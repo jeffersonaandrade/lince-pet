@@ -441,7 +441,7 @@ async function mapaPorNome(
 
 async function usuario(
   prisma: PrismaClient,
-  seed: { email: string; nome: string; sobrenome: string; celular: string; cep: string; rua: string; numero: string; bairro: string; cidade: string; estado: string; portrait: string },
+  seed: { email: string; nome: string; sobrenome: string; celular: string; cep: string; rua: string; numero: string; bairro: string; cidade: string; estado: string; portrait: string; whatsappOptIn?: number },
   userType: UserType,
   senhaHash: string
 ) {
@@ -466,6 +466,7 @@ async function usuario(
       ativo: 1,
       isEmailVerified: 1,
       profilePic: seed.portrait,
+      notificarWhatsapp: seed.whatsappOptIn ?? 1,
       createdAt: quando,
       updatedAt: quando,
     },
@@ -496,7 +497,6 @@ export async function seedDemonstracao(prisma: PrismaClient) {
           userId: user.id,
           cpf: seed.cpf,
           genero: seed.genero,
-          whatsappOptIn: seed.whatsappOptIn,
           createdAt: quando,
           updatedAt: quando,
         },
