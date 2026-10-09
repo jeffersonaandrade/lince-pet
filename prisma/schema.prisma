@@ -20,12 +20,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// ENUMs nativos do MySQL. Mapeados como String, o Prisma 6 falha ao ler (P2032).
+enum UserType {
+  tutor
+  veterinario
+  clinica
+}
+
+enum Genero {
+  masculino
+  feminino
+  outro
+}
+
+enum TipoClinica {
+  solo
+  multipla
+}
+
+enum Porte {
+  pequeno
+  medio
+  grande
+}
+
+enum PaymentType {
+  credits
+  appointment
+}
+
 model User {
   id                       String    @id @db.Char(36)
   email                    String    @unique @db.VarChar(255)
   password                 String    @db.VarChar(255)
-  /// ENUM('tutor','veterinario','clinica')
-  userType                 String    @map("user_type")
+  userType                 UserType  @map("user_type")
   nome                     String    @db.VarChar(255)
   celular                  String?   @db.VarChar(15)
   cep                      String?   @db.VarChar(8)
@@ -65,8 +93,7 @@ model Tutor {
   id            String    @id @db.Char(36)
   userId        String?   @map("user_id") @db.Char(36)
   cpf           String?   @unique @db.VarChar(14)
-  /// ENUM('masculino','feminino','outro')
-  genero        String?
+  genero        Genero?
   createdAt     DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
   /// 1 = aceita avisos de consultas por WhatsApp (opt-out no perfil)
@@ -87,8 +114,7 @@ model Veterinario {
   userId                     String?   @map("user_id") @db.Char(36)
   cpf                        String?   @db.VarChar(14)
   cnpj                       String?   @db.VarChar(18)
-  /// ENUM('masculino','feminino','outro')
-  genero                     String?
+  genero                     Genero?
   crmv                       String?   @unique @db.VarChar(15)
   bio                        String?   @db.Text
   fotoUrl                    String?   @map("foto_url") @db.VarChar(1024)
@@ -138,8 +164,7 @@ model Clinica {
   createdAt             DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt             DateTime? @map("updated_at") @db.Timestamp(0)
   nomeClinica           String?   @map("nome_clinica") @db.VarChar(200)
-  /// ENUM('solo','multipla')
-  tipoClinica           String?   @default("solo") @map("tipo_clinica")
+  tipoClinica           TipoClinica? @default(solo) @map("tipo_clinica")
   nomeFantasia          String?   @map("nome_fantasia") @db.VarChar(255)
   razaoSocial           String?   @map("razao_social") @db.VarChar(255)
   endereco              String?   @db.VarChar(255)
@@ -355,8 +380,7 @@ model Pet {
   fotoUrl   String?   @map("foto_url") @db.VarChar(255)
   createdAt DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
-  /// ENUM('pequeno','medio','grande')
-  porte     String?
+  porte     Porte?
 
   tutor        Tutor?            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   agendamentos Agendamento[]
@@ -549,8 +573,7 @@ model Payment {
   userId                  String?   @map("user_id") @db.Char(36)
   tutorId                 String?   @map("tutor_id") @db.Char(36)
   veterinarioId           String?   @map("veterinario_id") @db.Char(36)
-  /// ENUM('credits','appointment')
-  type                    String
+  type                    PaymentType
   provider                String    @default("stripe") @db.VarChar(255)
   checkoutSessionId       String?   @map("checkout_session_id") @db.VarChar(255)
   providerPaymentIntentId String?   @map("provider_payment_intent_id") @db.VarChar(255)

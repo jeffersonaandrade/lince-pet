@@ -198,6 +198,25 @@ impl.update({
     "src_app_dashboard_clinica_alterar_plano_page": ["rule_site_planos_fonte_unica"],
     "tests_server_site_links_test": ["rule_site_sem_link_quebrado"],
 })
+seed_nodes = [
+    rule("rule_seed_banco_vazio", "Seed Prisma popula catalogo de um banco vazio",
+         "npx prisma db seed grava planos de assinatura, especialidades oficiais, planos de saude e diferenciais. Sem isso a listagem de planos e o cadastro de especialidades ficam vazios."),
+    rule("rule_seed_planos_assinatura", "Planos de assinatura do seed seguem o banco do Adonis",
+         "free, pro, pro_plus, starter, clinic, clinic_pro com preco, limite, features, prioridade e trial ja ajustados. Upsert por code sem trocar id. /precos continua em src/config/planos.ts."),
+    rule("rule_seed_demonstracao", "Seed de demonstracao e idempotente e so usa e-mails mockup",
+         "prisma db seed cria tutores, vets, clinicas, pets, consultas, avaliacoes, favoritos, prontuario e um bloqueio. Senha senha123 so nas contas novas com e-mail mockup; nao troca senha existente e nao duplica."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in seed_nodes if n["id"] not in nodes_ids]
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in seed_nodes]
+impl.update({
+    "prisma_seed": ["rule_seed_banco_vazio", "rule_seed_planos_assinatura", "rule_seed_demonstracao"],
+    "prisma_demo": ["rule_seed_demonstracao"],
+    "prisma_catalogo": ["rule_seed_planos_assinatura"],
+    "src_data_especialidades": ["rule_seed_banco_vazio"],
+    "tests_server_catalogo_seed_test": ["rule_seed_banco_vazio", "rule_seed_planos_assinatura"],
+})
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 
