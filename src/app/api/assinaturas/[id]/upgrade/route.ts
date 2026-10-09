@@ -3,10 +3,18 @@ import { ApiRequest, badRequest, forbidden, ok, route, serverError } from '@/ser
 import { requireUser } from '@/server/auth/session'
 import { creating, updating } from '@/server/lucid'
 import { AsaasService, getCheckoutUrl, type BillingType } from '@/server/services/asaas'
+import {
+  assinanteDe,
+  assinanteDaAssinatura,
+  assinaturasDo,
+  donoDaAssinatura,
+  garantirClienteAsaas,
+  referenciaExterna,
+} from '@/server/services/assinante'
 
 export const PATCH = route<{ id: string }>(async (req, { id }) => {
   const request = await ApiRequest.from(req)
-  const user = await requireUser(request, ['veterinario', 'clinica'])
+  const user = await requireUser(request, ['veterinario', 'clinica', 'prestador'])
   try {
     const { planCode, cycle, billingType, creditCardToken } = request.only([
       'planCode',
@@ -22,15 +30,16 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
     const localSub = await prisma.subscription.findUnique({ where: { id } })
     if (!localSub) throw new Error('E_ROW_NOT_FOUND: Row not found')
 
-    const isVet = user.userType === 'veterinario'
-    const entity = isVet ? user.veterinario : user.userType === 'clinica' ? user.clinica : null
-    if (!entity) return forbidden({ message: 'Apenas veterinários e clínicas podem atualizar assinatura' })
-    const ownerId = isVet ? localSub.veterinarioId : localSub.clinicaId
-    if (ownerId !== entity.id) throw new Error('E_ROW_NOT_FOUND: Row not found')
+    const assinante = assinanteDe(user)
+    if (!assinante) return forbidden({ message: 'Apenas veterinários, clínicas e profissionais podem atualizar assinatura' })
+    const donoDaSub = assinanteDaAssinatura(localSub)
+    if (donoDaSub?.tipo !== assinante.tipo || donoDaSub.id !== assinante.id) {
+      throw new Error('E_ROW_NOT_FOUND: Row not found')
+    }
 
     const service = new AsaasService()
-    const owner = isVet ? { veterinarioId: entity.id } : { clinicaId: entity.id }
-    const externalReference = `${isVet ? 'vet' : 'clinica'}:${entity.id}`
+    const owner = assinaturasDo(assinante)
+    const externalReference = referenciaExterna(assinante)
 
     if (localSub.asaasSubscriptionId && newPlan.priceCents > 0) {
       try {
@@ -60,8 +69,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         })
 
         const newSub = creating({
-          veterinarioId: isVet ? entity.id : null,
-          clinicaId: isVet ? null : entity.id,
+          ...donoDaAssinatura(assinante),
           planId: newPlan.id,
           asaasSubscriptionId: asaasSub.id,
           asaasCustomerId: localSub.asaasCustomerId,
@@ -84,9 +92,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
     } else if (!localSub.asaasSubscriptionId && newPlan.priceCents > 0) {
       let customer: any
       try {
-        customer = isVet
-          ? await service.ensureCustomerForVeterinario(user, user.veterinario!)
-          : await service.ensureCustomerForClinica(user, user.clinica!)
+        customer = await garantirClienteAsaas(service, user, assinante)
       } catch {
         return badRequest({ message: 'Erro ao cadastrar cliente no Asaas.' })
       }
@@ -111,8 +117,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
       }
 
       const newSub = creating({
-        veterinarioId: isVet ? entity.id : null,
-        clinicaId: isVet ? null : entity.id,
+        ...donoDaAssinatura(assinante),
         planId: newPlan.id,
         asaasSubscriptionId: asaasSub.id,
         asaasCustomerId: customer.id,

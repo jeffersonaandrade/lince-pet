@@ -2,7 +2,17 @@ import 'server-only'
 import { DateTime } from 'luxon'
 import axios from 'axios'
 import { SignJWT } from 'jose'
-import type { Agendamento, Clinica, Pet, Tutor, User, Veterinario } from '@prisma/client'
+import type {
+  Agendamento,
+  Clinica,
+  Pet,
+  Prestador,
+  ServicoOferecido,
+  TipoServico,
+  Tutor,
+  User,
+  Veterinario,
+} from '@prisma/client'
 import { prisma } from '../db'
 import { env, requiredEnv } from '../env'
 import { creating, updating } from '../lucid'
@@ -28,6 +38,7 @@ export type CalendarUser = Omit<User, 'password'>
 export type CalendarAgendamento = Agendamento & {
   tutor?: (Tutor & { user?: unknown }) | null
   veterinario?: (Veterinario & { user?: unknown }) | null
+  prestador?: (Prestador & { user?: unknown }) | null
   pet?: Pet | null
   clinica?: Clinica | null
 }
@@ -156,16 +167,65 @@ function buildEventDateTime(dataConsulta: DateTime, horarioConsulta: string): Da
   return inicioDaConsulta(dataConsulta.toISODate()!, horarioConsulta)
 }
 
-type Papel = 'tutor' | 'veterinario'
+type Papel = 'tutor' | 'veterinario' | 'prestador'
 
 type EventContext = {
   agendamento: CalendarAgendamento
   tutorUser: CalendarUser | null
   vetUser: CalendarUser | null
   pet: Pet | null
+  prestadorUser?: CalendarUser | null
+  tipoServico?: TipoServico | null
+  servico?: ServicoOferecido | null
+}
+
+const LEMBRETES = {
+  useDefault: false,
+  overrides: [
+    { method: 'popup', minutes: 30 },
+    { method: 'email', minutes: 120 },
+  ],
+}
+
+/** Pedido de prestador: usa início/fim do pedido (serviço ou hospedagem de vários dias) e texto de serviço. */
+function montarEventoServico(ctx: EventContext, role: Papel) {
+  const { agendamento, pet } = ctx
+  const inicio = DateTime.fromJSDate(agendamento.inicioEm!).setZone('America/Sao_Paulo')
+  const fim = DateTime.fromJSDate(agendamento.fimEm ?? agendamento.inicioEm!).setZone('America/Sao_Paulo')
+  const petNome = pet?.nome || 'Pet'
+  const servico = ctx.servico?.nome || ctx.tipoServico?.nome || 'Serviço pet'
+  const tutorNome = `${ctx.tutorUser?.nome || 'Tutor'} ${ctx.tutorUser?.sobrenome || ''}`.trim()
+  const profNome = `${ctx.prestadorUser?.nome || 'Profissional'} ${ctx.prestadorUser?.sobrenome || ''}`.trim()
+  const local = `${agendamento.localNome || 'A combinar'}${agendamento.localEndereco ? ` - ${agendamento.localEndereco}` : ''}`
+
+  const linhas = [
+    `🛎️ Serviço: ${servico}`,
+    `🐾 Pet: ${petNome}`,
+    role === 'tutor'
+      ? `👤 Profissional: ${profNome}`
+      : `👤 Tutor: ${tutorNome} (${ctx.tutorUser?.celular || 'sem celular'})`,
+    `📅 ${inicio.toFormat('dd/MM/yyyy HH:mm')} até ${fim.toFormat('dd/MM/yyyy HH:mm')}`,
+    `📍 ${local}`,
+    `💰 Valor: R$ ${(Number(agendamento.precoConsulta) || 0).toFixed(2)}`,
+    role === 'tutor'
+      ? `🔍 Código de início: ${agendamento.startCode || 'Não gerado'} (informe ao profissional ao começar)`
+      : 'Peça ao tutor o código de início para registrar o começo do serviço.',
+  ]
+
+  return {
+    summary:
+      role === 'tutor' ? `${servico} - ${petNome} (${profNome})` : `${servico} - ${petNome} (Tutor: ${tutorNome})`,
+    location: local,
+    description: linhas.join('\n'),
+    status: 'confirmed',
+    start: { dateTime: inicio.toISO(), timeZone: 'America/Sao_Paulo' },
+    end: { dateTime: fim.toISO(), timeZone: 'America/Sao_Paulo' },
+    reminders: LEMBRETES,
+  }
 }
 
 function montarEvento(ctx: EventContext, role: Papel) {
+  if (ctx.agendamento.prestadorId && ctx.agendamento.inicioEm) return montarEventoServico(ctx, role)
   const { agendamento, pet } = ctx
   const startDateTime = buildEventDateTime(
     consumeDataConsulta(agendamento.dataConsulta)!,
@@ -220,13 +280,7 @@ Insira o código fornecido pelo tutor no painel para dar início oficial ao aten
     status: 'confirmed',
     start: { dateTime: startDateTime.toISO(), timeZone: 'America/Sao_Paulo' },
     end: { dateTime: endDateTime.toISO(), timeZone: 'America/Sao_Paulo' },
-    reminders: {
-      useDefault: false,
-      overrides: [
-        { method: 'popup', minutes: 30 },
-        { method: 'email', minutes: 120 },
-      ],
-    },
+    reminders: LEMBRETES,
   }
 }
 
@@ -312,11 +366,19 @@ async function carregarContexto(agendamento: string | CalendarAgendamento): Prom
     a.veterinario ?? (a.veterinarioId ? await prisma.veterinario.findUnique({ where: { id: a.veterinarioId } }) : null)
   const pet = a.pet ?? (a.petId ? await prisma.pet.findUnique({ where: { id: a.petId } }) : null)
 
-  const [tutorUser, vetUser] = await Promise.all([
+  const prestador = a.prestadorId
+    ? await prisma.prestador.findUnique({ where: { id: a.prestadorId }, include: { tipoServico: true } })
+    : null
+  const servico = a.servicoOferecidoId
+    ? await prisma.servicoOferecido.findUnique({ where: { id: a.servicoOferecidoId } })
+    : null
+
+  const [tutorUser, vetUser, prestadorUser] = await Promise.all([
     findUserWithTokens(tutor?.userId),
     findUserWithTokens(veterinario?.userId),
+    findUserWithTokens(prestador?.userId),
   ])
-  return { agendamento: a, tutorUser, vetUser, pet }
+  return { agendamento: a, tutorUser, vetUser, pet, prestadorUser, tipoServico: prestador?.tipoServico ?? null, servico }
 }
 
 /**
@@ -331,6 +393,7 @@ async function sincronizarEvento(agendamento: string | CalendarAgendamento, acao
     const participantes: [CalendarUser | null, Papel][] = [
       [ctx.tutorUser, 'tutor'],
       [ctx.vetUser, 'veterinario'],
+      [ctx.prestadorUser ?? null, 'prestador'],
     ]
     await Promise.all(
       participantes

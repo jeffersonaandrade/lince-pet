@@ -9,6 +9,7 @@ import { appointmentCancellation } from '../emails/appointment_cancellation'
 import { appointmentRescheduled } from '../emails/appointment_rescheduled'
 import { appointmentRescheduledVet } from '../emails/appointment_rescheduled_vet'
 import { newAppointmentVet } from '../emails/new_appointment_vet'
+import { pedidoServicoEmail, type PedidoServicoEmailData } from '../emails/pedido_servico'
 
 type SendResult = { success: true } | { success: false; error: unknown }
 
@@ -316,7 +317,24 @@ async function sendNewAppointmentToVeterinarian(
   }
 }
 
+/** E-mail dos pedidos de prestador (novo, aceito, recusado, cancelado, remarcado). */
+async function sendPedidoServico(
+  email: string,
+  assunto: string,
+  payload: Omit<PedidoServicoEmailData, 'logoHtml'>
+): Promise<SendResult> {
+  try {
+    const html = pedidoServicoEmail({ ...payload, logoHtml: buildLogoHtml(LOGO_STYLE) })
+    await sendMail({ to: email, from: fromAddress(), subject: `${assunto} - Lince Pet`, html })
+    return { success: true }
+  } catch (error) {
+    console.error('❌ [NotificationService] Erro ao enviar e-mail de pedido de serviço:', error)
+    return { success: false, error }
+  }
+}
+
 export const notifications = {
+  sendPedidoServico,
   sendAppointmentConfirmation,
   sendAppointmentCancellation,
   sendAppointmentRescheduled,

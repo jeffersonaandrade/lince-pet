@@ -25,6 +25,7 @@ import UserImage from "../ui/UserImage/UserImage";
 import styles from "./header.module.css";
 import NotificationBell from "../NotificationBell/NotificationBell";
 import { NotificationsService } from "@/services/notifications/notifications";
+import { dashboardDoTipo, rotuloDoTipo } from "@/utils/tipoConta";
 import IconSilver from "../../../public/img/IconSilver.png";
 import NameIconHeader from "../../../public/img/NameIconHeader.png";
 import IconDoctor from "../../../public/doctor.svg";
@@ -62,12 +63,7 @@ export default function Header() {
     await logout();
     setIsDropdownOpen(false);
   };
-  const profileHref =
-    user?.userType === "tutor"
-      ? "/dashboard/tutor"
-      : user?.userType === "clinica"
-        ? "/dashboard/clinica"
-        : "/dashboard/veterinario";
+  const profileHref = dashboardDoTipo(user?.userType);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -233,11 +229,7 @@ export default function Header() {
                         <span className={styles.userEmail}>{user.email}</span>
                         {user.userType && (
                           <span className={styles.userType}>
-                            {user.userType === "tutor"
-                              ? "Tutor"
-                              : user.userType === "clinica"
-                                ? "Clínica"
-                                : "Veterinário"}
+                            {rotuloDoTipo(user.userType, user.tipoServico?.nome)}
                           </span>
                         )}
                       </div>

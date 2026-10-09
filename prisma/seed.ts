@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { randomUUID } from 'node:crypto'
 import { especialidadesVeterinarias } from '../src/data/especialidades'
-import { DIFERENCIAIS, PLANOS_ASSINATURA, PLANOS_SAUDE } from './catalogo'
+import { DIFERENCIAIS, PLANOS_ASSINATURA, PLANOS_SAUDE, TIPOS_SERVICO } from './catalogo'
 import { seedDemonstracao } from './demo'
 
 const prisma = new PrismaClient()
@@ -104,11 +104,24 @@ async function seedDiferenciais() {
   }
 }
 
+async function seedTiposServico() {
+  const quando = agora()
+  for (const tipo of TIPOS_SERVICO) {
+    const dados = { nome: tipo.nome, descricao: tipo.descricao, modalidade: tipo.modalidade, ordem: tipo.ordem }
+    await prisma.tipoServico.upsert({
+      where: { slug: tipo.slug },
+      create: { id: randomUUID(), slug: tipo.slug, ativo: 1, ...dados, createdAt: quando, updatedAt: quando },
+      update: { ...dados, updatedAt: quando },
+    })
+  }
+}
+
 async function main() {
   await seedPlanosAssinatura()
   await seedEspecialidades()
   await seedPlanosSaude()
   await seedDiferenciais()
+  await seedTiposServico()
   await seedDemonstracao(prisma)
   const [planos, especialidades, saude, diferenciais] = await Promise.all([
     prisma.subscriptionPlan.count(),

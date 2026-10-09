@@ -21,6 +21,8 @@ export async function findEntityId(userId: string, userType: string): Promise<st
       return (await prisma.veterinario.findFirst(where))?.id
     case 'clinica':
       return (await prisma.clinica.findFirst(where))?.id
+    case 'prestador':
+      return (await prisma.prestador.findFirst(where))?.id
   }
   return undefined
 }
@@ -114,6 +116,21 @@ export function getUserProfile(user: CurrentUser) {
       onboardingComplete: clinica.onboardingComplete,
       isVerified: clinica.isVerified,
       fotoUrl: clinica.fotoPerfil || baseProfile.fotoUrl,
+    }
+  }
+
+  if (user.userType === 'prestador' && user.prestador) {
+    const p = user.prestador
+    return {
+      ...baseProfile,
+      cpf: p.cpf,
+      cnpj: p.cnpj,
+      bio: p.bio,
+      fotoUrl: p.fotoUrl || baseProfile.fotoUrl,
+      tipoServico: { slug: p.tipoServico.slug, nome: p.tipoServico.nome, modalidade: p.tipoServico.modalidade },
+      onboardingComplete: p.onboardingComplete,
+      onboardingStep: p.onboardingStep,
+      subscriptionPlanCode: p.subscriptionPlanCode || null,
     }
   }
 

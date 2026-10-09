@@ -9,6 +9,7 @@ import {
     NotificationItem,
 } from "@/services/notifications/notifications";
 import ClinicRequestModal from "./ClinicRequestModal";
+import { dashboardDoTipo } from "@/utils/tipoConta";
 import styles from "./notificationBell.module.css";
 
 // ============================================================
@@ -51,6 +52,13 @@ const NOTIFICATION_CONFIG: Record<
         icon: <Link2 size={18} />,
         color: "#f59e0b", // âmbar
     },
+    PEDIDO_NOVO: { icon: <Calendar size={18} />, color: "#22c55e" },
+    PEDIDO_ACEITO: { icon: <Check size={18} />, color: "#3b82f6" },
+    PEDIDO_RECUSADO: { icon: <X size={18} />, color: "#ef4444" },
+    PEDIDO_CANCELADO: { icon: <X size={18} />, color: "#ef4444" },
+    PEDIDO_REMARCADO: { icon: <Calendar size={18} />, color: "#e67e22" },
+    PEDIDO_CONCLUIDO: { icon: <CheckCircle size={18} />, color: "#10b981" },
+    NOVA_AVALIACAO: { icon: <Star size={18} />, color: "#eab308" },
 };
 
 // Ícone/cor padrão caso o type não esteja mapeado
@@ -167,12 +175,14 @@ export default function NotificationBell({
         const navigate = () => {
             setIsOpen(false);
             if (onNavigate) onNavigate();
-            if (notif.type === 'NOVO_AGENDAMENTO' || notif.type === 'AGENDAMENTO_CANCELADO' || notif.type === 'AGENDAMENTO_REAGENDADO') {
-                router.push(user?.userType === 'clinica' ? '/dashboard/clinica' : '/dashboard/veterinario');
+            if (notif.type.startsWith('PEDIDO_') || notif.type === 'NOVA_AVALIACAO') {
+                router.push(dashboardDoTipo(user?.userType));
+            } else if (notif.type === 'NOVO_AGENDAMENTO' || notif.type === 'AGENDAMENTO_CANCELADO' || notif.type === 'AGENDAMENTO_REAGENDADO') {
+                router.push(dashboardDoTipo(user?.userType));
             } else if (notif.type === 'AGENDAMENTO_CONFIRMADO') {
                 router.push('/dashboard/tutor');
             } else if (notif.type === 'AVALIACAO_RECEBIDA') {
-                router.push(user?.userType === 'clinica' ? '/dashboard/clinica' : '/dashboard/veterinario');
+                router.push(dashboardDoTipo(user?.userType));
             } else if (notif.type === 'VINCULO_CLINICA_SOLICITADO') {
                 if (notif.action_data?.isRequest) {
                     setRequestData({

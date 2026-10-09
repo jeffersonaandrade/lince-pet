@@ -112,6 +112,23 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Sincronização do evento:** criar consulta insere o evento na agenda de cada participante conectado; remarcar atualiza o evento (se sumiu no Google, cria outro); cancelar (pelo tutor ou por bloqueio de agenda) apaga o evento. O id fica em `agendamento_google_eventos` (consulta x usuário). Falha do Google nunca derruba o fluxo; 401/403 desliga a integração do usuário.
 - **Desconectar:** `POST /api/google/calendar/disconnect` revoga o token no Google (melhor esforço) e limpa as credenciais. Para de criar eventos novos; não apaga consultas da plataforma nem os eventos já criados no Google.
 
+### Prestadores de serviço pet
+
+- **Conta genérica:** tosador, passeador, adestrador, pet sitter e os próximos tipos usam a mesma conta `prestador` (`user_type = prestador`). O tipo vem do catálogo `tipos_servico` (`slug`, `nome`, `modalidade`), populado pelo seed; tipo novo = linha nova no catálogo, sem código novo. Cadastro em `/signup/prestador`, onboarding em 3 passos (onde atende, serviços e preços, apresentação e grade semanal), painel em `/dashboard/prestador`, perfil público em `/profissionais/:id`.
+- **Um tipo por prestador:** quem faz dois serviços diferentes cria duas contas. Dentro do tipo, o prestador cadastra vários serviços (`servicos_oferecidos`), cada um com preço e, na modalidade duração, minutos.
+- **Sem dados de veterinário:** sem CRMV, especialidade, consulta online, prontuário, registro clínico ou anotação privada. A tela e as rotas são próprias (`src/server/services/prestadores.ts` e `pedidos-prestador.ts`).
+- **Busca:** aba "Profissionais" em `/explorar` com filtro por tipo (`GET /api/prestadores/search?tipo=`); só aparece quem concluiu o onboarding e está ativo.
+- **Pedido = `Agendamento`:** com `prestador_id` e `servico_oferecido_id`, sem veterinário. Todo pedido tem `inicio_em`/`fim_em` (UTC; regras de dia/horário em `America/Sao_Paulo`).
+  - **Duração** (banho, tosa, passeio, adestramento): fim = início + duração do serviço; precisa caber na grade do dia.
+  - **Período** (hospedagem / pet sitter): entrada e saída em dias diferentes, até 30 dias; preço = diária × número de dias (arredondado para cima). Entrada e saída precisam cair dentro da grade dos respectivos dias.
+- **Sem sobreposição:** pedidos `pendente`, `confirmado` ou `em andamento` ocupam a agenda; outro pedido que sobreponha o período recebe 409. A checagem é refeita na transação.
+- **Local:** o tutor escolhe domicílio (endereço do tutor) ou local do profissional, só entre os que o prestador atende.
+- **Aceite obrigatório:** o pedido nasce `pendente`; o prestador aceita (`confirmado`) ou recusa (`cancelado`, com motivo opcional). Remarcar pelo tutor volta o pedido para `pendente`.
+- **Código de início:** o tutor só vê o código depois do aceite. O prestador digita o código para iniciar (`em andamento`, até 5 tentativas) e depois conclui (`realizado`); o tutor pode avaliar o serviço concluído.
+- **Bloqueio de agenda do prestador:** mesmo modelo de `bloqueios_agenda` (dia inteiro ou horários, cada horário bloqueia 1h). Diferente do vet, bloqueio que atinge pedido ativo é recusado com 409 e a lista de conflitos: o prestador recusa ou combina a remarcação antes.
+- **Limite do plano:** o prestador começa no plano `free` (10 pedidos/mês) e pode assinar o `pro` (ilimitado) pelo mesmo fluxo Asaas (`/api/assinaturas`, referência `prestador:<id>`). Pedido criado conta no mês; recusa ou cancelamento devolve a cota. Cancelar ou atrasar a assinatura volta para `free`.
+- **Avisos:** os mesmos canais da consulta (in-app, e-mail, WhatsApp e Google Agenda) com texto de serviço ("Novo pedido de Banho e tosa", sem "Dr(a)." nem "consulta"). WhatsApp do prestador depende do plano dele ter `whatsapp_notifications`.
+
 ## Testes
 
 - `npm test`: unitários (`tests/server`).

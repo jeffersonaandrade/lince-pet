@@ -26,7 +26,7 @@ export const POST = route<{ id: string }>(async (req, { id }) => {
     if (!agendamento) return notFound({ message: 'Agendamento não encontrado' })
 
     if (statusNormalizado(agendamento.status) !== 'realizado') {
-      return badRequest({ message: 'Só é possível avaliar consultas concluídas' })
+      return badRequest({ message: 'Só é possível avaliar atendimentos concluídos' })
     }
 
     const jaAvaliado = await prisma.avaliacao.findFirst({ where: { agendamentoId: agendamento.id } })
@@ -36,7 +36,8 @@ export const POST = route<{ id: string }>(async (req, { id }) => {
       data: creating({
         agendamentoId: agendamento.id,
         tutorId: tutor.id,
-        veterinarioId: agendamento.veterinarioId as string,
+        veterinarioId: agendamento.veterinarioId,
+        prestadorId: agendamento.prestadorId,
         estrelas: payload.estrelas,
         comentario: payload.comentario || null,
         clinicaId: agendamento.clinicaId || null,
@@ -73,6 +74,19 @@ export const POST = route<{ id: string }>(async (req, { id }) => {
             })
           }
         }
+      }
+
+      const prestador = agendamento.prestadorId
+        ? await prisma.prestador.findFirst({ where: { id: agendamento.prestadorId } })
+        : null
+      if (prestador) {
+        await inAppNotifications.createGenericNotification({
+          userId: prestador.userId,
+          type: 'NOVA_AVALIACAO',
+          title: 'Nova avaliação',
+          message: `${tutorNome} avaliou seu serviço com ${payload.estrelas} estrela(s).`,
+          actionData: { agendamentoId: agendamento.id, pedido: true },
+        })
       }
     } catch (notifErr) {
       console.error('❌ Erro ao enviar notificação de avaliação:', notifErr)

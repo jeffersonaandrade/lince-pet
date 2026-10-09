@@ -265,6 +265,67 @@ impl.update({
 })
 new_edges += [edge("src_server_services_bloqueios", "rule_google_agenda_sincroniza_evento", "implements")]
 
+prestador_nodes = [
+    rule("rule_prestador_conta_generica", "Prestador: conta generica com tipo do catalogo",
+         "Tosador, passeador, adestrador, pet sitter e proximos usam user_type prestador; tipo vem de tipos_servico (slug, nome, modalidade); tipo novo = linha no catalogo. Cadastro, onboarding, painel e perfil publico proprios."),
+    rule("rule_prestador_um_tipo", "Prestador: um tipo por conta, varios servicos",
+         "Cada prestador tem um tipo de servico; dentro dele cadastra servicos_oferecidos com preco e duracao (modalidade duracao)."),
+    rule("rule_prestador_sem_dados_vet", "Prestador: sem CRMV, consulta, prontuario ou anotacao",
+         "Telas e rotas proprias (prestadores.ts, pedidos-prestador.ts); nao reutiliza a tela de veterinario; pedido sem veterinario_id."),
+    rule("rule_prestador_busca_por_tipo", "Prestador: busca por tipo de servico",
+         "Aba Profissionais em /explorar e GET /api/prestadores/search?tipo=; so quem concluiu onboarding e esta ativo."),
+    rule("rule_prestador_pedido_inicio_fim", "Pedido de servico: inicio e fim (duracao ou periodo)",
+         "Pedido = Agendamento com prestador_id e inicio_em/fim_em. Duracao: fim = inicio + duracao, dentro da grade. Periodo (hospedagem): ate 30 dias, preco = diaria x dias."),
+    rule("rule_prestador_sem_sobreposicao", "Pedido de servico: sem sobreposicao na agenda",
+         "Pedidos pendente/confirmado/em andamento ocupam a agenda; sobreposicao retorna 409, checada de novo na transacao."),
+    rule("rule_prestador_aceite_obrigatorio", "Pedido de servico: aceite obrigatorio",
+         "Nasce pendente; prestador aceita (confirmado) ou recusa (cancelado, motivo opcional); remarcacao pelo tutor volta para pendente."),
+    rule("rule_prestador_codigo_apos_aceite", "Pedido de servico: codigo de inicio so apos aceite",
+         "Tutor ve o codigo quando confirmado; prestador digita para iniciar (ate 5 tentativas) e depois conclui; tutor avalia o servico concluido."),
+    rule("rule_prestador_bloqueio_conflito_409", "Bloqueio do prestador com pedido ativo e recusado (409)",
+         "Diferente do vet, nao cancela pedidos: devolve 409 com a lista de conflitos para o prestador recusar ou remarcar antes."),
+    rule("rule_prestador_limite_plano", "Prestador: plano free com limite mensal e upgrade Asaas",
+         "Comeca no free (10 pedidos/mes); pro pelo mesmo fluxo /api/assinaturas (referencia prestador:<id>); recusa/cancelamento devolve a cota; cancelar ou atrasar volta para free."),
+    rule("rule_prestador_avisos_reaproveitados", "Pedido de servico: mesmos avisos com texto de servico",
+         "In-app, e-mail, WhatsApp e Google Agenda reaproveitados via profissionalDe; textos sem Dr(a). nem consulta; WhatsApp depende do plano do prestador."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in prestador_nodes if n["id"] not in nodes_ids]
+prestador_rules = [n["id"] for n in prestador_nodes]
+new_edges += [edge("concept_regras_de_negocio", r) for r in prestador_rules]
+new_edges += [edge("rule_prestador_conta_generica", r) for r in prestador_rules[1:]]
+new_edges += [edge("rule_prestador_bloqueio_conflito_409", "rule_bloqueio_cancela_consultas", "references")]
+new_edges += [edge("rule_prestador_avisos_reaproveitados", "rule_canais_por_usuario", "references")]
+prestador_impl = {
+    "src_server_services_prestadores": [
+        "rule_prestador_conta_generica", "rule_prestador_um_tipo", "rule_prestador_busca_por_tipo", "rule_prestador_sem_dados_vet",
+    ],
+    "src_server_services_pedidos_prestador": [
+        "rule_prestador_pedido_inicio_fim", "rule_prestador_sem_sobreposicao", "rule_prestador_aceite_obrigatorio",
+        "rule_prestador_codigo_apos_aceite", "rule_prestador_bloqueio_conflito_409", "rule_prestador_limite_plano",
+        "rule_prestador_avisos_reaproveitados", "rule_prestador_sem_dados_vet",
+    ],
+    "src_server_services_profissional": ["rule_prestador_avisos_reaproveitados"],
+    "src_server_services_assinante": ["rule_prestador_limite_plano"],
+    "src_server_services_asaas_webhook": ["rule_prestador_limite_plano"],
+    "src_server_services_whatsapp_notificacoes": ["rule_prestador_avisos_reaproveitados"],
+    "src_server_services_google_calendar": ["rule_prestador_avisos_reaproveitados"],
+    "src_app_api_prestadores_search_route": ["rule_prestador_busca_por_tipo"],
+    "src_app_api_prestadores_register_route": ["rule_prestador_conta_generica", "rule_prestador_um_tipo"],
+    "src_app_api_prestadores_bloqueios_route": ["rule_prestador_bloqueio_conflito_409"],
+    "src_app_api_agendamentos_id_cancelar_route": ["rule_prestador_limite_plano"],
+    "src_app_api_agendamentos_id_reagendar_route": ["rule_prestador_aceite_obrigatorio"],
+    "src_app_api_agendamentos_route": ["rule_prestador_codigo_apos_aceite"],
+    "src_app_dashboard_prestador_page": ["rule_prestador_aceite_obrigatorio", "rule_prestador_codigo_apos_aceite"],
+    "src_components_prestador_painelbloqueios": ["rule_prestador_bloqueio_conflito_409"],
+    "src_components_prestador_pedidoservicoform": ["rule_prestador_pedido_inicio_fim"],
+    "src_components_prestador_listaprofissionais": ["rule_prestador_busca_por_tipo"],
+    "src_app_dashboard_tutor_appointmentitem": ["rule_prestador_codigo_apos_aceite"],
+    "tests_server_prestadores_test": prestador_rules,
+}
+for code_id, rs in prestador_impl.items():
+    impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

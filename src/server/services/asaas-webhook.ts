@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 import { prisma } from '../db'
 import { updating } from '../lucid'
 import { AsaasService } from './asaas'
+import { PLANO_PADRAO, assinanteDaAssinatura, assinaturasDo, definirPlano, planoAtualDe } from './assinante'
 
 type Tx = Prisma.TransactionClient
 
@@ -61,6 +62,17 @@ async function downgradeVet(tx: Tx, subId: string, veterinarioId: string, reason
   }
 }
 
+async function downgradePrestador(tx: Tx, subId: string, prestadorId: string, reason: string) {
+  const others = await tx.subscription.count({ where: { prestadorId, status: 'active', id: { not: subId } } })
+  if (others > 0) return
+  const dono = { tipo: 'prestador' as const, id: prestadorId }
+  const atual = await planoAtualDe(tx, dono)
+  if (atual !== undefined && atual !== PLANO_PADRAO.prestador) {
+    await definirPlano(tx, dono, PLANO_PADRAO.prestador, false)
+    console.log(`[Webhook Asaas] Prestador ${prestadorId} rebaixado para plano ${PLANO_PADRAO.prestador} devido a ${reason}.`)
+  }
+}
+
 async function processEvent(tx: Tx, payload: any, eventType: string) {
   const isPaymentConfirmed = ['PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED'].includes(eventType)
   const isPaymentOverdue = ['PAYMENT_OVERDUE'].includes(eventType)
@@ -73,14 +85,12 @@ async function processEvent(tx: Tx, payload: any, eventType: string) {
         await tx.subscription.update({ where: { id: localSub.id }, data: updating({ status: 'active' }) })
         console.log(`[Webhook Asaas] Assinatura ${localSub.id} ativada via pagamento.`)
 
-        const otherActiveSubs = await tx.subscription.findMany({
-          where: {
-            id: { not: localSub.id },
-            ...(localSub.veterinarioId ? { veterinarioId: localSub.veterinarioId } : {}),
-            ...(localSub.clinicaId ? { clinicaId: localSub.clinicaId } : {}),
-            status: { in: ['active', 'pending'] },
-          },
-        })
+        const dono = assinanteDaAssinatura(localSub)
+        const otherActiveSubs = dono
+          ? await tx.subscription.findMany({
+              where: { id: { not: localSub.id }, ...assinaturasDo(dono), status: { in: ['active', 'pending'] } },
+            })
+          : []
 
         if (otherActiveSubs.length > 0) {
           const service = new AsaasService()
@@ -125,12 +135,21 @@ async function processEvent(tx: Tx, payload: any, eventType: string) {
               console.log(`[Webhook Asaas] Clínica ${clinica.id} atualizada para plano ${plan.code}.`)
             }
           }
+
+          if (localSub.prestadorId && plan) {
+            const atual = await planoAtualDe(tx, { tipo: 'prestador', id: localSub.prestadorId })
+            if (atual !== undefined && atual !== plan.code) {
+              await definirPlano(tx, { tipo: 'prestador', id: localSub.prestadorId }, plan.code)
+              console.log(`[Webhook Asaas] Prestador ${localSub.prestadorId} atualizado para plano ${plan.code}.`)
+            }
+          }
         }
       } else if (isPaymentOverdue) {
         await tx.subscription.update({ where: { id: localSub.id }, data: updating({ status: 'past_due' }) })
         console.log(`[Webhook Asaas] Assinatura ${localSub.id} atrasada.`)
 
         if (localSub.veterinarioId) await downgradeVet(tx, localSub.id, localSub.veterinarioId, 'atraso')
+        if (localSub.prestadorId) await downgradePrestador(tx, localSub.id, localSub.prestadorId, 'atraso')
 
         if (localSub.clinicaId) {
           const clinica = await tx.clinica.findUnique({ where: { id: localSub.clinicaId } })
@@ -167,6 +186,7 @@ async function processEvent(tx: Tx, payload: any, eventType: string) {
         console.log(`[Webhook Asaas] Assinatura ${localSub.id} cancelada.`)
 
         if (localSub.veterinarioId) await downgradeVet(tx, localSub.id, localSub.veterinarioId, 'cancelamento')
+        if (localSub.prestadorId) await downgradePrestador(tx, localSub.id, localSub.prestadorId, 'cancelamento')
 
         if (localSub.clinicaId) {
           const clinica = await tx.clinica.findUnique({ where: { id: localSub.clinicaId } })

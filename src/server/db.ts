@@ -1,5 +1,8 @@
 import 'server-only'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, type User } from '@prisma/client'
+
+/** User como sai do client global (sem senha nem tokens do Google). */
+export type Usuario = Omit<User, 'password' | 'googleAccessToken' | 'googleRefreshToken' | 'googleTokenExpiresAt'>
 
 /**
  * Campos com `serializeAs: null` no Lucid nunca saem do banco por padrão.

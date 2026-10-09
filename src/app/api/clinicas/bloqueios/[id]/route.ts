@@ -9,7 +9,7 @@ export const DELETE = route<{ id: string }>(async (req, { id }) => {
   if (!user.clinica) return unauthorized({ message: 'Usuário não autenticado ou não é clínica' })
 
   const bloqueio = await prisma.bloqueioAgenda.findUnique({ where: { id } })
-  if (!bloqueio) return notFound({ message: 'Bloqueio não encontrado' })
+  if (!bloqueio?.veterinarioId) return notFound({ message: 'Bloqueio não encontrado' })
   await assertVinculoAceito(user.clinica.id, bloqueio.veterinarioId)
 
   await prisma.bloqueioAgenda.delete({ where: { id } })

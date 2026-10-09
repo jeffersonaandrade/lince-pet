@@ -86,17 +86,22 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const searchParams = new URLSearchParams();
+    const novos = new URLSearchParams();
+    // Mantém a aba e o tipo de serviço escolhidos no /explorar (ex.: profissionais pet > passeador).
+    for (const chave of ["tab", "tipo"]) {
+      const valor = searchParams.get(chave);
+      if (valor) novos.set(chave, valor);
+    }
 
     if (searchValue.trim())
-      searchParams.set("search", searchValue.trim());
+      novos.set("search", searchValue.trim());
     if (specialtyValue.trim())
-      searchParams.set("specialty", specialtyValue.trim());
+      novos.set("specialty", specialtyValue.trim());
     if (locationValue.trim())
-      searchParams.set("location", locationValue.trim());
-    if (plansValue.trim()) searchParams.set("plans", plansValue.trim());
+      novos.set("location", locationValue.trim());
+    if (plansValue.trim()) novos.set("plans", plansValue.trim());
 
-    const queryString = searchParams.toString();
+    const queryString = novos.toString();
     if (queryString) {
       router.push(`/explorar?${queryString}`);
     } else {

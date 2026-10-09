@@ -2,7 +2,7 @@ import 'server-only'
 import { SignJWT, jwtVerify } from 'jose'
 import { requiredEnv } from '../env'
 
-export type UserType = 'tutor' | 'veterinario' | 'clinica'
+export type UserType = 'tutor' | 'veterinario' | 'clinica' | 'prestador'
 
 export type TokenPayload = {
   userId: number | string

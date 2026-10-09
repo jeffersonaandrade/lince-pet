@@ -81,6 +81,23 @@ export type ClinicaDemo = {
   descricao: string
 }
 
+export type PrestadorDemo = Endereco & {
+  email: string
+  nome: string
+  sobrenome: string
+  celular: string
+  portrait: string
+  cpf: string
+  tipo: 'tosador' | 'passeador' | 'adestrador' | 'pet_sitter'
+  bio: string
+  raioKm: number
+  atendeLocalProprio: boolean
+  servicos: { nome: string; preco: number; duracaoMin: number | null }[]
+}
+
+/** Grade padrão dos prestadores de demonstração: seg a sáb, 08:00 às 18:00 (0=domingo). */
+const HORARIOS_PRESTADOR = Object.fromEntries([1, 2, 3, 4, 5, 6].map((dia) => [String(dia), ['08:00', '18:00']]))
+
 const foto = (path: string) => `https://randomuser.me/api/portraits/${path}.jpg`
 
 const cidade = (estado: string, nome: string, cep: string, rua: string, numero: string, bairro: string): Endereco => ({
@@ -396,6 +413,71 @@ export const PETS: Record<string, { nome: string; especie: string; raca: string;
     { nome: 'Frida', especie: 'Gato', raca: 'SRD', idade: 5, porte: Porte.pequeno },
   ],
 }
+
+export const PRESTADORES: PrestadorDemo[] = [
+  {
+    email: 'tosa.bianca.mockup@email.com',
+    nome: 'Bianca',
+    sobrenome: 'Tosa',
+    celular: '11988887771',
+    portrait: foto('women/31'),
+    cpf: '511.222.333-01',
+    tipo: 'tosador',
+    bio: 'Banho e tosa com produtos hipoalergênicos. Atendo em domicílio com van equipada.',
+    raioKm: 10,
+    atendeLocalProprio: true,
+    servicos: [
+      { nome: 'Banho porte pequeno', preco: 60, duracaoMin: 60 },
+      { nome: 'Banho e tosa porte médio', preco: 110, duracaoMin: 120 },
+    ],
+    ...sp('04538133', 'Rua Funchal', '200', 'Vila Olímpia'),
+  },
+  {
+    email: 'passeio.rafael.mockup@email.com',
+    nome: 'Rafael',
+    sobrenome: 'Passos',
+    celular: '21988887772',
+    portrait: foto('men/41'),
+    cpf: '511.222.333-02',
+    tipo: 'passeador',
+    bio: 'Passeios individuais ou em dupla, com relatório e fotos ao final.',
+    raioKm: 5,
+    atendeLocalProprio: false,
+    servicos: [
+      { nome: 'Passeio 30 min', preco: 30, duracaoMin: 30 },
+      { nome: 'Passeio 1 hora', preco: 50, duracaoMin: 60 },
+    ],
+    ...rj('22290030', 'Rua Voluntários da Pátria', '45', 'Botafogo'),
+  },
+  {
+    email: 'adestra.carla.mockup@email.com',
+    nome: 'Carla',
+    sobrenome: 'Mendes',
+    celular: '31988887773',
+    portrait: foto('women/52'),
+    cpf: '511.222.333-03',
+    tipo: 'adestrador',
+    bio: 'Adestramento positivo: obediência básica, passeio sem puxar e socialização.',
+    raioKm: 15,
+    atendeLocalProprio: false,
+    servicos: [{ nome: 'Aula de adestramento', preco: 120, duracaoMin: 60 }],
+    ...mg('30130110', 'Avenida Afonso Pena', '1500', 'Centro'),
+  },
+  {
+    email: 'sitter.lucas.mockup@email.com',
+    nome: 'Lucas',
+    sobrenome: 'Ferraz',
+    celular: '41988887774',
+    portrait: foto('men/63'),
+    cpf: '511.222.333-04',
+    tipo: 'pet_sitter',
+    bio: 'Hospedagem em casa com quintal, um pet por vez, com atualização diária.',
+    raioKm: 20,
+    atendeLocalProprio: true,
+    servicos: [{ nome: 'Diária de hospedagem', preco: 90, duracaoMin: null }],
+    ...pr('80250104', 'Rua Comendador Araújo', '300', 'Centro'),
+  },
+]
 
 const COMENTARIOS = [
   'Explicou o diagnóstico com calma e o pet saiu bem.',
@@ -984,8 +1066,80 @@ export async function seedDemonstracao(prisma: PrismaClient) {
     }
   }
 
+  const tipos = new Map(
+    (await prisma.tipoServico.findMany({ select: { id: true, slug: true, modalidade: true } })).map((t) => [t.slug, t])
+  )
+  let prestadores = 0
+  for (const [index, seed] of PRESTADORES.entries()) {
+    const tipo = tipos.get(seed.tipo)
+    if (!tipo) throw new Error(`Catálogo ausente em tipos_servico: ${seed.tipo}`)
+    const user = await usuario(prisma, seed, UserType.prestador, senhaHash)
+    let prestador = await prisma.prestador.findFirst({ where: { userId: user.id } })
+    if (!prestador) {
+      prestador = await prisma.prestador.create({
+        data: {
+          id: randomUUID(),
+          userId: user.id,
+          tipoServicoId: tipo.id,
+          cpf: seed.cpf,
+          bio: seed.bio,
+          fotoUrl: seed.portrait,
+          atendeDomicilio: 1,
+          atendeLocalProprio: seed.atendeLocalProprio ? 1 : 0,
+          raioKm: seed.raioKm,
+          horarios: HORARIOS_PRESTADOR,
+          onboardingStep: 4,
+          onboardingComplete: 1,
+          subscriptionPlanCode: 'free',
+          createdAt: quando,
+          updatedAt: quando,
+          servicos: {
+            create: seed.servicos.map((s) => ({
+              id: randomUUID(),
+              nome: s.nome,
+              preco: s.preco,
+              duracaoMin: s.duracaoMin,
+              createdAt: quando,
+              updatedAt: quando,
+            })),
+          },
+        },
+      })
+    }
+    prestadores++
+
+    const item = tutores[index % tutores.length]
+    const pet = pets.get(item.tutor.id)?.[0]
+    const servico = await prisma.servicoOferecido.findFirst({ where: { prestadorId: prestador.id } })
+    const jaTemPedido = await prisma.agendamento.findFirst({ where: { prestadorId: prestador.id } })
+    if (pet && servico && !jaTemPedido) {
+      const inicio = DateTime.now().setZone('America/Sao_Paulo').plus({ days: 3 + index }).set({ hour: 10, minute: 0, second: 0, millisecond: 0 })
+      const fim = servico.duracaoMin ? inicio.plus({ minutes: servico.duracaoMin }) : inicio.plus({ days: 3 })
+      const dias = servico.duracaoMin ? 1 : 3
+      await prisma.agendamento.create({
+        data: {
+          id: randomUUID(),
+          tutorId: item.tutor.id,
+          petId: pet.id,
+          prestadorId: prestador.id,
+          servicoOferecidoId: servico.id,
+          inicioEm: inicio.toUTC().toJSDate(),
+          fimEm: fim.toUTC().toJSDate(),
+          dataConsulta: inicio.toISODate(),
+          horarioConsulta: inicio.toFormat('HH:mm'),
+          tipoConsulta: tipo.slug,
+          precoConsulta: Number(servico.preco) * dias,
+          status: 'pendente',
+          observacoes: 'pedido de demonstração',
+          createdAt: quando,
+          updatedAt: quando,
+        },
+      })
+    }
+  }
+
   const petsTotal = [...pets.values()].reduce((total, lista) => total + lista.length, 0)
   console.log(
-    `Demonstração: ${tutores.length} tutores, ${veterinarios.length} veterinários, ${clinicas.length} clínicas, ${petsTotal} pets, ${agendamentos} consultas, ${avaliacoes} avaliações, ${prontuarios} prontuários novos, ${favoritos} favoritos, ${notificacoes} notificações novas. Senha das contas novas: ${SENHA_DEMO}`
+    `Demonstração: ${tutores.length} tutores, ${veterinarios.length} veterinários, ${clinicas.length} clínicas, ${prestadores} prestadores, ${petsTotal} pets, ${agendamentos} consultas, ${avaliacoes} avaliações, ${prontuarios} prontuários novos, ${favoritos} favoritos, ${notificacoes} notificações novas. Senha das contas novas: ${SENHA_DEMO}`
   )
 }

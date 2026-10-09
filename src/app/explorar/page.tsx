@@ -10,6 +10,9 @@ import { searchVeterinarios } from "../../services/veterinarios/veterinarios";
 import styles from "./explorar.module.css";
 import { searchClinicas } from "../../services/clinicas/clinicas";
 import Skeleton from "../../components/ui/Skeleton/Skeleton";
+import ListaProfissionais from "../../components/Prestador/ListaProfissionais";
+
+type Aba = "veterinarios" | "clinicas" | "profissionais";
 
 interface Veterinario {
   id: string;
@@ -53,16 +56,16 @@ interface Clinica {
 function ExplorarContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"veterinarios" | "clinicas">(() => {
+  const [activeTab, setActiveTab] = useState<Aba>(() => {
     const tabParam = searchParams.get("tab");
-    return tabParam === "clinicas" ? "clinicas" : "veterinarios";
+    return tabParam === "clinicas" || tabParam === "profissionais" ? tabParam : "veterinarios";
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [specialtyTerm, setSpecialtyTerm] = useState("");
   const [veterinarios, setVeterinarios] = useState<Veterinario[]>([]);
   const [clinicas, setClinicas] = useState<Clinica[]>([]);
   
-  const handleTabChange = (tab: "veterinarios" | "clinicas") => {
+  const handleTabChange = (tab: Aba) => {
     setActiveTab(tab);
     const params = new URLSearchParams(searchParams.toString());
     params.set("tab", tab);
@@ -189,8 +192,8 @@ function ExplorarContent() {
     setSearchTerm(searchParams.get("search") || "");
     setSpecialtyTerm(searchParams.get("specialty") || "");
     const tabParam = searchParams.get("tab");
-    if (tabParam === "clinicas" || tabParam === "veterinarios") {
-      setActiveTab(tabParam as "veterinarios" | "clinicas");
+    if (tabParam === "clinicas" || tabParam === "veterinarios" || tabParam === "profissionais") {
+      setActiveTab(tabParam);
     }
   }, [searchParams]);
 
@@ -198,6 +201,9 @@ function ExplorarContent() {
     const location = searchParams.get("location");
     if (activeTab === "clinicas") {
       return location ? `Clínicas em ${location}` : "Explorar Clínicas";
+    }
+    if (activeTab === "profissionais") {
+      return location ? `Profissionais pet em ${location}` : "Profissionais pet";
     }
 
     if (location) {
@@ -501,9 +507,18 @@ function ExplorarContent() {
           >
             Clínicas
           </button>
+          <button
+            className={`${styles.tabButton} ${activeTab === 'profissionais' ? styles.activeTab : ''}`}
+            onClick={() => handleTabChange('profissionais')}
+          >
+            Profissionais pet
+          </button>
         </div>
       </div>
 
+      {activeTab === 'profissionais' ? <ListaProfissionais /> : null}
+
+      {activeTab !== 'profissionais' ? (<>
       <div className={styles.results}>
         <div className={styles.resultsInfo}>
           {loading ? (
@@ -761,6 +776,7 @@ function ExplorarContent() {
           )}
         </div>
       )}
+      </>) : null}
     </div>
   );
 }
