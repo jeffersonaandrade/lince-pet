@@ -32,6 +32,32 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 - **Agendamento:** `POST /api/agendamentos` checa limite do plano, grava, notifica (in-app, e-mail, WhatsApp) e cria evento no Google Calendar via `after()`.
 - **Assinaturas:** `/api/assinaturas/*` cria/atualiza no Asaas; `POST /api/webhooks/asaas` é idempotente via `webhook_events.event_id`.
 - **Uploads:** multipart -> `UploadedFile` -> S3 (`src/server/services/storage.ts`).
+- **Agenda:** a grade semanal fica em `veterinario_enderecos.horarios_funcionamento` (presencial) e `veterinarios.horarios_online`, editada no Perfil. Bloqueios pontuais ficam em `bloqueios_agenda` (`src/server/services/bloqueios.ts`). `GET /api/agendamentos/disponibilidade/:vet` devolve `horarios_ocupados` (consultas + bloqueios), `horarios_bloqueados` e `dia_bloqueado`.
+
+## Regras de negócio
+
+Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/rules/graphify.mdc`).
+
+### Bloqueio pontual de agenda
+
+- **Grade semanal x bloqueio pontual:** a grade semanal é recorrente e não é alterada pelo bloqueio. O bloqueio vale só para as datas informadas (bloquear 15/10 não afeta 22/10).
+- **Diário ou período (pontual):** um bloqueio tem `data_inicio`/`data_fim` (`YYYY-MM-DD`, até 31 dias, sem datas passadas). `horarios = null` bloqueia o dia inteiro; uma lista `HH:mm` bloqueia só esses horários em cada dia do período.
+- **Recorrente (toda semana):** `recorrente = 1` + `dias_semana` (0=domingo) repete o bloqueio nesses dias a partir de `data_inicio`; `data_fim` é opcional (null = até o profissional remover) e não tem limite de 31 dias. Serve para "toda quinta só atendo de manhã" sem mexer na grade do Perfil.
+- **Intervalo de horários:** no modal, "Das/Até" marca de uma vez todos os horários de 30 min do intervalo (fim exclusivo: 11:00–17:00 bloqueia 11:00 a 16:30). Assim o vet fecha 3–5 horas e atende só no restante do dia.
+- **Quem bloqueia:** o veterinário (`/api/veterinarios/bloqueios`) e a clínica com vínculo `aceito` (`/api/clinicas/veterinarios/:vet/bloqueios`, `DELETE /api/clinicas/bloqueios/:id`). Sem vínculo aceito: 404.
+- **Consultas no período:** o front chama `POST ...?preview=1` e mostra as consultas `pendente`/`confirmado` afetadas. Ao confirmar, elas são canceladas com motivo "Agenda bloqueada pelo profissional", o uso mensal do vet é devolvido e o tutor é avisado (in-app + e-mail).
+- **Sem estorno automático:** consulta paga cancelada pelo bloqueio é estornada manualmente.
+- **Vale para todos os locais:** o bloqueio é do veterinário, não do endereço (presencial e online).
+- **Remover bloqueio** libera os horários, mas não restaura consultas canceladas.
+- **Trava no backend:** `POST /api/agendamentos` e `PATCH /api/agendamentos/:id/reagendar` recusam horário bloqueado (400).
+
+### Anotações privadas do veterinário
+
+- **Visibilidade:** a anotação (`agendamento_anotacoes`, 1:1 com a consulta) é lida/editada só pelo veterinário dono em `GET/PUT /api/veterinarios/agendamentos/:id/anotacao` (outro vet: 404). Fica em tabela separada e nenhuma rota de tutor ou clínica a inclui.
+- **Quando pode:** a partir do início do atendimento (`started_at` preenchido, status "em andamento") e depois de concluída, sem prazo para editar. Pendente, confirmada ou cancelada: 400.
+- **Campos:** local do atendimento (endereços do vet, Online, Domicílio ou texto livre), status do pagamento (`pago`/`pendente`/`isento`), forma (`pix`/`cartao`/`dinheiro`/`plano_pet`/`outro`), nome do plano (só com `plano_pet`) e observações do paciente (até 5.000 caracteres).
+- **Não altera pagamento real:** os campos de pagamento são registro do vet; `payment_status` da consulta e o Asaas não mudam.
+- **Histórico por pet:** no modal da consulta (qualquer status, exceto cancelada) o vet abre o histórico do pet: `GET /api/veterinarios/agendamentos/:id/anotacao/historico` devolve só as anotações **dele** em outras consultas do mesmo pet, mais recentes primeiro. Anotações de outros veterinários nunca aparecem.
 
 ## Testes
 

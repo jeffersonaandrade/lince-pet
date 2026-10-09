@@ -19,3 +19,12 @@ Only use Read/Grep/Glob directly when:
 - If `graphify-out/wiki/index.md` exists, navigate it instead of reading raw files
 - Read `graphify-out/GRAPH_REPORT.md` only for broad architecture review when query/path/explain do not surface enough context
 - After modifying code files, run `graphify update .` to keep the graph current (AST-only, no API cost)
+
+## Regras de negócio (obrigatório)
+
+- Antes de decidir ou implementar uma regra de negócio, rode `graphify query "<regra/feature>"` para ver as regras já registradas (nós `rule_*` e `concept_*` ancorados em `docs/ARQUITETURA.md`).
+- Toda decisão de negócio nova (inclusive respostas do usuário a perguntas de produto) deve ser registrada:
+  1. Na seção "Regras de negócio" de `docs/ARQUITETURA.md`.
+  2. No grafo: acrescente os nós (`rule_<feature>_<regra>`, `file_type: rationale`, `source_file: docs/ARQUITETURA.md`) e as arestas `implements` (código -> regra) em `graphify-out/.graphify_business_rules.py`, depois rode:
+     `Get-Content graphify-out\.graphify_business_rules.py -Raw | & (Get-Content graphify-out\.graphify_python) -` e `graphify cluster-only .`
+  3. Confirme com `graphify query` que as regras aparecem. O script grava o cache semântico do `docs/ARQUITETURA.md`, então os nós sobrevivem ao `graphify update .`.
