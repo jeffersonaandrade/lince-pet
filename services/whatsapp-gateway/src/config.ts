@@ -23,6 +23,7 @@ export const config = {
   queueMaxSize: readInt('QUEUE_MAX_SIZE', 1000),
   circuitFailureThreshold: readInt('CIRCUIT_FAILURE_THRESHOLD', 5),
   circuitOpenMs: readInt('CIRCUIT_OPEN_MS', 60_000),
+  autoReplyText: process.env.AUTO_REPLY_TEXT || '',
 }
 
 export function validateConfig() {

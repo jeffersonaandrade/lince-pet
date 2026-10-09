@@ -24,8 +24,8 @@ async function readJson(req: http.IncomingMessage) {
   return raw ? JSON.parse(raw) : {}
 }
 
-function authorized(req: http.IncomingMessage) {
-  return req.headers['x-gateway-token'] === config.gatewayToken
+function authorized(req: http.IncomingMessage, url: URL) {
+  return req.headers['x-gateway-token'] === config.gatewayToken || url.searchParams.get('token') === config.gatewayToken
 }
 
 function validateMessage(body: Record<string, unknown>): SendMessageInput {
@@ -47,7 +47,7 @@ const server = http.createServer(async (req, res) => {
       return
     }
 
-    if (!authorized(req)) {
+    if (!authorized(req, url)) {
       send(res, 401, { ok: false, error: 'unauthorized' })
       return
     }
@@ -79,6 +79,14 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/webhooks/evolution/messages-upsert') {
       const decision = classifyEvolutionMessage(await readJson(req))
+      if (decision.accepted && decision.remoteJid && config.autoReplyText) {
+        const job = queue.enqueue({
+          to: decision.remoteJid,
+          text: config.autoReplyText,
+          idempotencyKey: `autoreply:${decision.messageId || decision.remoteJid}`,
+        })
+        Object.assign(decision, { replyJobId: job.id })
+      }
       console.log(JSON.stringify({ level: 'info', event: 'webhook.evolution.messages_upsert', ...decision }))
       send(res, 200, decision)
       return

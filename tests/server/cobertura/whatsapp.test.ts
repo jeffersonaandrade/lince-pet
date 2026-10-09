@@ -42,6 +42,47 @@ describe('providerAtual (provedor agnóstico)', () => {
     expect(providerAtual().nome).toBe('log')
     expect(console.warn).toHaveBeenCalledWith(expect.stringContaining("'zapi' não implementado"))
   })
+
+  it('gateway envia para /messages com token e devolve o id local do job', async () => {
+    vi.stubEnv('WHATSAPP_PROVIDER', 'gateway')
+    vi.stubEnv('WHATSAPP_GATEWAY_URL', 'http://gateway.test/')
+    vi.stubEnv('WHATSAPP_GATEWAY_TOKEN', 'secret')
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 'job-1' }), { status: 202, headers: { 'Content-Type': 'application/json' } })
+    )
+
+    const r = await providerAtual().enviar('5581999990000', 'texto')
+
+    expect(r).toEqual({ id: 'job-1' })
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://gateway.test/messages',
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Gateway-Token': 'secret' },
+        body: JSON.stringify({ to: '5581999990000', text: 'texto' }),
+      })
+    )
+  })
+
+  it('gateway sem URL/token falha sem retry', async () => {
+    vi.stubEnv('WHATSAPP_PROVIDER', 'gateway')
+    await expect(providerAtual().enviar('55', 'texto')).rejects.toMatchObject({
+      message: 'WHATSAPP_GATEWAY_URL e WHATSAPP_GATEWAY_TOKEN são obrigatórios',
+      temporario: false,
+    })
+  })
+
+  it('gateway 429/5xx vira erro temporário; 400 vira permanente', async () => {
+    vi.stubEnv('WHATSAPP_PROVIDER', 'gateway')
+    vi.stubEnv('WHATSAPP_GATEWAY_URL', 'http://gateway.test')
+    vi.stubEnv('WHATSAPP_GATEWAY_TOKEN', 'secret')
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ error: 'fila cheia' }), { status: 429 }))
+    await expect(providerAtual().enviar('55', 'texto')).rejects.toMatchObject({ message: 'fila cheia', temporario: true })
+
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({ error: 'grupo bloqueado' }), { status: 422 }))
+    await expect(providerAtual().enviar('55', 'texto')).rejects.toMatchObject({ message: 'grupo bloqueado', temporario: false })
+  })
 })
 
 describe('normalizarTelefoneE164', () => {

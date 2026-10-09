@@ -76,3 +76,11 @@ Variaveis obrigatorias para Evolution:
 - Persistencia duravel deve ser adicionada antes de producao real.
 - WhatsApp nao oficial pode bloquear numero ou quebrar sem aviso.
 - Respostas automaticas futuras devem entrar na mesma fila de envio, com limite de cadencia, nunca responder em massa.
+
+## Autoresposta de teste
+
+Para validar recebimento ponta a ponta, defina `AUTO_REPLY_TEXT`. O gateway responde somente mensagens individuais recebidas de terceiros, ignora grupos e ignora mensagens enviadas pelo proprio numero.
+
+```bash
+AUTO_REPLY_TEXT="Recebemos sua mensagem. Este e um teste da Lince Pet."
+```
