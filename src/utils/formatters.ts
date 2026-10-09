@@ -25,6 +25,16 @@ export const formatPhone = (value: string): string => {
   )}`;
 };
 
+/** Link wa.me a partir de um celular brasileiro (com ou sem máscara/DDI). */
+export const toWhatsAppLink = (phone?: string | null): string | null => {
+  const digits = (phone || "").replace(/\D/g, "");
+  if (digits.length === 10 || digits.length === 11) return `https://wa.me/55${digits}`;
+  if ((digits.length === 12 || digits.length === 13) && digits.startsWith("55")) {
+    return `https://wa.me/${digits}`;
+  }
+  return null;
+};
+
 export const removeMask = (value: string): string => {
   return value.replace(/\D/g, "");
 };

@@ -1115,7 +1115,7 @@
 
 
 /* Remove o indicador de dia atual padrão da biblioteca */
-:global(.rbc-today) {
+.calendarContainer :global(.rbc-today) {
   background-color: transparent !important;
 }
 
