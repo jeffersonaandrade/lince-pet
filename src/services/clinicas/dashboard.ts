@@ -9,6 +9,7 @@ export interface AgendamentoDashboard {
   clienteSobrenome?: string;
   tutorTelefone?: string | null;
   tutorEmail?: string | null;
+  petId?: string | null;
   pet: string;
   petRaca?: string;
   petPorte?: string;
@@ -51,6 +52,7 @@ export interface EventoCalendario {
     clienteSobrenome?: string;
     tutorTelefone?: string | null;
     tutorEmail?: string | null;
+    petId?: string | null;
     pet: string;
     petRaca?: string;
     petPorte?: string;
@@ -179,6 +181,7 @@ export class ClinicaDashboardService {
             clienteSobrenome: agendamento.tutor_sobrenome,
             tutorTelefone: agendamento.tutor_telefone,
             tutorEmail: agendamento.tutor_email,
+            petId: agendamento.pet_id ?? null,
             pet: agendamento.pet_nome || "Pet",
             petRaca: agendamento.pet_raca,
             petPorte: agendamento.pet_porte,
@@ -235,6 +238,7 @@ export class ClinicaDashboardService {
         clienteSobrenome: agendamento.tutor_sobrenome,
         tutorTelefone: agendamento.tutor_telefone,
         tutorEmail: agendamento.tutor_email,
+        petId: agendamento.pet_id ?? null,
         pet: agendamento.pet_nome || "Pet",
         petRaca: agendamento.pet_raca,
         petPorte: agendamento.pet_porte,

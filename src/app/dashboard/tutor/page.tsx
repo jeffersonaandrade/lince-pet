@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./tutor.module.css";
 import { AppointmentItem } from "./AppointmentItem";
-import { Pencil, Trash2, MapPin, Stethoscope, Dog, User as UserIcon, Calendar, History, Star, Clock } from "lucide-react";
+import { Pencil, Trash2, MapPin, Stethoscope, Dog, User as UserIcon, Calendar, History, Star, Clock, ClipboardList } from "lucide-react";
+import ProntuarioPet from "@/components/Prontuario/ProntuarioPet";
 import {
   AgendamentosService,
   ListaAgendamentosResponse,
@@ -133,6 +134,7 @@ export default function TutorDashboard() {
   const [pets, setPets] = useState<Pet[]>([]);
   const [isSavingPet, setIsSavingPet] = useState(false);
   const [isPetModalOpen, setIsPetModalOpen] = useState(false);
+  const [prontuarioPet, setProntuarioPet] = useState<{ id: string; nome: string } | null>(null);
   const [form, setForm] = useState<{
     nome: string;
     especie: string;
@@ -690,6 +692,15 @@ export default function TutorDashboard() {
                       </div>
                     </div>
                     <button
+                      type="button"
+                      className={styles.actionButtonGhost}
+                      onClick={() => setProntuarioPet({ id: String(p.id), nome: p.nome })}
+                      title="Ver prontuário"
+                      aria-label={`Ver prontuário de ${p.nome}`}
+                    >
+                      <ClipboardList size={18} />
+                    </button>
+                    <button
                       className={styles.actionButtonGhost}
                       onClick={() => openEditPet(p)}
                       title="Editar pet"
@@ -891,6 +902,34 @@ export default function TutorDashboard() {
             </div>
           </div>
         </div>
+
+        {prontuarioPet && (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Prontuário de ${prontuarioPet.nome}`}
+            className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50 p-4"
+            onClick={() => setProntuarioPet(null)}
+          >
+            <div
+              className="flex max-h-[90vh] w-full max-w-2xl flex-col gap-3 overflow-y-auto rounded-2xl bg-white p-5 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="m-0 text-lg font-bold text-slate-800">Prontuário</h3>
+                <button
+                  type="button"
+                  aria-label="Fechar"
+                  onClick={() => setProntuarioPet(null)}
+                  className="cursor-pointer rounded-lg border-0 bg-transparent px-2 text-2xl leading-none text-slate-500 hover:text-slate-800"
+                >
+                  &times;
+                </button>
+              </div>
+              <ProntuarioPet petId={prontuarioPet.id} petNome={prontuarioPet.nome} />
+            </div>
+          </div>
+        )}
 
         {isPetModalOpen && (
           <div className={styles.modalOverlay} role="dialog" aria-modal="true">

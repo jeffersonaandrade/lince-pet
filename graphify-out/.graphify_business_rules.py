@@ -60,12 +60,29 @@ anotacao_nodes = [
 ]
 new_nodes += anotacao_nodes
 
+prontuario_nodes = [
+    rule("rule_prontuario_registro_campos", "Registro clinico: 8 campos por consulta",
+         "registros_clinicos 1:1 com a consulta: queixa, diagnostico, tratamento, peso 0-500 kg, vacinas/medicacoes, retorno (hoje ou futuro), plano de saude, encaminhamento texto livre; textos ate 5000."),
+    rule("rule_prontuario_autor", "Registro clinico: so o vet da consulta escreve",
+         "GET/PUT /veterinarios/agendamentos/:id/registro; outro vet 404; mesma janela da anotacao (podeAnotar): a partir do inicio, editavel depois; cancelada sem registro."),
+    rule("rule_prontuario_acesso", "Prontuario visivel ao tutor dono e a vets/clinicas com consulta do pet",
+         "GET /pets/:id/prontuario: tutor dono ou vet/clinica com consulta nao cancelada (inclusive futura) veem o prontuario inteiro, com registros de outros profissionais; demais 404."),
+    rule("rule_prontuario_tutor_ve_tudo", "Tutor ve todos os registros clinicos do pet",
+         "Sem marcacao de compartilhamento: todo registro clinico aparece para o tutor dono."),
+    rule("rule_prontuario_sem_nota_privada", "Prontuario nunca inclui a anotacao privada do vet",
+         "prontuarioDoPet seleciona so agendamento + registroClinico; agendamento_anotacoes fica fora; plano da anotacao e financeiro, plano clinico fica no registro."),
+    rule("rule_prontuario_pet_novo_vazio", "Pet novo comeca com prontuario vazio",
+         "Linha do tempo = consultas nao canceladas do pet, mais recentes primeiro; sem consultas mostra 'Este pet ainda nao tem registros'."),
+]
+new_nodes += prontuario_nodes
+
 def edge(s, t, rel="conceptually_related_to"):
     return {"source": s, "target": t, "relation": rel, "confidence": "EXTRACTED",
             "confidence_score": 1.0, "source_file": DOC, "weight": 1.0}
 
 anotacao_rules = [n["id"] for n in anotacao_nodes]
-rules = [n["id"] for n in new_nodes[1:] if n["id"] not in anotacao_rules]
+prontuario_rules = [n["id"] for n in prontuario_nodes]
+rules = [n["id"] for n in new_nodes[1:] if n["id"] not in anotacao_rules + prontuario_rules]
 new_edges = [edge("concept_regras_de_negocio", r) for r in rules]
 new_edges += [edge("rule_bloqueio_pontual_agenda", r) for r in rules[1:]]
 impl = {
@@ -88,6 +105,19 @@ impl.update({
     "src_components_anotacaoprivada_historicoanotacoes": ["rule_anotacao_historico_por_pet"],
     "src_app_api_veterinarios_agendamentos_id_anotacao_historico_route": ["rule_anotacao_historico_por_pet"],
 })
+new_edges += [edge("concept_regras_de_negocio", r) for r in prontuario_rules]
+new_edges += [edge("rule_prontuario_acesso", r) for r in prontuario_rules if r != "rule_prontuario_acesso"]
+new_edges += [edge("rule_prontuario_sem_nota_privada", "rule_anotacao_privada_visibilidade", "references")]
+new_edges += [edge("rule_prontuario_autor", "rule_anotacao_quando_pode", "references")]
+impl.update({
+    "src_server_services_prontuario": prontuario_rules,
+    "src_app_api_veterinarios_agendamentos_id_registro_route": ["rule_prontuario_autor", "rule_prontuario_registro_campos"],
+    "src_app_api_pets_id_prontuario_route": ["rule_prontuario_acesso", "rule_prontuario_tutor_ve_tudo", "rule_prontuario_sem_nota_privada"],
+    "src_components_prontuario_registroclinicoform": ["rule_prontuario_registro_campos", "rule_prontuario_autor"],
+    "src_components_prontuario_prontuariopet": ["rule_prontuario_acesso", "rule_prontuario_pet_novo_vazio"],
+    "tests_server_prontuario_test": ["rule_prontuario_acesso", "rule_prontuario_sem_nota_privada"],
+})
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

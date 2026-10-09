@@ -62,13 +62,13 @@ model User {
 }
 
 model Tutor {
-  id        String    @id @db.Char(36)
-  userId    String?   @map("user_id") @db.Char(36)
-  cpf       String?   @unique @db.VarChar(14)
+  id            String    @id @db.Char(36)
+  userId        String?   @map("user_id") @db.Char(36)
+  cpf           String?   @unique @db.VarChar(14)
   /// ENUM('masculino','feminino','outro')
-  genero    String?
-  createdAt DateTime? @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
+  genero        String?
+  createdAt     DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
 
   user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   agendamentos Agendamento[]
@@ -356,8 +356,9 @@ model Pet {
   /// ENUM('pequeno','medio','grande')
   porte     String?
 
-  tutor        Tutor?        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  tutor        Tutor?            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   agendamentos Agendamento[]
+  registros    RegistroClinico[]
 
   @@map("pets")
 }
@@ -394,12 +395,13 @@ model Agendamento {
   localEndereco      String?   @map("local_endereco") @db.VarChar(255)
   clinicaId          String?   @map("clinica_id") @db.Char(36)
 
-  tutor       Tutor?       @relation(fields: [tutorId], references: [id])
-  pet         Pet?         @relation(fields: [petId], references: [id], onDelete: SetNull)
-  veterinario Veterinario? @relation(fields: [veterinarioId], references: [id])
-  clinica     Clinica?     @relation(fields: [clinicaId], references: [id], onDelete: SetNull)
-  avaliacao   Avaliacao?
-  anotacao    AgendamentoAnotacao?
+  tutor           Tutor?               @relation(fields: [tutorId], references: [id])
+  pet             Pet?                 @relation(fields: [petId], references: [id], onDelete: SetNull)
+  veterinario     Veterinario?         @relation(fields: [veterinarioId], references: [id])
+  clinica         Clinica?             @relation(fields: [clinicaId], references: [id], onDelete: SetNull)
+  avaliacao       Avaliacao?
+  anotacao        AgendamentoAnotacao?
+  registroClinico RegistroClinico?
 
   @@map("agendamentos")
 }
@@ -423,6 +425,31 @@ model AgendamentoAnotacao {
 
   @@index([veterinarioId])
   @@map("agendamento_anotacoes")
+}
+
+/// Registro clínico da consulta: compõe o prontuário do pet (visível ao tutor e a vets/clínicas que atendem o pet).
+model RegistroClinico {
+  id                String    @id @db.Char(36)
+  agendamentoId     String    @unique @map("agendamento_id") @db.Char(36)
+  petId             String    @map("pet_id") @db.Char(36)
+  veterinarioId     String    @map("veterinario_id") @db.Char(36)
+  queixa            String?   @db.Text
+  diagnostico       String?   @db.Text
+  tratamento        String?   @db.Text
+  pesoKg            Decimal?  @map("peso_kg") @db.Decimal(6, 2)
+  vacinasMedicacoes String?   @map("vacinas_medicacoes") @db.Text
+  /// YYYY-MM-DD
+  retornoSugerido   String?   @map("retorno_sugerido") @db.VarChar(10)
+  planoSaude        String?   @map("plano_saude") @db.VarChar(255)
+  encaminhamento    String?   @db.Text
+  createdAt         DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime? @map("updated_at") @db.Timestamp(0)
+
+  agendamento Agendamento @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  pet         Pet         @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([petId])
+  @@map("registros_clinicos")
 }
 
 /// Bloqueio da agenda (não altera a grade semanal). `horarios` null = dia inteiro.

@@ -20,6 +20,7 @@ import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImage
 import ShareProfileButton from "@/components/ShareProfileButton/ShareProfileButton";
 import TutorContact from "@/components/TutorContact/TutorContact";
 import BloqueiosLista from "@/components/BloqueioAgenda/BloqueiosLista";
+import ProntuarioPet from "@/components/Prontuario/ProntuarioPet";
 import Image from "next/image";
 import { formatDateToISO } from "@/utils/formatters";
 
@@ -59,6 +60,7 @@ interface CalendarEvent {
     clienteSobrenome?: string;
     tutorTelefone?: string | null;
     tutorEmail?: string | null;
+    petId?: string | null;
     pet: string;
     petRaca?: string;
     petPorte?: string;
@@ -954,6 +956,7 @@ export default function ClinicaDashboard() {
                               clienteSobrenome: consulta.clienteSobrenome,
                               tutorTelefone: consulta.tutorTelefone,
                               tutorEmail: consulta.tutorEmail,
+                              petId: consulta.petId,
                               pet: consulta.pet,
                               petRaca: consulta.petRaca,
                               petPorte: consulta.petPorte,
@@ -1295,6 +1298,17 @@ export default function ClinicaDashboard() {
                   <div className={styles.obsBox}>
                     {selectedEvent.resource.observacoes}
                   </div>
+                </div>
+              )}
+
+              {selectedEvent.resource?.petId && !(selectedEvent.resource.status || "").toLowerCase().startsWith("cancelad") && (
+                <div className={styles.modalSection}>
+                  <ProntuarioPet
+                    key={`prontuario-${selectedEvent.id}`}
+                    petId={selectedEvent.resource.petId}
+                    petNome={selectedEvent.resource.pet}
+                    recolhivel
+                  />
                 </div>
               )}
             </div>

@@ -42,6 +42,7 @@ export const GET = route(async (req) => {
       tutor_sobrenome: a.tutor?.user?.sobrenome || '',
       tutor_telefone: a.tutor?.user?.celular || null,
       tutor_email: a.tutor?.user?.email || null,
+      pet_id: a.petId,
       pet_nome: a.pet?.nome || 'Pet',
       pet_raca: a.pet?.raca || '',
       pet_porte: a.pet?.porte || '',

@@ -144,6 +144,7 @@ export async function listAgendamentos(veterinario: Veterinario, qs: Record<stri
         tutor_sobrenome: agendamento.tutor?.user?.sobrenome || '',
         tutor_telefone: agendamento.tutor?.user?.celular || null,
         tutor_email: agendamento.tutor?.user?.email || null,
+        pet_id: agendamento.petId,
         pet_nome: agendamento.pet?.nome || 'Pet não identificado',
         pet_especie: agendamento.pet?.especie || '',
         pet_raca: agendamento.pet?.raca || '',

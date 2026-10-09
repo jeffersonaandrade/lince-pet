@@ -21,6 +21,8 @@ import TutorContact from "@/components/TutorContact/TutorContact";
 import BloqueiosLista from "@/components/BloqueioAgenda/BloqueiosLista";
 import AnotacaoPrivada from "@/components/AnotacaoPrivada/AnotacaoPrivada";
 import HistoricoAnotacoes from "@/components/AnotacaoPrivada/HistoricoAnotacoes";
+import RegistroClinicoForm from "@/components/Prontuario/RegistroClinicoForm";
+import ProntuarioPet from "@/components/Prontuario/ProntuarioPet";
 import { mapearDiasBloqueados, type BloqueioScope } from "@/services/veterinarios/bloqueios";
 import Image from "next/image";
 import { formatDateToISO } from "@/utils/formatters";
@@ -63,6 +65,7 @@ interface CalendarEvent {
     clienteSobrenome?: string;
     tutorTelefone?: string | null;
     tutorEmail?: string | null;
+    petId?: string | null;
     pet: string;
     petRaca?: string;
     petPorte?: string;
@@ -87,6 +90,7 @@ interface ProximaConsulta {
   clienteSobrenome?: string;
   tutorTelefone?: string | null;
   tutorEmail?: string | null;
+  petId?: string | null;
   pet: string;
   petEspecie?: string;
   petRaca?: string;
@@ -1004,6 +1008,7 @@ export default function VeterinarioDashboard() {
                             clienteSobrenome: consulta.clienteSobrenome,
                             tutorTelefone: consulta.tutorTelefone,
                             tutorEmail: consulta.tutorEmail,
+                            petId: consulta.petId,
                             pet: consulta.pet,
                             petRaca: consulta.petRaca,
                             petPorte: consulta.petPorte,
@@ -1434,7 +1439,24 @@ export default function VeterinarioDashboard() {
 
               {STATUS_COM_ANOTACAO.includes(normalizeStatus(selectedEvent.resource?.status)) && (
                 <div className={styles.modalSection}>
+                  <RegistroClinicoForm agendamentoId={selectedEvent.id} />
+                </div>
+              )}
+
+              {STATUS_COM_ANOTACAO.includes(normalizeStatus(selectedEvent.resource?.status)) && (
+                <div className={styles.modalSection}>
                   <AnotacaoPrivada agendamentoId={selectedEvent.id} locais={locaisDoVet} />
+                </div>
+              )}
+
+              {!normalizeStatus(selectedEvent.resource?.status).startsWith("cancelad") && selectedEvent.resource?.petId && (
+                <div className={styles.modalSection}>
+                  <ProntuarioPet
+                    key={`prontuario-${selectedEvent.id}`}
+                    petId={selectedEvent.resource.petId}
+                    petNome={selectedEvent.resource.pet}
+                    recolhivel
+                  />
                 </div>
               )}
 

@@ -59,6 +59,16 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Não altera pagamento real:** os campos de pagamento são registro do vet; `payment_status` da consulta e o Asaas não mudam.
 - **Histórico por pet:** no modal da consulta (qualquer status, exceto cancelada) o vet abre o histórico do pet: `GET /api/veterinarios/agendamentos/:id/anotacao/historico` devolve só as anotações **dele** em outras consultas do mesmo pet, mais recentes primeiro. Anotações de outros veterinários nunca aparecem.
 
+### Prontuário do pet
+
+- **Registro clínico por consulta** (`registros_clinicos`, 1:1 com a consulta): queixa, diagnóstico, tratamento/prescrição, peso (0 a 500 kg), vacinas/medicações aplicadas, retorno sugerido (hoje ou futuro), plano de saúde usado e encaminhamento em texto livre. Textos com até 5000 caracteres.
+- **Autor:** só o vet da consulta escreve (`GET/PUT /api/veterinarios/agendamentos/:id/registro`), com a mesma janela da anotação privada: a partir do início do atendimento, editável depois de concluída; consulta cancelada não tem registro.
+- **Acesso ao prontuário** (`GET /api/pets/:id/prontuario`): o tutor dono e qualquer vet ou clínica com consulta **não cancelada** do pet (inclusive futura, para se preparar) veem o prontuário inteiro, com registros de outros profissionais. Demais usuários recebem 404.
+- **Tutor vê tudo:** todos os registros clínicos aparecem para o tutor dono, sem marcação de compartilhamento.
+- **Sem nota privada:** o prontuário nunca inclui a anotação privada (`agendamento_anotacoes`). O plano registrado na anotação é dado financeiro do vet; o plano clínico fica no registro.
+- **Pet novo:** começa com o prontuário vazio e acumula uma entrada por consulta não cancelada.
+
+
 ## Testes
 
 - `npm test`: unitários (`tests/server`).
