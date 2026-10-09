@@ -1,6 +1,7 @@
 ﻿import 'server-only'
 import { prisma } from '../db'
 import { updating } from '../lucid'
+import { PLANOS_POR_TIPO } from './assinatura-regras'
 
 type VetUsage = {
   id: string
@@ -16,6 +17,14 @@ export type DonoDoLimite = 'veterinario' | 'prestador'
 
 const findPlan = (vet: ComPlano) =>
   prisma.subscriptionPlan.findUnique({ where: { code: vet.subscriptionPlanCode || 'free' } })
+
+/** Planos ativos que o tipo pode contratar. Sem tipo, devolve todos os ativos. */
+export function listarPlanosAtivos(tipo?: keyof typeof PLANOS_POR_TIPO) {
+  return prisma.subscriptionPlan.findMany({
+    where: { active: 1, ...(tipo ? { code: { in: PLANOS_POR_TIPO[tipo] } } : {}) },
+    orderBy: [{ searchPriority: 'asc' }, { priceCents: 'asc' }],
+  })
+}
 
 const saveUsage = (vet: VetUsage, data: Partial<VetUsage>, dono: DonoDoLimite = 'veterinario') => {
   Object.assign(vet, data)

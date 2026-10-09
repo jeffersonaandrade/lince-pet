@@ -3,8 +3,8 @@
  * especialidades e os planos de saúde do perfil.
  *
  * Os planos de assinatura são as linhas atuais de `subscription_plans` (seeder
- * do Adonis + ajustes das migrations). Preço de exibição em `src/config/planos.ts`
- * é outra fonte e não entra aqui.
+ * do Adonis + ajustes das migrations). A tela lê estes registros;
+ * `src/config/planos.ts` só guarda texto e ícone, casados pelo code.
  */
 
 export type PlanoAssinaturaSeed = {

@@ -99,14 +99,14 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Contatos centralizados:** e-mail, WhatsApp e redes sociais ficam em `src/config/site.ts`. Campo vazio não vira link (mostra "Em breve"); rede social sem URL não aparece no rodapé.
 - **Links externos** (WhatsApp, redes) abrem em nova aba (`target="_blank" rel="noopener noreferrer"`).
 - **Ano vigente no copyright:** o rodapé do site (`src/components/Footer/AnoAtual.tsx`, client, para não ficar preso ao ano do build) e os e-mails de consulta (`src/server/emails/*`) mostram sempre o ano atual. `tests/server/site-links.test.ts` falha se houver "© 20xx" fixo em `src`.
-- **Planos com fonte única:** `/precos` e as telas de alterar plano (vet e clínica) leem `src/config/planos.ts`.
+- **Planos de assinatura na tela:** `/precos`, o cadastro do veterinário e alterar plano (vet e clínica) listam `subscription_plans` ativos (`GET /api/assinaturas/planos?tipo=`). Preço, nome, limite e features vêm do banco. Texto e ícone ficam em `src/config/planos.ts`, casados pelo `code`; plano sem texto usa nome e preço do banco.
 - **Páginas:** `/sobre`, `/contato`, `/como-funciona`, `/servicos` (especialidades do banco, ISR 1h), `/precos`, `/ajuda` (Central de Ajuda + FAQ), `/seguranca`, `/cookies`. Textos em rascunho até revisão do cliente.
 - **Estilo:** páginas novas em Tailwind (`src/components/Institucional/PaginaInstitucional.tsx`). Os resets globais ficam em `@layer base` no `globals.css`; sem layer, eles venceriam as utilities do Tailwind.
 
 ### Catálogo inicial do banco
 
 - **Banco vazio:** `npx prisma db seed` (`prisma/seed.ts`) grava o que o baseline `0_init` não traz: planos de assinatura, especialidades oficiais, planos de saúde e diferenciais de clínica. Sem isso, a listagem de planos e o cadastro de especialidades ficam vazios.
-- **Planos de assinatura:** `prisma/catalogo.ts` (`vet_starter`, `vet_pro`, `starter`, `clinic`, `clinic_pro`, `free`, `pro` e o legado `pro_plus` inativo), com preço em centavos, limite mensal, features, prioridade de busca, trial e `maxVeterinarios`. Upsert por `code`, sem trocar o id. O texto de `/precos` continua em `src/config/planos.ts`.
+- **Planos de assinatura:** `prisma/catalogo.ts` (`vet_starter`, `vet_pro`, `starter`, `clinic`, `clinic_pro`, `free`, `pro` e o legado `pro_plus` inativo), com preço em centavos, limite mensal, features, prioridade de busca, trial e `maxVeterinarios`. Upsert por `code`, sem trocar o id. A tela lê esses registros; `src/config/planos.ts` só guarda texto e ícone.
 - **Especialidades:** a lista de `src/data/especialidades.ts` (a mesma da migration que populava `especialidades`). Upsert por nome; não apaga nomes extras que já existam.
 - **Planos de saúde e diferenciais:** os nomes que o `mockup_seeder` criava para o perfil (`planos` e `diferenciais`). Upsert/first-or-create por nome.
 - **Demonstração:** o mesmo comando cria tutores, veterinários, clínicas, pets, consultas (pendente, confirmada, realizada e cancelada), avaliações, favoritos, prontuário, uma anotação privada e um bloqueio de agenda. Cidades e especialidades variadas. E-mails terminam em `mockup`. Senha de todas essas contas: `senha123`. Não altera senha de quem já existe.

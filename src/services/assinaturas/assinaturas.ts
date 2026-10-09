@@ -26,8 +26,8 @@ export type PlanoBackend = { id: string; code: string; name: string; priceCents:
 
 export function AssinaturasService() {
   return {
-    async listarPlanos() {
-      const { data } = await api.get("/assinaturas/planos");
+    async listarPlanos(tipo?: "veterinario" | "clinica" | "prestador"): Promise<PlanoBackend[]> {
+      const { data } = await api.get("/assinaturas/planos", { params: tipo ? { tipo } : {} });
       return data?.plans || [];
     },
     async criarAssinatura(params: { planCode: string }): Promise<RespostaContratacao> {

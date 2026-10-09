@@ -182,8 +182,8 @@ site_nodes = [
          "Header/Footer so linkam paginas existentes; pagina futura nao tem link; externos em nova aba; garantido por tests/server/site-links.test.ts."),
     rule("rule_site_contatos_config", "Site: contatos e redes em src/config/site.ts",
          "E-mail, WhatsApp e redes centralizados; campo vazio nao vira link ('Em breve'); rede sem URL nao aparece no rodape."),
-    rule("rule_site_planos_fonte_unica", "Site: planos publicos com fonte unica",
-         "/precos e alterar-plano (vet e clinica) leem src/config/planos.ts."),
+    rule("rule_site_planos_fonte_unica", "Site: planos de assinatura vem de subscription_plans",
+         "/precos, cadastro do vet e alterar-plano listam subscription_plans ativos (GET /api/assinaturas/planos?tipo=). Preco e nome vem do banco; texto e icone em src/config/planos.ts casados pelo code."),
     rule("rule_site_ano_vigente", "Site e e-mails: copyright sempre com o ano vigente",
          "Footer usa AnoAtual (client, nao fica preso ao ano do build); templates de e-mail usam new Date().getFullYear(); teste falha com '(c) 20xx' fixo em src."),
 ]
@@ -204,13 +204,18 @@ impl.update({
     "src_app_precos_page": ["rule_site_planos_fonte_unica"],
     "src_app_dashboard_veterinario_alterar_plano_page": ["rule_site_planos_fonte_unica"],
     "src_app_dashboard_clinica_alterar_plano_page": ["rule_site_planos_fonte_unica"],
+    "src_components_assinatura_alterarplano": ["rule_site_planos_fonte_unica"],
+    "src_app_signup_veterinario_page": ["rule_site_planos_fonte_unica"],
+    "src_app_signup_veterinario_components_veterinariosignup": ["rule_site_planos_fonte_unica"],
+    "src_app_api_assinaturas_planos_route": ["rule_site_planos_fonte_unica"],
+    "src_server_services_subscription": ["rule_site_planos_fonte_unica"],
     "tests_server_site_links_test": ["rule_site_sem_link_quebrado", "rule_site_ano_vigente"],
 })
 seed_nodes = [
     rule("rule_seed_banco_vazio", "Seed Prisma popula catalogo de um banco vazio",
          "npx prisma db seed grava planos de assinatura, especialidades oficiais, planos de saude e diferenciais. Sem isso a listagem de planos e o cadastro de especialidades ficam vazios."),
     rule("rule_seed_planos_assinatura", "Planos de assinatura do seed vem de prisma/catalogo.ts",
-         "vet_starter, vet_pro, starter, clinic, clinic_pro, free, pro e pro_plus (inativo) com preco, limite, features, prioridade, trial e maxVeterinarios. Upsert por code sem trocar id. /precos continua em src/config/planos.ts."),
+         "vet_starter, vet_pro, starter, clinic, clinic_pro, free, pro e pro_plus (inativo) com preco, limite, features, prioridade, trial e maxVeterinarios. Upsert por code sem trocar id. A tela le esses registros; src/config/planos.ts so guarda texto e icone."),
     rule("rule_seed_demonstracao", "Seed de demonstracao e idempotente e so usa e-mails mockup",
          "prisma db seed cria tutores, vets, clinicas, pets, consultas, avaliacoes, favoritos, prontuario e um bloqueio. Senha senha123 so nas contas novas com e-mail mockup; nao troca senha existente e nao duplica."),
 ]

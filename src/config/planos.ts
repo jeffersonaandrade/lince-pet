@@ -1,4 +1,7 @@
-/** Fonte única dos planos exibidos em /precos e nas telas de alterar plano. */
+/**
+ * Texto e ícone dos planos, casados pelo `code` de `subscription_plans`.
+ * Quais planos aparecem e o preço vêm do banco (planos ativos).
+ */
 export type PlanoMetadata = {
   code: string
   name: string
@@ -89,3 +92,60 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
     ],
   },
 ]
+
+export type PlanoAssinatura = {
+  code: string
+  name: string
+  priceCents: number
+  trialDays?: number | null
+  searchPriority?: number | null
+  features?: unknown
+}
+
+const apresentacaoPorCodigo = new Map(
+  [...PLANOS_VETERINARIO, ...PLANOS_CLINICA].map((plano) => [plano.code, plano])
+)
+
+const ICONES = ['/iconPlans/Plan1.svg', '/iconPlans/Plan2.svg', '/iconPlans/Plan3.svg']
+
+const ROTULOS_FEATURE: Record<string, string> = {
+  basic_profile: 'Perfil básico',
+  qr_code: 'QR Code',
+  complete_profile: 'Perfil completo',
+  whatsapp_notifications: 'Notificações por WhatsApp',
+  basic_dashboard: 'Dashboard de métricas básico',
+  featured_search: 'Destaque na busca',
+  complete_dashboard: 'Dashboard de métricas completo',
+}
+
+export function formatarPrecoPlano(priceCents: number) {
+  if (priceCents <= 0) return 'Grátis'
+  const reais = priceCents / 100
+  const texto = Number.isInteger(reais) ? String(reais) : reais.toFixed(2).replace('.', ',')
+  return `R$ ${texto}`
+}
+
+function beneficiosDasFeatures(features: unknown) {
+  const lista = Array.isArray(features) ? features : []
+  return lista.flatMap((item) => {
+    if (typeof item !== 'string') return []
+    return [ROTULOS_FEATURE[item] ?? item]
+  })
+}
+
+/** Card de exibição: preço e nome do banco; texto e ícone do config quando o code existe. */
+export function cartaoDePlano(plan: PlanoAssinatura): PlanoMetadata & { priceCents: number; trialDays: number } {
+  const apresentacao = apresentacaoPorCodigo.get(plan.code)
+  const prioridade = plan.searchPriority ?? 1
+  return {
+    code: plan.code,
+    name: plan.name,
+    description: apresentacao?.description ?? 'Assinatura Lince Pet',
+    iconPath: apresentacao?.iconPath ?? ICONES[Math.min(Math.max(prioridade, 0), ICONES.length - 1)],
+    defaultPrice: formatarPrecoPlano(plan.priceCents),
+    buttonText: apresentacao?.buttonText ?? 'Assinar plano',
+    benefits: apresentacao?.benefits?.length ? apresentacao.benefits : beneficiosDasFeatures(plan.features),
+    priceCents: plan.priceCents,
+    trialDays: plan.trialDays ?? 0,
+  }
+}

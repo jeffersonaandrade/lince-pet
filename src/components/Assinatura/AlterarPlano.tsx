@@ -5,18 +5,13 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { handleApiError, type ErrorState } from "@/utils/errorHandler";
-import { DIAS_TESTE_GRATIS, type PlanoMetadata } from "@/config/planos";
-import {
-  AssinaturasService,
-  type PlanoBackend,
-  type StatusAssinatura,
-} from "@/services/assinaturas/assinaturas";
+import { cartaoDePlano, DIAS_TESTE_GRATIS, type PlanoMetadata } from "@/config/planos";
+import { AssinaturasService, type StatusAssinatura } from "@/services/assinaturas/assinaturas";
 import { StatusAssinaturaAviso } from "./StatusAssinaturaAviso";
 import styles from "./alterar-plano.module.css";
 
 type Props = {
   tipo: "veterinario" | "clinica";
-  planos: PlanoMetadata[];
   destaque: string;
   painel: string;
   titulo: string;
@@ -29,11 +24,11 @@ const formatarPreco = (cents: number) =>
 const formatarData = (iso: string) => new Date(`${iso}T12:00:00`).toLocaleDateString("pt-BR");
 
 /** Escolha e contratação de plano (vet e clínica). Pagamento sempre na fatura do Asaas. */
-export function AlterarPlano({ tipo, planos, destaque, painel, titulo, descricao }: Props) {
+export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Props) {
   const router = useRouter();
   const { user, loading } = useAuth();
   const [status, setStatus] = useState<StatusAssinatura | null>(null);
-  const [precos, setPrecos] = useState<PlanoBackend[]>([]);
+  const [planos, setPlanos] = useState<Array<PlanoMetadata & { priceCents: number }>>([]);
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [carregado, setCarregado] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -51,15 +46,16 @@ export function AlterarPlano({ tipo, planos, destaque, painel, titulo, descricao
       return;
     }
     const servico = AssinaturasService();
-    Promise.all([servico.listarPlanos().catch(() => []), servico.obterStatus().catch(() => null)])
+    Promise.all([servico.listarPlanos(tipo).catch(() => []), servico.obterStatus().catch(() => null)])
       .then(([lista, st]) => {
-        setPrecos(lista);
+        const cards = lista.map(cartaoDePlano);
+        setPlanos(cards);
         setStatus(st);
         const atual = st?.plan?.code;
-        if (atual && planos.some((p) => p.code === atual)) setSelecionado(atual);
+        if (atual && cards.some((p) => p.code === atual)) setSelecionado(atual);
       })
       .finally(() => setCarregado(true));
-  }, [user, loading, router, tipo, planos]);
+  }, [user, loading, router, tipo]);
 
   if (loading || !carregado) {
     return (
@@ -71,7 +67,6 @@ export function AlterarPlano({ tipo, planos, destaque, painel, titulo, descricao
 
   const planoAtual = status?.plan?.code ?? null;
   const ehAtual = (code: string) => code === planoAtual && status?.statusLabel === "ativa";
-  const precoDe = (code: string) => precos.find((p) => p.code === code)?.priceCents;
   const testeNaContratacao = Boolean(status?.testeDisponivel);
   const vencimentoTeste = new Date(Date.now() + DIAS_TESTE_GRATIS * 86_400_000).toLocaleDateString("pt-BR");
 
@@ -129,8 +124,7 @@ export function AlterarPlano({ tipo, planos, destaque, painel, titulo, descricao
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.plansGrid}>
               {planos.map((plan) => {
-                const cents = precoDe(plan.code);
-                const preco = cents !== undefined ? formatarPreco(cents) : plan.defaultPrice;
+                const preco = plan.priceCents <= 0 ? "Grátis" : formatarPreco(plan.priceCents);
                 const isSelected = selecionado === plan.code;
                 const isCurrent = ehAtual(plan.code);
                 return (
@@ -152,7 +146,7 @@ export function AlterarPlano({ tipo, planos, destaque, painel, titulo, descricao
 
                     <span className={styles.valuePlan}>
                       {preco}
-                      <span className="text-base font-normal text-slate-500">/mês</span>
+                      {plan.priceCents > 0 ? <span className="text-base font-normal text-slate-500">/mês</span> : null}
                     </span>
 
                     <button

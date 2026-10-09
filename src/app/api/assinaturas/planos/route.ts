@@ -1,7 +1,11 @@
-import { prisma } from '@/server/db'
-import { ok, route } from '@/server/http'
+import { badRequest, ok, route } from '@/server/http'
+import { listarPlanosAtivos } from '@/server/services/subscription'
 
-export const GET = route(async () => {
-  const plans = await prisma.subscriptionPlan.findMany({ where: { active: 1 } })
+const PUBLICO = new Set(['veterinario', 'clinica', 'prestador'])
+
+export const GET = route(async (req) => {
+  const tipo = new URL(req.url).searchParams.get('tipo')
+  if (tipo && !PUBLICO.has(tipo)) return badRequest({ message: 'tipo inválido' })
+  const plans = await listarPlanosAtivos(tipo === 'clinica' || tipo === 'prestador' || tipo === 'veterinario' ? tipo : undefined)
   return ok({ plans })
 })
