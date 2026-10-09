@@ -171,4 +171,5 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 
 - `npm test`: unitários (`tests/server`).
 - `npm run test:coverage`: unitários com cobertura de `src/server/services`. Falha se algum serviço ficar abaixo de 95% de linhas, statements ou funções (por arquivo). Os testes de cobertura por serviço ficam em `tests/server/cobertura/`; Prisma e integrações externas (Asaas, S3, Resend, WhatsApp, Google) sempre mockados.
+- `npm run test:mutation`: testes de mutação (StrykerJS + vitest-runner, config em `stryker.config.json`) nos serviços críticos — assinatura/Asaas, limite de equipe/vínculos, bloqueios, pedidos de prestador e encaminhamentos. Mede se os testes falham quando o código é alterado (cobertura só mede execução). Incremental (`reports/stryker-incremental.json`), relatório em `reports/mutation/index.html`. Meta: mutation score ≥ 80% por arquivo. Lento (dezenas de minutos na primeira execução): rodar sob demanda ou no CI noturno, não a cada commit.
 - `npm run test:contract`: compara Adonis x Next quando `CONTRACT_ADONIS_URL` e `CONTRACT_NEXT_URL` estão definidos.

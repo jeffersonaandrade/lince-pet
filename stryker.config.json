@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "testRunner": "vitest",
+  "vitest": { "configFile": "vitest.config.ts" },
+  "coverageAnalysis": "perTest",
+  "mutate": [
+    "src/server/services/assinatura-regras.ts",
+    "src/server/services/assinaturas.ts",
+    "src/server/services/asaas-webhook.ts",
+    "src/server/services/subscription.ts",
+    "src/server/services/clinica-equipe.ts",
+    "src/server/services/vinculos.ts",
+    "src/server/services/bloqueios.ts",
+    "src/server/services/pedidos-prestador.ts",
+    "src/server/services/encaminhamentos.ts"
+  ],
+  "ignoreStatic": true,
+  "incremental": true,
+  "incrementalFile": "reports/stryker-incremental.json",
+  "reporters": ["clear-text", "progress", "html"],
+  "htmlReporter": { "fileName": "reports/mutation/index.html" },
+  "thresholds": { "high": 90, "low": 80, "break": 80 },
+  "concurrency": 4,
+  "timeoutMS": 30000
+}

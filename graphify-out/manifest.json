@@ -12,9 +12,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1791567546.48129,
-    "seen": 1791567604.839333,
-    "ast_hash": "686f447a919d78b60b568d9e143832f5",
+    "mtime": 1791567849.273091,
+    "seen": 1791569253.3096948,
+    "ast_hash": "ce5ad9e0e5ec704697fab6bf78d61e0e",
     "semantic_hash": ""
   },
   "src/app/clinicas/[id]/page.tsx": {
@@ -816,9 +816,9 @@
     "semantic_hash": ""
   },
   "src/server/services/vinculos.ts": {
-    "mtime": 1791566336.5126984,
-    "seen": 1791566381.422698,
-    "ast_hash": "865bdf74d6b6e5f6a62e8c864a82b6ab",
+    "mtime": 1791568248.3115966,
+    "seen": 1791569253.405887,
+    "ast_hash": "af1fa224a9a771c42f9aff91364041bf",
     "semantic_hash": ""
   },
   "src/server/validators/avaliacao.ts": {
@@ -1788,9 +1788,9 @@
     "semantic_hash": ""
   },
   "tests/server/asaas-webhook.test.ts": {
-    "mtime": 1791566677.5177505,
-    "seen": 1791566772.1007464,
-    "ast_hash": "60a8c28d9d2df521b1f4b5226a17b55d",
+    "mtime": 1791568782.822174,
+    "seen": 1791569253.4180722,
+    "ast_hash": "5f14832679d56346becf188877458371",
     "semantic_hash": ""
   },
   "src/server/emails/appointment_cancellation.ts": {
@@ -1992,9 +1992,9 @@
     "semantic_hash": ""
   },
   "src/server/services/notifications.ts": {
-    "mtime": 1791557750.1056385,
-    "seen": 1791558885.2306204,
-    "ast_hash": "359c3f2eeb506588a84b6e7b2b3a2b6a",
+    "mtime": 1791568091.4635952,
+    "seen": 1791569253.402549,
+    "ast_hash": "3acca73be5c43a3510a4bcdc3c72c2d0",
     "semantic_hash": ""
   },
   "src/server/services/whatsapp.ts": {
@@ -2022,9 +2022,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1791567580.721903,
-    "seen": 1791567604.97575,
-    "ast_hash": "98e48d9485a861c3b3760560a30d1a5c",
+    "mtime": 1791567960.0700772,
+    "seen": 1791569253.4695544,
+    "ast_hash": "23a91cb9fa10d7cb28479b42dadd4661",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2082,9 +2082,9 @@
     "semantic_hash": ""
   },
   "src/server/services/bloqueios.ts": {
-    "mtime": 1791555755.6724918,
-    "seen": 1791555792.6232398,
-    "ast_hash": "d89d62c13199500e4cea4e0a1b4e4215",
+    "mtime": 1791568091.460065,
+    "seen": 1791569253.4004257,
+    "ast_hash": "afa119e8e35d5b093d1435c66ab691d2",
     "semantic_hash": ""
   },
   "src/services/veterinarios/bloqueios.ts": {
@@ -2226,15 +2226,15 @@
     "semantic_hash": ""
   },
   "src/server/services/clinica-equipe.ts": {
-    "mtime": 1791566336.5037613,
-    "seen": 1791566381.4195123,
-    "ast_hash": "0924ef09fa02de02d6765a382fa847b4",
+    "mtime": 1791568176.645434,
+    "seen": 1791569253.4011164,
+    "ast_hash": "2c31ebb95e830b3b64d8797e8b7bd61f",
     "semantic_hash": ""
   },
   "tests/server/clinica-equipe.test.ts": {
-    "mtime": 1791566336.5288436,
-    "seen": 1791566381.4312518,
-    "ast_hash": "99f1be91c584946e639e17d0872c6238",
+    "mtime": 1791568789.4205196,
+    "seen": 1791569253.4199164,
+    "ast_hash": "95842da5e5095677080194e3a796253a",
     "semantic_hash": ""
   },
   "tests/server/veterinarios.test.ts": {
@@ -2592,9 +2592,9 @@
     "semantic_hash": ""
   },
   "src/server/services/pedidos-prestador.ts": {
-    "mtime": 1791561481.3139038,
-    "seen": 1791561615.2043931,
-    "ast_hash": "974a3e89a8b7861589488c97fe363707",
+    "mtime": 1791568091.4615855,
+    "seen": 1791569253.4028525,
+    "ast_hash": "7f5b01190b70549df97d95971b134775",
     "semantic_hash": ""
   },
   "src/server/services/prestadores.ts": {
@@ -2784,9 +2784,9 @@
     "semantic_hash": ""
   },
   "tests/server/assinaturas.test.ts": {
-    "mtime": 1791566677.6269,
-    "seen": 1791566772.1007562,
-    "ast_hash": "044b52725b1c8bf12356948e22716f5a",
+    "mtime": 1791568848.6609328,
+    "seen": 1791569253.4186265,
+    "ast_hash": "35affc154f4bfad00bcc40e59aa481a3",
     "semantic_hash": ""
   },
   "src/components/Home/SearchBar/OrdenacaoLista.tsx": {
@@ -2856,9 +2856,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/bloqueios.test.ts": {
-    "mtime": 1791567324.9017484,
-    "seen": 1791567604.9370573,
-    "ast_hash": "ffa415be603bf6662971b89273fe42ab",
+    "mtime": 1791568176.64797,
+    "seen": 1791569253.4226918,
+    "ast_hash": "121d24e4521a0e7dcda9fc4e9c55fda3",
     "semantic_hash": ""
   },
   "tests/server/cobertura/brazilapi.test.ts": {
@@ -2904,9 +2904,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/notifications.test.ts": {
-    "mtime": 1791567141.245569,
-    "seen": 1791567604.9370687,
-    "ast_hash": "e43cc182b60a11e09f6658cbcf16eb03",
+    "mtime": 1791568124.4506633,
+    "seen": 1791569253.4251597,
+    "ast_hash": "b666824cc9a1f8944913477982a945c3",
     "semantic_hash": ""
   },
   "tests/server/cobertura/onboarding.test.ts": {
@@ -2922,9 +2922,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/pedidos-prestador-fluxo.test.ts": {
-    "mtime": 1791567451.6205254,
-    "seen": 1791567604.937073,
-    "ast_hash": "b349dbddc0921677cad637cd34351c29",
+    "mtime": 1791568124.4317274,
+    "seen": 1791569253.4257185,
+    "ast_hash": "cbbe845ce6de918194e8ad73e43447d6",
     "semantic_hash": ""
   },
   "tests/server/cobertura/pets.test.ts": {
@@ -2982,9 +2982,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/vinculos.test.ts": {
-    "mtime": 1791567144.8757699,
-    "seen": 1791567604.9370873,
-    "ast_hash": "1b9c674b97e4331d397e153ee378b55b",
+    "mtime": 1791568287.939371,
+    "seen": 1791569253.428464,
+    "ast_hash": "a425e11d4a120b7c08907de4aef3cd1b",
     "semantic_hash": ""
   },
   "tests/server/cobertura/whatsapp-mensagens.test.ts": {
@@ -3003,6 +3003,12 @@
     "mtime": 1791567084.163549,
     "seen": 1791567604.9370918,
     "ast_hash": "ea2d4ed4365c9592417a249818465737",
+    "semantic_hash": ""
+  },
+  "stryker.config.json": {
+    "mtime": 1791568861.3434224,
+    "seen": 1791569253.4172444,
+    "ast_hash": "bf180ede9a0f97b314adb12f9bd3c705",
     "semantic_hash": ""
   }
 }

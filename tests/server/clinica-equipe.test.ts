@@ -98,4 +98,46 @@ describe('limite de vets pelo plano da clínica', () => {
     comPlano('clinic_pro', null, 300)
     await expect(garantirVagaNaEquipe('cli-1')).resolves.toBeUndefined()
   })
+
+  it('consulta o plano da clínica pelo código', async () => {
+    comPlano('starter', 5, 0)
+    await garantirVagaNaEquipe('cli-1')
+    expect(prismaMock.clinica.findUnique).toHaveBeenCalledWith({
+      where: { id: 'cli-1' },
+      select: { subscriptionPlanCode: true },
+    })
+    expect(prismaMock.subscriptionPlan.findUnique).toHaveBeenCalledWith({ where: { code: 'starter' } })
+  })
+
+  it('clínica inexistente é barrada com o motivo', async () => {
+    prismaMock.clinica.findUnique.mockResolvedValue(null)
+    prismaMock.veterinarioClinica.count.mockResolvedValue(0)
+    const erro = await garantirVagaNaEquipe('cli-x').catch((e) => e)
+    expect(erro.body).toEqual({ status: 403, message: expect.stringMatching(/\S/) })
+    expect(prismaMock.subscriptionPlan.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('usa o client recebido (transação) em vez do prisma global', async () => {
+    const tx = {
+      clinica: { findUnique: vi.fn().mockResolvedValue({ subscriptionPlanCode: 'starter' }) },
+      subscriptionPlan: { findUnique: vi.fn().mockResolvedValue({ code: 'starter', maxVeterinarios: 5 }) },
+      veterinarioClinica: { count: vi.fn().mockResolvedValue(5) },
+    }
+    await expect(garantirVagaNaEquipe('cli-1', undefined, tx as never)).rejects.toMatchObject({ status: 403 })
+    expect(prismaMock.clinica.findUnique).not.toHaveBeenCalled()
+    expect(tx.veterinarioClinica.count).toHaveBeenCalled()
+  })
+})
+
+describe('detalhes da equipe', () => {
+  it('lista incluindo o usuário do veterinário', async () => {
+    await listarEquipe('cli-1')
+    expect(prismaMock.veterinarioClinica.findMany.mock.calls[0][0].include).toEqual({ veterinario: { include: { user: true } } })
+  })
+
+  it('remover sem vínculo explica o motivo', async () => {
+    prismaMock.veterinarioClinica.deleteMany.mockResolvedValue({ count: 0 })
+    const erro = await removerDaEquipe('cli-1', 'vet-x').catch((e) => e)
+    expect(erro.body).toEqual({ status: 404, message: 'Veterinário não vinculado a esta clínica' })
+  })
 })

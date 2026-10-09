@@ -269,11 +269,162 @@ describe('webhook Asaas: assinatura encerrada', () => {
     expect(prismaMock.subscription.update.mock.calls[0][0].data.canceledAt).toBe(canceledAt)
   })
 
+  it('grava o cancelamento na própria assinatura', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'active' }))
+    await handleAsaasEvent(evento('SUBSCRIPTION_DELETED', { subscription: { id: 'sub_asaas_1' } }))
+    expect(prismaMock.subscription.update.mock.calls[0][0].where).toEqual({ id: 'sub-1' })
+  })
+
   it('encerramento identificado pelo payment.subscription também funciona', async () => {
     prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'active' }))
     prismaMock.veterinario.findUnique.mockResolvedValue({ subscriptionPlanCode: 'vet_pro' })
     await handleAsaasEvent(evento('SUBSCRIPTION_INACTIVATED', { payment: { subscription: 'sub_asaas_1' } }))
     expect(prismaMock.subscription.findFirst.mock.calls[0][0].where).toEqual({ asaasSubscriptionId: 'sub_asaas_1' })
     expect(statusGravado()).toEqual(['canceled'])
+  })
+})
+
+describe('webhook Asaas: idempotência e transação', () => {
+  it('consulta o evento pela chave e grava o payload original', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet())
+    const payload = pagamento('PAYMENT_CONFIRMED')
+    await handleAsaasEvent(payload)
+    expect(prismaMock.webhookEvent.findUnique).toHaveBeenCalledWith({ where: { eventId: 'evt_PAYMENT_CONFIRMED' } })
+    expect(prismaMock.webhookEvent.create.mock.calls[0][0].data.payload).toBe(JSON.stringify(payload))
+    expect(prismaMock.$transaction).toHaveBeenCalledWith(expect.any(Function), { maxWait: 10_000, timeout: 60_000 })
+  })
+
+  it('evento sem chave é processado sem gravar webhook_events', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet())
+    await expect(
+      handleAsaasEvent({ event: 'PAYMENT_CONFIRMED', payment: { subscription: 'sub_asaas_1' } })
+    ).resolves.toBe(true)
+    expect(prismaMock.webhookEvent.findUnique).not.toHaveBeenCalled()
+    expect(prismaMock.webhookEvent.create).not.toHaveBeenCalled()
+    expect(statusGravado()).toEqual(['active'])
+  })
+
+  it('payload nulo não quebra nem grava nada', async () => {
+    await expect(handleAsaasEvent(null)).resolves.toBe(true)
+    expect(prismaMock.webhookEvent.create).not.toHaveBeenCalled()
+    expect(prismaMock.subscription.findFirst).not.toHaveBeenCalled()
+  })
+
+  it('P2002 sem chave de evento sobe o erro', async () => {
+    const { Prisma } = await import('@prisma/client')
+    prismaMock.subscription.findFirst.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError('dup', { code: 'P2002', clientVersion: 'x' })
+    )
+    await expect(handleAsaasEvent({ event: 'PAYMENT_CONFIRMED', payment: { subscription: 'sub_asaas_1' } })).rejects.toThrow(
+      'dup'
+    )
+  })
+
+  it('outro erro do Prisma ou erro com code P2002 fora do Prisma sobe', async () => {
+    const { Prisma } = await import('@prisma/client')
+    prismaMock.webhookEvent.create.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError('fk', { code: 'P2003', clientVersion: 'x' })
+    )
+    await expect(handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))).rejects.toThrow('fk')
+    prismaMock.webhookEvent.create.mockRejectedValueOnce(Object.assign(new Error('falso'), { code: 'P2002' }))
+    await expect(handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))).rejects.toThrow('falso')
+  })
+})
+
+describe('webhook Asaas: detalhes da ativação', () => {
+  it('atualiza a assinatura certa e busca as antigas do mesmo dono', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet())
+    await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
+    expect(prismaMock.subscription.update.mock.calls[0][0].where).toEqual({ id: 'sub-1' })
+    expect(prismaMock.subscription.findMany).toHaveBeenCalledWith({
+      where: { id: { not: 'sub-1' }, veterinarioId: 'vet-1', status: { in: ['active', 'pending', 'past_due'] } },
+    })
+    expect(prismaMock.subscriptionPlan.findUnique).toHaveBeenCalledWith({ where: { id: 'plan-pro' } })
+  })
+
+  it('sem assinaturas antigas não instancia o Asaas', async () => {
+    const { AsaasService } = await import('@/server/services/asaas')
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet())
+    await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
+    expect(AsaasService).not.toHaveBeenCalled()
+  })
+
+  it('antiga sem id no Asaas é cancelada só localmente', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet())
+    prismaMock.subscription.findMany.mockResolvedValue([subVet({ id: 'sub-velha', asaasSubscriptionId: null, status: 'pending' })])
+    await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
+    expect(asaasFake.cancelSubscription).not.toHaveBeenCalled()
+    expect(prismaMock.subscription.update.mock.calls[1][0].where).toEqual({ id: 'sub-velha' })
+    expect(prismaMock.subscription.update.mock.calls[1][0].data.canceledAt).toBeInstanceOf(Date)
+  })
+
+  it('loga a falha ao cancelar a antiga no Asaas', async () => {
+    const erro = vi.spyOn(console, 'error').mockImplementation(() => {})
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet())
+    prismaMock.subscription.findMany.mockResolvedValue([subVet({ id: 'sub-velha', asaasSubscriptionId: 'sub_velha' })])
+    asaasFake.cancelSubscription.mockRejectedValueOnce(new Error('500'))
+    await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
+    expect(erro).toHaveBeenCalledWith(expect.stringContaining('sub_velha'), expect.any(Error))
+    erro.mockRestore()
+  })
+
+  it('assinatura expirada não é reativada por pagamento', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'expired' }))
+    await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
+    expect(prismaMock.subscription.update).not.toHaveBeenCalled()
+  })
+
+  it('assinatura sem dono só é ativada, sem mexer em plano', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet({ veterinarioId: null }))
+    await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
+    expect(statusGravado()).toEqual(['active'])
+    expect(prismaMock.subscription.findMany).not.toHaveBeenCalled()
+    expect(prismaMock.subscriptionPlan.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('plano inexistente não altera o dono', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet())
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue(null)
+    await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
+    expect(prismaMock.veterinario.findUnique).not.toHaveBeenCalled()
+    expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
+  })
+
+  it('dono apagado (sem registro) não recebe plano', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet())
+    prismaMock.veterinario.findUnique.mockResolvedValue(null)
+    await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
+    expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
+  })
+})
+
+describe('webhook Asaas: detalhes do rebaixamento', () => {
+  it('marca past_due na assinatura certa e conta outras ativas do dono', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'active' }))
+    await handleAsaasEvent(pagamento('PAYMENT_OVERDUE'))
+    expect(prismaMock.subscription.update.mock.calls[0][0].where).toEqual({ id: 'sub-1' })
+    expect(prismaMock.subscription.count).toHaveBeenCalledWith({
+      where: { veterinarioId: 'vet-1', status: 'active', id: { not: 'sub-1' } },
+    })
+  })
+
+  it('assinatura expirada ignora fatura vencida', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'expired' }))
+    await handleAsaasEvent(pagamento('PAYMENT_OVERDUE'))
+    expect(prismaMock.subscription.update).not.toHaveBeenCalled()
+  })
+
+  it('assinatura sem dono vira past_due sem rebaixar ninguém', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet({ veterinarioId: null, status: 'active' }))
+    await handleAsaasEvent(pagamento('PAYMENT_OVERDUE'))
+    expect(statusGravado()).toEqual(['past_due'])
+    expect(prismaMock.subscription.count).not.toHaveBeenCalled()
+  })
+
+  it('dono apagado (sem registro) não é rebaixado', async () => {
+    prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'active' }))
+    prismaMock.veterinario.findUnique.mockResolvedValue(null)
+    await handleAsaasEvent(pagamento('PAYMENT_OVERDUE'))
+    expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
   })
 })
