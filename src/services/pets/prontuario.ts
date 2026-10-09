@@ -1,4 +1,5 @@
 import { api } from "@/hook/api";
+import type { Encaminhamento } from "@/services/encaminhamentos/encaminhamentos";
 
 export interface RegistroClinico {
   id: string;
@@ -39,6 +40,7 @@ export interface Prontuario {
     foto_url: string | null;
   };
   consultas: ConsultaProntuario[];
+  encaminhamentos?: Encaminhamento[];
 }
 
 export const MAX_TEXTO_REGISTRO = 5000;

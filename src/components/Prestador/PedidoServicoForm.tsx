@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import MinhaAgendaDoDia from "@/components/Encaminhamento/MinhaAgendaDoDia";
 import { PetsService, type PetRecord } from "@/services/pets/pets";
 import { PrestadoresService, type PrestadorPublico } from "@/services/prestadores/prestadores";
 import { handleApiError } from "@/utils/errorHandler";
@@ -17,7 +18,15 @@ function diarias(data: string, hora: string, dataFim: string, horaFim: string) {
 }
 
 /** Formulário "Pedir serviço" do perfil público: sessão (duração) ou hospedagem (entrada e saída). */
-export default function PedidoServicoForm({ prestador }: { prestador: PrestadorPublico }) {
+export default function PedidoServicoForm({
+  prestador,
+  encaminhamentoId,
+  petIdInicial,
+}: {
+  prestador: PrestadorPublico;
+  encaminhamentoId?: string | null;
+  petIdInicial?: string | null;
+}) {
   const { user } = useAuth();
   const porDiaria = prestador.tipo_servico.modalidade === "periodo";
   const [pets, setPets] = useState<PetRecord[]>([]);
@@ -43,10 +52,11 @@ export default function PedidoServicoForm({ prestador }: { prestador: PrestadorP
     PetsService.listarPets()
       .then((lista) => {
         setPets(lista);
-        if (lista[0]) setPetId(lista[0].id);
+        const encaminhado = lista.find((p) => String(p.id) === petIdInicial);
+        if (encaminhado || lista[0]) setPetId((encaminhado ?? lista[0]).id);
       })
       .catch(() => setPets([]));
-  }, [ehTutor]);
+  }, [ehTutor, petIdInicial]);
 
   useEffect(() => {
     if (porDiaria || !servicoId || !data) return setSlots(null);
@@ -99,6 +109,7 @@ export default function PedidoServicoForm({ prestador }: { prestador: PrestadorP
         ...(porDiaria ? { data_fim: dataFim, horario_fim: horarioFim || horario } : {}),
         local,
         observacoes: observacoes || null,
+        encaminhamento_id: encaminhamentoId || null,
       });
       setEnviado(true);
     } catch (err) {
@@ -227,6 +238,8 @@ export default function PedidoServicoForm({ prestador }: { prestador: PrestadorP
           ) : null}
         </>
       )}
+
+      <MinhaAgendaDoDia data={data || null} horario={horario} duracaoMin={servico?.duracao_min ?? 60} />
 
       <Campo label="Observações (opcional)">
         <textarea

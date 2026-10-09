@@ -22,11 +22,12 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 - Booleanos são `Int` (0/1): o frontend compara com `0`/`1` (ex.: `onboardingComplete === 0`).
 - ENUMs do Postgres (`user_type`, `genero`, `tipo_clinica`, `porte`, `payments.type`) são enums do Prisma. Como `String`, a leitura no banco real falha com P2032.
 - Conexão: `DATABASE_URL` e `DIRECT_URL` são iguais. No `.env` (dev e Prisma local) apontam para `127.0.0.1:5433`. No `.env.production` (`next build` / `next start`) apontam para o pooler do Supabase em modo sessão, porta 5432 do host `aws-0-us-east-2.pooler.supabase.com`. A conexão direta `db.<ref>.supabase.co` é só IPv6. A app autentica com o próprio JWT; usa o usuário `postgres` do banco, não a chave anon.
-- Busca textual em SQL cru usa `ILIKE` (o Postgres diferencia maiúsculas). Login e “esqueci a senha” também comparam e-mail sem diferenciar maiúsculas. O índice único de `users.email` diferencia: o cadastro grava o e-mail em minúsculas.
+- Busca textual em SQL cru usa `ILIKE` (o Postgres diferencia maiúsculas); no Prisma, `contains` sempre com `mode: 'insensitive'`. Login e “esqueci a senha” também comparam e-mail sem diferenciar maiúsculas. O índice único de `users.email` diferencia: o cadastro grava o e-mail em minúsculas.
 - `User -> tutor/veterinario/clinica/prestador` são listas no Prisma (`user_id` sem UNIQUE): usar `findFirst({ where: { userId } })`.
 - DECIMAL sai como string com 2 casas; datas saem em ISO (servidor em `TZ=UTC`).
 - `agendamentos.data_consulta` é VARCHAR (`YYYY-MM-DD`).
 - Migrations: Prisma Migrate com baseline `prisma/migrations/0_init`. `docker compose up` sobe o Postgres local e aplica as migrations pendentes; não roda o seed (`npm run db:seed` é separado). `npm start` aplica as migrations do `.env.production` (Supabase) e só então sobe o Next. Em banco que já existia antes do Prisma: `prisma migrate resolve --applied 0_init` uma única vez.
+- Dados do MySQL antigo: `npm run db:migrar-mysql` (`scripts/migrar-dados-mysql.ts`) lê `MYSQL_ORIGEM_URL` e copia para o `DATABASE_URL` (`--env=.env.production` para o Supabase). Sem `--executar` só confere: tabelas e colunas de cada lado, contagens e bloqueios (coluna NOT NULL sem default ausente no MySQL). Com `--executar`: copia as colunas em comum na ordem das FKs, numa única transação (erro = nada gravado), com `ON CONFLICT DO NOTHING`, ajusta as sequências autoincrement e confere as contagens. Rodar com o destino recém-migrado e **antes** do seed (o seed é idempotente e completa o catálogo depois). Tabelas do Adonis (`adonis_schema*`) ficam de fora; datas `0000-00-00` viram NULL; datas são lidas em UTC.
 
 ## Fluxos principais
 
@@ -138,6 +139,17 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Bloqueio de agenda do prestador:** mesmo modelo de `bloqueios_agenda` (dia inteiro ou horários, cada horário bloqueia 1h). Diferente do vet, bloqueio que atinge pedido ativo é recusado com 409 e a lista de conflitos: o prestador recusa ou combina a remarcação antes.
 - **Limite do plano:** o prestador começa no plano `free` (10 pedidos/mês) e pode assinar o `pro` (ilimitado) pelo mesmo fluxo Asaas (`/api/assinaturas`, referência `prestador:<id>`). Pedido criado conta no mês; recusa ou cancelamento devolve a cota. Cancelar ou atrasar a assinatura volta para `free`.
 - **Avisos:** os mesmos canais da consulta (in-app, e-mail, WhatsApp e Google Agenda) com texto de serviço ("Novo pedido de Banho e tosa", sem "Dr(a)." nem "consulta"). WhatsApp do prestador depende do plano dele ter `whatsapp_notifications`.
+
+### Encaminhamento de pet
+
+- **Quem envia:** só o vet ou a clínica da consulta (`POST /api/agendamentos/:id/encaminhamentos`), a partir do início do atendimento (mesma janela do registro clínico); consulta cancelada não encaminha. O campo de encaminhamento em texto livre do registro clínico continua.
+- **Destino:** outra clínica, outro veterinário ou um prestador (`destino_tipo` = `clinica`, `veterinario` ou `prestador`), ativo na plataforma. Não pode encaminhar para si mesmo. Motivo obrigatório (3 a 2000 caracteres) e urgência `rotina` (padrão) ou `prioritario`.
+- **Sem duplicado:** já existindo encaminhamento `enviado` da mesma consulta para o mesmo destino, responde 409.
+- **Status:** nasce `enviado`; o destino aceita (`aceito`) ou recusa (`recusado`, com motivo de pelo menos 3 caracteres). Só o destino responde e só uma vez. Painel "Encaminhamentos recebidos" nos dashboards de vet, clínica e prestador (`/api/encaminhamentos/recebidos`).
+- **Prontuário:** enquanto o encaminhamento está `enviado` ou `aceito`, o destino (inclusive prestador) vê o prontuário do pet. Encaminhamentos aceitos aparecem no prontuário (origem, destino, motivo e consulta marcada).
+- **Quem marca é o tutor** (decisão da dona do produto): depois do aceite, o tutor vê "Agendar com X" no painel e agenda pela tela normal do destino (`?encaminhamento=&pet=`), com o pet já escolhido e a própria agenda do dia ao lado da agenda do destino. A marcação segue as regras normais do destino (grade, bloqueios, limite do plano, aceite do prestador).
+- **Vínculo:** `encaminhamento_id` em `POST /api/agendamentos` e no pedido de prestador. Só vale para encaminhamento `aceito` do próprio tutor, para o mesmo pet e o mesmo destino, e sem outra marcação ativa (409). A consulta criada fica em `agendamento_destino_id`.
+- **Avisos:** novo encaminhamento avisa destino e tutor (sino e e-mail); aceite e recusa avisam tutor e origem (sino e e-mail) e o tutor por WhatsApp (plano da consulta de origem, mesmas regras de opt-out). Falha de aviso nunca bloqueia o fluxo.
 
 ## Testes
 

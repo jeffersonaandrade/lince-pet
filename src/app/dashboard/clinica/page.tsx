@@ -21,6 +21,8 @@ import ShareProfileButton from "@/components/ShareProfileButton/ShareProfileButt
 import TutorContact from "@/components/TutorContact/TutorContact";
 import BloqueiosLista from "@/components/BloqueioAgenda/BloqueiosLista";
 import ProntuarioPet from "@/components/Prontuario/ProntuarioPet";
+import EncaminharModal from "@/components/Encaminhamento/EncaminharModal";
+import PainelRecebidos from "@/components/Encaminhamento/PainelRecebidos";
 import Image from "next/image";
 import { formatDateToISO } from "@/utils/formatters";
 
@@ -46,8 +48,11 @@ import {
   ChevronRight,
   TrendingUp,
   Stethoscope,
-  Mail
+  Mail,
+  Send
 } from "lucide-react";
+
+const STATUS_ENCAMINHAVEL = ["em andamento", "emandamento", "realizado", "concluido", "concluida", "finalizado"];
 
 // Interface para os eventos do calendário
 interface CalendarEvent {
@@ -94,6 +99,7 @@ export default function ClinicaDashboard() {
   const [view, setView] = useState<'month' | 'week' | 'day'>("month");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [encaminhando, setEncaminhando] = useState<{ id: string | number; pet?: string | null } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [clinicaId, setClinicaId] = useState<string | null>(null);
@@ -734,6 +740,10 @@ export default function ClinicaDashboard() {
               </div>
             )}
 
+            <div className="mt-4">
+              <PainelRecebidos />
+            </div>
+
             {/* Resumo de Consultas */}
             <div className={styles.appointmentsCard}>
               <div className={styles.appointmentsHeader}>
@@ -1309,6 +1319,15 @@ export default function ClinicaDashboard() {
                     petNome={selectedEvent.resource.pet}
                     recolhivel
                   />
+                  {STATUS_ENCAMINHAVEL.includes((selectedEvent.resource.status || "").toLowerCase()) ? (
+                    <button
+                      type="button"
+                      onClick={() => setEncaminhando({ id: selectedEvent.id, pet: selectedEvent.resource?.pet })}
+                      className="mt-3 inline-flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100"
+                    >
+                      <Send size={14} /> Encaminhar pet
+                    </button>
+                  ) : null}
                 </div>
               )}
             </div>
@@ -1395,6 +1414,14 @@ export default function ClinicaDashboard() {
           </div>
         </div>
       )}
+
+      {encaminhando ? (
+        <EncaminharModal
+          agendamentoId={encaminhando.id}
+          petNome={encaminhando.pet}
+          onFechar={() => setEncaminhando(null)}
+        />
+      ) : null}
     </>
   );
 }

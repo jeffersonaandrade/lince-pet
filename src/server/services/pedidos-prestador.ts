@@ -17,6 +17,7 @@ import { notificarAgendamento } from './whatsapp-notificacoes'
 import { googleCalendar, type AcaoAgenda } from './google-calendar'
 import type { Destinatario, EventoWhatsapp } from './whatsapp-mensagens'
 import type { Modalidade } from './prestadores'
+import { conferirEncaminhamento, vincularAgendamento } from './encaminhamentos'
 
 /**
  * Pedido de serviço a um prestador. Reaproveita `agendamentos` (prestadorId no lugar de veterinarioId)
@@ -185,6 +186,7 @@ export const pedidoValidator = vine.compile(
     horario_fim: hora().optional().nullable(),
     local: vine.enum(['domicilio', 'local_proprio'] as const),
     observacoes: vine.string().trim().maxLength(255).optional().nullable(),
+    encaminhamento_id: vine.string().trim().optional().nullable(),
   })
 )
 
@@ -232,6 +234,9 @@ export async function criarPedido(tutor: { id: string; user: Usuario }, prestado
 
   const limite = await canCreateAppointment(prestador, 'prestador')
   if (!limite.allowed) throw erro('Este profissional atingiu o limite de pedidos do mês. Tente outro profissional.', 403)
+  if (d.encaminhamento_id) {
+    await conferirEncaminhamento(d.encaminhamento_id, { tutorId: tutor.id, petId: pet.id, prestadorId: prestador.id })
+  }
 
   const pedido = await prisma.$transaction(async (tx) => {
     const ocupado = await tx.agendamento.findFirst({
@@ -258,6 +263,7 @@ export async function criarPedido(tutor: { id: string; user: Usuario }, prestado
     })
   })
 
+  if (d.encaminhamento_id) await vincularAgendamento(d.encaminhamento_id, pedido.id)
   await incrementUsage(prestador, 'prestador')
   after(() => avisarPedido('novo', pedido.id))
   return serializarPedido(pedido, 'tutor')

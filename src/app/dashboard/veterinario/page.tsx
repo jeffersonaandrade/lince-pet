@@ -23,11 +23,13 @@ import AnotacaoPrivada from "@/components/AnotacaoPrivada/AnotacaoPrivada";
 import HistoricoAnotacoes from "@/components/AnotacaoPrivada/HistoricoAnotacoes";
 import RegistroClinicoForm from "@/components/Prontuario/RegistroClinicoForm";
 import ProntuarioPet from "@/components/Prontuario/ProntuarioPet";
+import EncaminharModal from "@/components/Encaminhamento/EncaminharModal";
+import PainelRecebidos from "@/components/Encaminhamento/PainelRecebidos";
 import { mapearDiasBloqueados, type BloqueioScope } from "@/services/veterinarios/bloqueios";
 import Image from "next/image";
 import { formatDateToISO } from "@/utils/formatters";
 import LottieLoading from "@/components/ui/LottieLoading/LottieLoading";
-import { Dog, Tag, Maximize2, MapPin, CreditCard, MessageCircle, Calendar as CalendarIcon, Camera, Info, TrendingUp, Clock, Star, Crown } from "lucide-react";
+import { Dog, Tag, Maximize2, MapPin, CreditCard, MessageCircle, Calendar as CalendarIcon, Camera, Info, TrendingUp, Clock, Star, Crown, Send } from "lucide-react";
 
 
 
@@ -181,6 +183,7 @@ export default function VeterinarioDashboard() {
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [encaminhando, setEncaminhando] = useState<{ id: string | number; pet?: string | null } | null>(null);
   const [isConcluding, setIsConcluding] = useState(false);
   const [isCodeModalOpen, setIsCodeModalOpen] = useState(false);
   const [startCode, setStartCode] = useState("");
@@ -874,6 +877,10 @@ export default function VeterinarioDashboard() {
               />
             </div>
 
+            <div className="mt-4">
+              <PainelRecebidos />
+            </div>
+
             {/* Próximas Consultas */}
             <div className={styles.appointmentsCard}>
               <div className={styles.appointmentsHeader}>
@@ -1440,6 +1447,15 @@ export default function VeterinarioDashboard() {
               {STATUS_COM_ANOTACAO.includes(normalizeStatus(selectedEvent.resource?.status)) && (
                 <div className={styles.modalSection}>
                   <RegistroClinicoForm agendamentoId={selectedEvent.id} />
+                  {selectedEvent.resource?.petId ? (
+                    <button
+                      type="button"
+                      onClick={() => setEncaminhando({ id: selectedEvent.id, pet: selectedEvent.resource?.pet })}
+                      className="mt-3 inline-flex items-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100"
+                    >
+                      <Send size={14} /> Encaminhar pet
+                    </button>
+                  ) : null}
                 </div>
               )}
 
@@ -1788,6 +1804,13 @@ export default function VeterinarioDashboard() {
         </div>
       )}
 
+      {encaminhando ? (
+        <EncaminharModal
+          agendamentoId={encaminhando.id}
+          petNome={encaminhando.pet}
+          onFechar={() => setEncaminhando(null)}
+        />
+      ) : null}
     </>
   );
 }

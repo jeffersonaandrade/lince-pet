@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Home, MapPin, Star, Store } from "lucide-react";
 import UserImage from "@/components/ui/UserImage/UserImage";
 import PedidoServicoForm from "@/components/Prestador/PedidoServicoForm";
+import { FaixaEncaminhamento, useEncaminhamentoDaUrl } from "@/components/Encaminhamento/FaixaEncaminhamento";
 import { DIAS_SEMANA, formatarDuracao, formatarPreco } from "@/components/Prestador/ui";
 import { PrestadoresService, type PrestadorPublico } from "@/services/prestadores/prestadores";
 
@@ -13,6 +14,7 @@ export default function PerfilProfissionalPage() {
   const { id } = useParams<{ id: string }>();
   const [prestador, setPrestador] = useState<PrestadorPublico | null>(null);
   const [erro, setErro] = useState(false);
+  const { encaminhamentoId, petId: petEncaminhadoId, encaminhamento } = useEncaminhamentoDaUrl();
 
   useEffect(() => {
     PrestadoresService.obter(id)
@@ -117,7 +119,10 @@ export default function PerfilProfissionalPage() {
 
         <aside className="h-fit rounded-3xl bg-white p-6 shadow-sm lg:sticky lg:top-24">
           <h2 className="mb-4 text-lg font-bold text-slate-800">Pedir serviço</h2>
-          <PedidoServicoForm prestador={p} />
+          <div className="mb-4 empty:hidden">
+            <FaixaEncaminhamento encaminhamento={encaminhamento} />
+          </div>
+          <PedidoServicoForm prestador={p} encaminhamentoId={encaminhamentoId} petIdInicial={petEncaminhadoId} />
         </aside>
       </div>
     </main>

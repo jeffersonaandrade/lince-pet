@@ -38,6 +38,8 @@ import styles from "./veterinario.module.css";
 import SuccessScreen from "@/components/SuccessScreen/SuccessScreen";
 import ModalPortal from "@/components/ui/ModalPortal";
 import CustomSelect from "@/components/ui/CustomSelect/CustomSelect";
+import MinhaAgendaDoDia from "@/components/Encaminhamento/MinhaAgendaDoDia";
+import { FaixaEncaminhamento, useEncaminhamentoDaUrl } from "@/components/Encaminhamento/FaixaEncaminhamento";
 import LottieLoading from "@/components/ui/LottieLoading/LottieLoading";
 import { PetsService, type PetRecord } from "@/services/pets/pets";
 import { FavoritesService } from "@/services/favorites/favorites";
@@ -127,6 +129,7 @@ export default function VeterinarioProfile() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDate, setCustomDate] = useState<string | null>(null);
   const searchParams = useSearchParams();
+  const { encaminhamentoId, petId: petEncaminhadoId, encaminhamento } = useEncaminhamentoDaUrl();
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [diaBloqueado, setDiaBloqueado] = useState(false);
   const [carregandoDisponibilidade, setCarregandoDisponibilidade] = useState(false);
@@ -483,7 +486,8 @@ export default function VeterinarioProfile() {
         setLoadingPets(true);
         const list = await PetsService.listarPets();
         setPets(list);
-        setSelectedPetId(list[0]?.id ?? null);
+        const petEncaminhado = list.find((p) => String(p.id) === petEncaminhadoId);
+        setSelectedPetId(petEncaminhado?.id ?? list[0]?.id ?? null);
       } catch (e) {
         setPets([]);
         console.error("Erro ao carregar pets:", e);
@@ -521,7 +525,8 @@ export default function VeterinarioProfile() {
         especialidade: especialidadeSelecionada,
         observacoes: observacoes || undefined,
         pet_id: selectedPetId as string,
-        endereco_id: selectedLocationId === -1 ? undefined : (selectedLocationId || undefined)
+        endereco_id: selectedLocationId === -1 ? undefined : (selectedLocationId || undefined),
+        encaminhamento_id: encaminhamentoId || undefined,
       };
       await AgendamentosService.criarAgendamento(dadosAgendamento as any);
 
@@ -811,6 +816,9 @@ export default function VeterinarioProfile() {
             <aside className={styles.sidebar}>
               <div className={styles.stickyCard}>
                 <h3>Agendar Consulta</h3>
+                <div className="mb-4 empty:hidden">
+                  <FaixaEncaminhamento encaminhamento={encaminhamento} />
+                </div>
 
                 <div className={styles.locationSelectionWrapper}>
                   <div style={{ marginBottom: "20px" }}>
@@ -929,6 +937,14 @@ export default function VeterinarioProfile() {
                               </>
                             ) : <p className={styles.noAvailability}>Sem horários</p>}
                           </div>
+                          {user?.userType === "tutor" ? (
+                            <div className="mt-3">
+                              <MinhaAgendaDoDia
+                                data={formatLocalISODate(new Date(new Date().setDate(new Date().getDate() + selectedDay)))}
+                                horario={selectedTimeSlot}
+                              />
+                            </div>
+                          ) : null}
                         </>
                       )}
                     </div>
