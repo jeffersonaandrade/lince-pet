@@ -106,64 +106,8 @@ function ExplorarContent() {
         searchClinicas(filters),
       ]);
 
-      let loadedVets = vetsResponse.veterinarios || [];
+      const loadedVets = vetsResponse.veterinarios || [];
       const loadedClinicas = Array.isArray(clinicasResponse) ? clinicasResponse : (clinicasResponse.clinicas || []);
-
-      // Se não há veterinários cadastrados, exibir dados de exemplo temporariamente
-      if (loadedVets.length === 0) {
-        loadedVets = [
-          {
-            id: "exemplo-1",
-            nome: "Dr. João Silva (Exemplo)",
-            email: "joao@exemplo.com",
-            cidade: "São Paulo",
-            estado: "SP",
-            endereco: "Rua Exemplo, 123, São Paulo",
-            especialidades: ["Clínica Geral", "Cirurgia"],
-            crmv: "CRMV-SP 12345",
-            bio: "Este é um veterinário de exemplo para testar a interface.",
-            preco: 150,
-            experiencia: 5,
-            rating: 4.8,
-            totalReviews: 120,
-            availability: {
-              segunda: ["09:00", "10:00", "14:00", "15:00"],
-              terca: ["09:00", "10:00", "14:00", "15:00"],
-              quarta: ["09:00", "10:00"],
-              quinta: ["14:00", "15:00", "16:00"],
-              sexta: ["09:00", "10:00", "14:00"],
-              sabado: [],
-              domingo: [],
-            },
-            clinica: null,
-          },
-          {
-            id: "exemplo-2",
-            nome: "Dra. Maria Santos (Exemplo)",
-            email: "maria@exemplo.com",
-            cidade: "Rio de Janeiro",
-            estado: "RJ",
-            endereco: "Av. Exemplo, 456, Rio de Janeiro",
-            especialidades: ["Dermatologia", "Alergologia"],
-            crmv: "CRMV-RJ 67890",
-            bio: "Veterinária especializada em dermatologia e alergias.",
-            preco: 180,
-            experiencia: 8,
-            rating: 4.9,
-            totalReviews: 89,
-            availability: {
-              segunda: ["08:00", "09:00", "10:00"],
-              terca: ["08:00", "09:00"],
-              quarta: ["14:00", "15:00", "16:00"],
-              quinta: ["08:00", "09:00", "10:00"],
-              sexta: ["08:00", "09:00"],
-              sabado: ["08:00", "09:00"],
-              domingo: [],
-            },
-            clinica: "Clínica Pet Care",
-          },
-        ];
-      }
 
       setVeterinarios(loadedVets);
 
@@ -654,7 +598,7 @@ function ExplorarContent() {
           {filteredVeterinarios.length === 0 && (
             <div className={styles.noResults}>
               <h3>Nenhum veterinário encontrado</h3>
-              <p>Tente buscar por outros termos ou cidades.</p>
+              <p>Tente outro plano, termo ou cidade.</p>
               {(searchParams.get("search") || searchParams.get("location") || searchParams.get("plans")) && (
                 <button
                   className={styles.clearFiltersButtonLarge}
@@ -763,7 +707,7 @@ function ExplorarContent() {
           {filteredClinics.length === 0 && (
             <div className={styles.noResults}>
               <h3>Nenhuma clínica encontrada</h3>
-              <p>Tente buscar por outros termos ou cidades.</p>
+              <p>Tente outro plano, termo ou cidade.</p>
               {(searchParams.get("search") || searchParams.get("location") || searchParams.get("plans")) && (
                 <button
                   className={styles.clearFiltersButtonLarge}

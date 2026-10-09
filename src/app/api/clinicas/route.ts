@@ -15,7 +15,9 @@ export const GET = route(async (req) => {
   if (search) AND.push({ OR: [{ nomeClinica: { contains: search } }, { descricao: { contains: search } }] })
   if (cidade) AND.push({ cidade: { contains: cidade } })
   if (estado) AND.push({ estado })
-  if (plano) AND.push({ clinicaPlanos: { some: { plano: { name: { contains: plano } } } } })
+  if (plano) {
+    AND.push({ clinicaPlanos: { some: { plano: { name: { contains: plano, mode: 'insensitive' } } } } })
+  }
 
   const clinicas = await prisma.clinica.findMany({
     where: { AND },

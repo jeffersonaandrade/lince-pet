@@ -6,7 +6,7 @@ import styles from "./searchbar.module.css";
 import SearchSection from "../../ui/SearchSection";
 import CitySearchSection from "../../ui/CitySearchSection";
 import { especialidadesVeterinarias } from "../../../data/especialidades";
-import { planosSaudeAnimal } from "../../../data/planos-saude";
+import { getPlanos } from "../../../services/veterinarios/veterinarios";
 
 interface UserLocation {
   city: string;
@@ -24,6 +24,7 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
   const [specialtyValue, setSpecialtyValue] = useState("");
   const [locationValue, setLocationValue] = useState("");
   const [plansValue, setPlansValue] = useState("");
+  const [planos, setPlanos] = useState<string[]>([]);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
   const [searchDropdownOpen, setSearchDropdownOpen] = useState(false);
@@ -83,6 +84,21 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
       getUserLocation();
     }
   }, []); // Run only once on mount
+
+  useEffect(() => {
+    let ativo = true;
+    getPlanos()
+      .then((lista: { name?: string }[]) => {
+        if (!ativo || !Array.isArray(lista)) return;
+        setPlanos(lista.flatMap((plano) => (plano?.name ? [plano.name] : [])));
+      })
+      .catch(() => {
+        if (ativo) setPlanos([]);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,7 +172,7 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
 
           <div className={styles.lastSection} ref={lastSectionRef}>
             <SearchSection
-              options={planosSaudeAnimal}
+              options={planos}
               value={plansValue}
               onChange={setPlansValue}
               placeholder="Planos de saúde"

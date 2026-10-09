@@ -204,6 +204,7 @@ export interface SearchVeterinarios {
   cidade?: string;
   estado?: string;
   especialidade?: string;
+  plano?: string;
 }
 
 export const searchVeterinarios = async (filters: SearchVeterinarios) => {
@@ -214,6 +215,7 @@ export const searchVeterinarios = async (filters: SearchVeterinarios) => {
   if (filters.estado) params.append("estado", filters.estado);
   if (filters.especialidade)
     params.append("especialidade", filters.especialidade);
+  if (filters.plano) params.append("plano", filters.plano);
 
   const response = await api.get(`/veterinarios/search?${params.toString()}`);
   return response.data;
