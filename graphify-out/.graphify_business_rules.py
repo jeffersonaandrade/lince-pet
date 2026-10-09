@@ -176,6 +176,28 @@ impl.update({
     "src_app_api_clinicas_professionals_id_route": ["rule_clinica_remove_vinculo"],
     "tests_server_clinica_equipe_test": ["rule_clinica_remove_vinculo"],
 })
+
+site_nodes = [
+    rule("rule_site_sem_link_quebrado", "Site: nenhum link com # ou para rota inexistente",
+         "Header/Footer so linkam paginas existentes; pagina futura nao tem link; externos em nova aba; garantido por tests/server/site-links.test.ts."),
+    rule("rule_site_contatos_config", "Site: contatos e redes em src/config/site.ts",
+         "E-mail, WhatsApp e redes centralizados; campo vazio nao vira link ('Em breve'); rede sem URL nao aparece no rodape."),
+    rule("rule_site_planos_fonte_unica", "Site: planos publicos com fonte unica",
+         "/precos e alterar-plano (vet e clinica) leem src/config/planos.ts."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in site_nodes if n["id"] not in nodes_ids]
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in site_nodes]
+impl.update({
+    "src_components_footer_footer": ["rule_site_sem_link_quebrado", "rule_site_contatos_config"],
+    "src_config_site": ["rule_site_contatos_config"],
+    "src_app_contato_page": ["rule_site_contatos_config"],
+    "src_config_planos": ["rule_site_planos_fonte_unica"],
+    "src_app_precos_page": ["rule_site_planos_fonte_unica"],
+    "src_app_dashboard_veterinario_alterar_plano_page": ["rule_site_planos_fonte_unica"],
+    "src_app_dashboard_clinica_alterar_plano_page": ["rule_site_planos_fonte_unica"],
+    "tests_server_site_links_test": ["rule_site_sem_link_quebrado"],
+})
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

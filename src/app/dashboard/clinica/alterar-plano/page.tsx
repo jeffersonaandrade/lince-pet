@@ -7,53 +7,8 @@ import { handleApiError, type ErrorState } from "@/utils/errorHandler";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "./alterar-plano.module.css";
 import { AssinaturasService } from "@/services/assinaturas/assinaturas";
-
-const plansMetadata = [
-  {
-    code: "starter",
-    name: "Starter",
-    description: "Conheça o LincePet Clínica",
-    iconPath: "/iconPlans/Plan1.svg",
-    defaultPrice: "R$ 75",
-    buttonText: "Assinar plano",
-    benefits: [
-      "Posição padrão na busca",
-      "Cadastro de 1 Veterinário",
-      "Notificações por e-mail",
-      "QR Code / Link da clínica"
-    ]
-  },
-  {
-    code: "clinic",
-    name: "Clinic",
-    description: "O essencial para sua clínica",
-    iconPath: "/iconPlans/Plan2.svg",
-    defaultPrice: "R$ 149",
-    buttonText: "Assinar plano",
-    benefits: [
-      "Todos os benefícios do plano gratuito",
-      "Até 5 Veterinários na equipe",
-      
-      "Dashboard de métricas nível básico",
-      "Busca prioritária no explorar"
-    ]
-  },
-  {
-    code: "clinic_pro",
-    name: "Clinic Pro",
-    description: "Controle total e destaque máximo",
-    iconPath: "/iconPlans/Plan3.svg",
-    defaultPrice: "R$ 299",
-    buttonText: "Assinar plano",
-    benefits: [
-      "Todos os benefícios dos planos anteriores",
-      "Veterinários ilimitados na equipe",
-      "Topo da categoria de busca",
-      "Dashboard de métricas nível completo",
-      "Suporte prioritário 24/7"
-    ]
-  }
-];
+import { PLANOS_CLINICA } from "@/config/planos";
+const plansMetadata = PLANOS_CLINICA;
 
 function AlterarPlanoContent() {
   const router = useRouter();

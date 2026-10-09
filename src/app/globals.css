@@ -39,33 +39,36 @@ body {
   line-height: 1.6;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+/* Resets em @layer base: CSS sem layer venceria as utilities do Tailwind (padding, cor etc.). */
+@layer base {
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
-  color: var(--text-color);
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+    color: var(--text-color);
+  }
 
-input,
-button,
-select {
-  font-family: var(--font-family);
-  border: none;
-  outline: none;
+  input,
+  button,
+  select {
+    font-family: var(--font-family);
+    border: none;
+    outline: none;
+  }
 }
 
 .main-content {

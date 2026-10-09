@@ -7,42 +7,8 @@ import { handleApiError, type ErrorState } from "@/utils/errorHandler";
 import { useAuth } from "@/contexts/AuthContext";
 import styles from "./alterar-plano.module.css";
 import { AssinaturasService } from "@/services/assinaturas/assinaturas";
-
-
-
-const plansMetadata = [
-  {
-    code: "pro",
-    name: "Pro",
-    description: "Conheça o LincePet",
-    iconPath: "/iconPlans/Plan2.svg",
-    defaultPrice: "R$ 59",
-    buttonText: "Assinar plano",
-    benefits: [
-      "Todos os benefícios do plano gratuito",
-      "Agendamentos ilimitados",
-      "Bloqueio de horário personalizado",
-      "Dashboard de métricas nível básico",
-      "Busca prioritária no explorar",
-      "Teste grátis por 7 dias"
-    ]
-  },
-  {
-    code: "pro_plus",
-    name: "Pro+",
-    description: "Conheça o LincePet",
-    iconPath: "/iconPlans/Plan3.svg",
-    defaultPrice: "R$ 99",
-    buttonText: "Assinar plano",
-    benefits: [
-      "Todos os benefícios dos planos anteriores",
-      "Topo da categoria de busca",
-      "Agendamentos ilimitados",
-      "Dashboard de métricas nível completo",
-      "Teste grátis por 7 dias"
-    ]
-  }
-];
+import { PLANOS_VETERINARIO } from "@/config/planos";
+const plansMetadata = PLANOS_VETERINARIO;
 
 function AlterarPlanoContent() {
   const router = useRouter();

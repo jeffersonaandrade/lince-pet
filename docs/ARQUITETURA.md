@@ -73,6 +73,15 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Lista:** `GET /api/clinicas/professionals` e `GET /api/veterinarios` (clínica) devolvem os veterinários com vínculo `aceito` (`src/server/services/clinica-equipe.ts`).
 - **Remover = desfazer vínculo:** `DELETE /api/clinicas/professionals/:id` e `DELETE /api/veterinarios/:id` apagam só o vínculo com aquele veterinário. A conta, as consultas e o histórico do veterinário permanecem. Sem vínculo: 404.
 
+### Site institucional e links
+
+- **Sem link quebrado:** Header e Footer não têm `href="#"` nem apontam para rota inexistente; página que ainda não existe não ganha link. `tests/server/site-links.test.ts` garante isso.
+- **Contatos centralizados:** e-mail, WhatsApp e redes sociais ficam em `src/config/site.ts`. Campo vazio não vira link (mostra "Em breve"); rede social sem URL não aparece no rodapé.
+- **Links externos** (WhatsApp, redes) abrem em nova aba (`target="_blank" rel="noopener noreferrer"`).
+- **Planos com fonte única:** `/precos` e as telas de alterar plano (vet e clínica) leem `src/config/planos.ts`.
+- **Páginas:** `/sobre`, `/contato`, `/como-funciona`, `/servicos` (especialidades do banco, ISR 1h), `/precos`, `/ajuda` (Central de Ajuda + FAQ), `/seguranca`, `/cookies`. Textos em rascunho até revisão do cliente.
+- **Estilo:** páginas novas em Tailwind (`src/components/Institucional/PaginaInstitucional.tsx`). Os resets globais ficam em `@layer base` no `globals.css`; sem layer, eles venceriam as utilities do Tailwind.
+
 ### Notificações por WhatsApp
 
 - **Número central:** todas as mensagens saem de um único número da Lince Pet, que distribui avisos para tutores, vets e clínicas. Vet e clínica não conectam número próprio.
