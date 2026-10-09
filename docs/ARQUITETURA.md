@@ -79,6 +79,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Sem link quebrado:** Header e Footer não têm `href="#"` nem apontam para rota inexistente; página que ainda não existe não ganha link. `tests/server/site-links.test.ts` garante isso.
 - **Contatos centralizados:** e-mail, WhatsApp e redes sociais ficam em `src/config/site.ts`. Campo vazio não vira link (mostra "Em breve"); rede social sem URL não aparece no rodapé.
 - **Links externos** (WhatsApp, redes) abrem em nova aba (`target="_blank" rel="noopener noreferrer"`).
+- **Ano vigente no copyright:** o rodapé do site (`src/components/Footer/AnoAtual.tsx`, client, para não ficar preso ao ano do build) e os e-mails de consulta (`src/server/emails/*`) mostram sempre o ano atual. `tests/server/site-links.test.ts` falha se houver "© 20xx" fixo em `src`.
 - **Planos com fonte única:** `/precos` e as telas de alterar plano (vet e clínica) leem `src/config/planos.ts`.
 - **Páginas:** `/sobre`, `/contato`, `/como-funciona`, `/servicos` (especialidades do banco, ISR 1h), `/precos`, `/ajuda` (Central de Ajuda + FAQ), `/seguranca`, `/cookies`. Textos em rascunho até revisão do cliente.
 - **Estilo:** páginas novas em Tailwind (`src/components/Institucional/PaginaInstitucional.tsx`). Os resets globais ficam em `@layer base` no `globals.css`; sem layer, eles venceriam as utilities do Tailwind.

@@ -66,7 +66,7 @@ prontuario_nodes = [
     rule("rule_prontuario_autor", "Registro clinico: so o vet da consulta escreve",
          "GET/PUT /veterinarios/agendamentos/:id/registro; outro vet 404; mesma janela da anotacao (podeAnotar): a partir do inicio, editavel depois; cancelada sem registro."),
     rule("rule_prontuario_acesso", "Prontuario visivel ao tutor dono e a vets/clinicas com consulta do pet",
-         "GET /pets/:id/prontuario: tutor dono ou vet/clinica com consulta nao cancelada (inclusive futura) veem o prontuario inteiro, com registros de outros profissionais; demais 404."),
+         "GET /pets/:id/prontuario: tutor dono ou vet/clinica com consulta nao cancelada (inclusive futura, confirmado pela dona do produto) veem o prontuario inteiro, com registros de outros profissionais; demais 404."),
     rule("rule_prontuario_tutor_ve_tudo", "Tutor ve todos os registros clinicos do pet",
          "Sem marcacao de compartilhamento: todo registro clinico aparece para o tutor dono."),
     rule("rule_prontuario_sem_nota_privada", "Prontuario nunca inclui a anotacao privada do vet",
@@ -127,8 +127,8 @@ whatsapp_nodes = [
          "Confirmacao (tutor) e novo agendamento (profissional) na criacao; lembretes 24h/2h (tutor); cancelamento pelo tutor (profissional); cancelamento por bloqueio (tutor); remarcacao (ambos). Profissional = celular do vet ou WhatsApp da clinica."),
     rule("rule_whatsapp_regra_plano", "WhatsApp: so com plano do vet ou da clinica",
          "Envia se o vet OU a clinica da consulta tiver a feature whatsapp_notifications; senao registra ignorado/sem_plano."),
-    rule("rule_whatsapp_opt_out", "WhatsApp: opt-out do tutor no perfil (padrao ligado)",
-         "tutores.whatsapp_opt_in em Perfil > Notificacoes; desligado bloqueia so o tutor; e-mail/in-app seguem; profissional continua recebendo."),
+    rule("rule_whatsapp_opt_out", "WhatsApp: opt-out do tutor e do vet no perfil (padrao ligado)",
+         "users.notificar_whatsapp em Perfil > Avisos de consulta (tutor e vet); desligado bloqueia so quem desligou, inclusive pelo WhatsApp da clinica; a outra parte continua recebendo."),
     rule("rule_whatsapp_lembretes_24h_2h", "WhatsApp: lembretes 24h e 2h via cron protegido",
          "GET /api/cron/lembretes-whatsapp com Bearer CRON_SECRET a cada 15 min; janela 24h (24h a 2h antes) e 2h (ate o inicio); consulta criada apos a janela abrir pula aquele lembrete."),
     rule("rule_whatsapp_idempotencia", "WhatsApp: envio idempotente e registrado",
@@ -155,7 +155,7 @@ impl.update({
     "src_app_api_agendamentos_route": ["rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia"],
     "src_app_api_agendamentos_id_cancelar_route": ["rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia"],
     "src_app_api_agendamentos_id_reagendar_route": ["rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios"],
-    "src_app_api_tutor_profile_route": ["rule_whatsapp_opt_out"],
+    "src_app_api_me_notificacoes_route": ["rule_whatsapp_opt_out"],
     "src_app_dashboard_tutor_perfil_page": ["rule_whatsapp_opt_out"],
     "tests_server_whatsapp_test": whatsapp_rules,
 })
@@ -184,19 +184,27 @@ site_nodes = [
          "E-mail, WhatsApp e redes centralizados; campo vazio nao vira link ('Em breve'); rede sem URL nao aparece no rodape."),
     rule("rule_site_planos_fonte_unica", "Site: planos publicos com fonte unica",
          "/precos e alterar-plano (vet e clinica) leem src/config/planos.ts."),
+    rule("rule_site_ano_vigente", "Site e e-mails: copyright sempre com o ano vigente",
+         "Footer usa AnoAtual (client, nao fica preso ao ano do build); templates de e-mail usam new Date().getFullYear(); teste falha com '(c) 20xx' fixo em src."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in site_nodes if n["id"] not in nodes_ids]
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in site_nodes]
 impl.update({
-    "src_components_footer_footer": ["rule_site_sem_link_quebrado", "rule_site_contatos_config"],
+    "src_components_footer_footer": ["rule_site_sem_link_quebrado", "rule_site_contatos_config", "rule_site_ano_vigente"],
+    "src_components_footer_anoatual": ["rule_site_ano_vigente"],
+    "src_server_emails_appointment_confirmation": ["rule_site_ano_vigente"],
+    "src_server_emails_new_appointment_vet": ["rule_site_ano_vigente"],
+    "src_server_emails_appointment_rescheduled": ["rule_site_ano_vigente"],
+    "src_server_emails_appointment_rescheduled_vet": ["rule_site_ano_vigente"],
+    "src_server_emails_appointment_cancellation": ["rule_site_ano_vigente"],
     "src_config_site": ["rule_site_contatos_config"],
     "src_app_contato_page": ["rule_site_contatos_config"],
     "src_config_planos": ["rule_site_planos_fonte_unica"],
     "src_app_precos_page": ["rule_site_planos_fonte_unica"],
     "src_app_dashboard_veterinario_alterar_plano_page": ["rule_site_planos_fonte_unica"],
     "src_app_dashboard_clinica_alterar_plano_page": ["rule_site_planos_fonte_unica"],
-    "tests_server_site_links_test": ["rule_site_sem_link_quebrado"],
+    "tests_server_site_links_test": ["rule_site_sem_link_quebrado", "rule_site_ano_vigente"],
 })
 seed_nodes = [
     rule("rule_seed_banco_vazio", "Seed Prisma popula catalogo de um banco vazio",
@@ -216,11 +224,52 @@ impl.update({
     "src_data_especialidades": ["rule_seed_banco_vazio"],
     "tests_server_catalogo_seed_test": ["rule_seed_banco_vazio", "rule_seed_planos_assinatura"],
 })
+canais_nodes = [
+    rule("rule_canais_por_usuario", "Canais de aviso: tutor e vet escolhem e-mail e WhatsApp",
+         "GET/PUT /api/me/notificacoes (users.notificar_email, users.notificar_whatsapp, padrao ligado); aviso so sai pelos canais ligados; in-app (sino) sempre ligado."),
+    rule("rule_canais_email_codigo_no_painel", "E-mail desligavel; codigo de inicio no painel do tutor",
+         "Desligar e-mail corta todos os e-mails de consulta; o codigo de inicio aparece no painel (codigo_inicio em GET /agendamentos) em consultas futuras nao canceladas e nao iniciadas."),
+    rule("rule_google_agenda_conexao_e_canal", "Google Agenda: canal ativo = conta conectada",
+         "Sem interruptor separado; tutor e vet conectam a propria conta via /api/google/calendar/auth; vet precisa de plano Pro (trava no front)."),
+    rule("rule_google_agenda_sincroniza_evento", "Google Agenda: criar/remarcar/cancelar atualiza o evento",
+         "Criar insere; remarcar faz PATCH (404/410 cria outro); cancelar pelo tutor ou por bloqueio apaga; id em agendamento_google_eventos; falha nunca derruba o fluxo; 401/403 desliga a integracao."),
+    rule("rule_google_agenda_desconectar", "Google Agenda: desconectar para de criar eventos sem apagar historico",
+         "POST /api/google/calendar/disconnect revoga o token (melhor esforco) e limpa credenciais; consultas da plataforma e eventos ja criados permanecem."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in canais_nodes if n["id"] not in nodes_ids]
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in canais_nodes]
+new_edges += [edge("rule_canais_por_usuario", "rule_whatsapp_opt_out", "references")]
+impl.update({
+    "src_server_services_canais_notificacao": ["rule_canais_por_usuario", "rule_google_agenda_conexao_e_canal"],
+    "src_app_api_me_notificacoes_route": ["rule_whatsapp_opt_out", "rule_canais_por_usuario"],
+    "src_components_preferenciasnotificacao_preferenciasnotificacao": [
+        "rule_canais_por_usuario", "rule_google_agenda_conexao_e_canal", "rule_google_agenda_desconectar",
+    ],
+    "src_server_services_google_calendar": ["rule_google_agenda_sincroniza_evento", "rule_google_agenda_desconectar"],
+    "src_app_api_google_calendar_disconnect_route": ["rule_google_agenda_desconectar"],
+    "src_app_api_agendamentos_route": [
+        "rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia",
+        "rule_canais_por_usuario", "rule_canais_email_codigo_no_painel", "rule_google_agenda_sincroniza_evento",
+    ],
+    "src_app_api_agendamentos_id_cancelar_route": [
+        "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia", "rule_canais_por_usuario",
+        "rule_google_agenda_sincroniza_evento",
+    ],
+    "src_app_api_agendamentos_id_reagendar_route": [
+        "rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios", "rule_canais_por_usuario",
+        "rule_google_agenda_sincroniza_evento",
+    ],
+    "src_app_dashboard_tutor_appointmentitem": ["rule_canais_email_codigo_no_painel"],
+    "tests_server_google_agenda_test": [n["id"] for n in canais_nodes],
+})
+new_edges += [edge("src_server_services_bloqueios", "rule_google_agenda_sincroniza_evento", "implements")]
 
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 
-nodes = doc_nodes + [n for n in new_nodes if n["id"] not in doc_ids]
+new_ids = {n["id"] for n in new_nodes}
+nodes = [n for n in doc_nodes if n["id"] not in new_ids] + new_nodes
 edge_keys = {(e["source"], e["target"], e["relation"]) for e in doc_edges}
 edges = doc_edges + [e for e in new_edges if (e["source"], e["target"], e["relation"]) not in edge_keys]
 hyperedges = [h for h in g.get("hyperedges", []) if h.get("source_file") == DOC]

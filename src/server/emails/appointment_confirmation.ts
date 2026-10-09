@@ -309,7 +309,7 @@ ${
 
       <div class="footer">
         <p>
-          © 2025 Lince Pet. Todos os direitos reservados.
+          © ${new Date().getFullYear()} Lince Pet. Todos os direitos reservados.
         </p>
         <p>
           Este é um email automático, por favor não responda.

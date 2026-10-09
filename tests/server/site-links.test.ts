@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const raiz = path.resolve(__dirname, '../..')
@@ -23,6 +23,14 @@ describe('links do Header e do Footer', () => {
     const links = linksInternos(ler(arquivo))
     expect(links.length).toBeGreaterThan(0)
     expect(links.filter((rota) => !paginaExiste(rota))).toEqual([])
+  })
+
+  it('nenhum © com ano fixo no código (site e e-mails usam o ano vigente)', () => {
+    const fontes = readdirSync(path.join(raiz, 'src'), { recursive: true, encoding: 'utf8' }).filter((f) =>
+      /\.tsx?$/.test(f)
+    )
+    expect(fontes.length).toBeGreaterThan(0)
+    expect(fontes.filter((f) => /©\s*20\d{2}/.test(ler(path.join('src', f))))).toEqual([])
   })
 
   it('Footer cobre as páginas institucionais', () => {

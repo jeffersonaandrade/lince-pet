@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SITE } from "@/config/site";
+import { AnoAtual } from "./AnoAtual";
 import styles from "./footer.module.css";
 
 const GRUPOS = [
@@ -75,7 +76,7 @@ export default function Footer() {
 
         <div className={styles.footerBottom}>
           <p className={styles.copyright}>
-            © {new Date().getFullYear()} Lince Pet. Todos os direitos reservados.
+            © <AnoAtual /> Lince Pet. Todos os direitos reservados.
           </p>
           {REDES.length > 0 && (
             <div className={styles.socialLinks}>
