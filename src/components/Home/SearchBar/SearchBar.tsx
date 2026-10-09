@@ -1,6 +1,6 @@
 "use client";
 import { Search, Stethoscope, MapPin, Shield } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./searchbar.module.css";
 import SearchSection from "../../ui/SearchSection";
@@ -15,9 +15,10 @@ interface UserLocation {
 
 interface SearchBarProps {
   showCatImage?: boolean;
+  extra?: ReactNode;
 }
 
-export default function SearchBar({ showCatImage = false }: SearchBarProps) {
+export default function SearchBar({ showCatImage = false, extra = null }: SearchBarProps) {
   const router = useRouter();
 
   const [searchValue, setSearchValue] = useState("");
@@ -104,7 +105,7 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
     e.preventDefault();
     const novos = new URLSearchParams();
     // Mantém a aba e o tipo de serviço escolhidos no /explorar (ex.: profissionais pet > passeador).
-    for (const chave of ["tab", "tipo"]) {
+    for (const chave of ["tab", "tipo", "ordem", "direcao"]) {
       const valor = searchParams.get(chave);
       if (valor) novos.set(chave, valor);
     }
@@ -182,7 +183,10 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
               onDropdownStateChange={() => { }}
               parentRef={lastSectionRef}
             />
+          </div>
 
+          <div className={styles.barActions}>
+            {extra}
             <button type="submit" className={styles.searchButton}>
               <Search size={20} />
             </button>

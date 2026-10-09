@@ -127,31 +127,59 @@
 }
 
 .veterinariosList {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
+  align-items: stretch;
 }
 
 .veterinarioCard {
   background: white;
   border: var(--border);
   border-radius: 12px;
-  padding: 20px;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  padding: 16px;
+  min-width: 0;
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   cursor: pointer;
+}
+
+.veterinarioCard:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: 0 12px 28px rgba(var(--primary-rgb), 0.18);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veterinarioCard {
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .veterinarioCard:hover {
+    transform: none;
+  }
 }
 
 .cardContent {
   display: flex;
   gap: 24px;
-  align-items: flex-start;
+  align-items: stretch;
+  height: 100%;
 }
 
 .leftColumn {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-width: min(650px, 72vw);
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.secondRow {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .rightColumn {
@@ -183,18 +211,22 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1;
 }
 
 .addressSection {
   display: flex;
   align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: auto;
 }
 
 .addressText {
   font-size: 14px;
   color: var(--text-muted);
   line-height: 1.4;
+  min-width: 0;
 }
 
 .profileImage {
@@ -334,6 +366,10 @@
   line-height: 1.5;
   color: var(--text-muted);
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .specialties {
@@ -365,6 +401,24 @@
   font-size: 13px;
   color: var(--text-muted);
   font-weight: 500;
+}
+
+.planos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+
+.planoTag {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border: 1px solid var(--primary);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .expandButton {
@@ -733,6 +787,7 @@
 } */
 
 .noResults {
+  grid-column: 1 / -1;
   text-align: center;
   padding: 48px 24px;
   color: var(--text-muted);
@@ -1044,6 +1099,10 @@
 }
 
 @media (max-width: 768px) {
+  .veterinariosList {
+    grid-template-columns: 1fr;
+  }
+
   .container {
     padding: 16px;
   }
@@ -1132,7 +1191,8 @@
     justify-content: center;
   }
 
-  .specialties {
+  .specialties,
+  .planos {
     justify-content: center;
   }
 

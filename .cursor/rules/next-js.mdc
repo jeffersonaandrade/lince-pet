@@ -8,6 +8,7 @@ alwaysApply: false
 >
 > **Ajustes do projeto Lince Pet (prevalecem sobre o texto abaixo):**
 > - Estilizacao: seguir a regra do usuario (Tailwind) para codigo novo; nao reescrever CSS Modules existentes sem pedido.
+> - `page.tsx` sem `'use client'`, componentes da rota e fluxo ate `src/services`: seguir `.cursor/rules/frontend.mdc`. Ela prevalece sobre a organizacao generica abaixo quando houver conflito.
 > - Backend: Route Handlers em src/app/api/** usam route()/ApiRequest/json() de src/server/http.ts e requireUser() de src/server/auth/session.ts; manter o contrato herdado do Adonis (mesmo path, JSON, status e formato de erro VineJS). Logica de dominio em src/server/services/*, validators em src/server/validators/* (todos com import 'server-only').
 > - Auth: JWT em cookie httpOnly 'auth_token' (nunca localStorage); o frontend chama '/api' na mesma origem com withCredentials.
 > - Logica de servidor fica em src/server/** com import 'server-only'.

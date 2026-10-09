@@ -333,8 +333,8 @@ plano_saude_nodes = [
          "GET /api/veterinarios/search?plano= e GET /api/clinicas?plano= filtram veterinario_planos e clinica_planos pelo nome, sem diferenciar maiusculas."),
     rule("rule_plano_saude_sem_exemplo", "Busca sem resultado nao mostra profissional ficticio",
          "Se ninguem aceita o plano, /explorar fica vazio."),
-    rule("rule_plano_saude_perfil", "Perfil mostra so os planos ligados ao cadastro",
-         "/veterinario/[id] e /clinicas/[id] exibem os planos de veterinario_planos e clinica_planos daquele cadastro."),
+    rule("rule_plano_saude_perfil", "Perfil e card da busca mostram so os planos ligados ao cadastro",
+         "/veterinario/[id] e /clinicas/[id] exibem os planos ligados ao cadastro. O card do veterinario em /explorar mostra os mesmos nomes de veterinario_planos."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in plano_saude_nodes if n["id"] not in nodes_ids]
@@ -348,10 +348,23 @@ impl.update({
     "src_app_api_veterinarios_search_route": ["rule_plano_saude_so_quem_aceita"],
     "src_server_services_veterinarios": ["rule_plano_saude_so_quem_aceita"],
     "src_app_api_clinicas_route": ["rule_plano_saude_so_quem_aceita"],
-    "src_app_explorar_page": ["rule_plano_saude_sem_exemplo", "rule_plano_saude_so_quem_aceita"],
+    "src_app_explorar_page": ["rule_plano_saude_sem_exemplo", "rule_plano_saude_so_quem_aceita", "rule_plano_saude_perfil"],
     "src_app_veterinario_id_page": ["rule_plano_saude_perfil"],
     "src_app_clinicas_id_page": ["rule_plano_saude_perfil"],
     "tests_server_busca_plano_saude_test": ["rule_plano_saude_so_quem_aceita"],
+})
+
+ordenacao_nodes = [
+    rule("rule_explorar_ordenacao", "Explorar ordena a lista por nome ou nota",
+         "O icone de filtro em /explorar ordena a aba atual (veterinarios, clinicas, profissionais) por nome ou nota, crescente ou decrescente. Parametros ordem e direcao na URL; sem eles a ordem e a da API. Empate de nota desempata pelo nome; nota ausente vale zero. Nao dispara nova busca."),
+]
+new_nodes += [n for n in ordenacao_nodes if n["id"] not in {x["id"] for x in new_nodes}]
+new_edges += [edge("concept_regras_de_negocio", "rule_explorar_ordenacao")]
+impl.update({
+    "src_lib_ordenacao": ["rule_explorar_ordenacao"],
+    "src_components_home_searchbar_ordenacaolista": ["rule_explorar_ordenacao"],
+    "src_app_explorar_page": impl.get("src_app_explorar_page", []) + ["rule_explorar_ordenacao"],
+    "src_components_prestador_listaprofissionais": impl.get("src_components_prestador_listaprofissionais", []) + ["rule_explorar_ordenacao"],
 })
 
 for code_id, rs in impl.items():

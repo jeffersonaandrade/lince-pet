@@ -100,7 +100,8 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Mesma lista do cadastro:** o filtro "Plano de Saúde" em `/explorar` lista os nomes da tabela `planos` (`GET /api/planos`), os mesmos que veterinário e clínica marcam no onboarding e no perfil. Não há lista fixa à parte.
 - **Só quem aceita:** `GET /api/veterinarios/search?plano=` e `GET /api/clinicas?plano=` devolvem apenas quem tem aquele nome em `veterinario_planos` ou `clinica_planos`. A comparação não diferencia maiúsculas.
 - **Sem exemplo:** se ninguém aceita o plano, `/explorar` fica vazio. Não entra profissional fictício.
-- **Perfil:** `/veterinario/[id]` e `/clinicas/[id]` mostram só os planos ligados àquele cadastro.
+- **Perfil e card da busca:** `/veterinario/[id]`, `/clinicas/[id]` e o card do veterinário em `/explorar` mostram só os planos ligados àquele cadastro.
+- **Ordenação:** o ícone de filtro na barra de `/explorar` ordena a aba atual (veterinários, clínicas e profissionais pet) por nome ou por nota, crescente ou decrescente. A ordem fica na URL (`ordem=nome|nota`, `direcao=asc|desc`) e não dispara nova busca. Sem esses parâmetros, a lista permanece na ordem da API. Empate de nota desempata pelo nome. Nota ausente conta como zero.
 
 ### Notificações por WhatsApp
 

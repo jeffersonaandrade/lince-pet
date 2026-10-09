@@ -11,6 +11,8 @@ import styles from "./explorar.module.css";
 import { searchClinicas } from "../../services/clinicas/clinicas";
 import Skeleton from "../../components/ui/Skeleton/Skeleton";
 import ListaProfissionais from "../../components/Prestador/ListaProfissionais";
+import OrdenacaoLista from "../../components/Home/SearchBar/OrdenacaoLista";
+import { lerOrdenacao, ordenarLista } from "../../lib/ordenacao";
 
 type Aba = "veterinarios" | "clinicas" | "profissionais";
 
@@ -32,6 +34,7 @@ interface Veterinario {
   preco: number;
   experiencia: number;
   clinica?: string | null;
+  planos?: { id: string; name: string }[];
   availability: {
     [key: string]: string[];
   };
@@ -130,7 +133,14 @@ function ExplorarContent() {
 
   useEffect(() => {
     loadData();
-  }, [searchParams]);
+    // Ordenação (ordem/direcao) é local e não deve buscar de novo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    searchParams.get("search"),
+    searchParams.get("specialty"),
+    searchParams.get("location"),
+    searchParams.get("plans"),
+  ]);
 
   useEffect(() => {
     setSearchTerm(searchParams.get("search") || "");
@@ -173,6 +183,20 @@ function ExplorarContent() {
 
     return matchesSearch && matchesSpecialty;
   });
+
+  const { criterio: criterioOrdenacao, direcao: direcaoOrdenacao } = lerOrdenacao(searchParams);
+  const veterinariosVisiveis = criterioOrdenacao
+    ? ordenarLista(filteredVeterinarios, criterioOrdenacao, direcaoOrdenacao, (vet) => ({
+        nome: vet.nome,
+        nota: Number(vet.rating) || 0,
+      }))
+    : filteredVeterinarios;
+  const clinicasVisiveis = criterioOrdenacao
+    ? ordenarLista(filteredClinics, criterioOrdenacao, direcaoOrdenacao, (clinic) => ({
+        nome: clinic.nomeClinica ?? "",
+        nota: Number(clinic.rating) || 0,
+      }))
+    : filteredClinics;
 
   const openInMaps = (address: string) => {
     const encodedAddress = encodeURIComponent(address);
@@ -370,7 +394,7 @@ function ExplorarContent() {
           <p className={styles.subtitle}>
             Encontre veterinários especializados perto de você
           </p>
-          <SearchBar />
+          <SearchBar extra={<OrdenacaoLista />} />
         </div>
         <div className={styles.error}>
           <h3>Ops! Algo deu errado</h3>
@@ -393,7 +417,7 @@ function ExplorarContent() {
           <div className={styles.cardContent}>
             <div className={styles.leftColumn}>
               <div className={styles.firstRow}>
-                <Skeleton shape="circle" width={120} height={120} />
+                <Skeleton shape="circle" width={88} height={88} />
                 <div className={styles.infoColumn}>
                   <div className={styles.nameSection}>
                     <Skeleton width={200} height={24} />
@@ -436,7 +460,7 @@ function ExplorarContent() {
         <p className={styles.subtitle}>
           Encontre veterinários especializados perto de você
         </p>
-        <SearchBar />
+        <SearchBar extra={<OrdenacaoLista />} />
 
         <div className={styles.tabsContainer}>
           <button
@@ -497,7 +521,7 @@ function ExplorarContent() {
 
       {loading ? renderSkeletons() : activeTab === 'veterinarios' ? (
         <div className={styles.veterinariosList}>
-          {filteredVeterinarios.map((vet) => (
+          {veterinariosVisiveis.map((vet) => (
             <div
               key={vet.id}
               className={styles.veterinarioCard}
@@ -509,7 +533,7 @@ function ExplorarContent() {
                     <UserImage
                       src={vet.fotoUrl || vet.image}
                       alt={`Dr(a). ${vet.nome}`}
-                      size={120}
+                      size={88}
                     />
 
                     <div className={styles.infoColumn}>
@@ -567,6 +591,16 @@ function ExplorarContent() {
                         )}
                       </div>
 
+                      {vet.planos && vet.planos.length > 0 ? (
+                        <div className={styles.planos}>
+                          {vet.planos.map((plano) => (
+                            <span key={plano.id} className={styles.planoTag}>
+                              {plano.name}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+
                       <div className={styles.addressSection}>
                         <span className={styles.addressText}>{vet.endereco}</span>
                         <button
@@ -595,7 +629,7 @@ function ExplorarContent() {
             </div>
           ))}
 
-          {filteredVeterinarios.length === 0 && (
+          {veterinariosVisiveis.length === 0 && (
             <div className={styles.noResults}>
               <h3>Nenhum veterinário encontrado</h3>
               <p>Tente outro plano, termo ou cidade.</p>
@@ -612,7 +646,7 @@ function ExplorarContent() {
         </div>
       ) : (
         <div className={styles.veterinariosList}>
-          {filteredClinics.map((clinic) => (
+          {clinicasVisiveis.map((clinic) => (
             <div
               key={clinic.id}
               className={styles.veterinarioCard}
@@ -625,7 +659,7 @@ function ExplorarContent() {
                     <UserImage
                       src={clinic.fotoPerfil || undefined}
                       alt={clinic.nomeClinica}
-                      size={120}
+                      size={88}
                     />
 
                     <div className={styles.infoColumn}>
@@ -704,7 +738,7 @@ function ExplorarContent() {
               </div>
             </div>
           ))}
-          {filteredClinics.length === 0 && (
+          {clinicasVisiveis.length === 0 && (
             <div className={styles.noResults}>
               <h3>Nenhuma clínica encontrada</h3>
               <p>Tente outro plano, termo ou cidade.</p>
