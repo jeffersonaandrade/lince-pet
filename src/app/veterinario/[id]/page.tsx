@@ -128,6 +128,7 @@ export default function VeterinarioProfile() {
   const [customDate, setCustomDate] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
+  const [diaBloqueado, setDiaBloqueado] = useState(false);
   const [carregandoDisponibilidade, setCarregandoDisponibilidade] = useState(false);
   const [showAllSlots, setShowAllSlots] = useState(false);
 
@@ -436,8 +437,10 @@ export default function VeterinarioProfile() {
         setCarregandoDisponibilidade(true);
         const resp = await AgendamentosService.verificarDisponibilidade(veterinario.id, data);
         setHorariosOcupados(resp.horarios_ocupados || []);
+        setDiaBloqueado(Boolean(resp.dia_bloqueado));
       } catch (e) {
         setHorariosOcupados([]);
+        setDiaBloqueado(false);
       } finally {
         setCarregandoDisponibilidade(false);
       }
@@ -447,10 +450,10 @@ export default function VeterinarioProfile() {
   }, [veterinario?.id, selectedDay]);
 
   useEffect(() => {
-    if (selectedTimeSlot && horariosOcupados.includes(selectedTimeSlot)) {
+    if (selectedTimeSlot && (diaBloqueado || horariosOcupados.includes(selectedTimeSlot))) {
       setSelectedTimeSlot(null);
     }
-  }, [horariosOcupados]);
+  }, [horariosOcupados, diaBloqueado]);
 
   // Actions
   const openInMaps = (address: string) => {
@@ -898,6 +901,8 @@ export default function VeterinarioProfile() {
                           <div className={styles.timeSlots}>
                             {carregandoDisponibilidade ? (
                               <p>Carregando...</p>
+                            ) : diaBloqueado ? (
+                              <p className={styles.noAvailability}>Agenda indisponível nesta data</p>
                             ) : generateTimeSlots().length > 0 ? (
                               <>
                                 {generateTimeSlots()

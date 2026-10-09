@@ -23,6 +23,8 @@ interface CustomCalendarProps {
   view?: 'month' | 'week' | 'day';
   onViewChange?: (view: 'month' | 'week' | 'day') => void;
   statusMeta?: (status?: string) => { color: string; label: string; icon: any };
+  /** Datas (YYYY-MM-DD) com bloqueio de agenda: dia inteiro ou só alguns horários. */
+  blockedDays?: Record<string, 'dia' | 'parcial'>;
 }
 
 const CustomCalendar: React.FC<CustomCalendarProps> = ({
@@ -34,7 +36,14 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   view: externalView = 'month',
   onViewChange,
   statusMeta,
+  blockedDays,
 }) => {
+  const blockedLabel = (day: Date) => {
+    const kind = blockedDays?.[moment(day).format('YYYY-MM-DD')];
+    if (!kind) return null;
+    return kind === 'dia' ? 'Agenda bloqueada' : 'Horários bloqueados';
+  };
+
   const [currentDate, setCurrentDate] = useState(externalDate || new Date());
   const [view, setView] = useState<'month' | 'week' | 'day'>(externalView);
 
@@ -205,6 +214,13 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                     <span className={styles.moreEvents}>+{dayEvents.length - 3}</span>
                   )}
                 </div>
+                {blockedLabel(day) && (
+                  <span
+                    className={`mt-1 block h-1 w-full rounded-full ${blockedDays?.[moment(day).format('YYYY-MM-DD')] === 'dia' ? 'bg-slate-500' : 'bg-slate-300'}`}
+                    title={blockedLabel(day)!}
+                    aria-label={blockedLabel(day)!}
+                  />
+                )}
               </div>
             );
           })}
@@ -224,6 +240,11 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
                   </span>
                 </div>
                 <div className={styles.agendaEvents}>
+                  {blockedLabel(day) && (
+                    <div className="mb-1 rounded-md bg-slate-200 px-2 py-1 text-xs font-semibold text-slate-600">
+                      {blockedLabel(day)}
+                    </div>
+                  )}
                   {dayEvents.length > 0 ? (
                     dayEvents.map((event) => {
                       const meta = statusMeta ? statusMeta(event.resource?.status) : { color: '#e67e22' };

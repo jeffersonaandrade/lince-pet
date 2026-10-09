@@ -45,6 +45,17 @@ export const inAppNotifications = {
       `Dr(a). ${p.veterinarioNome} confirmou sua consulta de ${p.dataConsulta} às ${p.horarioConsulta}.`,
       { agendamentoId: p.agendamentoId }),
 
+  notifyAppointmentCancelledByAgendaBlockToTutor: (p: {
+    tutorUserId: string
+    veterinarioNome: string
+    dataConsulta: string
+    horarioConsulta: string
+    agendamentoId: string
+  }) =>
+    create(p.tutorUserId, 'AGENDAMENTO_CANCELADO', 'Consulta cancelada',
+      `Dr(a). ${p.veterinarioNome} bloqueou a agenda e sua consulta de ${p.dataConsulta} às ${p.horarioConsulta} foi cancelada. Agende um novo horário.`,
+      { agendamentoId: p.agendamentoId }),
+
   notifyAppointmentCompletedToTutor: (p: { tutorUserId: string; veterinarioNome: string; agendamentoId: string }) =>
     create(p.tutorUserId, 'AGENDAMENTO_CONCLUIDO', 'Sua consulta terminou!',
       `O atendimento com Dr(a). ${p.veterinarioNome} foi concluído. O que achou? Deixe sua avaliação!`,

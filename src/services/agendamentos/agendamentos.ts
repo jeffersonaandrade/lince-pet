@@ -61,7 +61,10 @@ export interface ListaAgendamentosResponse {
 
 export interface DisponibilidadeResponse {
   data: string;
+  /** Inclui horários com consulta e horários bloqueados pelo profissional. */
   horarios_ocupados: string[];
+  horarios_bloqueados?: string[];
+  dia_bloqueado?: boolean;
 }
 
 /**

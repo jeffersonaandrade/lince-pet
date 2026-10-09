@@ -17,6 +17,11 @@ import { AssinaturasService } from "@/services/assinaturas/assinaturas";
 import Link from "next/link";
 import ShareProfileButton from "@/components/ShareProfileButton/ShareProfileButton";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
+import TutorContact from "@/components/TutorContact/TutorContact";
+import BloqueiosLista from "@/components/BloqueioAgenda/BloqueiosLista";
+import AnotacaoPrivada from "@/components/AnotacaoPrivada/AnotacaoPrivada";
+import HistoricoAnotacoes from "@/components/AnotacaoPrivada/HistoricoAnotacoes";
+import { mapearDiasBloqueados, type BloqueioScope } from "@/services/veterinarios/bloqueios";
 import Image from "next/image";
 import { formatDateToISO } from "@/utils/formatters";
 import LottieLoading from "@/components/ui/LottieLoading/LottieLoading";
@@ -42,6 +47,11 @@ const PawIcon = ({ size = 14, className = "" }: { size?: number; className?: str
   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="#e67e22" d="M9.5 22q-1.475 0-2.488-1.012T6 18.5q0-.225.063-.35t-.013-.2t-.2-.012T5.5 18q-1.475 0-2.488-1.012T2 14.5t1.013-2.488T5.5 11q.575 0 1.05.15t.9.45l4.15-4.15q-.3-.425-.45-.9T11 5.5q0-1.475 1.013-2.488T14.5 2t2.488 1.013T18 5.5q0 .225-.062.35t.012.2t.2.013T18.5 6q1.475 0 2.488 1.013T22 9.5t-1.012 2.488T18.5 13q-.575 0-1.05-.15t-.9-.45l-4.15 4.15q.3.425.45.9T13 18.5q0 1.475-1.012 2.488T9.5 22m0-2q.65 0 1.075-.425T11 18.5q0-.225-.062-.437t-.188-.413q-.425-.6-.35-1.287t.6-1.213L15.15 11q.525-.525 1.213-.6t1.287.35q.2.125.413.188T18.5 11q.65 0 1.075-.425T20 9.5t-.425-1.075T18.5 8q-.875 0-1.225-.088t-.725-.462t-.462-.725T16 5.5q0-.65-.425-1.075T14.5 4t-1.075.425T13 5.5q0 .275.05.463t.2.387q.425.6.35 1.288T13 8.85L8.85 13q-.525.525-1.213.6t-1.287-.35q-.2-.125-.412-.187T5.5 13q-.65 0-1.075.425T4 14.5t.425 1.075T5.5 16q.875 0 1.225.088t.725.462t.462.725T8 18.5q0 .65.425 1.075T9.5 20m2.5-8" /></svg>
 );
 
+const BLOQUEIO_SCOPE_VET: BloqueioScope = { tipo: "veterinario" };
+
+/** Anotação privada liberada a partir do início do atendimento (status normalizados, sem acento). */
+const STATUS_COM_ANOTACAO = ["em andamento", "emandamento", "realizado", "concluido", "concluida", "finalizado"];
+
 // Interface para os eventos do calendário
 interface CalendarEvent {
   id: number;
@@ -51,6 +61,8 @@ interface CalendarEvent {
   resource?: {
     cliente: string;
     clienteSobrenome?: string;
+    tutorTelefone?: string | null;
+    tutorEmail?: string | null;
     pet: string;
     petRaca?: string;
     petPorte?: string;
@@ -73,6 +85,8 @@ interface ProximaConsulta {
   observacoes?: string;
   cliente: string;
   clienteSobrenome?: string;
+  tutorTelefone?: string | null;
+  tutorEmail?: string | null;
   pet: string;
   petEspecie?: string;
   petRaca?: string;
@@ -181,6 +195,13 @@ export default function VeterinarioDashboard() {
     }>
   >([]);
   const [vetEnderecos, setVetEnderecos] = useState<VetEndereco[]>([]);
+  const locaisDoVet = useMemo(
+    () =>
+      vetEnderecos.map((e) =>
+        [e.nomeClinica || "Consultório", [e.rua, e.numero].filter(Boolean).join(", ")].filter(Boolean).join(" - ")
+      ),
+    [vetEnderecos]
+  );
 
   // Informações do perfil do veterinário para o topo
   const [vetId, setVetId] = useState<number | string | null>(null);
@@ -196,6 +217,7 @@ export default function VeterinarioDashboard() {
 
   // Estados para dados reais
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [diasBloqueados, setDiasBloqueados] = useState<Record<string, "dia" | "parcial">>({});
   const [dashboardData, setDashboardData] = useState<DashboardData>({
     agendamentosHoje: 0,
     agendamentosSemana: 0,
@@ -830,8 +852,22 @@ export default function VeterinarioDashboard() {
                     carregarConsultasPorData(date);
                   }}
                   statusMeta={statusMeta}
+                  blockedDays={diasBloqueados}
                 />
               </div>
+            </div>
+
+            <div className="mt-4">
+              <BloqueiosLista
+                scope={BLOQUEIO_SCOPE_VET}
+                defaultDate={moment(selectedDate).format("YYYY-MM-DD")}
+                onChange={(bloqueios) => setDiasBloqueados(mapearDiasBloqueados(bloqueios))}
+                onAppointmentsCancelled={() => {
+                  carregarEstatisticas();
+                  carregarConsultasPorData(selectedDate);
+                  carregarEventosCalendario(currentDate);
+                }}
+              />
             </div>
 
             {/* Próximas Consultas */}
@@ -966,6 +1002,8 @@ export default function VeterinarioDashboard() {
                           resource: {
                             cliente: consulta.cliente,
                             clienteSobrenome: consulta.clienteSobrenome,
+                            tutorTelefone: consulta.tutorTelefone,
+                            tutorEmail: consulta.tutorEmail,
                             pet: consulta.pet,
                             petRaca: consulta.petRaca,
                             petPorte: consulta.petPorte,
@@ -1286,15 +1324,12 @@ export default function VeterinarioDashboard() {
                 </div>
 
                 <div className={styles.modalGrid}>
-                  <div className={styles.infoCardSmall}>
-                    <UserIcon size={16} className={styles.infoCardIcon} />
-                    <div>
-                      <span className={styles.infoCardLabel}>Tutor</span>
-                      <span className={styles.infoCardValue}>
-                        {selectedEvent.resource?.cliente} {selectedEvent.resource?.clienteSobrenome}
-                      </span>
-                    </div>
-                  </div>
+                  <TutorContact
+                    nome={selectedEvent.resource?.cliente}
+                    sobrenome={selectedEvent.resource?.clienteSobrenome}
+                    telefone={selectedEvent.resource?.tutorTelefone}
+                    email={selectedEvent.resource?.tutorEmail}
+                  />
 
                   <div className={styles.infoCardSmall}>
                     <CalendarIcon size={16} className={styles.infoCardIcon} />
@@ -1397,6 +1432,22 @@ export default function VeterinarioDashboard() {
                 </div>
               )}
 
+              {STATUS_COM_ANOTACAO.includes(normalizeStatus(selectedEvent.resource?.status)) && (
+                <div className={styles.modalSection}>
+                  <AnotacaoPrivada agendamentoId={selectedEvent.id} locais={locaisDoVet} />
+                </div>
+              )}
+
+              {!normalizeStatus(selectedEvent.resource?.status).startsWith("cancelad") && (
+                <div className={styles.modalSection}>
+                  <HistoricoAnotacoes
+                    key={selectedEvent.id}
+                    agendamentoId={selectedEvent.id}
+                    petNome={selectedEvent.resource?.pet}
+                  />
+                </div>
+              )}
+
               {/* Seção 5: Instruções para o Veterinário (Novo) */}
               <div className={styles.instructionsBox}>
                 <div className={styles.instructionsTitle}>
@@ -1467,15 +1518,12 @@ export default function VeterinarioDashboard() {
               <div className={styles.modalSection}>
                 <h5 className={styles.modalSectionTitle}>Informações Gerais</h5>
                 <div className={styles.modalGrid}>
-                  <div className={styles.infoCardSmall}>
-                    <UserIcon size={16} className={styles.infoCardIcon} />
-                    <div>
-                      <span className={styles.infoCardLabel}>Tutor</span>
-                      <span className={styles.infoCardValue}>
-                        {selectedEvent.resource?.cliente} {selectedEvent.resource?.clienteSobrenome}
-                      </span>
-                    </div>
-                  </div>
+                  <TutorContact
+                    nome={selectedEvent.resource?.cliente}
+                    sobrenome={selectedEvent.resource?.clienteSobrenome}
+                    telefone={selectedEvent.resource?.tutorTelefone}
+                    email={selectedEvent.resource?.tutorEmail}
+                  />
 
                   <div className={styles.infoCardSmall}>
                     <CalendarIcon size={16} className={styles.infoCardIcon} />

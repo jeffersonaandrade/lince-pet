@@ -6,6 +6,7 @@ import { requireUser } from '@/server/auth/session'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { notifications } from '@/server/services/notifications'
 import { nomeCompleto, podeSerCancelado, prepareDataConsulta } from '@/server/services/agendamentos'
+import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 
 /** PATCH /agendamentos/:id/reagendar */
 export const PATCH = route<{ id: string }>(async (req, { id }) => {
@@ -59,6 +60,13 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
 
       if (agendamentoExistente) {
         return badRequest({ message: 'O novo horário já está ocupado. Escolha outro horário.' })
+      }
+
+      if (
+        agendamento.veterinarioId &&
+        (await horarioEstaBloqueado(agendamento.veterinarioId, dataConsultaObj.toSQLDate()!, horario))
+      ) {
+        return badRequest({ message: MENSAGEM_HORARIO_BLOQUEADO })
       }
 
       return tx.agendamento.update({

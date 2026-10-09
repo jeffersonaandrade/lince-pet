@@ -10,6 +10,7 @@ import { canCreateAppointment, hasFeature } from '@/server/services/subscription
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { notifications } from '@/server/services/notifications'
 import { sendTemplateMessage } from '@/server/services/whatsapp'
+import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import {
   consumeDataConsulta,
   jaPassou,
@@ -130,6 +131,10 @@ export const POST = route(async (req) => {
 
     if (agendamentoExistente) {
       return badRequest({ message: 'Horário já ocupado. Escolha outro horário.' })
+    }
+
+    if (await horarioEstaBloqueado(str(veterinario_id), dataConsulta.toSQLDate()!, str(horario_consulta))) {
+      return badRequest({ message: MENSAGEM_HORARIO_BLOQUEADO })
     }
 
     const checkLimit = await canCreateAppointment(veterinario)

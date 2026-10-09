@@ -18,6 +18,8 @@ import { AssinaturasService } from "@/services/assinaturas/assinaturas";
 import Link from "next/link";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
 import ShareProfileButton from "@/components/ShareProfileButton/ShareProfileButton";
+import TutorContact from "@/components/TutorContact/TutorContact";
+import BloqueiosLista from "@/components/BloqueioAgenda/BloqueiosLista";
 import Image from "next/image";
 import { formatDateToISO } from "@/utils/formatters";
 
@@ -55,6 +57,8 @@ interface CalendarEvent {
   resource?: {
     cliente: string;
     clienteSobrenome?: string;
+    tutorTelefone?: string | null;
+    tutorEmail?: string | null;
     pet: string;
     petRaca?: string;
     petPorte?: string;
@@ -94,6 +98,7 @@ export default function ClinicaDashboard() {
 
   // Clinic specific states
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
+  const [bloqueioVetId, setBloqueioVetId] = useState<string | null>(null);
   const [recentComments, setRecentComments] = useState<any[]>([]); // Assuming same structure for now, probably need specific clinic comments service later
 
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -698,6 +703,35 @@ export default function ClinicaDashboard() {
               </div>
             </div>
 
+            {profissionais.length > 0 && (
+              <div className="mt-4 flex flex-col gap-2">
+                <label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+                  Gerenciar bloqueios do profissional
+                  <select
+                    className="rounded-lg border border-solid border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
+                    value={bloqueioVetId || profissionais[0].id}
+                    onChange={(e) => setBloqueioVetId(e.target.value)}
+                  >
+                    {profissionais.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {`${p.nome} ${p.sobrenome}`.trim()}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <BloqueiosLista
+                  key={bloqueioVetId || profissionais[0].id}
+                  scope={{ tipo: "clinica", veterinarioId: bloqueioVetId || profissionais[0].id }}
+                  defaultDate={moment(selectedDate).format("YYYY-MM-DD")}
+                  onAppointmentsCancelled={() => {
+                    carregarEstatisticas();
+                    carregarConsultasPorData(selectedDate);
+                    carregarEventosCalendario(currentDate);
+                  }}
+                />
+              </div>
+            )}
+
             {/* Resumo de Consultas */}
             <div className={styles.appointmentsCard}>
               <div className={styles.appointmentsHeader}>
@@ -918,6 +952,8 @@ export default function ClinicaDashboard() {
                             resource: {
                               cliente: consulta.cliente,
                               clienteSobrenome: consulta.clienteSobrenome,
+                              tutorTelefone: consulta.tutorTelefone,
+                              tutorEmail: consulta.tutorEmail,
                               pet: consulta.pet,
                               petRaca: consulta.petRaca,
                               petPorte: consulta.petPorte,
@@ -1154,15 +1190,12 @@ export default function ClinicaDashboard() {
                 </div>
 
                 <div className={styles.modalGrid}>
-                  <div className={styles.infoCardSmall}>
-                    <UserIcon size={16} className={styles.infoCardIcon} />
-                    <div>
-                      <span className={styles.infoCardLabel}>Tutor</span>
-                      <span className={styles.infoCardValue}>
-                        {selectedEvent.resource?.cliente} {selectedEvent.resource?.clienteSobrenome}
-                      </span>
-                    </div>
-                  </div>
+                  <TutorContact
+                    nome={selectedEvent.resource?.cliente}
+                    sobrenome={selectedEvent.resource?.clienteSobrenome}
+                    telefone={selectedEvent.resource?.tutorTelefone}
+                    email={selectedEvent.resource?.tutorEmail}
+                  />
 
                   <div className={styles.infoCardSmall}>
                     <UserIcon size={16} className={styles.infoCardIcon} />

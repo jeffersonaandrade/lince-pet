@@ -351,9 +351,14 @@ export default function TutorDashboard() {
           if (parts.length === 3) dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
         }
 
-        const finalSlots = possibleSlots.filter(
-          (slot: string) => !ocupados.includes(slot) || (rescheduleDate === dateStr && slot === rescheduleAgendamento.horario_consulta)
-        );
+        const bloqueados = resp.horarios_bloqueados || [];
+        const finalSlots = resp.dia_bloqueado
+          ? []
+          : possibleSlots.filter(
+              (slot: string) =>
+                !ocupados.includes(slot) ||
+                (rescheduleDate === dateStr && slot === rescheduleAgendamento.horario_consulta && !bloqueados.includes(slot))
+            );
 
         const sortedSlots = finalSlots.sort((a: string, b: string) => a.localeCompare(b));
         setRescheduleVetAvailableSlots(sortedSlots);

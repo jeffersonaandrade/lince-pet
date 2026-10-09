@@ -118,6 +118,7 @@ model Veterinario {
   creditsLedger       CreditsLedger[]
   veterinarioPlanos   VeterinarioPlano[]
   veterinarioClinicas VeterinarioClinica[]
+  bloqueiosAgenda     BloqueioAgenda[]
 
   @@map("veterinarios")
 }
@@ -398,8 +399,52 @@ model Agendamento {
   veterinario Veterinario? @relation(fields: [veterinarioId], references: [id])
   clinica     Clinica?     @relation(fields: [clinicaId], references: [id], onDelete: SetNull)
   avaliacao   Avaliacao?
+  anotacao    AgendamentoAnotacao?
 
   @@map("agendamentos")
+}
+
+/// Anotação privada do veterinário sobre a consulta. Nunca expor para tutor ou clínica.
+model AgendamentoAnotacao {
+  id               String    @id @db.Char(36)
+  agendamentoId    String    @unique @map("agendamento_id") @db.Char(36)
+  veterinarioId    String    @map("veterinario_id") @db.Char(36)
+  localAtendimento String?   @map("local_atendimento") @db.VarChar(255)
+  /// pago | pendente | isento
+  statusPagamento  String?   @map("status_pagamento") @db.VarChar(20)
+  /// pix | cartao | dinheiro | plano_pet | outro
+  formaPagamento   String?   @map("forma_pagamento") @db.VarChar(30)
+  planoNome        String?   @map("plano_nome") @db.VarChar(255)
+  observacoes      String?   @db.Text
+  createdAt        DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt        DateTime? @map("updated_at") @db.Timestamp(0)
+
+  agendamento Agendamento @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+
+  @@index([veterinarioId])
+  @@map("agendamento_anotacoes")
+}
+
+/// Bloqueio da agenda (não altera a grade semanal). `horarios` null = dia inteiro.
+/// `recorrente` = 1 repete nos `diasSemana` (0=domingo) a partir de `dataInicio`; `dataFim` null = sem fim.
+model BloqueioAgenda {
+  id              String    @id @db.Char(36)
+  veterinarioId   String    @map("veterinario_id") @db.Char(36)
+  dataInicio      String    @map("data_inicio") @db.VarChar(10)
+  dataFim         String?   @map("data_fim") @db.VarChar(10)
+  recorrente      Int       @default(0) @db.TinyInt
+  diasSemana      Json?     @map("dias_semana")
+  horarios        Json?
+  motivo          String?   @db.VarChar(255)
+  criadoPorUserId String?   @map("criado_por_user_id") @db.Char(36)
+  clinicaId       String?   @map("clinica_id") @db.Char(36)
+  createdAt       DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt       DateTime? @map("updated_at") @db.Timestamp(0)
+
+  veterinario Veterinario @relation(fields: [veterinarioId], references: [id], onDelete: Cascade)
+
+  @@index([veterinarioId, dataInicio, dataFim])
+  @@map("bloqueios_agenda")
 }
 
 /// TODO(verify): criada com guarda hasTable(); se a tabela já existia antes da migration, a estrutura real pode diferir.

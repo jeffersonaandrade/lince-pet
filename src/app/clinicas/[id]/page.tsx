@@ -76,6 +76,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [selectedProfessional, setSelectedProfessional] = useState<any>(null);
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
+  const [diaBloqueado, setDiaBloqueado] = useState(false);
   const [carregandoDisponibilidade, setCarregandoDisponibilidade] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [customDate, setCustomDate] = useState<string | null>(null);
@@ -284,6 +285,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
       const providerId = selectedProfessional?.id;
       if (!providerId) {
         setHorariosOcupados([]);
+        setDiaBloqueado(false);
         return;
       }
 
@@ -296,9 +298,11 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
         setCarregandoDisponibilidade(true);
         const resp = await AgendamentosService.verificarDisponibilidade(providerId, dataStr);
         setHorariosOcupados(resp.horarios_ocupados || []);
+        setDiaBloqueado(Boolean(resp.dia_bloqueado));
       } catch (e) {
         console.error("Erro ao carregar disponibilidade:", e);
         setHorariosOcupados([]);
+        setDiaBloqueado(false);
       } finally {
         setCarregandoDisponibilidade(false);
       }
@@ -804,6 +808,8 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                       <div className={styles.timeSlots}>
                         {carregandoDisponibilidade ? (
                           <div className={styles.noAvailability}><p>Carregando...</p></div>
+                        ) : diaBloqueado ? (
+                          <p className={styles.noAvailability}>Agenda do profissional indisponível nesta data</p>
                         ) : generateTimeSlots().length > 0 ? (
                           <>
                             {/* Resolvido: Tipagem explícita 'time: string' para evitar erro de implicit any no build */}
