@@ -1,3 +1,8 @@
+/* Tailwind sem preflight: o reset base alteraria o visual existente (CSS Modules). */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
 :root {
   --primary: #e67e22;
   --primary-rgb: 230, 126, 34;
