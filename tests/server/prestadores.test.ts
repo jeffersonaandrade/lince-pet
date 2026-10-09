@@ -4,7 +4,7 @@ import { DateTime } from 'luxon'
 const prismaMock = vi.hoisted(() => {
   const m: Record<string, any> = {
     tipoServico: { findFirst: vi.fn() },
-    user: { findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
+    user: { findUnique: vi.fn(), findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
     prestador: { findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
     pet: { findFirst: vi.fn(), findUnique: vi.fn() },
     tutor: { findUnique: vi.fn() },
@@ -144,7 +144,7 @@ describe('regras puras do pedido', () => {
 describe('cadastro e busca', () => {
   it('cria usuário prestador com o tipo do catálogo, plano free e onboarding pendente', async () => {
     prismaMock.tipoServico.findFirst.mockResolvedValue({ id: 'ts-passeador', slug: 'passeador' })
-    prismaMock.user.findUnique.mockResolvedValue(null)
+    prismaMock.user.findFirst.mockResolvedValue(null)
     prismaMock.user.create.mockImplementation(({ data }: { data: object }) => ({ id: 'u-novo', ...data }))
     prismaMock.prestador.create.mockImplementation(({ data }: { data: object }) => ({ id: 'pr-novo', ...data }))
 

@@ -7,8 +7,8 @@ alwaysApply: false
 > Fonte: https://github.com/sanjeed5/awesome-cursor-rules-mdc (rules-mdc/prisma.mdc)
 >
 > **Ajustes do projeto Lince Pet (prevalecem sobre o texto abaixo):**
-> - O banco MySQL ja existe: o schema vem de 'prisma db pull'. NAO trocar IDs inteiros por UUID nem renomear tabelas/colunas (usar @map/@@map).
-> - Migrations agora sao do Prisma (baseline 'prisma/migrations/0_init'). Em banco existente: 'prisma migrate resolve --applied 0_init' uma unica vez; depois 'prisma migrate dev --name <descricao>' (dev) e 'prisma migrate deploy' (prod). NUNCA 'migrate reset' no banco de producao.
+> - O banco e PostgreSQL (local ou Supabase). NAO trocar IDs CHAR(36) por UUID nativo nem renomear tabelas/colunas (usar @map/@@map).
+> - Migrations sao do Prisma (baseline 'prisma/migrations/0_init', SQL de Postgres). `docker compose up` aplica `prisma migrate deploy` no Postgres local e nao roda o seed. `npm start` aplica as migrations do `.env.production` (Supabase) antes do Next. NUNCA 'migrate reset' no banco de producao. O `.env` aponta para o Postgres local (porta 5433).
 > - O schema NAO tem @default(uuid()/now()) nem @updatedAt: criar com creating() e atualizar com updating() de src/server/lucid.ts.
 > - Colunas booleanas sao Int (0/1) e relacoes User->tutor/veterinario/clinica sao listas (usar findFirst({ where: { userId } })).
 > - Nao logar 'query' em producao.

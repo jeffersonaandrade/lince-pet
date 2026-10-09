@@ -27,7 +27,9 @@ export const GET = route(async (req) => {
 
   try {
     const googleUser = await fetchGoogleUser(params.get('code')!, origin)
-    const user = await prisma.user.findUnique({ where: { email: googleUser.email } })
+    const user = await prisma.user.findFirst({
+      where: { email: { equals: googleUser.email, mode: 'insensitive' } },
+    })
 
     if (user) {
       const res = redirect(`${frontend}/dashboard`)

@@ -40,7 +40,10 @@ export async function tokenFor(user: { id: string; nome: string; sobrenome: stri
 /** Equivalente ao User.verifyCredentials do withAuthFinder (E_INVALID_CREDENTIALS). */
 async function verifyCredentials(email: string, password: string) {
   const invalid = new HttpError(400, { status: 400, message: 'Invalid user credentials' })
-  const user = await prisma.user.findUnique({ where: { email }, omit: { password: false } })
+  const user = await prisma.user.findFirst({
+    where: { email: { equals: email, mode: 'insensitive' } },
+    omit: { password: false },
+  })
   if (!user) {
     await hashPassword(password)
     throw invalid
@@ -138,7 +141,9 @@ export function getUserProfile(user: CurrentUser) {
 }
 
 export async function forgotPassword(email: string) {
-  const user = await prisma.user.findUnique({ where: { email } })
+  const user = await prisma.user.findFirst({
+    where: { email: { equals: email, mode: 'insensitive' } },
+  })
   if (!user) return { message: FORGOT_PASSWORD_MESSAGE }
 
   const token = randomBytes(32).toString('hex')

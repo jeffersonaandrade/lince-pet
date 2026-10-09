@@ -19,7 +19,7 @@ export async function registerTutor(data: TutorRegistrationData) {
     return await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: creating({
-          email,
+          email: email.trim().toLowerCase(),
           password: hashed,
           userType: 'tutor',
           nome,

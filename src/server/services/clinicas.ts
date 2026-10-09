@@ -47,7 +47,7 @@ export function mediaAvaliacoes(estrelas: (number | null)[]) {
   return { rating, totalReviews }
 }
 
-/** Formato em que o mysql2 envia um Date como parâmetro (fuso local). */
+/** String `YYYY-MM-DD HH:mm:ss.SSS` no fuso do processo, para comparar com `data_consulta` (VARCHAR). */
 export function mysqlDateTime(d: Date) {
   const pad = (n: number, l = 2) => String(n).padStart(l, '0')
   return (
@@ -146,7 +146,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
   try {
     const password = await hashPassword(String(data.senha))
     const userData = creating({
-      email: String(data.email),
+      email: String(data.email).trim().toLowerCase(),
       password,
       userType: UserType.clinica,
       nome: str(data.nomeFantasia) as string,

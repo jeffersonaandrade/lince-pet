@@ -289,7 +289,7 @@ export async function registerVeterinario(data: VeterinarioRegistrationData) {
     await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: creating({
-          email: data.email,
+          email: data.email.trim().toLowerCase(),
           password,
           userType: 'veterinario',
           nome: data.nome,
@@ -335,19 +335,19 @@ export async function searchVeterinarios(filters: SearchFilters) {
   const conds: Prisma.Sql[] = [Prisma.sql`v.creditos > 0`]
   if (filters.search) {
     const like = `%${filters.search}%`
-    conds.push(Prisma.sql`(EXISTS (SELECT 1 FROM users u WHERE u.id = v.user_id AND CONCAT(u.nome, ' ', u.sobrenome) LIKE ${like}) OR v.bio LIKE ${like})`)
+    conds.push(Prisma.sql`(EXISTS (SELECT 1 FROM users u WHERE u.id = v.user_id AND CONCAT(u.nome, ' ', u.sobrenome) ILIKE ${like}) OR v.bio ILIKE ${like})`)
   }
   if (filters.cidade) {
-    conds.push(Prisma.sql`EXISTS (SELECT 1 FROM veterinario_enderecos e WHERE e.veterinario_id = v.id AND e.cidade LIKE ${`%${filters.cidade}%`})`)
+    conds.push(Prisma.sql`EXISTS (SELECT 1 FROM veterinario_enderecos e WHERE e.veterinario_id = v.id AND e.cidade ILIKE ${`%${filters.cidade}%`})`)
   }
   if (filters.estado) {
     conds.push(Prisma.sql`EXISTS (SELECT 1 FROM veterinario_enderecos e WHERE e.veterinario_id = v.id AND e.estado = ${filters.estado})`)
   }
   if (filters.especialidade) {
-    conds.push(Prisma.sql`EXISTS (SELECT 1 FROM especialidades es INNER JOIN especialidade_relacionamentos er ON er.especialidade_id = es.id WHERE er.entidade_id = v.id AND er.entidade_tipo = 'veterinario' AND es.nome LIKE ${`%${filters.especialidade}%`})`)
+    conds.push(Prisma.sql`EXISTS (SELECT 1 FROM especialidades es INNER JOIN especialidade_relacionamentos er ON er.especialidade_id = es.id WHERE er.entidade_id = v.id AND er.entidade_tipo = 'veterinario' AND es.nome ILIKE ${`%${filters.especialidade}%`})`)
   }
   if (filters.plano) {
-    conds.push(Prisma.sql`EXISTS (SELECT 1 FROM planos p INNER JOIN veterinario_planos vp ON vp.plano_id = p.id WHERE vp.veterinario_id = v.id AND p.name LIKE ${`%${filters.plano}%`})`)
+    conds.push(Prisma.sql`EXISTS (SELECT 1 FROM planos p INNER JOIN veterinario_planos vp ON vp.plano_id = p.id WHERE vp.veterinario_id = v.id AND p.name ILIKE ${`%${filters.plano}%`})`)
   }
 
   const ids = await prisma.$queryRaw<{ id: string }[]>`

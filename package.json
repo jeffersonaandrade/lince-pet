@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start",
+    "start": "node scripts/migrate-production.mjs && next start",
+    "db:up": "docker compose up -d --build",
+    "db:down": "docker compose down",
+    "db:migrate": "prisma migrate deploy",
     "lint": "eslint",
     "test": "vitest run",
     "test:contract": "vitest run tests/contract",

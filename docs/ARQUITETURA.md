@@ -13,18 +13,20 @@ O backend AdonisJS (`Lince-Pet-Backend-main`) foi migrado para Route Handlers do
 | Domínio | `src/server/services/*` | Asaas, storage S3, e-mail (Resend), WhatsApp, Google Calendar, notificações in-app, limites de plano, onboarding |
 | Validação | `src/server/validators/*` | VineJS v3 (mesmas mensagens do backend antigo) |
 | E-mails | `src/server/emails/*` | Templates Edge convertidos em funções TS que retornam HTML |
-| Banco | `prisma/schema.prisma` + `src/server/db.ts` | MySQL; Prisma singleton com `omit` global de senha e tokens Google |
+| Banco | `prisma/schema.prisma` + `src/server/db.ts` | PostgreSQL (local via Docker ou Supabase); Prisma singleton com `omit` global de senha e tokens Google |
 
 Todo arquivo em `src/server` começa com `import 'server-only'`.
 
 ## Convenções herdadas do banco
 
 - Booleanos são `Int` (0/1): o frontend compara com `0`/`1` (ex.: `onboardingComplete === 0`).
-- ENUMs do MySQL (`user_type`, `genero`, `tipo_clinica`, `porte`, `payments.type`) são enums do Prisma. Como `String`, a leitura no banco real falha com P2032.
-- `User -> tutor/veterinario/clinica` são listas no Prisma (`user_id` sem UNIQUE): usar `findFirst({ where: { userId } })`.
+- ENUMs do Postgres (`user_type`, `genero`, `tipo_clinica`, `porte`, `payments.type`) são enums do Prisma. Como `String`, a leitura no banco real falha com P2032.
+- Conexão: `DATABASE_URL` e `DIRECT_URL` são iguais. No `.env` (dev e Prisma local) apontam para `127.0.0.1:5433`. No `.env.production` (`next build` / `next start`) apontam para o pooler do Supabase em modo sessão, porta 5432 do host `aws-0-us-east-2.pooler.supabase.com`. A conexão direta `db.<ref>.supabase.co` é só IPv6. A app autentica com o próprio JWT; usa o usuário `postgres` do banco, não a chave anon.
+- Busca textual em SQL cru usa `ILIKE` (o Postgres diferencia maiúsculas). Login e “esqueci a senha” também comparam e-mail sem diferenciar maiúsculas. O índice único de `users.email` diferencia: o cadastro grava o e-mail em minúsculas.
+- `User -> tutor/veterinario/clinica/prestador` são listas no Prisma (`user_id` sem UNIQUE): usar `findFirst({ where: { userId } })`.
 - DECIMAL sai como string com 2 casas; datas saem em ISO (servidor em `TZ=UTC`).
 - `agendamentos.data_consulta` é VARCHAR (`YYYY-MM-DD`).
-- Migrations: Prisma Migrate com baseline `prisma/migrations/0_init` (em banco existente, `prisma migrate resolve --applied 0_init`).
+- Migrations: Prisma Migrate com baseline `prisma/migrations/0_init`. `docker compose up` sobe o Postgres local e aplica as migrations pendentes; não roda o seed (`npm run db:seed` é separado). `npm start` aplica as migrations do `.env.production` (Supabase) e só então sobe o Next. Em banco que já existia antes do Prisma: `prisma migrate resolve --applied 0_init` uma única vez.
 
 ## Fluxos principais
 

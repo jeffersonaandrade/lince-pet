@@ -55,9 +55,10 @@ export const registroValidator = vine.compile(
 export type RegistroPrestador = Awaited<ReturnType<typeof registroValidator.validate>>
 
 export async function registrarPrestador(data: RegistroPrestador) {
+  const email = data.email.trim().toLowerCase()
   const tipo = await prisma.tipoServico.findFirst({ where: { slug: data.tipo_servico, ativo: 1 } })
   if (!tipo) throw invalid('Tipo de serviço inválido')
-  if (await prisma.user.findUnique({ where: { email: data.email }, select: { id: true } })) {
+  if (await prisma.user.findFirst({ where: { email: { equals: email, mode: 'insensitive' } }, select: { id: true } })) {
     throw invalid('Email já está em uso')
   }
 
@@ -66,7 +67,7 @@ export async function registrarPrestador(data: RegistroPrestador) {
     return await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: creating({
-          email: data.email,
+          email,
           password,
           userType: 'prestador' as const,
           nome: data.nome,
@@ -287,16 +288,16 @@ export async function buscarPrestadores(filtros: FiltrosBusca) {
     onboardingComplete: 1,
     user: {
       ativo: 1,
-      ...(filtros.cidade ? { cidade: { contains: filtros.cidade } } : {}),
+      ...(filtros.cidade ? { cidade: { contains: filtros.cidade, mode: 'insensitive' } } : {}),
       ...(filtros.estado ? { estado: filtros.estado.toUpperCase() } : {}),
     },
     tipoServico: { ativo: 1, ...(filtros.tipo ? { slug: filtros.tipo } : {}) },
     ...(filtros.search
       ? {
           OR: [
-            { bio: { contains: filtros.search } },
-            { user: { nome: { contains: filtros.search } } },
-            { user: { sobrenome: { contains: filtros.search } } },
+            { bio: { contains: filtros.search, mode: 'insensitive' } },
+            { user: { nome: { contains: filtros.search, mode: 'insensitive' } } },
+            { user: { sobrenome: { contains: filtros.search, mode: 'insensitive' } } },
           ],
         }
       : {}),
