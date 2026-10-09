@@ -16,5 +16,19 @@ services:
       timeout: 5s
       retries: 20
 
+  # Aplica as migrations e encerra. Não roda o seed.
+  # A URL usa o hostname da rede do Compose. O Next, na máquina, continua no .env (porta 5433).
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/migrate/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://lincepet:lincepet@postgres:5432/lincepet
+      DIRECT_URL: postgresql://lincepet:lincepet@postgres:5432/lincepet
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
 volumes:
   lincepet_pg:

@@ -26,7 +26,7 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 - `User -> tutor/veterinario/clinica` são listas no Prisma (`user_id` sem UNIQUE): usar `findFirst({ where: { userId } })`.
 - DECIMAL sai como string com 2 casas; datas saem em ISO (servidor em `TZ=UTC`).
 - `agendamentos.data_consulta` é VARCHAR (`YYYY-MM-DD`).
-- Migrations: Prisma Migrate com baseline `prisma/migrations/0_init` (em banco existente, `prisma migrate resolve --applied 0_init`).
+- Migrations: Prisma Migrate com baseline `prisma/migrations/0_init`. `docker compose up` sobe o Postgres local e aplica as migrations pendentes; não roda o seed (`npm run db:seed` é separado). `npm start` aplica as migrations do `.env.production` (Supabase) e só então sobe o Next. Em banco que já existia antes do Prisma: `prisma migrate resolve --applied 0_init` uma única vez.
 
 ## Fluxos principais
 
