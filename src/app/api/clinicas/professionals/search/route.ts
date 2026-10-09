@@ -18,9 +18,9 @@ export const GET = route(async (req) => {
           EXISTS (
             SELECT 1 FROM users u
             WHERE v.user_id = u.id
-              AND (CONCAT(u.nome, ' ', u.sobrenome) LIKE ${like} OR u.nome LIKE ${like} OR u.sobrenome LIKE ${like})
+              AND (CONCAT(u.nome, ' ', u.sobrenome) ILIKE ${like} OR u.nome ILIKE ${like} OR u.sobrenome ILIKE ${like})
           )
-          OR v.crmv LIKE ${like}
+          OR v.crmv ILIKE ${like}
         )
         LIMIT 40
       `

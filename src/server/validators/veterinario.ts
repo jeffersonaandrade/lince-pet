@@ -22,7 +22,10 @@ const uniqueEmailExceptParam = vine.createRule(
     if (typeof value !== 'string') return
     const params = (field.data as { params?: { id?: string } }).params
     const user = await prisma.user.findFirst({
-      where: { email: value, ...(params?.id ? { NOT: { id: params.id } } : {}) },
+      where: {
+        email: { equals: value, mode: 'insensitive' },
+        ...(params?.id ? { NOT: { id: params.id } } : {}),
+      },
       select: { id: true },
     })
     if (user) field.report('The {{ field }} has already been taken', 'database.unique', field)

@@ -1,14 +1,12 @@
 // =============================================================================
-// Schema Prisma derivado das migrations do backend AdonisJS 6 (Lucid ORM)
-// (Lince-Pet-Backend-main/database/migrations, aplicadas em ordem natural).
+// Schema Prisma (PostgreSQL / Supabase).
 //
-// - NÃO houve acesso ao banco: antes de ir para produção, validar este arquivo
-//   com `npx prisma db pull --print` contra o banco MySQL real e comparar.
-// - Durante a transição, as migrations continuam sendo responsabilidade do
-//   Adonis. NÃO rodar `prisma migrate` / `prisma db push` neste banco.
-// - Colunas boolean (tinyint(1)) estão mapeadas como Int de propósito: o mysql2
-//   devolve 0/1 e o frontend depende desses valores numéricos.
+// - Colunas booleanas continuam Int (0/1) em SMALLINT: o frontend compara com
+//   0 e 1. Não virar Boolean nativo.
 // - Nomes de campos = nomes das propriedades dos models Lucid (@map p/ coluna).
+// - DATABASE_URL é a conexão da aplicação (no Supabase, o pooler na porta 6543
+//   com ?pgbouncer=true). DIRECT_URL é a conexão direta (porta 5432), usada
+//   só pelo Prisma Migrate.
 // =============================================================================
 
 generator client {
@@ -16,11 +14,12 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-/// ENUMs nativos do MySQL. Mapeados como String, o Prisma 6 falha ao ler (P2032).
+/// ENUMs nativos do Postgres. Mapeados como String, o Prisma falha ao ler (P2032).
 enum UserType {
   tutor
   veterinario
@@ -60,8 +59,8 @@ model User {
   rua                      String?   @db.VarChar(255)
   cidade                   String?   @db.VarChar(100)
   estado                   String?   @db.VarChar(2)
-  ativo                    Int?      @default(1) @db.TinyInt
-  isEmailVerified          Int?      @default(0) @map("is_email_verified") @db.TinyInt
+  ativo                    Int?      @default(1) @db.SmallInt
+  isEmailVerified          Int?      @default(0) @map("is_email_verified") @db.SmallInt
   profilePic               String?   @map("profile_pic") @db.VarChar(500)
   createdAt                DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt                DateTime? @map("updated_at") @db.Timestamp(0)
@@ -71,10 +70,10 @@ model User {
   googleAccessToken        String?   @map("google_access_token") @db.Text
   googleRefreshToken       String?   @map("google_refresh_token") @db.Text
   googleTokenExpiresAt     DateTime? @map("google_token_expires_at") @db.Timestamp(0)
-  googleCalendarAuthorized Int?      @default(0) @map("google_calendar_authorized") @db.TinyInt
+  googleCalendarAuthorized Int?      @default(0) @map("google_calendar_authorized") @db.SmallInt
   /// Canais de aviso de consultas (1 = ligado). O Google Agenda vale enquanto a conta estiver conectada.
-  notificarEmail           Int       @default(1) @map("notificar_email") @db.TinyInt
-  notificarWhatsapp        Int       @default(1) @map("notificar_whatsapp") @db.TinyInt
+  notificarEmail           Int       @default(1) @map("notificar_email") @db.SmallInt
+  notificarWhatsapp        Int       @default(1) @map("notificar_whatsapp") @db.SmallInt
 
   // TODO(verify): no Lucid são hasOne, mas user_id não tem UNIQUE nas migrations, então o Prisma exige lista.
   tutor               Tutor[]
@@ -120,13 +119,13 @@ model Veterinario {
   crmv                       String?   @unique @db.VarChar(15)
   bio                        String?   @db.Text
   fotoUrl                    String?   @map("foto_url") @db.VarChar(1024)
-  atendePresencial           Int?      @default(0) @map("atende_presencial") @db.TinyInt
-  atendeOnline               Int?      @default(0) @map("atende_online") @db.TinyInt
-  atendeDomicilio            Int?      @default(0) @map("atende_domicilio") @db.TinyInt
+  atendePresencial           Int?      @default(0) @map("atende_presencial") @db.SmallInt
+  atendeOnline               Int?      @default(0) @map("atende_online") @db.SmallInt
+  atendeDomicilio            Int?      @default(0) @map("atende_domicilio") @db.SmallInt
   precoConsulta              Decimal?  @map("preco_consulta") @db.Decimal(10, 2)
-  onboardingComplete         Int?      @default(0) @map("onboarding_complete") @db.TinyInt
+  onboardingComplete         Int?      @default(0) @map("onboarding_complete") @db.SmallInt
   onboardingStep             Int?      @default(1) @map("onboarding_step")
-  isVerified                 Int?      @default(0) @map("is_verified") @db.TinyInt
+  isVerified                 Int?      @default(0) @map("is_verified") @db.SmallInt
   createdAt                  DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt                  DateTime? @map("updated_at") @db.Timestamp(0)
   creditos                   Int       @default(0)
@@ -161,8 +160,8 @@ model Clinica {
   horariosFuncionamento Json?     @map("horarios_funcionamento")
   // TODO(verify): alterado de integer default 0 para string(10) via .alter(); MODIFY do MySQL deve ter removido o default.
   quantidadeVets        String?   @map("quantidade_vets") @db.VarChar(10)
-  onboardingComplete    Int?      @default(0) @map("onboarding_complete") @db.TinyInt
-  isVerified            Int?      @default(0) @map("is_verified") @db.TinyInt
+  onboardingComplete    Int?      @default(0) @map("onboarding_complete") @db.SmallInt
+  isVerified            Int?      @default(0) @map("is_verified") @db.SmallInt
   createdAt             DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt             DateTime? @map("updated_at") @db.Timestamp(0)
   nomeClinica           String?   @map("nome_clinica") @db.VarChar(200)
@@ -201,7 +200,7 @@ model Especialidade {
   id        String    @id @db.Char(36)
   nome      String    @unique @db.VarChar(255)
   descricao String?   @db.Text
-  ativo     Int?      @default(1) @db.TinyInt
+  ativo     Int?      @default(1) @db.SmallInt
   createdAt DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
 
@@ -213,7 +212,7 @@ model Especialidade {
 model VeterinarioClinica {
   veterinarioId String    @map("veterinario_id") @db.Char(36)
   clinicaId     String    @map("clinica_id") @db.Char(36)
-  ativo         Int?      @default(1) @db.TinyInt
+  ativo         Int?      @default(1) @db.SmallInt
   status        String?   @default("pendente") @db.VarChar(255)
   createdAt     DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
@@ -233,7 +232,7 @@ model EspecialidadeRelacionamento {
   // TODO(verify): polimórfica (vet ou clínica); FK p/ veterinarios removida, sem FK. Índices herdaram nomes veterinario_especialidades_*.
   entidadeId      String    @map("entidade_id") @db.Char(36)
   especialidadeId String    @map("especialidade_id") @db.Char(36)
-  ativo           Int?      @default(1) @db.TinyInt
+  ativo           Int?      @default(1) @db.SmallInt
   createdAt       DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt       DateTime? @map("updated_at") @db.Timestamp(0)
   entidadeTipo    String    @default("veterinario") @map("entidade_tipo") @db.VarChar(20)
@@ -252,7 +251,7 @@ model Diferencial {
   nome      String    @unique @db.VarChar(255)
   icone     String?   @db.VarChar(255)
   descricao String?   @db.Text
-  ativo     Int?      @default(1) @db.TinyInt
+  ativo     Int?      @default(1) @db.SmallInt
   createdAt DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
 
@@ -264,7 +263,7 @@ model Diferencial {
 model ClinicaDiferencial {
   clinicaId     String    @map("clinica_id") @db.Char(36)
   diferencialId String    @map("diferencial_id") @db.Char(36)
-  ativo         Int?      @default(1) @db.TinyInt
+  ativo         Int?      @default(1) @db.SmallInt
   createdAt     DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
 
@@ -286,7 +285,7 @@ model ExperienciaVeterinario {
   dataInicio    DateTime? @map("data_inicio") @db.Date
   dataFim       DateTime? @map("data_fim") @db.Date
   descricao     String?   @db.Text
-  ativo         Int?      @default(1) @db.TinyInt
+  ativo         Int?      @default(1) @db.SmallInt
   createdAt     DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
 
@@ -311,10 +310,10 @@ model VeterinarioEndereco {
   horariosDisponibilidade       Json?     @map("horarios_funcionamento")
   // TODO(verify): coluna horarios_disponibilidade não tem propriedade no Lucid (nome colide com o campo acima); nomeado como horariosDisponibilidadeColuna.
   horariosDisponibilidadeColuna Json?     @map("horarios_disponibilidade")
-  aceitaEmergencia              Int?      @default(0) @map("aceita_emergencia") @db.TinyInt
+  aceitaEmergencia              Int?      @default(0) @map("aceita_emergencia") @db.SmallInt
   observacoes                   String?   @db.Text
-  isPrimary                     Int?      @default(0) @map("is_primary") @db.TinyInt
-  ativo                         Int?      @default(1) @db.TinyInt
+  isPrimary                     Int?      @default(0) @map("is_primary") @db.SmallInt
+  ativo                         Int?      @default(1) @db.SmallInt
   createdAt                     DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt                     DateTime? @map("updated_at") @db.Timestamp(0)
   precoConsulta                 Decimal   @default(0) @map("preco_consulta") @db.Decimal(10, 2)
@@ -378,7 +377,7 @@ model Pet {
   nome      String    @db.VarChar(255)
   especie   String    @db.VarChar(255)
   raca      String?   @db.VarChar(255)
-  idade     Int?      @db.UnsignedInt
+  idade     Int?
   fotoUrl   String?   @map("foto_url") @db.VarChar(255)
   createdAt DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
@@ -534,7 +533,7 @@ model BloqueioAgenda {
   veterinarioId   String    @map("veterinario_id") @db.Char(36)
   dataInicio      String    @map("data_inicio") @db.VarChar(10)
   dataFim         String?   @map("data_fim") @db.VarChar(10)
-  recorrente      Int       @default(0) @db.TinyInt
+  recorrente      Int       @default(0) @db.SmallInt
   diasSemana      Json?     @map("dias_semana")
   horarios        Json?
   motivo          String?   @db.VarChar(255)
@@ -581,7 +580,7 @@ model CreditPlan {
   priceCents    Int       @map("price_cents")
   currency      String    @default("brl") @db.VarChar(255)
   stripePriceId String?   @map("stripe_price_id") @db.VarChar(255)
-  active        Int       @default(1) @db.TinyInt
+  active        Int       @default(1) @db.SmallInt
   createdAt     DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
 
@@ -600,7 +599,7 @@ model Payment {
   amountCents             Int       @map("amount_cents")
   currency                String    @default("brl") @db.VarChar(255)
   status                  String    @default("pending") @db.VarChar(255)
-  metadata                String?   @db.LongText
+  metadata                String?   @db.Text
   createdAt               DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt               DateTime? @map("updated_at") @db.Timestamp(0)
 
@@ -618,7 +617,7 @@ model CreditsLedger {
   paymentId     String?   @map("payment_id") @db.Char(36)
   deltaCredits  Int       @map("delta_credits")
   reason        String    @db.VarChar(255)
-  meta          String?   @db.LongText
+  meta          String?   @db.Text
   createdAt     DateTime? @map("created_at") @db.Timestamp(0)
 
   veterinario Veterinario @relation(fields: [veterinarioId], references: [id], onDelete: Cascade)
@@ -628,11 +627,11 @@ model CreditsLedger {
 }
 
 model WebhookEvent {
-  id          Int       @id @default(autoincrement()) @db.UnsignedInt
+  id          Int       @id @default(autoincrement())
   provider    String    @db.VarChar(255)
   eventId     String    @unique @map("event_id") @db.VarChar(255)
   type        String    @db.VarChar(255)
-  payload     String    @db.LongText
+  payload     String    @db.Text
   processedAt DateTime? @map("processed_at") @db.Timestamp(0)
   createdAt   DateTime? @map("created_at") @db.Timestamp(0)
 
@@ -663,7 +662,7 @@ model Notification {
   type       String    @db.VarChar(255)
   title      String    @db.VarChar(255)
   message    String    @db.Text
-  isRead     Int?      @default(0) @map("is_read") @db.TinyInt
+  isRead     Int?      @default(0) @map("is_read") @db.SmallInt
   actionData Json?     @map("action_data")
   createdAt  DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt  DateTime? @map("updated_at") @db.Timestamp(0)
@@ -687,7 +686,7 @@ model SubscriptionPlan {
   features                Json?
   searchPriority          Int?      @default(0) @map("search_priority")
   trialDays               Int?      @default(0) @map("trial_days")
-  active                  Int?      @default(1) @db.TinyInt
+  active                  Int?      @default(1) @db.SmallInt
   createdAt               DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt               DateTime? @map("updated_at") @db.Timestamp(0)
 
@@ -720,7 +719,7 @@ model Subscription {
 }
 
 model PasswordResetToken {
-  id        Int       @id @default(autoincrement()) @db.UnsignedInt
+  id        Int       @id @default(autoincrement())
   // TODO(verify): coluna criada como string (VARCHAR(255)) referenciando users.id CHAR(36).
   userId    String?   @map("user_id") @db.VarChar(255)
   token     String    @unique @db.VarChar(255)
