@@ -472,6 +472,7 @@ assinatura_impl = {
     "tests_server_assinaturas_test": ["rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_trial_unico", "rule_assinatura_cancelamento"],
     "tests_server_assinatura_regras_test": ["rule_assinatura_status", "rule_assinatura_webhook_token", "rule_assinatura_limite_vets_clinica"],
     "tests_server_asaas_webhook_test": ["rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_inadimplencia", "rule_assinatura_cancelamento"],
+    "tests_server_assinatura_rotas_test": ["rule_assinatura_status", "rule_assinatura_webhook_token", "rule_assinatura_fatura_asaas"],
 }
 for code_id, rs in assinatura_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]

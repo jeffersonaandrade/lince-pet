@@ -38,10 +38,11 @@ export function somarDias(d: Date, dias: number) {
 export const temDireitoAoTeste = (trialDays: number | null | undefined, jaTeveAssinaturaPaga: boolean) =>
   !jaTeveAssinaturaPaga && (trialDays ?? 0) > 0
 
-/** Fim do período pago: vencimento da fatura + 1 mês (ciclo mensal). */
+/** Fim do período pago: vencimento da fatura + 1 mês (ciclo mensal); 31/01 vai a 28/02 (ou 29/02). */
 export function fimDoPeriodo(dueDate: string) {
   const [y, m, d] = dueDate.split('-').map(Number)
-  return new Date(Date.UTC(y, m, d, 23, 59, 59))
+  const ultimoDiaDoMes = new Date(Date.UTC(y, m + 1, 0)).getUTCDate()
+  return new Date(Date.UTC(y, m, Math.min(d, ultimoDiaDoMes), 23, 59, 59))
 }
 
 /**

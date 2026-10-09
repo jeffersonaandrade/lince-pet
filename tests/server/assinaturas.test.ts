@@ -13,6 +13,7 @@ const prismaMock = vi.hoisted(() => {
     },
     veterinario: { update: vi.fn() },
     clinica: { update: vi.fn() },
+    prestador: { update: vi.fn() },
   }
   m.$transaction = vi.fn(async (fn: (tx: unknown) => unknown) => fn(m))
   return m
@@ -24,6 +25,8 @@ import { assinanteDe } from '@/server/services/assinante'
 
 const asaas = {
   ensureCustomerForVeterinario: vi.fn(),
+  ensureCustomerForClinica: vi.fn(),
+  ensureCustomerForPrestador: vi.fn(),
   createSubscription: vi.fn(),
   getSubscriptionPayments: vi.fn(),
   cancelSubscription: vi.fn(),
@@ -39,7 +42,21 @@ const vet = (plano = 'none') =>
     veterinario: { id: 'vet-1', subscriptionPlanCode: plano, monthlyAppointmentsUsed: 0 },
   }) as never
 
+const clinica = (plano = 'none') =>
+  ({ id: 'u-2', userType: 'clinica', clinica: { id: 'cli-1', subscriptionPlanCode: plano } }) as never
+
+const prestador = (plano = 'free') =>
+  ({
+    id: 'u-3',
+    userType: 'prestador',
+    prestador: { id: 'pre-1', subscriptionPlanCode: plano, monthlyAppointmentsUsed: 4 },
+  }) as never
+
+const tutor = () => ({ id: 'u-4', userType: 'tutor' }) as never
+
 const PLANO_VET = { id: 'p-1', code: 'vet_starter', name: 'Vet Starter', priceCents: 3990, trialDays: 14, active: 1 }
+const PLANO_PEQUENA = { id: 'p-3', code: 'starter', name: 'Pequena', priceCents: 9990, trialDays: 14, active: 1 }
+const PLANO_FREE = { id: 'p-4', code: 'free', name: 'Gratuito', priceCents: 0, trialDays: 0, active: 1 }
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -99,6 +116,79 @@ describe('contratar plano', () => {
     await expect(contratarPlano(vet(), 'vet_starter', fabrica)).rejects.toMatchObject({ status: 400 })
     expect(prismaMock.subscription.create).not.toHaveBeenCalled()
   })
+
+  it('Asaas recusando o cadastro do cliente vira 400 e não cria assinatura', async () => {
+    asaas.ensureCustomerForVeterinario.mockRejectedValue(new Error('cpf inválido'))
+    await expect(contratarPlano(vet(), 'vet_starter', fabrica)).rejects.toMatchObject({
+      status: 400,
+      body: { message: expect.stringContaining('CPF/CNPJ') },
+    })
+    expect(asaas.createSubscription).not.toHaveBeenCalled()
+    expect(prismaMock.subscription.create).not.toHaveBeenCalled()
+  })
+
+  it('plano inativo (pro_plus legado): 400', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ ...PLANO_VET, code: 'pro_plus', active: 0 })
+    await expect(contratarPlano(vet(), 'pro_plus', fabrica)).rejects.toMatchObject({ status: 400 })
+  })
+
+  it('vet não contrata plano de prestador', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ ...PLANO_VET, code: 'pro', priceCents: 5900 })
+    await expect(contratarPlano(vet(), 'pro', fabrica)).rejects.toMatchObject({ status: 400 })
+  })
+
+  it('tutor não assina: 403', async () => {
+    await expect(contratarPlano(tutor(), 'vet_starter', fabrica)).rejects.toMatchObject({ status: 403 })
+  })
+
+  it('clínica contrata a Pequena no teste: cliente da clínica e plano na clínica', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue(PLANO_PEQUENA)
+    asaas.ensureCustomerForClinica.mockResolvedValue({ id: 'cus_cli' })
+    await contratarPlano(clinica(), 'starter', fabrica)
+
+    const enviado = asaas.createSubscription.mock.calls[0][0]
+    expect(enviado).toMatchObject({ customerId: 'cus_cli', value: 99.9, externalReference: 'clinica:cli-1' })
+    expect(prismaMock.subscription.create.mock.calls[0][0].data).toMatchObject({
+      clinicaId: 'cli-1',
+      veterinarioId: null,
+      status: 'active',
+    })
+    expect(prismaMock.clinica.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('starter')
+  })
+
+  it('a contagem de "já assinou" é por dono e só considera assinaturas do Asaas', async () => {
+    await contratarPlano(vet(), 'vet_starter', fabrica)
+    expect(prismaMock.subscription.count.mock.calls[0][0].where).toEqual({
+      veterinarioId: 'vet-1',
+      asaasSubscriptionId: { not: null },
+    })
+  })
+
+  it('plano gratuito do prestador ativa direto, sem Asaas', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue(PLANO_FREE)
+    const r = await contratarPlano(prestador('none'), 'free', fabrica)
+    expect(asaas.createSubscription).not.toHaveBeenCalled()
+    expect(prismaMock.subscription.create.mock.calls[0][0].data).toMatchObject({ prestadorId: 'pre-1', status: 'active' })
+    expect(prismaMock.prestador.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('free')
+    expect(r).toMatchObject({ checkoutUrl: null, emTeste: false })
+  })
+
+  it('sem fatura em aberto ou falha ao buscá-la: pendente com checkoutUrl null', async () => {
+    prismaMock.subscription.count.mockResolvedValue(1)
+    asaas.getSubscriptionPayments.mockRejectedValue(new Error('timeout'))
+    const r = await contratarPlano(vet(), 'vet_starter', fabrica)
+    expect(prismaMock.subscription.create.mock.calls[0][0].data.status).toBe('pending')
+    expect(r.checkoutUrl).toBeNull()
+  })
+
+  it('pendente não tem período nem fim de teste e vence hoje', async () => {
+    prismaMock.subscription.count.mockResolvedValue(1)
+    const r = await contratarPlano(vet(), 'vet_starter', fabrica)
+    const data = prismaMock.subscription.create.mock.calls[0][0].data
+    expect(data).toMatchObject({ trialEnd: null, currentPeriodStart: null, currentPeriodEnd: null })
+    expect(r.primeiraFatura).toBe(asaas.createSubscription.mock.calls[0][0].nextDueDate)
+    expect(Math.abs(new Date(r.primeiraFatura!).getTime() - Date.now())).toBeLessThan(2 * 86_400_000)
+  })
 })
 
 describe('trocar plano', () => {
@@ -132,10 +222,117 @@ describe('trocar plano', () => {
     expect(prismaMock.subscription.updateMany.mock.calls[0][0].data.status).toBe('canceled')
     expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('none')
   })
+
+  it('mesmo plano com assinatura ativa: 400', async () => {
+    prismaMock.subscription.findUnique.mockResolvedValue(atual)
+    await expect(trocarPlano(vet('vet_starter'), 'sub-1', 'vet_starter', fabrica)).rejects.toMatchObject({ status: 400 })
+    expect(asaas.createSubscription).not.toHaveBeenCalled()
+  })
+
+  it('mesmo plano com assinatura inadimplente gera nova fatura', async () => {
+    prismaMock.subscription.findUnique.mockResolvedValue({ ...atual, status: 'past_due' })
+    prismaMock.subscription.count.mockResolvedValue(1)
+    await trocarPlano(vet('vet_starter'), 'sub-1', 'vet_starter', fabrica)
+    expect(asaas.createSubscription).toHaveBeenCalled()
+  })
+
+  it('plano de outro tipo: 400', async () => {
+    prismaMock.subscription.findUnique.mockResolvedValue(atual)
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ ...PLANO_PEQUENA })
+    await expect(trocarPlano(vet('vet_starter'), 'sub-1', 'starter', fabrica)).rejects.toMatchObject({ status: 400 })
+  })
+
+  it('assinatura inexistente: 404', async () => {
+    prismaMock.subscription.findUnique.mockResolvedValue(null)
+    await expect(trocarPlano(vet('vet_starter'), 'sub-x', 'vet_pro', fabrica)).rejects.toMatchObject({ status: 404 })
+  })
+
+  it('id de assinatura de uma clínica com o mesmo id do vet: 404', async () => {
+    prismaMock.subscription.findUnique.mockResolvedValue({ ...atual, veterinarioId: null, clinicaId: 'vet-1' })
+    await expect(trocarPlano(vet('vet_starter'), 'sub-1', 'vet_pro', fabrica)).rejects.toMatchObject({ status: 404 })
+  })
+
+  it('nova troca cancela a troca pendente anterior (Asaas e local) antes de criar outra', async () => {
+    prismaMock.subscription.findUnique.mockResolvedValue(atual)
+    prismaMock.subscription.count.mockResolvedValue(1)
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ ...PLANO_VET, id: 'p-2', code: 'vet_pro', priceCents: 5990 })
+    prismaMock.subscription.findMany.mockResolvedValue([{ id: 'sub-pend', status: 'pending', asaasSubscriptionId: 'sub_pend' }])
+    await trocarPlano(vet('vet_starter'), 'sub-1', 'vet_pro', fabrica)
+
+    expect(asaas.cancelSubscription).toHaveBeenCalledWith('sub_pend')
+    expect(prismaMock.subscription.updateMany.mock.calls[0][0]).toMatchObject({
+      where: { id: { in: ['sub-pend'] } },
+      data: { status: 'canceled' },
+    })
+    expect(asaas.createSubscription.mock.calls[0][0]).toMatchObject({ customerId: 'cus_1', value: 59.9 })
+  })
+
+  it('downgrade (vet_pro para vet_starter) também só vale após o pagamento', async () => {
+    prismaMock.subscription.findUnique.mockResolvedValue(atual)
+    prismaMock.subscription.count.mockResolvedValue(1)
+    const r = await trocarPlano(vet('vet_pro'), 'sub-1', 'vet_starter', fabrica)
+    expect(prismaMock.subscription.create.mock.calls[0][0].data.status).toBe('pending')
+    expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
+    expect(r.message).toMatch(/Conclua o pagamento/)
+  })
+
+  it('prestador trocando para o free cancela a assinatura paga e volta ao free', async () => {
+    const subPre = { ...atual, veterinarioId: null, prestadorId: 'pre-1', asaasSubscriptionId: 'sub_pre' }
+    prismaMock.subscription.findUnique.mockResolvedValue(subPre)
+    prismaMock.subscription.findMany.mockResolvedValue([subPre])
+    const r = await trocarPlano(prestador('pro'), 'sub-1', 'free', fabrica)
+    expect(asaas.cancelSubscription).toHaveBeenCalledWith('sub_pre')
+    expect(prismaMock.prestador.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('free')
+    expect(r.subscription).toBeNull()
+  })
 })
 
 describe('cancelar', () => {
   it('sem assinatura aberta: 400', async () => {
     await expect(cancelarAssinaturas(assinanteDe(vet('vet_pro'))!, fabrica)).rejects.toMatchObject({ status: 400 })
+  })
+
+  it('cancela todas as abertas no Asaas, marca canceladas e o vet fica sem plano', async () => {
+    prismaMock.subscription.findMany.mockResolvedValue([
+      { id: 'a', asaasSubscriptionId: 'sub_a', status: 'active' },
+      { id: 'b', asaasSubscriptionId: 'sub_b', status: 'pending' },
+    ])
+    await cancelarAssinaturas(assinanteDe(vet('vet_pro'))!, fabrica)
+    expect(asaas.cancelSubscription.mock.calls.map((c) => c[0])).toEqual(['sub_a', 'sub_b'])
+    expect(prismaMock.subscription.updateMany.mock.calls[0][0]).toMatchObject({
+      where: { id: { in: ['a', 'b'] } },
+      data: { status: 'canceled', canceledAt: expect.any(Date) },
+    })
+    expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('none')
+  })
+
+  it('só procura assinaturas não encerradas do próprio dono', async () => {
+    await expect(cancelarAssinaturas(assinanteDe(clinica('clinic'))!, fabrica)).rejects.toMatchObject({ status: 400 })
+    expect(prismaMock.subscription.findMany.mock.calls[0][0].where).toEqual({
+      clinicaId: 'cli-1',
+      status: { notIn: ['canceled', 'expired'] },
+    })
+  })
+
+  it('falha no Asaas não impede o cancelamento local', async () => {
+    prismaMock.subscription.findMany.mockResolvedValue([{ id: 'a', asaasSubscriptionId: 'sub_a', status: 'active' }])
+    asaas.cancelSubscription.mockRejectedValueOnce(new Error('500'))
+    await cancelarAssinaturas(assinanteDe(vet('vet_pro'))!, fabrica)
+    expect(prismaMock.subscription.updateMany).toHaveBeenCalled()
+    expect(prismaMock.veterinario.update).toHaveBeenCalled()
+  })
+
+  it('assinatura sem Asaas (plano gratuito) não chama o Asaas', async () => {
+    const fabricaEspia = vi.fn(fabrica)
+    prismaMock.subscription.findMany.mockResolvedValue([{ id: 'a', asaasSubscriptionId: null, status: 'active' }])
+    await cancelarAssinaturas(assinanteDe(prestador('free'))!, fabricaEspia)
+    expect(fabricaEspia).not.toHaveBeenCalled()
+    expect(prismaMock.prestador.update).not.toHaveBeenCalled()
+  })
+
+  it('cancelar não zera o contador mensal do vet', async () => {
+    prismaMock.subscription.findMany.mockResolvedValue([{ id: 'a', asaasSubscriptionId: 'sub_a', status: 'active' }])
+    await cancelarAssinaturas(assinanteDe(vet('vet_pro'))!, fabrica)
+    expect(prismaMock.veterinario.update.mock.calls[0][0].data).not.toHaveProperty('monthlyAppointmentsUsed')
   })
 })

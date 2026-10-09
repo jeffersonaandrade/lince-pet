@@ -170,4 +170,5 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 ## Testes
 
 - `npm test`: unitários (`tests/server`).
+- `npm run test:coverage`: unitários com cobertura de `src/server/services`. Falha se algum serviço ficar abaixo de 95% de linhas, statements ou funções (por arquivo). Os testes de cobertura por serviço ficam em `tests/server/cobertura/`; Prisma e integrações externas (Asaas, S3, Resend, WhatsApp, Google) sempre mockados.
 - `npm run test:contract`: compara Adonis x Next quando `CONTRACT_ADONIS_URL` e `CONTRACT_NEXT_URL` estão definidos.

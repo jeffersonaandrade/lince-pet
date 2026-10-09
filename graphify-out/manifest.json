@@ -12,9 +12,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1791561941.4674737,
-    "seen": 1791562026.4949949,
-    "ast_hash": "e983ba172e755d9a23f138ffc5e5ab4b",
+    "mtime": 1791567546.48129,
+    "seen": 1791567604.839333,
+    "ast_hash": "686f447a919d78b60b568d9e143832f5",
     "semantic_hash": ""
   },
   "src/app/clinicas/[id]/page.tsx": {
@@ -870,9 +870,9 @@
     "semantic_hash": ""
   },
   "vitest.config.ts": {
-    "mtime": 1791507927.0524354,
-    "seen": 1791508445.1078327,
-    "ast_hash": "ae18b92b74d73cb1cbf714ac50c8ea03",
+    "mtime": 1791567546.4582188,
+    "seen": 1791567604.9414113,
+    "ast_hash": "ec7652b6c8a6d8a87a36eb6899348536",
     "semantic_hash": ""
   },
   ".agents/skills/clean-architecture/SKILL.md": {
@@ -1788,9 +1788,9 @@
     "semantic_hash": ""
   },
   "tests/server/asaas-webhook.test.ts": {
-    "mtime": 1791566336.5182219,
-    "seen": 1791566381.4305818,
-    "ast_hash": "aa6294d02945921e47f34e272dcafe38",
+    "mtime": 1791566677.5177505,
+    "seen": 1791566772.1007464,
+    "ast_hash": "60a8c28d9d2df521b1f4b5226a17b55d",
     "semantic_hash": ""
   },
   "src/server/emails/appointment_cancellation.ts": {
@@ -2022,9 +2022,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1791566336.328971,
-    "seen": 1791566381.4595087,
-    "ast_hash": "c6cbf66491535a4525472940ab406d9b",
+    "mtime": 1791567580.721903,
+    "seen": 1791567604.97575,
+    "ast_hash": "98e48d9485a861c3b3760560a30d1a5c",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2766,9 +2766,9 @@
     "semantic_hash": ""
   },
   "src/server/services/assinatura-regras.ts": {
-    "mtime": 1791566336.4933336,
-    "seen": 1791566381.418388,
-    "ast_hash": "0cf1626136119424116507e19d7b9cee",
+    "mtime": 1791566619.9255407,
+    "seen": 1791566772.081864,
+    "ast_hash": "7728a045872c2ef8c441e85c6ffca923",
     "semantic_hash": ""
   },
   "src/server/services/assinaturas.ts": {
@@ -2778,15 +2778,15 @@
     "semantic_hash": ""
   },
   "tests/server/assinatura-regras.test.ts": {
-    "mtime": 1791566336.5202198,
-    "seen": 1791566381.430585,
-    "ast_hash": "d27939889ca0e8abfb40c5cb65acfbc3",
+    "mtime": 1791566629.5393927,
+    "seen": 1791566772.1007504,
+    "ast_hash": "6782af214ef574f7c5dca6a5ed282471",
     "semantic_hash": ""
   },
   "tests/server/assinaturas.test.ts": {
-    "mtime": 1791566336.5212202,
-    "seen": 1791566381.4305868,
-    "ast_hash": "3cf6a4b081e38f52ed10a0b6150ba798",
+    "mtime": 1791566677.6269,
+    "seen": 1791566772.1007562,
+    "ast_hash": "044b52725b1c8bf12356948e22716f5a",
     "semantic_hash": ""
   },
   "src/components/Home/SearchBar/OrdenacaoLista.tsx": {
@@ -2805,6 +2805,204 @@
     "mtime": 1791566335.9886458,
     "seen": 1791566381.4312463,
     "ast_hash": "fc0cc8907419fa930b62b5f13a945543",
+    "semantic_hash": ""
+  },
+  "tests/server/assinatura-rotas.test.ts": {
+    "mtime": 1791566719.241676,
+    "seen": 1791566772.1007535,
+    "ast_hash": "4c5a6c8d1ba1e09602780d7041499483",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/agendamentos.test.ts": {
+    "mtime": 1791567136.4255314,
+    "seen": 1791567604.9370453,
+    "ast_hash": "a5196e37f5b4c34ccc2a8e29406f8f90",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/anotacoes.test.ts": {
+    "mtime": 1791567146.5647783,
+    "seen": 1791567604.9370477,
+    "ast_hash": "217d2a0c4f823a2ab0ef5e7d33660fe8",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/asaas.test.ts": {
+    "mtime": 1791567198.5155983,
+    "seen": 1791567604.9370496,
+    "ast_hash": "a10e3c5a09fbb928ebe0dc11222f8df7",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/assinante.test.ts": {
+    "mtime": 1791567204.5761504,
+    "seen": 1791567604.9370513,
+    "ast_hash": "ce8a299b10332556245b657de5af6abb",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/assinaturas.test.ts": {
+    "mtime": 1791567259.1953733,
+    "seen": 1791567604.937053,
+    "ast_hash": "d802a2ea0d939e75c8d45f2a72393468",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/auth.test.ts": {
+    "mtime": 1791567129.4948773,
+    "seen": 1791567604.9370544,
+    "ast_hash": "ae5055bb0e9a2bc9d24377f9de7cd299",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/avaliacoes.test.ts": {
+    "mtime": 1791567178.5513537,
+    "seen": 1791567604.937056,
+    "ast_hash": "6869c3f5044821c167de20aaaa225447",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/bloqueios.test.ts": {
+    "mtime": 1791567324.9017484,
+    "seen": 1791567604.9370573,
+    "ast_hash": "ffa415be603bf6662971b89273fe42ab",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/brazilapi.test.ts": {
+    "mtime": 1791567061.2963936,
+    "seen": 1791567604.937059,
+    "ast_hash": "fed5b83121d167576a6dc293e2fbafa2",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/canais-notificacao.test.ts": {
+    "mtime": 1791567193.3697443,
+    "seen": 1791567604.9370604,
+    "ast_hash": "b697b3f922a8b495309619dc28c7c6eb",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/clinicas.test.ts": {
+    "mtime": 1791567199.6504407,
+    "seen": 1791567604.9370618,
+    "ast_hash": "a94fe63db7e6b2a337cff2ef397d7925",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/encaminhamentos.test.ts": {
+    "mtime": 1791567369.2573094,
+    "seen": 1791567604.9370635,
+    "ast_hash": "0f97aeddd49207e286f13c85eedaf433",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/google-calendar.test.ts": {
+    "mtime": 1791567192.7487786,
+    "seen": 1791567604.9370646,
+    "ast_hash": "c13900e6eb394ba9d05f397c24669394",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/in-app-notifications.test.ts": {
+    "mtime": 1791567147.9559548,
+    "seen": 1791567604.937066,
+    "ast_hash": "4268a94fffbe15a2e5aefea46ab15a4d",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/mail.test.ts": {
+    "mtime": 1791567071.3438146,
+    "seen": 1791567604.9370673,
+    "ast_hash": "5edb2f6eb4962d54efc6127f641881ec",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/notifications.test.ts": {
+    "mtime": 1791567141.245569,
+    "seen": 1791567604.9370687,
+    "ast_hash": "e43cc182b60a11e09f6658cbcf16eb03",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/onboarding.test.ts": {
+    "mtime": 1791567158.2875493,
+    "seen": 1791567604.93707,
+    "ast_hash": "050609611788191ff97d335749c16a5f",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/pedidos-prestador-criacao.test.ts": {
+    "mtime": 1791567405.036907,
+    "seen": 1791567604.9370716,
+    "ast_hash": "bc062db0d14f59a46802a88aa6c37a70",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/pedidos-prestador-fluxo.test.ts": {
+    "mtime": 1791567451.6205254,
+    "seen": 1791567604.937073,
+    "ast_hash": "b349dbddc0921677cad637cd34351c29",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/pets.test.ts": {
+    "mtime": 1791567171.4599092,
+    "seen": 1791567604.9370744,
+    "ast_hash": "7f9f66604f91669ad8464cd69f5bc332",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/prestadores.test.ts": {
+    "mtime": 1791567382.233261,
+    "seen": 1791567604.9370763,
+    "ast_hash": "d9a970e2e39015dfec2cefb245931ade",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/profissional.test.ts": {
+    "mtime": 1791567156.4099894,
+    "seen": 1791567604.9370775,
+    "ast_hash": "07cd302a72e70b438f2e2a7f8aa56c8c",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/prontuario.test.ts": {
+    "mtime": 1791567368.324413,
+    "seen": 1791567604.937079,
+    "ast_hash": "5d8e733b3aba082e651acdceb4c77cde",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/storage.test.ts": {
+    "mtime": 1791567069.1777143,
+    "seen": 1791567604.9370806,
+    "ast_hash": "00f560128dd67175582c7a446edf0cb4",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/subscription.test.ts": {
+    "mtime": 1791567170.3394992,
+    "seen": 1791567604.937082,
+    "ast_hash": "5db4f61b20bd18ca77e70d9fa631ff19",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/tutor.test.ts": {
+    "mtime": 1791567167.0919359,
+    "seen": 1791567604.9370835,
+    "ast_hash": "c6f1e43fb0cf508d041d3ad928102368",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/veterinario-dashboard.test.ts": {
+    "mtime": 1791567163.585959,
+    "seen": 1791567604.9370847,
+    "ast_hash": "399ee9d8937d2165bde8fa96d6997b4b",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/veterinarios.test.ts": {
+    "mtime": 1791567243.6099393,
+    "seen": 1791567604.9370859,
+    "ast_hash": "83c74805dc479bcd8de7aa5de91d1623",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/vinculos.test.ts": {
+    "mtime": 1791567144.8757699,
+    "seen": 1791567604.9370873,
+    "ast_hash": "1b9c674b97e4331d397e153ee378b55b",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/whatsapp-mensagens.test.ts": {
+    "mtime": 1791567091.6885455,
+    "seen": 1791567604.9370887,
+    "ast_hash": "b073322af8dfa0366ad3134419cb29e2",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/whatsapp-notificacoes.test.ts": {
+    "mtime": 1791567297.771523,
+    "seen": 1791567604.9370904,
+    "ast_hash": "97e48c6ceec95ac41d444e31d68cf2fe",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/whatsapp.test.ts": {
+    "mtime": 1791567084.163549,
+    "seen": 1791567604.9370918,
+    "ast_hash": "ea2d4ed4365c9592417a249818465737",
     "semantic_hash": ""
   }
 }

@@ -12,5 +12,11 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/**/*.test.ts'],
     testTimeout: 30000,
+    coverage: {
+      provider: 'v8',
+      include: ['src/server/services/**/*.ts'],
+      reporter: ['text', 'json-summary'],
+      thresholds: { perFile: true, lines: 95, statements: 95, functions: 95 },
+    },
   },
 })
