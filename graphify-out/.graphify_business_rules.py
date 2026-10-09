@@ -160,6 +160,22 @@ impl.update({
     "tests_server_whatsapp_test": whatsapp_rules,
 })
 new_edges += [edge("src_server_services_bloqueios", "rule_whatsapp_eventos_destinatarios", "implements")]
+
+equipe_nodes = [
+    rule("rule_clinica_remove_vinculo", "Clinica remove veterinario = desfaz vinculo (nao apaga conta)",
+         "GET /clinicas/professionals e GET /veterinarios listam vinculos 'aceito'; DELETE /clinicas/professionals/:id e DELETE /veterinarios/:id apagam so o vinculo; conta, consultas e historico do vet permanecem; sem vinculo 404."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in equipe_nodes if n["id"] not in nodes_ids]
+new_edges += [edge("concept_regras_de_negocio", "rule_clinica_remove_vinculo")]
+impl.update({
+    "src_server_services_clinica_equipe": ["rule_clinica_remove_vinculo"],
+    "src_app_api_veterinarios_route": ["rule_clinica_remove_vinculo"],
+    "src_app_api_veterinarios_id_route": ["rule_clinica_remove_vinculo"],
+    "src_app_api_clinicas_professionals_route": ["rule_clinica_remove_vinculo"],
+    "src_app_api_clinicas_professionals_id_route": ["rule_clinica_remove_vinculo"],
+    "tests_server_clinica_equipe_test": ["rule_clinica_remove_vinculo"],
+})
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

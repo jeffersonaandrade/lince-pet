@@ -1,8 +1,12 @@
 import { ApiRequest, created, json, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { uploadVeterinarioPhoto } from '@/server/services/storage'
-import { registerVeterinario, type VeterinarioRegistrationData } from '@/server/services/veterinarios'
-import { listVeterinarios } from '@/server/services/onboarding'
+import {
+  registerVeterinario,
+  serializeVeterinario,
+  type VeterinarioRegistrationData,
+} from '@/server/services/veterinarios'
+import { listarEquipe } from '@/server/services/clinica-equipe'
 import { createVeterinarioRegistrationValidator } from '@/server/validators/veterinario'
 
 export const POST = route(async (req) => {
@@ -30,6 +34,7 @@ export const POST = route(async (req) => {
 
 export const GET = route(async (req) => {
   const currentUser = await requireUser(await ApiRequest.from(req), ['clinica'])
-  const veterinarios = await listVeterinarios(currentUser)
-  return json({ veterinarios })
+  if (!currentUser.clinica) return json({ veterinarios: [] })
+  const equipe = await listarEquipe(currentUser.clinica.id)
+  return json({ veterinarios: equipe.map(serializeVeterinario) })
 })

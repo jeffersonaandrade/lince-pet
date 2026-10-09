@@ -3,6 +3,7 @@ import { ApiRequest, badRequest, ok, route, serverError, unauthorized } from '@/
 import { requireUser } from '@/server/auth/session'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { serializeRelatedUser } from '@/server/services/clinicas'
+import { listarEquipe } from '@/server/services/clinica-equipe'
 
 export const GET = route(async (req) => {
   const currentUser = await requireUser(await ApiRequest.from(req))
@@ -11,11 +12,8 @@ export const GET = route(async (req) => {
   }
 
   try {
-    const vinculos = await prisma.veterinarioClinica.findMany({
-      where: { clinicaId: currentUser.clinica.id, status: 'aceito' },
-      include: { veterinario: { include: { user: true } } },
-    })
-    const profissionais = vinculos.map(({ veterinario: { user, ...vet } }) => ({
+    const equipe = await listarEquipe(currentUser.clinica.id)
+    const profissionais = equipe.map(({ user, ...vet }) => ({
       ...vet,
       user: serializeRelatedUser(user),
     }))

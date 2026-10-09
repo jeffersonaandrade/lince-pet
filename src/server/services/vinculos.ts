@@ -23,14 +23,14 @@ export async function aceitarVinculo(currentUser: CurrentUser, clinicaId: string
   const pivot = await prisma.veterinarioClinica.findFirst({ where: { ...where, status: 'pendente' } })
   if (!pivot) return false
 
+  const clinica = await prisma.clinica.findUnique({ where: { id: clinicaId } })
+  if (!clinica) throw rowNotFound()
+
   await prisma.$transaction(async (tx) => {
     await tx.veterinarioClinica.updateMany({
       where,
       data: { status: 'aceito', ativo: 1, updatedAt: new Date() },
     })
-
-    const clinica = await prisma.clinica.findUnique({ where: { id: clinicaId } })
-    if (!clinica) throw rowNotFound()
 
     await tx.veterinarioEndereco.create({
       data: creating({
@@ -72,10 +72,10 @@ export async function recusarVinculo(currentUser: CurrentUser, clinicaId: string
   const pivot = await prisma.veterinarioClinica.findFirst({ where })
   if (!pivot) return false
 
-  await prisma.veterinarioClinica.deleteMany({ where })
-
   const clinica = await prisma.clinica.findUnique({ where: { id: clinicaId } })
   if (!clinica) throw rowNotFound()
+
+  await prisma.veterinarioClinica.deleteMany({ where })
 
   const userClinica = clinica.userId ? await prisma.user.findFirst({ where: { id: clinica.userId } }) : null
   if (userClinica) {

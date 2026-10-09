@@ -68,6 +68,11 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Sem nota privada:** o prontuário nunca inclui a anotação privada (`agendamento_anotacoes`). O plano registrado na anotação é dado financeiro do vet; o plano clínico fica no registro.
 - **Pet novo:** começa com o prontuário vazio e acumula uma entrada por consulta não cancelada.
 
+### Equipe da clínica
+
+- **Lista:** `GET /api/clinicas/professionals` e `GET /api/veterinarios` (clínica) devolvem os veterinários com vínculo `aceito` (`src/server/services/clinica-equipe.ts`).
+- **Remover = desfazer vínculo:** `DELETE /api/clinicas/professionals/:id` e `DELETE /api/veterinarios/:id` apagam só o vínculo com aquele veterinário. A conta, as consultas e o histórico do veterinário permanecem. Sem vínculo: 404.
+
 ### Notificações por WhatsApp
 
 - **Número central:** todas as mensagens saem de um único número da Lince Pet, que distribui avisos para tutores, vets e clínicas. Vet e clínica não conectam número próprio.

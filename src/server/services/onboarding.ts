@@ -32,11 +32,6 @@ const vetOf = (user: CurrentUser) => user.veterinario as Veterinario
 
 const nextStep = (vet: Veterinario, step: number) => Math.max(step, vet.onboardingStep ?? 0)
 
-export async function listVeterinarios(user: CurrentUser) {
-  const veterinarios = await findVeterinarios({ userId: user.id }, ['user'])
-  return veterinarios.map(serializeVeterinario)
-}
-
 export function validatePreviousSteps(veterinario: Veterinario, currentStep: number): string[] {
   const errors: string[] = []
 
@@ -168,7 +163,6 @@ export async function processStep4(user: CurrentUser, payload: Infer<typeof step
 
     if (visitTypes.presencial && locations && locations.length > 0) {
       for (const [i, location] of locations.entries()) {
-        const fotoUrl = (location as { fotoUrl?: string }).fotoUrl
         await tx.veterinarioEndereco.create({
           data: creating({
             veterinarioId: veterinario.id,
@@ -184,7 +178,7 @@ export async function processStep4(user: CurrentUser, payload: Infer<typeof step
             observacoes: location.observacoes || null,
             isPrimary: Number(location.isPrimary || i === 0),
             precoConsulta: Math.round(Number(location.precoConsulta) * 100) / 100,
-            fotoUrl: fotoUrl || null,
+            fotoUrl: location.fotoUrl || null,
             ativo: 1,
           }),
         })
@@ -293,15 +287,4 @@ export async function getProgress(user: CurrentUser) {
       nextStepRequirements: nextStepErrors,
     },
   }
-}
-
-export async function deleteVeterinario(user: CurrentUser) {
-  const veterinario = await prisma.veterinario.findFirst({
-    where: { id: vetOf(user).id, userId: user.id },
-    select: { id: true },
-  })
-  if (!veterinario) throw rowNotFound()
-
-  await prisma.veterinario.delete({ where: { id: veterinario.id } })
-  return { success: true, message: 'Veterinário removido com sucesso' }
 }

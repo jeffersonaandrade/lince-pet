@@ -17,6 +17,7 @@ function statusNormalizado(status: string | null) {
 export const POST = route<{ id: string }>(async (req, { id }) => {
   const request = await ApiRequest.from(req)
   const user = await requireUser(request)
+  const payload = await createAvaliacaoValidator.validate(request.all())
   try {
     const tutor = await prisma.tutor.findFirst({ where: { userId: user.id } })
     if (!tutor) return badRequest({ message: 'Apenas tutores podem avaliar' })
@@ -30,8 +31,6 @@ export const POST = route<{ id: string }>(async (req, { id }) => {
 
     const jaAvaliado = await prisma.avaliacao.findFirst({ where: { agendamentoId: agendamento.id } })
     if (jaAvaliado) return badRequest({ message: 'Este agendamento já foi avaliado' })
-
-    const payload = await createAvaliacaoValidator.validate(request.all())
 
     const avaliacao = await prisma.avaliacao.create({
       data: creating({

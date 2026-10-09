@@ -1,6 +1,6 @@
-import { prisma } from '@/server/db'
-import { ApiRequest, ok, route, serverError, unauthorized } from '@/server/http'
+import { ApiRequest, HttpError, ok, route, serverError, unauthorized } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
+import { removerDaEquipe } from '@/server/services/clinica-equipe'
 
 export const DELETE = route<{ id: string }>(async (req, { id }) => {
   const currentUser = await requireUser(await ApiRequest.from(req))
@@ -9,11 +9,10 @@ export const DELETE = route<{ id: string }>(async (req, { id }) => {
   }
 
   try {
-    await prisma.veterinarioClinica.deleteMany({
-      where: { clinicaId: currentUser.clinica.id, veterinarioId: id },
-    })
+    await removerDaEquipe(currentUser.clinica.id, id)
     return ok({ message: 'Veterinário removido com sucesso' })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error(error)
     return serverError({ message: 'Erro ao remover veterinário' })
   }

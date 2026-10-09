@@ -1,7 +1,7 @@
 import { ApiRequest, json, notFound, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { getVeterinarioById } from '@/server/services/veterinarios'
-import { deleteVeterinario } from '@/server/services/onboarding'
+import { removerDaEquipe } from '@/server/services/clinica-equipe'
 
 export const GET = route<{ id: string }>(async (_req, { id }) => {
   try {
@@ -16,8 +16,10 @@ export const GET = route<{ id: string }>(async (_req, { id }) => {
   }
 })
 
-// O parâmetro (:veterinarioId no Adonis) é ignorado: remove o veterinário do próprio usuário.
-export const DELETE = route(async (req) => {
+/** Clínica remove o veterinário da equipe (desfaz o vínculo, não apaga a conta). */
+export const DELETE = route<{ id: string }>(async (req, { id }) => {
   const currentUser = await requireUser(await ApiRequest.from(req), ['clinica'])
-  return json(await deleteVeterinario(currentUser))
+  if (!currentUser.clinica) return notFound({ message: 'Clínica não encontrada' })
+  await removerDaEquipe(currentUser.clinica.id, id)
+  return json({ success: true, message: 'Veterinário removido com sucesso' })
 })

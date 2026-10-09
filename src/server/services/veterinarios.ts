@@ -370,7 +370,14 @@ export async function searchVeterinarios(filters: SearchFilters) {
 
 export async function getVeterinarioById(id: string) {
   try {
-    const [veterinario] = await findVeterinarios({ id }, ['user', 'especialidades', 'enderecos', 'experiencias', 'planos'])
+    const [veterinario] = await findVeterinarios({ id }, [
+      'user',
+      'especialidades',
+      'enderecos',
+      'avaliacoes',
+      'experiencias',
+      'planos',
+    ])
     if (!veterinario) throw statusError('Veterinário não encontrado', 404)
 
     const data = formatVeterinarioData(veterinario)

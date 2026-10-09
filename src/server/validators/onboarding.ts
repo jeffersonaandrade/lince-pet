@@ -51,6 +51,7 @@ export const step4Validator = vine.compile(
           aceitaEmergencia: vine.boolean().optional(),
           observacoes: vine.string().trim().maxLength(500).optional(),
           precoConsulta: vine.number().positive(),
+          fotoUrl: vine.string().trim().maxLength(2048).optional(),
           horariosDisponibilidade: vine
             .object({
               segunda: horario(),

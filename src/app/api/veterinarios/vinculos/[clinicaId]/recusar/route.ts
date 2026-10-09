@@ -1,4 +1,4 @@
-import { ApiRequest, notFound, ok, route, serverError, unauthorized } from '@/server/http'
+import { ApiRequest, HttpError, notFound, ok, route, serverError, unauthorized } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { recusarVinculo } from '@/server/services/vinculos'
 
@@ -12,6 +12,7 @@ export const PATCH = route<{ clinicaId: string }>(async (req, { clinicaId }) => 
     }
     return ok({ message: 'Vínculo recusado.' })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error('❌ Erro ao recusar vínculo:', error)
     return serverError({ message: 'Erro ao recusar vínculo' })
   }
