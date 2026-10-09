@@ -12,10 +12,11 @@ export const GET = route(async (req) => {
   const { search, cidade, estado, plano } = (await ApiRequest.from(req)).qs()
   const AND: Prisma.ClinicaWhereInput[] = []
 
-  if (search) AND.push({ OR: [{ nomeClinica: { contains: search } }, { descricao: { contains: search } }] })
-  if (cidade) AND.push({ cidade: { contains: cidade } })
+  const like = (valor: string) => ({ contains: valor, mode: 'insensitive' as const })
+  if (search) AND.push({ OR: [{ nomeClinica: like(search) }, { descricao: like(search) }] })
+  if (cidade) AND.push({ cidade: like(cidade) })
   if (estado) AND.push({ estado })
-  if (plano) AND.push({ clinicaPlanos: { some: { plano: { name: { contains: plano } } } } })
+  if (plano) AND.push({ clinicaPlanos: { some: { plano: { name: like(plano) } } } })
 
   const clinicas = await prisma.clinica.findMany({
     where: { AND },
