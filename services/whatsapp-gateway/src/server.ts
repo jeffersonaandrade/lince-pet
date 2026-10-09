@@ -11,6 +11,7 @@ const provider: WhatsAppProvider = config.provider === 'evolution' ? new Evoluti
 const breaker = new CircuitBreaker()
 const queue = new MessageQueue(provider, breaker)
 const startupErrors = validateConfig()
+const lastAutoReplyByContact = new Map<string, number>()
 
 function send(res: http.ServerResponse, status: number, body: unknown) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' })
@@ -80,12 +81,19 @@ const server = http.createServer(async (req, res) => {
     if (req.method === 'POST' && url.pathname === '/webhooks/evolution/messages-upsert') {
       const decision = classifyEvolutionMessage(await readJson(req))
       if (decision.accepted && decision.remoteJid && config.autoReplyText) {
-        const job = queue.enqueue({
-          to: decision.remoteJid,
-          text: config.autoReplyText,
-          idempotencyKey: `autoreply:${decision.messageId || decision.remoteJid}`,
-        })
-        Object.assign(decision, { replyJobId: job.id })
+        const lastReplyAt = lastAutoReplyByContact.get(decision.remoteJid) || 0
+        const canReply = Date.now() - lastReplyAt >= config.autoReplyCooldownMs
+        if (canReply) {
+          const job = queue.enqueue({
+            to: decision.remoteJid,
+            text: config.autoReplyText,
+            idempotencyKey: `autoreply:${decision.messageId || decision.remoteJid}`,
+          })
+          lastAutoReplyByContact.set(decision.remoteJid, Date.now())
+          Object.assign(decision, { replyJobId: job.id })
+        } else {
+          Object.assign(decision, { replySkipped: 'cooldown' })
+        }
       }
       console.log(JSON.stringify({ level: 'info', event: 'webhook.evolution.messages_upsert', ...decision }))
       send(res, 200, decision)

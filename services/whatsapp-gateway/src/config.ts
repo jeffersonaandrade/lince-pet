@@ -24,6 +24,7 @@ export const config = {
   circuitFailureThreshold: readInt('CIRCUIT_FAILURE_THRESHOLD', 5),
   circuitOpenMs: readInt('CIRCUIT_OPEN_MS', 60_000),
   autoReplyText: process.env.AUTO_REPLY_TEXT || '',
+  autoReplyCooldownMs: readInt('AUTO_REPLY_COOLDOWN_MS', 86_400_000),
 }
 
 export function validateConfig() {

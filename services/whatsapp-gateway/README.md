@@ -83,4 +83,16 @@ Para validar recebimento ponta a ponta, defina `AUTO_REPLY_TEXT`. O gateway resp
 
 ```bash
 AUTO_REPLY_TEXT="Recebemos sua mensagem. Este e um teste da Lince Pet."
+AUTO_REPLY_COOLDOWN_MS=86400000
+```
+
+Em producao, use texto de redirecionamento para o site, nao atendimento:
+
+```text
+Olá! Este número é usado apenas para avisos automáticos da Lince Pet.
+
+Para acessar sua conta, agendar, remarcar, cancelar ou usar os canais corretos, acesse:
+https://www.lincepet.com.br/
+
+Esta conversa não é monitorada para atendimento.
 ```
