@@ -7,6 +7,7 @@ import { HttpError } from '../http'
 import { creating, updating } from '../lucid'
 import type { CurrentUser } from '../auth/session'
 import { MENSAGEM_ANOTACAO_INDISPONIVEL, podeAnotar } from './anotacoes'
+import { recebeuEncaminhamentoDoPet } from './encaminhamentos'
 
 /**
  * Prontuário do pet: consultas não canceladas + registro clínico de cada uma.
@@ -94,7 +95,10 @@ export async function salvarRegistro(agendamentoId: string, veterinarioId: strin
 
 const NAO_ENCONTRADO = () => new HttpError(404, { message: 'Prontuário não encontrado' })
 
-/** Tutor dono, ou vet/clínica com consulta não cancelada do pet. Demais casos: 404. */
+/**
+ * Tutor dono; vet/clínica com consulta não cancelada do pet; ou destino de encaminhamento enviado/aceito do pet
+ * (inclui prestador). Demais casos: 404.
+ */
 export async function assertAcessoProntuario(user: CurrentUser, petId: string) {
   const pet = await prisma.pet.findUnique({ where: { id: petId } })
   if (!pet) throw NAO_ENCONTRADO()
@@ -110,11 +114,10 @@ export async function assertAcessoProntuario(user: CurrentUser, petId: string) {
       : user.userType === 'clinica' && user.clinica
         ? { clinicaId: user.clinica.id }
         : null
-  if (!vinculo) throw NAO_ENCONTRADO()
 
-  const atendeu = await prisma.agendamento.count({ where: { petId, status: NAO_CANCELADO, ...vinculo } })
-  if (!atendeu) throw NAO_ENCONTRADO()
-  return pet
+  if (vinculo && (await prisma.agendamento.count({ where: { petId, status: NAO_CANCELADO, ...vinculo } }))) return pet
+  if (await recebeuEncaminhamentoDoPet(user, petId)) return pet
+  throw NAO_ENCONTRADO()
 }
 
 const nomeCompleto = (u?: { nome: string | null; sobrenome: string | null } | null) =>

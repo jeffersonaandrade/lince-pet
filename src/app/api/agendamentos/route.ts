@@ -3,7 +3,8 @@ import { DateTime } from 'luxon'
 import { randomInt } from 'node:crypto'
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/server/db'
-import { ApiRequest, badRequest, created, notFound, ok, route, serverError, unauthorized } from '@/server/http'
+import { ApiRequest, badRequest, created, HttpError, json, notFound, ok, route, serverError, unauthorized } from '@/server/http'
+import { conferirEncaminhamento, vincularAgendamento } from '@/server/services/encaminhamentos'
 import { creating, updating } from '@/server/lucid'
 import { requireUser } from '@/server/auth/session'
 import { canCreateAppointment } from '@/server/services/subscription'
@@ -51,6 +52,7 @@ export const POST = route(async (req) => {
       pet_id,
       endereco_id,
       clinica_id,
+      encaminhamento_id,
     } = apiReq.body
 
     if (!veterinario_id || !data_consulta || !horario_consulta || !tipo_consulta) {
@@ -144,6 +146,20 @@ export const POST = route(async (req) => {
       return badRequest({ message: checkLimit.reason || 'Limite mensal de agendamentos atingido.' })
     }
 
+    if (encaminhamento_id) {
+      try {
+        await conferirEncaminhamento(str(encaminhamento_id), {
+          tutorId: tutor.id,
+          petId: pet.id,
+          veterinarioId: str(veterinario_id),
+          clinicaId: finalClinicaId,
+        })
+      } catch (e) {
+        if (e instanceof HttpError) return json(e.body, e.status)
+        throw e
+      }
+    }
+
     let agendamento = await prisma.$transaction(async (tx) => {
       const novo = await tx.agendamento.create({
         data: creating({
@@ -171,6 +187,8 @@ export const POST = route(async (req) => {
       }
       return novo
     })
+
+    if (encaminhamento_id) await vincularAgendamento(str(encaminhamento_id), agendamento.id)
 
     try {
       const startCode = randomInt(100000, 999999).toString()

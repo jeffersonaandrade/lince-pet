@@ -326,6 +326,50 @@ prestador_impl = {
 for code_id, rs in prestador_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 
+encaminhamento_nodes = [
+    rule("rule_encaminhamento_quem_envia", "Encaminhamento: so vet/clinica da consulta, apos inicio do atendimento",
+         "POST /api/agendamentos/:id/encaminhamentos; mesma janela do registro clinico (podeAnotar); consulta cancelada nao encaminha; campo texto livre continua."),
+    rule("rule_encaminhamento_destino", "Encaminhamento: destino clinica, veterinario ou prestador",
+         "destino_tipo clinica/veterinario/prestador ativo; nao para si mesmo; motivo 3-2000; urgencia rotina/prioritario; duplicado enviado para o mesmo destino = 409."),
+    rule("rule_encaminhamento_aceite_recusa", "Encaminhamento: destino aceita ou recusa (recusa com motivo)",
+         "Nasce enviado; so o destino responde e uma vez; recusa exige motivo >= 3; painel Encaminhamentos recebidos em vet, clinica e prestador."),
+    rule("rule_encaminhamento_prontuario", "Encaminhamento: destino ve o prontuario enquanto enviado/aceito",
+         "assertAcessoProntuario libera o destino (inclusive prestador); aceitos aparecem no prontuario com origem, destino, motivo e consulta marcada."),
+    rule("rule_encaminhamento_tutor_marca", "Encaminhamento: quem marca o horario e o tutor",
+         "Decisao da dona do produto. Apos aceite, Agendar com X leva a tela normal do destino com ?encaminhamento=&pet=, pet preselecionado e agenda do tutor no dia; regras normais do destino."),
+    rule("rule_encaminhamento_vinculo", "Encaminhamento: vinculo com a consulta marcada",
+         "encaminhamento_id em POST /api/agendamentos e no pedido de prestador; so aceito, do proprio tutor, mesmo pet e destino, sem outra marcacao ativa (409); grava agendamento_destino_id."),
+    rule("rule_encaminhamento_avisos", "Encaminhamento: avisos de novo, aceite e recusa",
+         "Novo: destino e tutor (sino, e-mail). Aceite/recusa: tutor e origem (sino, e-mail) e tutor por WhatsApp pelo plano da consulta de origem; falha nunca bloqueia."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in encaminhamento_nodes if n["id"] not in nodes_ids]
+encaminhamento_rules = [n["id"] for n in encaminhamento_nodes]
+new_edges += [edge("concept_regras_de_negocio", r) for r in encaminhamento_rules]
+new_edges += [edge("rule_encaminhamento_quem_envia", r) for r in encaminhamento_rules[1:]]
+new_edges += [edge("rule_encaminhamento_prontuario", "rule_prontuario_acesso", "references")]
+new_edges += [edge("rule_encaminhamento_avisos", "rule_canais_por_usuario", "references")]
+encaminhamento_impl = {
+    "src_server_services_encaminhamentos": encaminhamento_rules,
+    "src_server_services_prontuario": ["rule_encaminhamento_prontuario"],
+    "src_server_services_pedidos_prestador": ["rule_encaminhamento_vinculo"],
+    "src_server_services_whatsapp_notificacoes": ["rule_encaminhamento_avisos"],
+    "src_app_api_agendamentos_route": ["rule_encaminhamento_vinculo"],
+    "src_app_api_agendamentos_id_encaminhamentos_route": ["rule_encaminhamento_quem_envia", "rule_encaminhamento_destino"],
+    "src_app_api_encaminhamentos_id_aceitar_route": ["rule_encaminhamento_aceite_recusa"],
+    "src_app_api_encaminhamentos_id_recusar_route": ["rule_encaminhamento_aceite_recusa"],
+    "src_app_api_pets_id_prontuario_route": ["rule_encaminhamento_prontuario"],
+    "src_components_encaminhamento_encaminharmodal": ["rule_encaminhamento_destino"],
+    "src_components_encaminhamento_painelrecebidos": ["rule_encaminhamento_aceite_recusa"],
+    "src_components_encaminhamento_encaminhamentostutor": ["rule_encaminhamento_tutor_marca"],
+    "src_components_encaminhamento_minhaagendadodia": ["rule_encaminhamento_tutor_marca"],
+    "src_components_encaminhamento_faixaencaminhamento": ["rule_encaminhamento_tutor_marca", "rule_encaminhamento_vinculo"],
+    "src_components_prontuario_prontuariopet": ["rule_encaminhamento_prontuario"],
+    "tests_server_encaminhamentos_test": encaminhamento_rules,
+}
+for code_id, rs in encaminhamento_impl.items():
+    impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

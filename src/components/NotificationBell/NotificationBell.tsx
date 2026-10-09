@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Bell, Check, CheckCheck, Calendar, Star, Link2, X, AlertCircle, CheckCircle } from "lucide-react";
+import { Bell, Check, CheckCheck, Calendar, Star, Link2, X, AlertCircle, CheckCircle, Send } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
     NotificationsService,
@@ -59,6 +59,9 @@ const NOTIFICATION_CONFIG: Record<
     PEDIDO_REMARCADO: { icon: <Calendar size={18} />, color: "#e67e22" },
     PEDIDO_CONCLUIDO: { icon: <CheckCircle size={18} />, color: "#10b981" },
     NOVA_AVALIACAO: { icon: <Star size={18} />, color: "#eab308" },
+    ENCAMINHAMENTO_NOVO: { icon: <Send size={18} />, color: "#8b5cf6" },
+    ENCAMINHAMENTO_ACEITO: { icon: <Check size={18} />, color: "#22c55e" },
+    ENCAMINHAMENTO_RECUSADO: { icon: <X size={18} />, color: "#ef4444" },
 };
 
 // Ícone/cor padrão caso o type não esteja mapeado
@@ -177,6 +180,8 @@ export default function NotificationBell({
             if (onNavigate) onNavigate();
             if (notif.type.startsWith('PEDIDO_') || notif.type === 'NOVA_AVALIACAO') {
                 router.push(dashboardDoTipo(user?.userType));
+            } else if (notif.type.startsWith('ENCAMINHAMENTO_')) {
+                router.push(`${dashboardDoTipo(user?.userType)}#encaminhamentos`);
             } else if (notif.type === 'NOVO_AGENDAMENTO' || notif.type === 'AGENDAMENTO_CANCELADO' || notif.type === 'AGENDAMENTO_REAGENDADO') {
                 router.push(dashboardDoTipo(user?.userType));
             } else if (notif.type === 'AGENDAMENTO_CONFIRMADO') {

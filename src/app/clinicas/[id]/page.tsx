@@ -37,6 +37,8 @@ import SuccessScreen from "@/components/SuccessScreen/SuccessScreen";
 import LottieLoading from "@/components/ui/LottieLoading/LottieLoading";
 import { PetsService, type PetRecord } from "@/services/pets/pets";
 import MiniCalendar from "@/components/MiniCalendar/MiniCalendar";
+import MinhaAgendaDoDia from "@/components/Encaminhamento/MinhaAgendaDoDia";
+import { FaixaEncaminhamento, useEncaminhamentoDaUrl } from "@/components/Encaminhamento/FaixaEncaminhamento";
 
 
 
@@ -67,6 +69,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const { encaminhamentoId, petId: petEncaminhadoId, encaminhamento } = useEncaminhamentoDaUrl();
   const [isFavorited, setIsFavorited] = useState(false);
   const [favoriteId, setFavoriteId] = useState<string | null>(null);
   const [loadingFavorite, setLoadingFavorite] = useState(false);
@@ -318,12 +321,13 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
       PetsService.listarPets()
         .then(res => {
           setPets(res);
-          if (res.length > 0) setSelectedPetId(res[0].id);
+          const petEncaminhado = res.find((p) => String(p.id) === petEncaminhadoId);
+          if (res.length > 0) setSelectedPetId(petEncaminhado?.id ?? res[0].id);
         })
         .catch(err => console.error("Erro ao carregar pets:", err))
         .finally(() => setLoadingPets(false));
     }
-  }, [user, showAgendamentoModal]);
+  }, [user, showAgendamentoModal, petEncaminhadoId]);
 
   const handleAgendar = () => {
     if (!user) {
@@ -360,6 +364,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
         pet_id: selectedPetId,
         observacoes: observacoes || undefined,
         clinica_id: id as string,
+        encaminhamento_id: encaminhamentoId || undefined,
       });
 
       setShowAgendamentoModal(false);
@@ -682,6 +687,9 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
             <aside className={styles.sidebar}>
               <div className={styles.stickyCard} id="scheduling-card">
                 <h3>Agendar Consulta</h3>
+                <div className="mb-4 empty:hidden">
+                  <FaixaEncaminhamento encaminhamento={encaminhamento} />
+                </div>
 
                 {!selectedProfessional ? (
                   <div style={{ padding: '0.5rem 0' }}>
@@ -837,6 +845,14 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                           </>
                         ) : <p className={styles.noAvailability}>Sem horários</p>}
                       </div>
+                      {user?.userType === "tutor" ? (
+                        <div className="mt-3">
+                          <MinhaAgendaDoDia
+                            data={formatLocalISODate(new Date(new Date().setDate(new Date().getDate() + selectedDay)))}
+                            horario={selectedTimeSlot}
+                          />
+                        </div>
+                      ) : null}
                     </div>
 
                     <div className={styles.pricingInfo}>

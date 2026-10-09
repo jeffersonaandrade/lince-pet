@@ -15,6 +15,7 @@ import {
 import { PainelPedidos } from "@/components/Prestador/PainelPedidos";
 import { PainelBloqueios } from "@/components/Prestador/PainelBloqueios";
 import { CardPlano } from "@/components/Prestador/CardPlano";
+import PainelRecebidos from "@/components/Encaminhamento/PainelRecebidos";
 import { Alerta, botaoSecundario } from "@/components/Prestador/ui";
 
 export default function DashboardPrestador() {
@@ -86,7 +87,10 @@ export default function DashboardPrestador() {
 
         {perfil ? (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-            <PainelPedidos pedidos={pedidos} onAtualizado={atualizarPedido} />
+            <div className="flex flex-col gap-6">
+              <PainelPedidos pedidos={pedidos} onAtualizado={atualizarPedido} />
+              <PainelRecebidos />
+            </div>
             <div className="flex flex-col gap-6">
               <CardPlano />
               <PainelBloqueios bloqueios={bloqueios} onAlterado={setBloqueios} />

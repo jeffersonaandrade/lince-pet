@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, ClipboardList, Scale } from "lucide-react";
+import { ChevronDown, ChevronUp, ClipboardList, Scale, Send } from "lucide-react";
 import {
   ProntuarioService,
   type ConsultaProntuario,
@@ -134,10 +134,32 @@ export default function ProntuarioPet({ petId, petNome, recolhivel = false }: Pr
           <p className="m-0 text-sm text-slate-500">Carregando...</p>
         ) : erro ? (
           <p role="alert" className="m-0 text-sm text-red-600">{erro}</p>
-        ) : !dados || dados.consultas.length === 0 ? (
+        ) : !dados || (dados.consultas.length === 0 && !dados.encaminhamentos?.length) ? (
           <p className="m-0 text-sm text-slate-500">Este pet ainda não tem registros.</p>
         ) : (
           <>
+            {dados.encaminhamentos?.length ? (
+              <div className="flex flex-col gap-1">
+                <span className="flex items-center gap-2 text-xs font-semibold uppercase text-slate-500">
+                  <Send size={12} /> Encaminhamentos aceitos
+                </span>
+                <ul className="m-0 flex list-none flex-col gap-2 p-0">
+                  {dados.encaminhamentos.map((e) => (
+                    <li key={e.id} className="rounded-lg border border-solid border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+                      <span className="font-semibold text-slate-800">
+                        {e.origem.nome} → {e.destino.nome}
+                      </span>
+                      <span className="text-xs text-slate-500">
+                        {" "}· {e.destino.rotulo}
+                        {e.respondido_em ? ` · aceito em ${formatarData(e.respondido_em)}` : ""}
+                        {e.agendamento_destino?.data ? ` · agendado para ${formatarData(e.agendamento_destino.data)}` : ""}
+                      </span>
+                      <p className="m-0 whitespace-pre-wrap text-xs">{e.motivo}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             {peso && (
               <p className="m-0 flex items-center gap-2 text-sm text-slate-700">
                 <Scale size={14} className="text-slate-500" />

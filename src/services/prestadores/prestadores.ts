@@ -103,6 +103,7 @@ export type NovoPedido = {
   horario_fim?: string | null;
   local: "domicilio" | "local_proprio";
   observacoes?: string | null;
+  encaminhamento_id?: string | null;
 };
 
 export const PrestadoresService = {

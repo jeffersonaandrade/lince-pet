@@ -67,7 +67,7 @@ const isDuplicado = (e: unknown) => e instanceof Prisma.PrismaClientKnownRequest
 /** Reserva o envio (unique de idempotência); null se já foi registrado antes. */
 async function reservar(data: {
   agendamentoId: string
-  evento: EventoWhatsapp
+  evento: string
   destinatario: Destinatario
   referencia: string
   telefone: string | null
@@ -91,12 +91,22 @@ async function enviarPara(
 ): Promise<ResultadoEnvio> {
   const texto = montarMensagem(evento, para, dadosDaMensagem(a, motivo))
   if (!texto) return 'nao_aplicavel'
+  return despachar(a, evento, para, referenciaDaConsulta(a), texto, planoOk)
+}
 
+async function despachar(
+  a: AgendamentoWhatsapp,
+  evento: string,
+  para: Destinatario,
+  referencia: string,
+  texto: string,
+  planoOk: boolean
+): Promise<ResultadoEnvio> {
   const base = {
     agendamentoId: a.id,
     evento,
     destinatario: para,
-    referencia: referenciaDaConsulta(a),
+    referencia,
     telefone: telefoneDe(a, para),
   }
 
@@ -131,6 +141,26 @@ async function enviarPara(
   })
   if (!r.ok) console.error(`[WhatsApp] Falha (${evento}/${para}) agendamento ${a.id}: ${r.erro}`)
   return r.ok ? 'enviado' : 'falhou'
+}
+
+/**
+ * Texto avulso ao tutor ligado a um agendamento (ex.: encaminhamento a partir da consulta).
+ * Mesmas regras de plano, canal e idempotência; `referencia` tem até 20 caracteres. Nunca lança erro.
+ */
+export async function notificarTutorAvulso(
+  agendamentoId: string,
+  evento: string,
+  referencia: string,
+  texto: string
+): Promise<ResultadoEnvio> {
+  try {
+    const a = await carregarAgendamento(agendamentoId)
+    if (!a) return 'nao_aplicavel'
+    return await despachar(a, evento.slice(0, 30), 'tutor', referencia.slice(0, 20), texto, await planoPermiteWhatsapp(a))
+  } catch (error) {
+    console.error(`[WhatsApp] Erro no aviso avulso ${evento}:`, error)
+    return 'falhou'
+  }
 }
 
 /** Dispara o evento para os destinatários. Nunca lança erro. */

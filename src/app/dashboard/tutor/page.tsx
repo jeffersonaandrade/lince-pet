@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./tutor.module.css";
 import { AppointmentItem } from "./AppointmentItem";
-import { Pencil, Trash2, MapPin, Stethoscope, Dog, User as UserIcon, Calendar, History, Star, Clock, ClipboardList } from "lucide-react";
+import { Pencil, Trash2, MapPin, Stethoscope, Dog, User as UserIcon, Calendar, History, Star, Clock, ClipboardList, Send } from "lucide-react";
 import ProntuarioPet from "@/components/Prontuario/ProntuarioPet";
+import EncaminhamentosTutor from "@/components/Encaminhamento/EncaminhamentosTutor";
 import {
   AgendamentosService,
   ListaAgendamentosResponse,
@@ -788,6 +789,16 @@ export default function TutorDashboard() {
                   />
                 ))}
               </div>
+            </div>
+
+            <div className={styles.card}>
+              <div className={styles.cardHeader}>
+                <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Send size={20} className={styles.metaInfoIcon} />
+                  Encaminhamentos
+                </h2>
+              </div>
+              <EncaminhamentosTutor />
             </div>
           </div>
 

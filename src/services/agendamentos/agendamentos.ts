@@ -11,6 +11,7 @@ export interface AgendamentoData {
   pet_id: string; // novo: pet que irá à consulta
   observacoes?: string;
   clinica_id?: string;
+  encaminhamento_id?: string;
 }
 
 export interface AgendamentoResponse {

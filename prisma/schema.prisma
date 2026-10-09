@@ -95,19 +95,20 @@ model User {
 }
 
 model Tutor {
-  id            String    @id @db.Char(36)
-  userId        String?   @map("user_id") @db.Char(36)
-  cpf           String?   @unique @db.VarChar(14)
-  genero        Genero?
-  createdAt     DateTime? @map("created_at") @db.Timestamp(0)
-  updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
+  id        String    @id @db.Char(36)
+  userId    String?   @map("user_id") @db.Char(36)
+  cpf       String?   @unique @db.VarChar(14)
+  genero    Genero?
+  createdAt DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
 
-  user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  agendamentos Agendamento[]
-  pets         Pet[]
-  favorites    Favorite[]
-  payments     Payment[]
-  avaliacoes   Avaliacao[]
+  user            User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agendamentos    Agendamento[]
+  pets            Pet[]
+  favorites       Favorite[]
+  payments        Payment[]
+  avaliacoes      Avaliacao[]
+  encaminhamentos Encaminhamento[]
 
   @@map("tutores")
 }
@@ -137,63 +138,67 @@ model Veterinario {
   monthlyAppointmentsUsed    Int?      @default(0) @map("monthly_appointments_used")
   monthlyAppointmentsResetAt DateTime? @map("monthly_appointments_reset_at") @db.Timestamp(0)
 
-  user                User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  enderecos           VeterinarioEndereco[]
-  agendamentos        Agendamento[]
-  avaliacoes          Avaliacao[]
-  favorites           Favorite[]
-  experiencias        ExperienciaVeterinario[]
+  user                     User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enderecos                VeterinarioEndereco[]
+  agendamentos             Agendamento[]
+  avaliacoes               Avaliacao[]
+  favorites                Favorite[]
+  experiencias             ExperienciaVeterinario[]
   // TODO(verify): Lucid declara belongsTo `subscription`, mas não existe coluna subscription_id em veterinarios; relação omitida (usar a lista abaixo).
-  subscriptions       Subscription[]
-  payments            Payment[]
-  creditsLedger       CreditsLedger[]
-  veterinarioPlanos   VeterinarioPlano[]
-  veterinarioClinicas VeterinarioClinica[]
-  bloqueiosAgenda     BloqueioAgenda[]
+  subscriptions            Subscription[]
+  payments                 Payment[]
+  creditsLedger            CreditsLedger[]
+  veterinarioPlanos        VeterinarioPlano[]
+  veterinarioClinicas      VeterinarioClinica[]
+  bloqueiosAgenda          BloqueioAgenda[]
+  encaminhamentosEnviados  Encaminhamento[]         @relation("EncaminhamentoOrigemVet")
+  encaminhamentosRecebidos Encaminhamento[]         @relation("EncaminhamentoDestinoVet")
 
   @@map("veterinarios")
 }
 
 model Clinica {
-  id                    String    @id @db.Char(36)
-  userId                String?   @map("user_id") @db.Char(36)
-  cnpj                  String?   @unique @db.VarChar(18)
-  descricao             String?   @db.Text
-  horariosFuncionamento Json?     @map("horarios_funcionamento")
+  id                    String       @id @db.Char(36)
+  userId                String?      @map("user_id") @db.Char(36)
+  cnpj                  String?      @unique @db.VarChar(18)
+  descricao             String?      @db.Text
+  horariosFuncionamento Json?        @map("horarios_funcionamento")
   // TODO(verify): alterado de integer default 0 para string(10) via .alter(); MODIFY do MySQL deve ter removido o default.
-  quantidadeVets        String?   @map("quantidade_vets") @db.VarChar(10)
-  onboardingComplete    Int?      @default(0) @map("onboarding_complete") @db.SmallInt
-  isVerified            Int?      @default(0) @map("is_verified") @db.SmallInt
-  createdAt             DateTime? @map("created_at") @db.Timestamp(0)
-  updatedAt             DateTime? @map("updated_at") @db.Timestamp(0)
-  nomeClinica           String?   @map("nome_clinica") @db.VarChar(200)
+  quantidadeVets        String?      @map("quantidade_vets") @db.VarChar(10)
+  onboardingComplete    Int?         @default(0) @map("onboarding_complete") @db.SmallInt
+  isVerified            Int?         @default(0) @map("is_verified") @db.SmallInt
+  createdAt             DateTime?    @map("created_at") @db.Timestamp(0)
+  updatedAt             DateTime?    @map("updated_at") @db.Timestamp(0)
+  nomeClinica           String?      @map("nome_clinica") @db.VarChar(200)
   tipoClinica           TipoClinica? @default(solo) @map("tipo_clinica")
-  nomeFantasia          String?   @map("nome_fantasia") @db.VarChar(255)
-  razaoSocial           String?   @map("razao_social") @db.VarChar(255)
-  endereco              String?   @db.VarChar(255)
-  cep                   String?   @db.VarChar(10)
-  cidade                String?   @db.VarChar(255)
-  estado                String?   @db.VarChar(2)
-  latitude              String?   @db.VarChar(255)
-  longitude             String?   @db.VarChar(255)
-  telefone              String?   @db.VarChar(255)
-  whatsapp              String?   @db.VarChar(255)
-  horarioFuncionamento  Json?     @map("horario_funcionamento")
+  nomeFantasia          String?      @map("nome_fantasia") @db.VarChar(255)
+  razaoSocial           String?      @map("razao_social") @db.VarChar(255)
+  endereco              String?      @db.VarChar(255)
+  cep                   String?      @db.VarChar(10)
+  cidade                String?      @db.VarChar(255)
+  estado                String?      @db.VarChar(2)
+  latitude              String?      @db.VarChar(255)
+  longitude             String?      @db.VarChar(255)
+  telefone              String?      @db.VarChar(255)
+  whatsapp              String?      @db.VarChar(255)
+  horarioFuncionamento  Json?        @map("horario_funcionamento")
   comodidades           Json?
-  fotoPerfil            String?   @map("foto_perfil") @db.VarChar(255)
-  fotoCapa              String?   @map("foto_capa") @db.VarChar(255)
-  sobre                 String?   @db.Text
-  subscriptionPlanCode  String?   @default("free") @map("subscription_plan_code") @db.VarChar(255)
+  fotoPerfil            String?      @map("foto_perfil") @db.VarChar(255)
+  fotoCapa              String?      @map("foto_capa") @db.VarChar(255)
+  sobre                 String?      @db.Text
+  subscriptionPlanCode  String?      @default("free") @map("subscription_plan_code") @db.VarChar(255)
 
-  user                 User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  favorites            Favorite[]
-  avaliacoes           Avaliacao[]
-  agendamentos         Agendamento[]
-  veterinarioEnderecos VeterinarioEndereco[]
-  subscriptions        Subscription[]
-  veterinarioClinicas  VeterinarioClinica[]
-  clinicaDiferenciais  ClinicaDiferencial[]
-  clinicaPlanos        ClinicaPlano[]
+  user                     User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  favorites                Favorite[]
+  avaliacoes               Avaliacao[]
+  agendamentos             Agendamento[]
+  veterinarioEnderecos     VeterinarioEndereco[]
+  subscriptions            Subscription[]
+  veterinarioClinicas      VeterinarioClinica[]
+  clinicaDiferenciais      ClinicaDiferencial[]
+  clinicaPlanos            ClinicaPlano[]
+  encaminhamentosEnviados  Encaminhamento[]      @relation("EncaminhamentoOrigemClinica")
+  encaminhamentosRecebidos Encaminhamento[]      @relation("EncaminhamentoDestinoClinica")
 
   @@map("clinicas")
 }
@@ -238,15 +243,16 @@ model Prestador {
   createdAt                  DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt                  DateTime? @map("updated_at") @db.Timestamp(0)
 
-  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tipoServico   TipoServico        @relation(fields: [tipoServicoId], references: [id])
-  servicos      ServicoOferecido[]
-  agendamentos  Agendamento[]
-  bloqueios     BloqueioAgenda[]
-  avaliacoes    Avaliacao[]
-  favorites     Favorite[]
-  payments      Payment[]
-  subscriptions Subscription[]
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tipoServico     TipoServico        @relation(fields: [tipoServicoId], references: [id])
+  servicos        ServicoOferecido[]
+  agendamentos    Agendamento[]
+  bloqueios       BloqueioAgenda[]
+  avaliacoes      Avaliacao[]
+  favorites       Favorite[]
+  payments        Payment[]
+  subscriptions   Subscription[]
+  encaminhamentos Encaminhamento[]
 
   @@index([userId])
   @@index([tipoServicoId])
@@ -459,9 +465,10 @@ model Pet {
   updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
   porte     Porte?
 
-  tutor        Tutor?            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  agendamentos Agendamento[]
-  registros    RegistroClinico[]
+  tutor           Tutor?            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  agendamentos    Agendamento[]
+  registros       RegistroClinico[]
+  encaminhamentos Encaminhamento[]
 
   @@map("pets")
 }
@@ -503,17 +510,19 @@ model Agendamento {
   inicioEm           DateTime? @map("inicio_em") @db.Timestamp(0)
   fimEm              DateTime? @map("fim_em") @db.Timestamp(0)
 
-  tutor            Tutor?               @relation(fields: [tutorId], references: [id])
-  pet              Pet?                 @relation(fields: [petId], references: [id], onDelete: SetNull)
-  veterinario      Veterinario?         @relation(fields: [veterinarioId], references: [id])
-  clinica          Clinica?             @relation(fields: [clinicaId], references: [id], onDelete: SetNull)
-  prestador        Prestador?           @relation(fields: [prestadorId], references: [id])
-  servicoOferecido ServicoOferecido?    @relation(fields: [servicoOferecidoId], references: [id], onDelete: SetNull)
-  avaliacao       Avaliacao?
-  anotacao        AgendamentoAnotacao?
-  registroClinico RegistroClinico?
-  whatsappEnvios  WhatsappEnvio[]
-  googleEventos   AgendamentoGoogleEvento[]
+  tutor                   Tutor?                    @relation(fields: [tutorId], references: [id])
+  pet                     Pet?                      @relation(fields: [petId], references: [id], onDelete: SetNull)
+  veterinario             Veterinario?              @relation(fields: [veterinarioId], references: [id])
+  clinica                 Clinica?                  @relation(fields: [clinicaId], references: [id], onDelete: SetNull)
+  prestador               Prestador?                @relation(fields: [prestadorId], references: [id])
+  servicoOferecido        ServicoOferecido?         @relation(fields: [servicoOferecidoId], references: [id], onDelete: SetNull)
+  avaliacao               Avaliacao?
+  anotacao                AgendamentoAnotacao?
+  registroClinico         RegistroClinico?
+  whatsappEnvios          WhatsappEnvio[]
+  googleEventos           AgendamentoGoogleEvento[]
+  encaminhamentosEnviados Encaminhamento[]          @relation("EncaminhamentoOrigem")
+  encaminhamentoOrigem    Encaminhamento?           @relation("EncaminhamentoDestino")
 
   @@index([prestadorId, inicioEm])
   @@map("agendamentos")
@@ -610,6 +619,49 @@ model RegistroClinico {
   @@map("registros_clinicos")
 }
 
+/// Encaminhamento do pet, a partir de uma consulta, para outra clínica, veterinário ou prestador.
+/// `status`: enviado | aceito | recusado. Quem marca o horário é o tutor (agendamentoDestinoId).
+model Encaminhamento {
+  id                   String    @id @db.Char(36)
+  petId                String    @map("pet_id") @db.Char(36)
+  tutorId              String    @map("tutor_id") @db.Char(36)
+  agendamentoOrigemId  String    @map("agendamento_origem_id") @db.Char(36)
+  origemVeterinarioId  String?   @map("origem_veterinario_id") @db.Char(36)
+  origemClinicaId      String?   @map("origem_clinica_id") @db.Char(36)
+  /// veterinario | clinica | prestador
+  destinoTipo          String    @map("destino_tipo") @db.VarChar(20)
+  destinoVeterinarioId String?   @map("destino_veterinario_id") @db.Char(36)
+  destinoClinicaId     String?   @map("destino_clinica_id") @db.Char(36)
+  destinoPrestadorId   String?   @map("destino_prestador_id") @db.Char(36)
+  motivo               String    @db.Text
+  /// rotina | prioritario
+  urgencia             String    @default("rotina") @db.VarChar(20)
+  status               String    @default("enviado") @db.VarChar(20)
+  motivoRecusa         String?   @map("motivo_recusa") @db.VarChar(500)
+  respondidoEm         DateTime? @map("respondido_em") @db.Timestamp(0)
+  agendamentoDestinoId String?   @unique @map("agendamento_destino_id") @db.Char(36)
+  createdAt            DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt            DateTime? @map("updated_at") @db.Timestamp(0)
+
+  pet                Pet          @relation(fields: [petId], references: [id], onDelete: Cascade)
+  tutor              Tutor        @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  agendamentoOrigem  Agendamento  @relation("EncaminhamentoOrigem", fields: [agendamentoOrigemId], references: [id], onDelete: Cascade)
+  agendamentoDestino Agendamento? @relation("EncaminhamentoDestino", fields: [agendamentoDestinoId], references: [id], onDelete: SetNull)
+  origemVeterinario  Veterinario? @relation("EncaminhamentoOrigemVet", fields: [origemVeterinarioId], references: [id], onDelete: SetNull)
+  origemClinica      Clinica?     @relation("EncaminhamentoOrigemClinica", fields: [origemClinicaId], references: [id], onDelete: SetNull)
+  destinoVeterinario Veterinario? @relation("EncaminhamentoDestinoVet", fields: [destinoVeterinarioId], references: [id], onDelete: Cascade)
+  destinoClinica     Clinica?     @relation("EncaminhamentoDestinoClinica", fields: [destinoClinicaId], references: [id], onDelete: Cascade)
+  destinoPrestador   Prestador?   @relation(fields: [destinoPrestadorId], references: [id], onDelete: Cascade)
+
+  @@index([petId])
+  @@index([tutorId])
+  @@index([agendamentoOrigemId])
+  @@index([destinoVeterinarioId, status])
+  @@index([destinoClinicaId, status])
+  @@index([destinoPrestadorId, status])
+  @@map("encaminhamentos")
+}
+
 /// Bloqueio da agenda (não altera a grade semanal). `horarios` null = dia inteiro.
 /// `recorrente` = 1 repete nos `diasSemana` (0=domingo) a partir de `dataInicio`; `dataFim` null = sem fim.
 model BloqueioAgenda {
@@ -650,8 +702,8 @@ model Avaliacao {
   estrelasClinica   Int?      @map("estrelas_clinica")
   comentarioClinica String?   @map("comentario_clinica") @db.Text
 
-  agendamento Agendamento @relation(fields: [agendamentoId], references: [id])
-  tutor       Tutor       @relation(fields: [tutorId], references: [id])
+  agendamento Agendamento  @relation(fields: [agendamentoId], references: [id])
+  tutor       Tutor        @relation(fields: [tutorId], references: [id])
   veterinario Veterinario? @relation(fields: [veterinarioId], references: [id])
   clinica     Clinica?     @relation(fields: [clinicaId], references: [id])
   prestador   Prestador?   @relation(fields: [prestadorId], references: [id])
@@ -678,21 +730,21 @@ model CreditPlan {
 }
 
 model Payment {
-  id                      String    @id @db.Char(36)
-  userId                  String?   @map("user_id") @db.Char(36)
-  tutorId                 String?   @map("tutor_id") @db.Char(36)
-  veterinarioId           String?   @map("veterinario_id") @db.Char(36)
-  prestadorId             String?   @map("prestador_id") @db.Char(36)
+  id                      String      @id @db.Char(36)
+  userId                  String?     @map("user_id") @db.Char(36)
+  tutorId                 String?     @map("tutor_id") @db.Char(36)
+  veterinarioId           String?     @map("veterinario_id") @db.Char(36)
+  prestadorId             String?     @map("prestador_id") @db.Char(36)
   type                    PaymentType
-  provider                String    @default("stripe") @db.VarChar(255)
-  checkoutSessionId       String?   @map("checkout_session_id") @db.VarChar(255)
-  providerPaymentIntentId String?   @map("provider_payment_intent_id") @db.VarChar(255)
-  amountCents             Int       @map("amount_cents")
-  currency                String    @default("brl") @db.VarChar(255)
-  status                  String    @default("pending") @db.VarChar(255)
-  metadata                String?   @db.Text
-  createdAt               DateTime? @map("created_at") @db.Timestamp(0)
-  updatedAt               DateTime? @map("updated_at") @db.Timestamp(0)
+  provider                String      @default("stripe") @db.VarChar(255)
+  checkoutSessionId       String?     @map("checkout_session_id") @db.VarChar(255)
+  providerPaymentIntentId String?     @map("provider_payment_intent_id") @db.VarChar(255)
+  amountCents             Int         @map("amount_cents")
+  currency                String      @default("brl") @db.VarChar(255)
+  status                  String      @default("pending") @db.VarChar(255)
+  metadata                String?     @db.Text
+  createdAt               DateTime?   @map("created_at") @db.Timestamp(0)
+  updatedAt               DateTime?   @map("updated_at") @db.Timestamp(0)
 
   user          User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
   tutor         Tutor?          @relation(fields: [tutorId], references: [id], onDelete: SetNull)
@@ -701,7 +753,6 @@ model Payment {
   creditsLedger CreditsLedger[]
 
   @@index([prestadorId])
-
   @@map("payments")
 }
 

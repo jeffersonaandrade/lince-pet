@@ -1138,8 +1138,56 @@ export async function seedDemonstracao(prisma: PrismaClient) {
     }
   }
 
+  const realizadas = await prisma.agendamento.findMany({
+    where: { status: 'realizado', veterinarioId: { not: null }, petId: { not: null }, tutorId: { not: null } },
+    orderBy: { dataConsulta: 'desc' },
+    take: 3,
+  })
+  const prestadorDemo = await prisma.prestador.findFirst({
+    where: { user: { email: { contains: 'mockup' } } },
+    orderBy: { createdAt: 'asc' },
+  })
+  const destinosDemo = [
+    { status: 'enviado', destinoTipo: 'clinica', destinoClinicaId: clinicas[0]?.clinica.id ?? null },
+    { status: 'aceito', destinoTipo: 'veterinario', destinoVeterinarioId: null as string | null },
+    { status: 'recusado', destinoTipo: 'prestador', destinoPrestadorId: prestadorDemo?.id ?? null },
+  ]
+  let encaminhamentos = 0
+  for (const [index, origem] of realizadas.entries()) {
+    const destino = destinosDemo[index]
+    if (destino.destinoTipo === 'veterinario') {
+      destino.destinoVeterinarioId = veterinarios.find((v) => v.veterinario.id !== origem.veterinarioId)?.veterinario.id ?? null
+    }
+    const idDestino = destino.destinoClinicaId ?? destino.destinoVeterinarioId ?? destino.destinoPrestadorId
+    if (!idDestino) continue
+    const existente = await prisma.encaminhamento.findFirst({ where: { agendamentoOrigemId: origem.id } })
+    if (existente) continue
+    await prisma.encaminhamento.create({
+      data: {
+        id: randomUUID(),
+        petId: origem.petId!,
+        tutorId: origem.tutorId!,
+        agendamentoOrigemId: origem.id,
+        origemVeterinarioId: origem.veterinarioId,
+        origemClinicaId: origem.clinicaId,
+        destinoTipo: destino.destinoTipo,
+        destinoVeterinarioId: destino.destinoVeterinarioId ?? null,
+        destinoClinicaId: destino.destinoClinicaId ?? null,
+        destinoPrestadorId: destino.destinoPrestadorId ?? null,
+        motivo: 'Avaliação complementar (demonstração).',
+        urgencia: index === 0 ? 'prioritario' : 'rotina',
+        status: destino.status,
+        motivoRecusa: destino.status === 'recusado' ? 'Sem agenda para o período (demonstração).' : null,
+        respondidoEm: destino.status === 'enviado' ? null : quando,
+        createdAt: quando,
+        updatedAt: quando,
+      },
+    })
+    encaminhamentos++
+  }
+
   const petsTotal = [...pets.values()].reduce((total, lista) => total + lista.length, 0)
   console.log(
-    `Demonstração: ${tutores.length} tutores, ${veterinarios.length} veterinários, ${clinicas.length} clínicas, ${prestadores} prestadores, ${petsTotal} pets, ${agendamentos} consultas, ${avaliacoes} avaliações, ${prontuarios} prontuários novos, ${favoritos} favoritos, ${notificacoes} notificações novas. Senha das contas novas: ${SENHA_DEMO}`
+    `Demonstração: ${tutores.length} tutores, ${veterinarios.length} veterinários, ${clinicas.length} clínicas, ${prestadores} prestadores, ${petsTotal} pets, ${agendamentos} consultas, ${avaliacoes} avaliações, ${prontuarios} prontuários novos, ${favoritos} favoritos, ${notificacoes} notificações novas, ${encaminhamentos} encaminhamentos novos. Senha das contas novas: ${SENHA_DEMO}`
   )
 }
