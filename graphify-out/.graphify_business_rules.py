@@ -378,7 +378,7 @@ plano_saude_nodes = [
     rule("rule_plano_saude_sem_exemplo", "Busca sem resultado nao mostra profissional ficticio",
          "Se ninguem aceita o plano, /explorar fica vazio."),
     rule("rule_plano_saude_perfil", "Perfil e card da busca mostram so os planos ligados ao cadastro",
-         "/veterinario/[id] e /clinicas/[id] exibem os planos ligados ao cadastro. O card do veterinario em /explorar mostra os mesmos nomes de veterinario_planos."),
+         "/veterinario/[id] e /clinicas/[id] exibem os planos ligados ao cadastro. Os cards de veterinario e de clinica em /explorar mostram os mesmos nomes de veterinario_planos e clinica_planos."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in plano_saude_nodes if n["id"] not in nodes_ids]
@@ -400,7 +400,7 @@ impl.update({
 
 ordenacao_nodes = [
     rule("rule_explorar_ordenacao", "Explorar ordena a lista por nome ou nota",
-         "O icone de filtro em /explorar ordena a aba atual (veterinarios, clinicas, profissionais) por nome ou nota, crescente ou decrescente. Parametros ordem e direcao na URL; sem eles a ordem e a da API. Empate de nota desempata pelo nome; nota ausente vale zero. Nao dispara nova busca."),
+         "O icone de filtro em /explorar ordena a aba atual (veterinarios, clinicas, profissionais) por nome ou nota, crescente ou decrescente. Parametros ordem e direcao na URL; sem eles a lista começa pela maior nota. Empate de nota desempata pelo nome; nota ausente vale zero. Nao dispara nova busca."),
 ]
 new_nodes += [n for n in ordenacao_nodes if n["id"] not in {x["id"] for x in new_nodes}]
 new_edges += [edge("concept_regras_de_negocio", "rule_explorar_ordenacao")]

@@ -2,18 +2,15 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SlidersHorizontal } from "lucide-react";
+import { Check, SlidersHorizontal } from "lucide-react";
 import { lerOrdenacao, type CriterioOrdenacao, type DirecaoOrdenacao } from "@/lib/ordenacao";
 import styles from "./searchbar.module.css";
 
-const CRITERIOS: { id: CriterioOrdenacao; rotulo: string }[] = [
-  { id: "nome", rotulo: "Ordem alfabética" },
-  { id: "nota", rotulo: "Nota" },
-];
-
-const DIRECOES: { id: DirecaoOrdenacao; rotulo: string }[] = [
-  { id: "asc", rotulo: "Crescente" },
-  { id: "desc", rotulo: "Decrescente" },
+const OPCOES: { ordem: CriterioOrdenacao; direcao: DirecaoOrdenacao; rotulo: string }[] = [
+  { ordem: "nome", direcao: "asc", rotulo: "Nome (A–Z)" },
+  { ordem: "nome", direcao: "desc", rotulo: "Nome (Z–A)" },
+  { ordem: "nota", direcao: "desc", rotulo: "Maior nota" },
+  { ordem: "nota", direcao: "asc", rotulo: "Menor nota" },
 ];
 
 export default function OrdenacaoLista() {
@@ -42,35 +39,28 @@ export default function OrdenacaoLista() {
 
   const aplicar = (proximaOrdem: CriterioOrdenacao, proximaDirecao: DirecaoOrdenacao) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("ordem", proximaOrdem);
-    params.set("direcao", proximaDirecao);
-    router.replace(`?${params.toString()}`, { scroll: false });
-  };
-
-  const limpar = () => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("ordem");
-    params.delete("direcao");
+    const padrao = proximaOrdem === "nota" && proximaDirecao === "desc";
+    if (padrao) {
+      params.delete("ordem");
+      params.delete("direcao");
+    } else {
+      params.set("ordem", proximaOrdem);
+      params.set("direcao", proximaDirecao);
+    }
     const query = params.toString();
     router.replace(query ? `?${query}` : "/explorar", { scroll: false });
     setAberto(false);
   };
 
-  const dica =
-    (criterio ?? "nome") === "nota"
-      ? direcao === "asc"
-        ? "Menor nota primeiro."
-        : "Maior nota primeiro."
-      : direcao === "asc"
-        ? "De A a Z."
-        : "De Z a A.";
+  const padraoAtivo = criterio === "nota" && direcao === "desc";
+  const ativa = OPCOES.find((opcao) => opcao.ordem === criterio && opcao.direcao === direcao);
 
   return (
     <div className={styles.sortRoot} ref={raizRef}>
       <button
         type="button"
-        className={`${styles.filterButton} ${criterio ? styles.filterButtonActive : ""}`}
-        aria-label="Ordenar lista"
+        className={`${styles.filterButton} ${padraoAtivo ? "" : styles.filterButtonActive}`}
+        aria-label={ativa ? `Ordenar lista, ${ativa.rotulo}` : "Ordenar lista"}
         aria-expanded={aberto}
         aria-controls={painelId}
         onClick={() => setAberto((atual) => !atual)}
@@ -78,45 +68,23 @@ export default function OrdenacaoLista() {
         <SlidersHorizontal size={20} />
       </button>
       {aberto ? (
-        <div id={painelId} className={styles.sortPanel} role="dialog" aria-label="Ordenação da lista">
-          <p className={styles.sortLabel}>Ordenar por</p>
-          <div className={styles.sortOptions} role="radiogroup" aria-label="Critério">
-            {CRITERIOS.map((item) => (
+        <div id={painelId} className={styles.sortPanel} role="menu" aria-label="Ordenar lista">
+          {OPCOES.map((opcao) => {
+            const selecionada = criterio === opcao.ordem && direcao === opcao.direcao;
+            return (
               <button
-                key={item.id}
+                key={opcao.rotulo}
                 type="button"
-                role="radio"
-                aria-checked={criterio === item.id}
-                className={`${styles.sortOption} ${criterio === item.id ? styles.sortOptionActive : ""}`}
-                onClick={() =>
-                  aplicar(item.id, criterio ? direcao : item.id === "nota" ? "desc" : "asc")
-                }
+                role="menuitemradio"
+                aria-checked={selecionada}
+                className={`${styles.sortOption} ${selecionada ? styles.sortOptionActive : ""}`}
+                onClick={() => aplicar(opcao.ordem, opcao.direcao)}
               >
-                {item.rotulo}
+                <span>{opcao.rotulo}</span>
+                {selecionada ? <Check size={16} aria-hidden="true" /> : null}
               </button>
-            ))}
-          </div>
-          <p className={styles.sortLabel}>Ordem</p>
-          <div className={styles.sortOptions} role="radiogroup" aria-label="Direção">
-            {DIRECOES.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                role="radio"
-                aria-checked={criterio !== null && direcao === item.id}
-                className={`${styles.sortOption} ${criterio !== null && direcao === item.id ? styles.sortOptionActive : ""}`}
-                onClick={() => aplicar(criterio ?? "nome", item.id)}
-              >
-                {item.rotulo}
-              </button>
-            ))}
-          </div>
-          <p className={styles.sortHint}>{dica}</p>
-          {criterio ? (
-            <button type="button" className={styles.sortClear} onClick={limpar}>
-              Limpar ordenação
-            </button>
-          ) : null}
+            );
+          })}
         </div>
       ) : null}
     </div>

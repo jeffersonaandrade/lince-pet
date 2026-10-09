@@ -4,11 +4,11 @@ export type DirecaoOrdenacao = "asc" | "desc";
 type LeitorParams = { get(nome: string): string | null };
 
 export function lerOrdenacao(params: LeitorParams): {
-  criterio: CriterioOrdenacao | null;
+  criterio: CriterioOrdenacao;
   direcao: DirecaoOrdenacao;
 } {
   const bruto = params.get("ordem");
-  const criterio = bruto === "nome" || bruto === "nota" ? bruto : null;
+  const criterio: CriterioOrdenacao = bruto === "nome" ? "nome" : "nota";
   const direcaoParam = params.get("direcao");
   const direcao: DirecaoOrdenacao =
     direcaoParam === "asc" || direcaoParam === "desc"

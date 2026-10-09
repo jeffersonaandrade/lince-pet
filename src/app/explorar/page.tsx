@@ -52,6 +52,7 @@ interface Clinica {
   rating: number;
   totalReviews: number;
   especialidades?: { nome: string }[];
+  planos?: { id: string; name: string }[];
   sobre?: string | null;
   descricao?: string | null;
 }
@@ -185,18 +186,14 @@ function ExplorarContent() {
   });
 
   const { criterio: criterioOrdenacao, direcao: direcaoOrdenacao } = lerOrdenacao(searchParams);
-  const veterinariosVisiveis = criterioOrdenacao
-    ? ordenarLista(filteredVeterinarios, criterioOrdenacao, direcaoOrdenacao, (vet) => ({
-        nome: vet.nome,
-        nota: Number(vet.rating) || 0,
-      }))
-    : filteredVeterinarios;
-  const clinicasVisiveis = criterioOrdenacao
-    ? ordenarLista(filteredClinics, criterioOrdenacao, direcaoOrdenacao, (clinic) => ({
-        nome: clinic.nomeClinica ?? "",
-        nota: Number(clinic.rating) || 0,
-      }))
-    : filteredClinics;
+  const veterinariosVisiveis = ordenarLista(filteredVeterinarios, criterioOrdenacao, direcaoOrdenacao, (vet) => ({
+    nome: vet.nome,
+    nota: Number(vet.rating) || 0,
+  }));
+  const clinicasVisiveis = ordenarLista(filteredClinics, criterioOrdenacao, direcaoOrdenacao, (clinic) => ({
+    nome: clinic.nomeClinica ?? "",
+    nota: Number(clinic.rating) || 0,
+  }));
 
   const openInMaps = (address: string) => {
     const encodedAddress = encodeURIComponent(address);
@@ -718,6 +715,15 @@ function ExplorarContent() {
                           <span key={index} className={styles.specialtyTag}>{esp.nome}</span>
                         ))}
                       </div>
+                      {clinic.planos && clinic.planos.length > 0 ? (
+                        <div className={styles.planos}>
+                          {clinic.planos.map((plano) => (
+                            <span key={plano.id} className={styles.planoTag}>
+                              {plano.name}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
                       <div className={styles.addressSection}>
                         <span className={styles.addressText}>{clinic.endereco}</span>
                         <button

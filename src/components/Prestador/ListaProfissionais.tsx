@@ -65,12 +65,10 @@ export default function ListaProfissionais() {
   const visiveis =
     lista === null
       ? []
-      : criterio
-        ? ordenarLista(lista, criterio, direcao, (p) => ({
-            nome: p.nome,
-            nota: p.nota_media ?? 0,
-          }))
-        : lista;
+      : ordenarLista(lista, criterio, direcao, (p) => ({
+          nome: p.nome,
+          nota: p.nota_media ?? 0,
+        }));
 
   return (
     <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 pb-16">
