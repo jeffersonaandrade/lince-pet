@@ -8,11 +8,13 @@ import { podeVincularVet } from './assinatura-regras'
  * Barra convite/aceite sem plano pago ou acima de `max_veterinarios` do plano.
  * Contam vínculos aceitos e pendentes; `exceto` tira da conta o vet que está aceitando o próprio convite.
  */
-export async function garantirVagaNaEquipe(clinicaId: string, exceto?: string) {
-  const clinica = await prisma.clinica.findUnique({ where: { id: clinicaId }, select: { subscriptionPlanCode: true } })
+type DbClient = Pick<typeof prisma, 'clinica' | 'subscriptionPlan' | 'veterinarioClinica'>
+
+export async function garantirVagaNaEquipe(clinicaId: string, exceto?: string, db: DbClient = prisma) {
+  const clinica = await db.clinica.findUnique({ where: { id: clinicaId }, select: { subscriptionPlanCode: true } })
   const code = clinica?.subscriptionPlanCode
-  const plano = code && code !== PLANO_PADRAO.clinica ? await prisma.subscriptionPlan.findUnique({ where: { code } }) : null
-  const vinculados = await prisma.veterinarioClinica.count({
+  const plano = code && code !== PLANO_PADRAO.clinica ? await db.subscriptionPlan.findUnique({ where: { code } }) : null
+  const vinculados = await db.veterinarioClinica.count({
     where: {
       clinicaId,
       status: { in: ['aceito', 'pendente'] },

@@ -24,9 +24,14 @@ function getLogoPath() {
   const envPath = process.env.EMAIL_LOGO_PATH
   if (envPath && fs.existsSync(envPath)) return envPath
 
-  const candidates = ['logo.png', 'logo.jpg', 'logo.svg', 'IconSilver.png', 'IconSilver.jpg'].map((f) =>
-    path.join(process.cwd(), 'app', 'services', f)
-  )
+  const candidates = [
+    path.join(process.cwd(), 'public', 'img', 'IconSilver.png'),
+    path.join(process.cwd(), 'public', 'img', 'IconSilver.jpg'),
+    path.join(process.cwd(), 'public', 'LincePet.png'),
+    path.join(process.cwd(), 'public', 'logo.png'),
+    path.join(process.cwd(), 'public', 'logo.jpg'),
+    path.join(process.cwd(), 'public', 'logo.svg'),
+  ]
   for (const p of candidates) {
     if (fs.existsSync(p)) return p
   }

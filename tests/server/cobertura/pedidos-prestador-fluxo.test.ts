@@ -295,7 +295,7 @@ describe('iniciarPedido (código de início)', () => {
   it('após 5 tentativas inválidas bloqueia, mesmo com o código certo', async () => {
     prismaMock.agendamento.findFirst.mockResolvedValueOnce(pedido({ status: 'confirmado', startCodeAttempts: 5 }))
     const e = await erroDe(iniciarPedido('pr-1', 'ped-1', '123456'))
-    expect(e!.message).toBe('Muitas tentativas inválidas. Tente novamente mais tarde.')
+    expect(e!.message).toBe('Muitas tentativas inválidas. Peça ao tutor para remarcar o pedido.')
     expect(prismaMock.agendamento.update).not.toHaveBeenCalled()
   })
 

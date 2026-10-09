@@ -252,34 +252,43 @@ export async function criarBloqueio(
 async function notificarTutores(veterinarioId: string, conflitos: Conflito[], motivo: string | null) {
   const vet = await prisma.veterinario.findUnique({ where: { id: veterinarioId }, include: { user: true } })
   const veterinarioNome = vet?.user ? nomeCompleto(vet.user) : 'Veterinário'
+  const motivoFinal = motivo || MOTIVO_CANCELAMENTO_BLOQUEIO
+
+  const tentarAviso = async (canal: string, fn: () => Promise<unknown>) => {
+    try {
+      await fn()
+    } catch (error) {
+      console.error(`❌ [Bloqueio] Erro ao notificar tutor do cancelamento (${canal}):`, error)
+    }
+  }
 
   for (const a of conflitos) {
-    await googleCalendar.sincronizarEvento(a.id, 'cancelar')
+    await tentarAviso('google_agenda', () => googleCalendar.sincronizarEvento(a.id, 'cancelar'))
     const tutorUser = a.tutor?.user
     if (!tutorUser) continue
     const data = a.dataConsulta ? DateTime.fromISO(a.dataConsulta).toFormat('dd/MM/yyyy') : ''
-    try {
-      await inAppNotifications.notifyAppointmentCancelledByAgendaBlockToTutor({
+    await tentarAviso('sino', () =>
+      inAppNotifications.notifyAppointmentCancelledByAgendaBlockToTutor({
         tutorUserId: tutorUser.id,
         veterinarioNome,
         dataConsulta: data,
         horarioConsulta: a.horarioConsulta || '',
         agendamentoId: a.id,
       })
-      if (podeEnviarEmail(tutorUser)) {
-        await notifications.sendAppointmentCancellation(tutorUser.email, {
+    )
+    if (podeEnviarEmail(tutorUser)) {
+      await tentarAviso('email', () =>
+        notifications.sendAppointmentCancellation(tutorUser.email, {
           nomeTutor: tutorUser.nome,
           nomeVeterinario: veterinarioNome,
           data,
           horario: a.horarioConsulta,
-          motivo: motivo || MOTIVO_CANCELAMENTO_BLOQUEIO,
+          motivo: motivoFinal,
           isVeterinario: false,
         })
-      }
-    } catch (error) {
-      console.error('❌ [Bloqueio] Erro ao notificar tutor do cancelamento:', error)
+      )
     }
-    await notificarAgendamento('cancelamento', a.id, ['tutor'], { motivo: motivo || MOTIVO_CANCELAMENTO_BLOQUEIO })
+    await tentarAviso('whatsapp', () => notificarAgendamento('cancelamento', a.id, ['tutor'], { motivo: motivoFinal }))
   }
 }
 

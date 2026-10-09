@@ -406,7 +406,9 @@ export async function iniciarPedido(prestadorId: string, id: string, code: unkno
   if (!code || typeof code !== 'string') throw erro('Código é obrigatório')
   if (pedido.status !== 'confirmado') throw erro('Só pedidos aceitos podem ser iniciados')
   const tentativas = pedido.startCodeAttempts ?? 0
-  if (tentativas >= MAX_TENTATIVAS_CODIGO) throw erro('Muitas tentativas inválidas. Tente novamente mais tarde.')
+  if (tentativas >= MAX_TENTATIVAS_CODIGO) {
+    throw erro('Muitas tentativas inválidas. Peça ao tutor para remarcar o pedido.')
+  }
   if (!pedido.startCode || !pedido.startCodeExpiresAt) throw erro('Este pedido não possui código ativo')
   const agora = new Date()
   if (agora > pedido.startCodeExpiresAt) throw erro('Código expirado')

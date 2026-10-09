@@ -103,15 +103,15 @@ describe('remetente e logo dos e-mails', () => {
     expect(ultimoEnvio().html).toContain(`src="data:${mime};base64,${b64}"`)
   })
 
-  it('EMAIL_LOGO_PATH inexistente procura os candidatos em app/services do projeto', async () => {
+  it('EMAIL_LOGO_PATH inexistente procura os candidatos em public do projeto', async () => {
     const raiz = fs.mkdtempSync(path.join(os.tmpdir(), 'lince-cand-'))
     try {
-      fs.mkdirSync(path.join(raiz, 'app', 'services'), { recursive: true })
-      fs.writeFileSync(path.join(raiz, 'app', 'services', 'IconSilver.jpg'), 'ICON')
+      fs.mkdirSync(path.join(raiz, 'public', 'img'), { recursive: true })
+      fs.writeFileSync(path.join(raiz, 'public', 'img', 'IconSilver.png'), 'ICON')
       vi.mocked(process.cwd).mockReturnValue(raiz)
       vi.stubEnv('EMAIL_LOGO_PATH', path.join(raiz, 'nao-existe.png'))
       await notifications.sendAppointmentConfirmation('ana@x.com', consulta)
-      expect(ultimoEnvio().html).toContain(`src="data:image/jpeg;base64,${Buffer.from('ICON').toString('base64')}"`)
+      expect(ultimoEnvio().html).toContain(`src="data:image/png;base64,${Buffer.from('ICON').toString('base64')}"`)
     } finally {
       fs.rmSync(raiz, { recursive: true, force: true })
     }

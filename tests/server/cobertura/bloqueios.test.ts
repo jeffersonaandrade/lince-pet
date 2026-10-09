@@ -461,7 +461,26 @@ describe('avisos ao tutor após o bloqueio (after)', () => {
 
     expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Bloqueio]'), expect.any(Error))
     expect(whatsappMock).toHaveBeenCalledTimes(2)
-    expect(emailMock).toHaveBeenCalledTimes(1)
+    expect(emailMock).toHaveBeenCalledTimes(2)
+    consoleSpy.mockRestore()
+  })
+
+  it('falha no Google Agenda ou WhatsApp não impede os demais avisos nem os próximos tutores', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    prismaMock.agendamento.findMany.mockResolvedValueOnce([consulta(), consulta({ id: 'ag-2' })])
+    prismaMock.tx.veterinario.findUnique.mockResolvedValueOnce(null)
+    prismaMock.veterinario.findUnique.mockResolvedValueOnce(null)
+    googleMock.mockRejectedValueOnce(new Error('google fora'))
+    whatsappMock.mockRejectedValueOnce(new Error('whatsapp fora'))
+    await criarBloqueio('vet-1', BODY, { userId: 'u-vet' })
+    await rodarAfter()
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('google_agenda'), expect.any(Error))
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('whatsapp'), expect.any(Error))
+    expect(inAppMock).toHaveBeenCalledTimes(2)
+    expect(emailMock).toHaveBeenCalledTimes(2)
+    expect(googleMock).toHaveBeenCalledTimes(2)
+    expect(whatsappMock).toHaveBeenCalledTimes(2)
     consoleSpy.mockRestore()
   })
 

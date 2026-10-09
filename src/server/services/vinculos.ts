@@ -1,4 +1,5 @@
 import 'server-only'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../db'
 import { HttpError } from '../http'
 import { creating, updating } from '../lucid'
@@ -7,8 +8,10 @@ import { inAppNotifications } from './in-app-notifications'
 import { garantirVagaNaEquipe } from './clinica-equipe'
 
 const rowNotFound = () => new HttpError(404, { status: 404, message: 'Row not found' })
+const MAX_TRANSACTION_RETRIES = 3
 
 const nomeVeterinario = (user: CurrentUser) => `${user.nome} ${user.sobrenome ?? ''}`.trim()
+const isTransactionConflict = (error: unknown) => (error as { code?: string } | null)?.code === 'P2034'
 
 async function veterinarioDoUsuario(userId: string) {
   const vet = await prisma.veterinario.findFirst({ where: { userId } })
@@ -26,43 +29,54 @@ export async function aceitarVinculo(currentUser: CurrentUser, clinicaId: string
 
   const clinica = await prisma.clinica.findUnique({ where: { id: clinicaId } })
   if (!clinica) throw rowNotFound()
-  await garantirVagaNaEquipe(clinicaId, vet.id)
+  for (let attempt = 1; attempt <= MAX_TRANSACTION_RETRIES; attempt++) {
+    try {
+      await prisma.$transaction(async (tx) => {
+        await garantirVagaNaEquipe(clinicaId, vet.id, tx)
 
-  await prisma.$transaction(async (tx) => {
-    await tx.veterinarioClinica.updateMany({
-      where,
-      data: { status: 'aceito', ativo: 1, updatedAt: new Date() },
-    })
+        await tx.veterinarioClinica.updateMany({
+          where,
+          data: { status: 'aceito', ativo: 1, updatedAt: new Date() },
+        })
 
-    await tx.veterinarioEndereco.create({
-      data: creating({
-        veterinarioId: vet.id,
-        clinicaId: clinica.id,
-        nomeClinica: clinica.nomeClinica,
-        rua: clinica.endereco || '',
-        numero: 'S/N',
-        bairro: '',
-        cidade: clinica.cidade || '',
-        estado: clinica.estado || '',
-        cep: clinica.cep || '',
-        precoConsulta: 0,
-        horariosDisponibilidade: {},
-        aceitaEmergencia: 0,
-        ativo: 1,
-        isPrimary: 0,
-        fotoUrl: clinica.fotoPerfil,
-      }),
-    })
+        await tx.veterinarioEndereco.create({
+          data: creating({
+            veterinarioId: vet.id,
+            clinicaId: clinica.id,
+            nomeClinica: clinica.nomeClinica,
+            rua: clinica.endereco || '',
+            numero: 'S/N',
+            bairro: '',
+            cidade: clinica.cidade || '',
+            estado: clinica.estado || '',
+            cep: clinica.cep || '',
+            precoConsulta: 0,
+            horariosDisponibilidade: {},
+            aceitaEmergencia: 0,
+            ativo: 1,
+            isPrimary: 0,
+            fotoUrl: clinica.fotoPerfil,
+          }),
+        })
+      }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable })
+      break
+    } catch (error) {
+      if (!isTransactionConflict(error) || attempt === MAX_TRANSACTION_RETRIES) throw error
+    }
+  }
 
-    const userClinica = clinica.userId ? await prisma.user.findFirst({ where: { id: clinica.userId } }) : null
-    if (userClinica) {
+  const userClinica = clinica.userId ? await prisma.user.findFirst({ where: { id: clinica.userId } }) : null
+  if (userClinica) {
+    try {
       await inAppNotifications.notifyClinicLinkResponse({
         clinicaUserId: userClinica.id,
         veterinarioNome: nomeVeterinario(currentUser),
         aceito: true,
       })
+    } catch (error) {
+      console.error('❌ [Vínculo] Erro ao notificar aceite de vínculo:', error)
     }
-  })
+  }
   return true
 }
 

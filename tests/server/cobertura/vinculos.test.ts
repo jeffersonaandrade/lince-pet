@@ -5,6 +5,8 @@ const prismaMock = vi.hoisted(() => {
   const tx = {
     veterinarioClinica: { updateMany: vi.fn() },
     veterinarioEndereco: { create: vi.fn() },
+    clinica: { findUnique: vi.fn() },
+    subscriptionPlan: { findUnique: vi.fn() },
   }
   return {
     tx,
@@ -74,13 +76,15 @@ describe('aceitarVinculo', () => {
   it('limite de vets do plano da clínica estourado (403): não aceita o vínculo', async () => {
     equipe.garantirVagaNaEquipe.mockRejectedValueOnce(new HttpError(403, { message: 'Limite do plano' }))
     await expect(aceitarVinculo(vetUser, 'cli-1')).rejects.toMatchObject({ status: 403 })
-    expect(equipe.garantirVagaNaEquipe).toHaveBeenCalledWith('cli-1', 'vet-1')
-    expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    expect(equipe.garantirVagaNaEquipe).toHaveBeenCalledWith('cli-1', 'vet-1', prismaMock.tx)
+    expect(prismaMock.$transaction).toHaveBeenCalled()
     expect(prismaMock.tx.veterinarioClinica.updateMany).not.toHaveBeenCalled()
   })
 
   it('caminho feliz: marca aceito/ativo, cria endereço da clínica e notifica a clínica', async () => {
     await expect(aceitarVinculo(vetUser, 'cli-1')).resolves.toBe(true)
+    expect(equipe.garantirVagaNaEquipe).toHaveBeenCalledWith('cli-1', 'vet-1', prismaMock.tx)
+    expect((prismaMock.$transaction.mock.calls[0] as unknown[])[1]).toMatchObject({ isolationLevel: 'Serializable' })
 
     const update = prismaMock.tx.veterinarioClinica.updateMany.mock.calls[0][0]
     expect(update.where).toEqual({ veterinarioId: 'vet-1', clinicaId: 'cli-1' })
@@ -114,6 +118,25 @@ describe('aceitarVinculo', () => {
       veterinarioNome: 'Ana Vet',
       aceito: true,
     })
+  })
+
+  it('falha na notificação não desfaz o aceite', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    notificacoes.notifyClinicLinkResponse.mockRejectedValueOnce(new Error('sino fora'))
+    await expect(aceitarVinculo(vetUser, 'cli-1')).resolves.toBe(true)
+    expect(prismaMock.tx.veterinarioClinica.updateMany).toHaveBeenCalled()
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[Vínculo]'), expect.any(Error))
+    consoleSpy.mockRestore()
+  })
+
+  it('repete transação serializável quando o banco detecta corrida de escrita', async () => {
+    prismaMock.$transaction
+      .mockRejectedValueOnce(Object.assign(new Error('write conflict'), { code: 'P2034' }))
+      .mockImplementationOnce(async (fn: (t: typeof prismaMock.tx) => unknown) => fn(prismaMock.tx))
+    await expect(aceitarVinculo(vetUser, 'cli-1')).resolves.toBe(true)
+    expect(prismaMock.$transaction).toHaveBeenCalledTimes(2)
+    expect(equipe.garantirVagaNaEquipe).toHaveBeenCalledTimes(1)
+    expect(prismaMock.tx.veterinarioClinica.updateMany).toHaveBeenCalledTimes(1)
   })
 
   it('clínica sem endereço/cidade/estado/cep grava strings vazias; sem userId não notifica', async () => {
