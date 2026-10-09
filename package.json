@@ -10,7 +10,11 @@
     "test": "vitest run",
     "test:contract": "vitest run tests/contract",
     "db:pull": "prisma db pull && prisma generate",
+    "db:seed": "prisma db seed",
     "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@adonisjs/hash": "^10.1.1",
@@ -48,6 +52,7 @@
     "jsonwebtoken": "^9.0.3",
     "postcss": "^8.5.29",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.20.6",
     "typescript": "^5",
     "vitest": "^3.2.7"
   }

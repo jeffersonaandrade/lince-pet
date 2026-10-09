@@ -1,6 +1,6 @@
 import 'server-only'
 import { DateTime } from 'luxon'
-import { Prisma, type Clinica, type Especialidade, type User, type VeterinarioEndereco } from '@prisma/client'
+import { Prisma, TipoClinica, UserType, type Clinica, type Especialidade, type User, type VeterinarioEndereco } from '@prisma/client'
 import { prisma } from '../db'
 import { serializeUser } from '../auth/session'
 import { hashPassword } from '../auth/password'
@@ -148,7 +148,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
     const userData = creating({
       email: String(data.email),
       password,
-      userType: 'clinica',
+      userType: UserType.clinica,
       nome: str(data.nomeFantasia) as string,
       celular: str(data.telefone),
       cep: str(data.cep) || '',
@@ -167,7 +167,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
           userId: userData.id,
           nomeClinica: str(data.nomeFantasia),
           razaoSocial: str(data.razaoSocial),
-          tipoClinica: 'multipla',
+          tipoClinica: TipoClinica.multipla,
           quantidadeVets: '1',
           cnpj: String(data.cnpj),
           telefone: str(data.telefone),

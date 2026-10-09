@@ -20,6 +20,7 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 ## Convenções herdadas do banco
 
 - Booleanos são `Int` (0/1): o frontend compara com `0`/`1` (ex.: `onboardingComplete === 0`).
+- ENUMs do MySQL (`user_type`, `genero`, `tipo_clinica`, `porte`, `payments.type`) são enums do Prisma. Como `String`, a leitura no banco real falha com P2032.
 - `User -> tutor/veterinario/clinica` são listas no Prisma (`user_id` sem UNIQUE): usar `findFirst({ where: { userId } })`.
 - DECIMAL sai como string com 2 casas; datas saem em ISO (servidor em `TZ=UTC`).
 - `agendamentos.data_consulta` é VARCHAR (`YYYY-MM-DD`).
@@ -81,6 +82,15 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Planos com fonte única:** `/precos` e as telas de alterar plano (vet e clínica) leem `src/config/planos.ts`.
 - **Páginas:** `/sobre`, `/contato`, `/como-funciona`, `/servicos` (especialidades do banco, ISR 1h), `/precos`, `/ajuda` (Central de Ajuda + FAQ), `/seguranca`, `/cookies`. Textos em rascunho até revisão do cliente.
 - **Estilo:** páginas novas em Tailwind (`src/components/Institucional/PaginaInstitucional.tsx`). Os resets globais ficam em `@layer base` no `globals.css`; sem layer, eles venceriam as utilities do Tailwind.
+
+### Catálogo inicial do banco
+
+- **Banco vazio:** `npx prisma db seed` (`prisma/seed.ts`) grava o que o baseline `0_init` não traz: planos de assinatura, especialidades oficiais, planos de saúde e diferenciais de clínica. Sem isso, a listagem de planos e o cadastro de especialidades ficam vazios.
+- **Planos de assinatura:** `free`, `pro`, `pro_plus`, `starter`, `clinic`, `clinic_pro`, com preço em centavos, limite mensal, features, prioridade de busca e trial do banco que já rodava o Adonis (incluindo os ajustes feitos em migration). Upsert por `code`, sem trocar o id. O texto de `/precos` continua em `src/config/planos.ts`.
+- **Especialidades:** a lista de `src/data/especialidades.ts` (a mesma da migration que populava `especialidades`). Upsert por nome; não apaga nomes extras que já existam.
+- **Planos de saúde e diferenciais:** os nomes que o `mockup_seeder` criava para o perfil (`planos` e `diferenciais`). Upsert/first-or-create por nome.
+- **Demonstração:** o mesmo comando cria tutores, veterinários, clínicas, pets, consultas (pendente, confirmada, realizada e cancelada), avaliações, favoritos, prontuário, uma anotação privada e um bloqueio de agenda. Cidades e especialidades variadas. E-mails terminam em `mockup`. Senha de todas essas contas: `senha123`. Não altera senha de quem já existe.
+- **Idempotente:** rodar de novo não duplica linha.
 
 ### Notificações por WhatsApp
 
