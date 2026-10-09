@@ -5,6 +5,7 @@ import { EvolutionProvider } from './evolution-provider.js'
 import { LogProvider } from './provider.js'
 import type { SendMessageInput, WhatsAppProvider } from './provider.js'
 import { MessageQueue } from './queue.js'
+import { classifyEvolutionMessage } from './evolution-webhook.js'
 
 const provider: WhatsAppProvider = config.provider === 'evolution' ? new EvolutionProvider() : new LogProvider()
 const breaker = new CircuitBreaker()
@@ -73,6 +74,13 @@ const server = http.createServer(async (req, res) => {
       }
       const job = queue.enqueue(validateMessage((await readJson(req)) as Record<string, unknown>))
       send(res, 202, { id: job.id, status: job.status, attempts: job.attempts })
+      return
+    }
+
+    if (req.method === 'POST' && url.pathname === '/webhooks/evolution/messages-upsert') {
+      const decision = classifyEvolutionMessage(await readJson(req))
+      console.log(JSON.stringify({ level: 'info', event: 'webhook.evolution.messages_upsert', ...decision }))
+      send(res, 200, decision)
       return
     }
 

@@ -22,6 +22,7 @@ VIAVEL COM RISCOS. Este servico nao torna WhatsApp nao oficial seguro para produ
 - `GET /provider/status`: estado do provider.
 - `POST /messages`: enfileira mensagem.
 - `GET /messages/:id`: consulta status local.
+- `POST /webhooks/evolution/messages-upsert`: recebe eventos de mensagem da Evolution API e ignora grupos.
 
 Todos os endpoints, exceto `/health/live`, exigem header:
 
@@ -66,6 +67,7 @@ Variaveis obrigatorias para Evolution:
 - Falhas nao quebram o app principal.
 - Mensagens nao duplicam com `idempotencyKey`.
 - Logs mostram erro, latencia, tentativa e provider.
+- Mensagens de grupo sao ignoradas e nunca geram resposta automatica.
 
 ## Limites conhecidos
 
@@ -73,3 +75,4 @@ Variaveis obrigatorias para Evolution:
 - Restart perde itens pendentes locais.
 - Persistencia duravel deve ser adicionada antes de producao real.
 - WhatsApp nao oficial pode bloquear numero ou quebrar sem aviso.
+- Respostas automaticas futuras devem entrar na mesma fila de envio, com limite de cadencia, nunca responder em massa.

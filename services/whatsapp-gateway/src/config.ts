@@ -19,6 +19,7 @@ export const config = {
   sendTimeoutMs: readInt('SEND_TIMEOUT_MS', 10_000),
   retryAttempts: readInt('RETRY_ATTEMPTS', 3),
   retryBaseDelayMs: readInt('RETRY_BASE_DELAY_MS', 750),
+  sendMinIntervalMs: readInt('SEND_MIN_INTERVAL_MS', 2500),
   queueMaxSize: readInt('QUEUE_MAX_SIZE', 1000),
   circuitFailureThreshold: readInt('CIRCUIT_FAILURE_THRESHOLD', 5),
   circuitOpenMs: readInt('CIRCUIT_OPEN_MS', 60_000),

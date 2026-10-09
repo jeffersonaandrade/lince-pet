@@ -22,6 +22,7 @@ export class MessageQueue {
   private idempotencyIndex = new Map<string, string>()
   private pending: string[] = []
   private running = false
+  private lastSentAt = 0
 
   constructor(
     private readonly provider: WhatsAppProvider,
@@ -32,6 +33,9 @@ export class MessageQueue {
     if (input.idempotencyKey) {
       const existingId = this.idempotencyIndex.get(input.idempotencyKey)
       if (existingId) return this.jobs.get(existingId)!
+    }
+    if (input.to.includes('@g.us')) {
+      throw Object.assign(new Error('Group messages are not allowed'), { status: 422 })
     }
     if (this.pending.length >= config.queueMaxSize) {
       throw Object.assign(new Error('Queue is full'), { status: 429 })
@@ -91,7 +95,9 @@ export class MessageQueue {
     for (let attempt = 1; attempt <= config.retryAttempts; attempt++) {
       job.attempts = attempt
       try {
+        await this.waitForPacing()
         const result = await this.provider.sendMessage(job)
+        this.lastSentAt = Date.now()
         this.breaker.recordSuccess()
         job.status = 'sent'
         job.providerMessageId = result.providerMessageId
@@ -118,5 +124,10 @@ export class MessageQueue {
     job.error = error
     job.updatedAt = new Date().toISOString()
     console.error(JSON.stringify({ level: 'error', event: 'message.failed', id: job.id, error }))
+  }
+
+  private async waitForPacing() {
+    const waitMs = Math.max(0, this.lastSentAt + config.sendMinIntervalMs - Date.now())
+    if (waitMs > 0) await sleep(waitMs)
   }
 }

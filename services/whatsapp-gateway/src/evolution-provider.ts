@@ -41,6 +41,7 @@ export class EvolutionProvider implements WhatsAppProvider {
   name = 'evolution'
 
   async sendMessage(input: SendMessageInput): Promise<SendMessageResult> {
+    if (input.to.includes('@g.us')) throw new Error('Group messages are not allowed')
     const number = digitsOnly(input.to)
     if (number.length < 10 || number.length > 15) throw new Error('Invalid WhatsApp destination number')
 
