@@ -25,6 +25,7 @@ interface User {
   googleCalendarAuthorized?: boolean;
   subscriptionPlanCode?: string | null;
   monthlyAppointmentsUsed?: number;
+  tipoServico?: { slug: string; nome: string; modalidade: string };
 }
 
 interface AuthContextType {

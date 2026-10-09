@@ -1,6 +1,6 @@
 import 'server-only'
 import axios, { type AxiosInstance } from 'axios'
-import type { Clinica, Tutor, User, Veterinario } from '@prisma/client'
+import type { Clinica, Prestador, Tutor, User, Veterinario } from '@prisma/client'
 import { env } from '../env'
 
 type AsaasEnv = 'sandbox' | 'production'
@@ -148,6 +148,21 @@ export class AsaasService {
       }
       throw error
     }
+  }
+
+  async ensureCustomerForPrestador(user: CustomerUser, prestador: Pick<Prestador, 'id' | 'cpf' | 'cnpj'>) {
+    const externalReference = `prestador:${prestador.id}`
+    const existing = await this.findCustomer(externalReference, user.email)
+    return this.upsertCustomer(
+      existing,
+      {
+        name: `${user.nome} ${user.sobrenome || ''}`.trim(),
+        email: user.email,
+        mobilePhone: user.celular || undefined,
+        cpfCnpj: prestador.cnpj || prestador.cpf || undefined,
+      },
+      externalReference
+    )
   }
 
   async ensureCustomerForTutor(user: CustomerUser, tutor: Pick<Tutor, 'id' | 'cpf'>) {

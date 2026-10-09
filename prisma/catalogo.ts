@@ -102,6 +102,23 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
   },
 ]
 
+/**
+ * Tipos de profissional pet além de vet e clínica. Tipo novo = item novo aqui (upsert por slug), sem migration.
+ * `modalidade`: duracao (hora de início + duração do serviço) | periodo (início e fim, ex.: hospedagem).
+ */
+export const TIPOS_SERVICO: {
+  slug: string
+  nome: string
+  descricao: string
+  modalidade: 'duracao' | 'periodo'
+  ordem: number
+}[] = [
+  { slug: 'tosador', nome: 'Banho e tosa', descricao: 'Banho, tosa e higiene', modalidade: 'duracao', ordem: 1 },
+  { slug: 'passeador', nome: 'Passeador', descricao: 'Passeios com o pet', modalidade: 'duracao', ordem: 2 },
+  { slug: 'adestrador', nome: 'Adestrador', descricao: 'Aulas de adestramento e comportamento', modalidade: 'duracao', ordem: 3 },
+  { slug: 'pet_sitter', nome: 'Pet sitter', descricao: 'Hospedagem e cuidado do pet por período', modalidade: 'periodo', ordem: 4 },
+]
+
 /** Nomes criados pelo mockup_seeder (firstOrCreate por nome). */
 export const PLANOS_SAUDE = [
   'Care pet',

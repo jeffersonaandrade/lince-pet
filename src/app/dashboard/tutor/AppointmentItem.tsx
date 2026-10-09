@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./tutor.module.css";
 import {
   Clock,
@@ -6,8 +6,10 @@ import {
   Dog,
   AlertCircle,
   CreditCard,
-  Maximize2
+  Maximize2,
+  PawPrint
 } from "lucide-react";
+import { RemarcarPedidoModal } from "@/components/Prestador/RemarcarPedidoModal";
 
 interface AppointmentItemProps {
   agendamento: any;
@@ -15,6 +17,7 @@ interface AppointmentItemProps {
   onCancel: (id: string) => void;
   onRate?: (agendamento: any) => void;
   onReschedule?: (agendamento: any) => void;
+  onChanged?: () => void;
   canRate?: boolean; // Keep for compatibility
   isRated?: boolean; // Keep for compatibility
 }
@@ -25,10 +28,15 @@ export function AppointmentItem({
   onCancel,
   onRate,
   onReschedule,
+  onChanged,
   canRate,
   isRated,
 }: AppointmentItemProps) {
-  const vetName = `${agendamento.veterinario.nome} ${agendamento.veterinario.sobrenome || ""}`.trim();
+  const [remarcando, setRemarcando] = useState(false);
+  const prestador = agendamento.prestador;
+  const profissional = prestador
+    ? `${prestador.nome} ${prestador.sobrenome || ""}`.trim()
+    : `Dr(a). ${`${agendamento.veterinario?.nome || ""} ${agendamento.veterinario?.sobrenome || ""}`.trim()}`;
   const locationName = agendamento.local_nome || "Local não informado";
   const locationAddress = agendamento.local_endereco || "";
   const hour = agendamento.horario_consulta?.substring(0, 5) || "--:--";
@@ -56,9 +64,20 @@ export function AppointmentItem({
             )}
             <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>
-                Dr(a). {vetName}
+                {profissional}
               </span>
+              {prestador ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700">
+                  <PawPrint size={12} /> {prestador.tipo_servico}
+                </span>
+              ) : null}
             </div>
+            {prestador ? (
+              <div className="mt-1 text-sm text-slate-600">
+                {prestador.servico ? <strong className="font-semibold">{prestador.servico}</strong> : null}
+                {prestador.periodo ? <span> · {prestador.periodo}</span> : null}
+              </div>
+            ) : null}
           </div>
           <div className={styles.consultTime}>
             <Clock size={14} style={{ marginRight: 6 }} />
@@ -118,10 +137,14 @@ export function AppointmentItem({
           </div>
         </div>
 
+        {prestador && agendamento.status === "pendente" ? (
+          <p className="mt-4 text-sm text-amber-700">Aguardando o profissional aceitar o pedido.</p>
+        ) : null}
+
         {agendamento.codigo_inicio ? (
           <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-dashed border-orange-300 bg-orange-50 px-4 py-3">
             <span className="text-sm text-slate-600">
-              Código de início: informe ao veterinário no atendimento
+              Código de início: informe ao {prestador ? "profissional" : "veterinário"} no atendimento
             </span>
             <span className="font-mono text-lg font-bold tracking-[0.3em] text-orange-600">
               {agendamento.codigo_inicio}
@@ -137,7 +160,7 @@ export function AppointmentItem({
               className={styles.primaryButton}
               style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
             >
-              Avaliar Consulta
+              {prestador ? "Avaliar Serviço" : "Avaliar Consulta"}
             </button>
           )}
 
@@ -146,11 +169,10 @@ export function AppointmentItem({
               Avaliado
             </span>
           )}
-          { }
           {canCancel && (
             <>
               <button
-                onClick={() => onReschedule?.(agendamento)}
+                onClick={() => (prestador ? setRemarcando(true) : onReschedule?.(agendamento))}
                 className={styles.secondaryButton}
                 style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#e67e22', borderColor: '#f8e8daff', background: '#fff' }}
               >
@@ -167,6 +189,20 @@ export function AppointmentItem({
           )}
         </div>
       </div>
+
+      {remarcando && prestador ? (
+        <RemarcarPedidoModal
+          pedidoId={agendamento.id}
+          prestadorId={prestador.id}
+          servicoId={prestador.servico_id}
+          modalidade={prestador.modalidade}
+          onFechar={() => setRemarcando(false)}
+          onRemarcado={() => {
+            setRemarcando(false);
+            onChanged?.();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

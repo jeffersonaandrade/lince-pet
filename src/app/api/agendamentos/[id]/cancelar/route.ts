@@ -9,6 +9,7 @@ import { notifications } from '@/server/services/notifications'
 import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
 import { podeEnviarEmail } from '@/server/services/canais-notificacao'
 import { googleCalendar } from '@/server/services/google-calendar'
+import { cancelarPedidoPeloTutor, ehPedidoDePrestador } from '@/server/services/pedidos-prestador'
 import {
   consumeDataConsulta,
   nomeCompleto,
@@ -27,6 +28,11 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
   const tutor = await prisma.tutor.findFirst({ where: { userId: user.id } })
   if (!tutor) {
     return badRequest({ message: 'Usuário não é um tutor válido' })
+  }
+
+  if (await ehPedidoDePrestador(id, tutor.id)) {
+    await cancelarPedidoPeloTutor(tutor.id, id, apiReq.body?.motivo ? String(apiReq.body.motivo) : null)
+    return ok({ message: 'Pedido cancelado com sucesso' })
   }
 
   try {

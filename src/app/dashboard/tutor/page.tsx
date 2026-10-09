@@ -218,6 +218,24 @@ export default function TutorDashboard() {
     });
   }, [historico]);
 
+  const carregarHistorico = async () => {
+    try {
+      setLoadingHistorico(true);
+      const res = await AgendamentosService.listarAgendamentos();
+      setHistorico(res.agendamentos);
+      // Pré-popula mapa de agendamentos avaliados com base no backend
+      const preMap: Record<string, boolean> = {};
+      res.agendamentos.forEach((a) => {
+        if ((a as any).avaliado) preMap[a.id] = true;
+      });
+      setAgendamentosAvaliados(preMap);
+    } catch (e) {
+      console.error("Erro ao carregar histórico:", e);
+    } finally {
+      setLoadingHistorico(false);
+    }
+  };
+
   const handleCancelAppointment = async (id: string) => {
     if (!confirm("Tem certeza que deseja cancelar esta consulta?")) return;
     try {
@@ -260,23 +278,7 @@ export default function TutorDashboard() {
       }
     })();
 
-    (async () => {
-      try {
-        setLoadingHistorico(true);
-        const res = await AgendamentosService.listarAgendamentos();
-        setHistorico(res.agendamentos);
-        // Pré-popula mapa de agendamentos avaliados com base no backend
-        const preMap: Record<string, boolean> = {};
-        res.agendamentos.forEach((a) => {
-          if ((a as any).avaliado) preMap[a.id] = true;
-        });
-        setAgendamentosAvaliados(preMap);
-      } catch (e) {
-        console.error("Erro ao carregar histórico:", e);
-      } finally {
-        setLoadingHistorico(false);
-      }
-    })();
+    carregarHistorico();
   }, [user, loading, router, localKey]);
 
   // Carrega as configurações do veterinário ao abrir o modal de reagendamento
@@ -768,6 +770,7 @@ export default function TutorDashboard() {
                     agendamento={a}
                     statusBadge={statusBadge}
                     onCancel={handleCancelAppointment}
+                    onChanged={carregarHistorico}
                     onReschedule={(agendamento) => {
                       setRescheduleAgendamentoId(agendamento.id);
                       setRescheduleAgendamento(agendamento);
@@ -863,6 +866,7 @@ export default function TutorDashboard() {
                               agendamento={a}
                               statusBadge={statusBadge}
                               onCancel={handleCancelAppointment}
+                              onChanged={carregarHistorico}
                               onReschedule={(agendamento) => {
                                 setRescheduleAgendamentoId(agendamento.id);
                                 setRescheduleAgendamento(agendamento);
@@ -1120,21 +1124,23 @@ export default function TutorDashboard() {
                   <>
                     <div className={styles.ratingSection}>
                       <div className={styles.ratingEntityHeader}>
-                        {ratingAgendamento.veterinario?.fotoUrl ? (
+                        {(ratingAgendamento.veterinario ?? ratingAgendamento.prestador)?.fotoUrl ? (
                           <img
-                            src={ratingAgendamento.veterinario.fotoUrl}
-                            alt={ratingAgendamento.veterinario?.nome}
+                            src={(ratingAgendamento.veterinario ?? ratingAgendamento.prestador).fotoUrl}
+                            alt={(ratingAgendamento.veterinario ?? ratingAgendamento.prestador)?.nome}
                             className={styles.ratingEntityAvatar}
                           />
                         ) : (
-                          <div className={styles.ratingEntityAvatar}>{(ratingAgendamento.veterinario?.nome?.charAt(0) || 'V').toUpperCase()}</div>
+                          <div className={styles.ratingEntityAvatar}>{((ratingAgendamento.veterinario ?? ratingAgendamento.prestador)?.nome?.charAt(0) || 'P').toUpperCase()}</div>
                         )}
                         <div className={styles.ratingEntityInfo}>
                           <h5 className={styles.ratingEntityName}>
-                            Dr(a). {ratingAgendamento.veterinario?.nome} {ratingAgendamento.veterinario?.sobrenome || ''}
+                            {ratingAgendamento.prestador
+                              ? `${ratingAgendamento.prestador.nome} ${ratingAgendamento.prestador.sobrenome || ''}`
+                              : `Dr(a). ${ratingAgendamento.veterinario?.nome} ${ratingAgendamento.veterinario?.sobrenome || ''}`}
                           </h5>
                           <div className={styles.ratingEntitySubtitle}>
-                            <Stethoscope size={14} /> Veterinário(a)
+                            <Stethoscope size={14} /> {ratingAgendamento.prestador?.tipo_servico || 'Veterinário(a)'}
                           </div>
                         </div>
                       </div>

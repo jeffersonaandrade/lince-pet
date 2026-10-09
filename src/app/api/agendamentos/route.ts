@@ -12,6 +12,7 @@ import { notifications } from '@/server/services/notifications'
 import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
 import { podeEnviarEmail } from '@/server/services/canais-notificacao'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
+import { descreverPeriodo } from '@/server/services/pedidos-prestador'
 import {
   consumeDataConsulta,
   jaPassou,
@@ -327,7 +328,13 @@ export const GET = route(async (req) => {
       ? []
       : await prisma.agendamento.findMany({
           where,
-          include: { veterinario: { include: { user: true } }, pet: true, clinica: true },
+          include: {
+            veterinario: { include: { user: true } },
+            prestador: { include: { user: true, tipoServico: true } },
+            servicoOferecido: true,
+            pet: true,
+            clinica: true,
+          },
           orderBy: [{ dataConsulta: 'desc' }, { horarioConsulta: 'asc' }],
         })
 
@@ -346,8 +353,13 @@ export const GET = route(async (req) => {
       const dataConsulta = consumeDataConsulta(agendamento.dataConsulta)
       if (!agendamento.createdAt) throw new TypeError('createdAt nulo')
       const passou = jaPassou(dataConsulta, agendamento.horarioConsulta)
+      const { veterinario, prestador } = agendamento
+      // Pedido de prestador só mostra o código depois de aceito.
       const codigoVisivel =
-        !passou && !agendamento.startCodeUsedAt && !['cancelado', 'cancelada'].includes(agendamento.status)
+        !passou &&
+        !agendamento.startCodeUsedAt &&
+        !['cancelado', 'cancelada'].includes(agendamento.status) &&
+        (!prestador || agendamento.status === 'confirmado')
       return {
         id: agendamento.id,
         data_consulta: dataConsulta!.toFormat('dd/MM/yyyy'),
@@ -364,14 +376,29 @@ export const GET = route(async (req) => {
         avaliado: avaliadosSet.has(agendamento.id),
         clinica_id: agendamento.clinicaId,
         clinica_foto: agendamento.clinica?.fotoPerfil || null,
-        veterinario: {
-          id: agendamento.veterinario!.id,
-          nome: agendamento.veterinario!.user!.nome,
-          sobrenome: agendamento.veterinario!.user!.sobrenome,
-          crmv: agendamento.veterinario!.crmv,
-          bio: agendamento.veterinario!.bio,
-          fotoUrl: agendamento.veterinario!.fotoUrl,
-        },
+        veterinario: veterinario
+          ? {
+              id: veterinario.id,
+              nome: veterinario.user!.nome,
+              sobrenome: veterinario.user!.sobrenome,
+              crmv: veterinario.crmv,
+              bio: veterinario.bio,
+              fotoUrl: veterinario.fotoUrl,
+            }
+          : null,
+        prestador: prestador
+          ? {
+              id: prestador.id,
+              nome: prestador.user.nome,
+              sobrenome: prestador.user.sobrenome,
+              fotoUrl: prestador.fotoUrl || prestador.user.profilePic,
+              tipo_servico: prestador.tipoServico.nome,
+              modalidade: prestador.tipoServico.modalidade,
+              servico_id: agendamento.servicoOferecidoId,
+              servico: agendamento.servicoOferecido?.nome || null,
+              periodo: descreverPeriodo(agendamento),
+            }
+          : null,
         pet: agendamento.pet
           ? {
               id: agendamento.pet.id,

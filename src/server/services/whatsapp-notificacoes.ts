@@ -5,11 +5,12 @@ import { creating, updating } from '../lucid'
 import { nomeCompleto } from './agendamentos'
 import { hasFeature } from './subscription'
 import { canaisDe } from './canais-notificacao'
+import { profissionalDe } from './profissional'
 import { enviarComRetry, normalizarTelefoneE164, providerAtual } from './whatsapp'
 import { montarMensagem, type Destinatario, type EventoWhatsapp } from './whatsapp-mensagens'
 
 /**
- * Orquestra os avisos de WhatsApp do agendamento. Regras: plano do vet ou da clínica com
+ * Orquestra os avisos de WhatsApp do agendamento. Regras: plano do vet, do prestador ou da clínica com
  * `whatsapp_notifications`, canal WhatsApp ligado por quem recebe (tutor ou vet), celular válido e envio único por
  * (agendamento, evento, destinatário, referência). Nunca lança erro: tudo vai para `whatsapp_envios`.
  */
@@ -22,6 +23,8 @@ const include = {
   tutor: { include: { user: true } },
   pet: true,
   veterinario: { include: { user: true } },
+  prestador: { include: { user: true, tipoServico: true } },
+  servicoOferecido: true,
   clinica: true,
 } satisfies Prisma.AgendamentoInclude
 
@@ -37,23 +40,25 @@ const formatarData = (iso?: string | null) => (iso ? iso.slice(0, 10).split('-')
 
 export async function planoPermiteWhatsapp(a: AgendamentoWhatsapp) {
   if (a.veterinario && (await hasFeature(a.veterinario, FEATURE_WHATSAPP))) return true
+  if (a.prestador && (await hasFeature(a.prestador, FEATURE_WHATSAPP))) return true
   return Boolean(a.clinica && (await hasFeature(a.clinica, FEATURE_WHATSAPP)))
 }
 
 function telefoneDe(a: AgendamentoWhatsapp, para: Destinatario) {
   if (para === 'tutor') return normalizarTelefoneE164(a.tutor?.user?.celular)
-  return normalizarTelefoneE164(a.veterinario?.user?.celular) || normalizarTelefoneE164(a.clinica?.whatsapp)
+  return normalizarTelefoneE164(profissionalDe(a).user?.celular) || normalizarTelefoneE164(a.clinica?.whatsapp)
 }
 
 function dadosDaMensagem(a: AgendamentoWhatsapp, motivo?: string | null) {
   return {
     tutor: a.tutor?.user ? nomeCompleto(a.tutor.user) : 'Tutor',
     pet: a.pet?.nome || 'seu pet',
-    profissional: a.veterinario?.user ? nomeCompleto(a.veterinario.user) : a.clinica?.nomeClinica || 'Profissional',
+    profissional: profissionalDe(a).nome,
     data: formatarData(a.dataConsulta),
     hora: a.horarioConsulta || '',
     local: a.localNome || a.localEndereco || a.tipoConsulta || 'a combinar',
     motivo,
+    servico: a.prestador ? a.servicoOferecido?.nome || a.prestador.tipoServico?.nome || 'Serviço' : null,
   }
 }
 
@@ -95,7 +100,7 @@ async function enviarPara(
     telefone: telefoneDe(a, para),
   }
 
-  const quemRecebe = para === 'tutor' ? a.tutor?.user : a.veterinario?.user
+  const quemRecebe = para === 'tutor' ? a.tutor?.user : profissionalDe(a).user
   const motivoIgnorado = !planoOk
     ? 'sem_plano'
     : quemRecebe && !canaisDe(quemRecebe).whatsapp

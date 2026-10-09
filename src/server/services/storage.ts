@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { env } from '../env'
 
 export type StorageFile = { buffer: Buffer; originalname: string; mimetype: string }
-export type StorageFolder = 'veterinarios' | 'pets' | 'tutores' | 'clinicas'
+export type StorageFolder = 'veterinarios' | 'pets' | 'tutores' | 'clinicas' | 'prestadores'
 
 let client: S3Client | null = null
 const s3 = () => (client ??= new S3Client({ region: region() }))
@@ -35,6 +35,7 @@ export const uploadVeterinarioPhoto = (file: StorageFile) => uploadPhoto('veteri
 export const uploadPetPhoto = (file: StorageFile) => uploadPhoto('pets', file)
 export const uploadTutorPhoto = (file: StorageFile) => uploadPhoto('tutores', file)
 export const uploadClinicaPhoto = (file: StorageFile) => uploadPhoto('clinicas', file)
+export const uploadPrestadorPhoto = (file: StorageFile) => uploadPhoto('prestadores', file)
 
 export async function deleteObject(key: string) {
   const Bucket = bucket()

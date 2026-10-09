@@ -1,6 +1,6 @@
 import 'server-only'
 import type { NextResponse } from 'next/server'
-import type { Clinica, Tutor, User, Veterinario } from '@prisma/client'
+import type { Clinica, Prestador, TipoServico, Tutor, User, Veterinario } from '@prisma/client'
 import { prisma } from '../db'
 import { HttpError, type ApiRequest } from '../http'
 import { isProduction } from '../env'
@@ -13,6 +13,7 @@ export type CurrentUser = PublicUser & {
   tutor: Tutor | null
   veterinario: Veterinario | null
   clinica: Clinica | null
+  prestador?: (Prestador & { tipoServico: TipoServico }) | null
 }
 
 /**
@@ -45,12 +46,13 @@ export async function loadUser(userId: string): Promise<CurrentUser | null> {
   if (!user) return null
   const userType = user.userType as UserType
   const where = { userId: user.id }
-  const [tutor, veterinario, clinica] = await Promise.all([
+  const [tutor, veterinario, clinica, prestador] = await Promise.all([
     userType === 'tutor' ? prisma.tutor.findFirst({ where }) : null,
     userType === 'veterinario' ? prisma.veterinario.findFirst({ where }) : null,
     userType === 'clinica' ? prisma.clinica.findFirst({ where }) : null,
+    userType === 'prestador' ? prisma.prestador.findFirst({ where, include: { tipoServico: true } }) : null,
   ])
-  return { ...user, userType, tutor, veterinario, clinica }
+  return { ...user, userType, tutor, veterinario, clinica, prestador }
 }
 
 /** Equivalente ao jwt_auth_middleware (mesmas mensagens e status). */
@@ -71,7 +73,7 @@ export async function requireUser(req: ApiRequest, allowed?: UserType[]): Promis
   const user = await authenticate(req)
   if (!allowed) return user
 
-  const valid: UserType[] = ['clinica', 'tutor', 'veterinario']
+  const valid: UserType[] = ['clinica', 'tutor', 'veterinario', 'prestador']
   if (!valid.includes(user.userType)) {
     throw new HttpError(400, { message: `Tipo de usuário inválido: '${user.userType}'.` })
   }

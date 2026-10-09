@@ -3,6 +3,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { onboardingDoTipo } from "@/utils/tipoConta";
 
 interface OnboardingRedirectProps {
   children: React.ReactNode;
@@ -15,20 +16,16 @@ export default function OnboardingRedirect({
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
-    if (!loading && user) {
-      // Don't redirect if already on onboarding page to avoid infinite loops
-      if (pathname === "/onboarding") return;
+  // Só veterinário e prestador têm onboarding obrigatório.
+  const destino =
+    user && user.onboardingComplete === 0 ? onboardingDoTipo(user.userType) : null;
+  const precisaRedirecionar = Boolean(destino && pathname !== destino);
 
-      // Check if user is logged in but hasn't completed onboarding
-      if (user.onboardingComplete === 0) {
-        // Only redirect veterinarios to onboarding - other user types might not need onboarding
-        if (user.userType === "veterinario") {
-          router.replace("/onboarding");
-        }
-      }
+  useEffect(() => {
+    if (!loading && destino && precisaRedirecionar) {
+      router.replace(destino);
     }
-  }, [user, loading, router, pathname]);
+  }, [loading, destino, precisaRedirecionar, router]);
 
   if (loading) {
     return (
@@ -44,13 +41,7 @@ export default function OnboardingRedirect({
     );
   }
 
-  // If user is logged in but needs onboarding, show loading state while redirecting
-  if (
-    user &&
-    user.onboardingComplete === 0 &&
-    user.userType === "veterinario" &&
-    pathname !== "/onboarding"
-  ) {
+  if (precisaRedirecionar) {
     return (
       <div
         style={{

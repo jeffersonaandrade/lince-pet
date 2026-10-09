@@ -3,19 +3,16 @@ import { ApiRequest, badRequest, forbidden, ok, route, serverError } from '@/ser
 import { requireUser } from '@/server/auth/session'
 import { updating } from '@/server/lucid'
 import { AsaasService } from '@/server/services/asaas'
+import { assinanteDe, assinaturasDo, definirPlano } from '@/server/services/assinante'
 
 export const DELETE = route<{ id: string }>(async (req) => {
-  const user = await requireUser(await ApiRequest.from(req), ['veterinario', 'clinica'])
+  const user = await requireUser(await ApiRequest.from(req), ['veterinario', 'clinica', 'prestador'])
   try {
-    const isVet = user.userType === 'veterinario'
-    const entity = isVet ? user.veterinario : user.userType === 'clinica' ? user.clinica : null
-    if (!entity) return forbidden({ message: 'Apenas veterinários e clínicas podem cancelar assinaturas' })
+    const assinante = assinanteDe(user)
+    if (!assinante) return forbidden({ message: 'Apenas veterinários, clínicas e profissionais podem cancelar assinaturas' })
 
     const activeSub = await prisma.subscription.findFirst({
-      where: {
-        ...(isVet ? { veterinarioId: entity.id } : { clinicaId: entity.id }),
-        status: { notIn: ['canceled', 'expired'] },
-      },
+      where: { ...assinaturasDo(assinante), status: { notIn: ['canceled', 'expired'] } },
       orderBy: { createdAt: 'desc' },
     })
     if (!activeSub) return badRequest({ message: 'Nenhuma assinatura ativa encontrada.' })
@@ -34,11 +31,8 @@ export const DELETE = route<{ id: string }>(async (req) => {
       data: updating({ status: 'canceled', canceledAt: new Date() }),
     })
 
-    const fallbackCode = isVet ? 'none' : 'starter'
-    if (entity.subscriptionPlanCode !== fallbackCode) {
-      const data = updating({ subscriptionPlanCode: fallbackCode })
-      if (isVet) await prisma.veterinario.update({ where: { id: entity.id }, data })
-      else await prisma.clinica.update({ where: { id: entity.id }, data })
+    if (assinante.planoAtual !== assinante.planoPadrao) {
+      await prisma.$transaction((tx) => definirPlano(tx, assinante, assinante.planoPadrao, false))
     }
 
     return ok({ message: 'Assinatura cancelada com sucesso' })

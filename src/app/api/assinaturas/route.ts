@@ -1,12 +1,20 @@
 import { prisma } from '@/server/db'
 import { ApiRequest, badRequest, created, forbidden, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
-import { creating, updating } from '@/server/lucid'
+import { creating } from '@/server/lucid'
 import { AsaasService, getCheckoutUrl, type BillingType } from '@/server/services/asaas'
+import {
+  assinanteDe,
+  assinaturasDo,
+  definirPlano,
+  donoDaAssinatura,
+  garantirClienteAsaas,
+  referenciaExterna,
+} from '@/server/services/assinante'
 
 export const POST = route(async (req) => {
   const request = await ApiRequest.from(req)
-  const user = await requireUser(request, ['veterinario', 'clinica'])
+  const user = await requireUser(request, ['veterinario', 'clinica', 'prestador'])
   try {
     const { planCode, billingType, creditCardToken, cycle } = request.only([
       'planCode',
@@ -19,15 +27,11 @@ export const POST = route(async (req) => {
     const plan = await prisma.subscriptionPlan.findUnique({ where: { code: String(planCode) } })
     if (!plan) return badRequest({ message: 'Plano inválido' })
 
-    const isVet = user.userType === 'veterinario'
-    const entity = isVet ? user.veterinario : user.userType === 'clinica' ? user.clinica : null
-    if (!entity) return forbidden({ message: 'Apenas veterinários e clínicas podem assinar' })
+    const assinante = assinanteDe(user)
+    if (!assinante) return forbidden({ message: 'Apenas veterinários, clínicas e profissionais podem assinar' })
 
     const existingSub = await prisma.subscription.findFirst({
-      where: {
-        ...(isVet ? { veterinarioId: entity.id } : { clinicaId: entity.id }),
-        status: { in: ['active', 'pending'] },
-      },
+      where: { ...assinaturasDo(assinante), status: { in: ['active', 'pending'] } },
     })
     if (existingSub) {
       return badRequest({
@@ -37,22 +41,11 @@ export const POST = route(async (req) => {
     }
 
     if (plan.priceCents === 0 || planCode === 'none') {
-      const sub = creating({
-        veterinarioId: isVet ? entity.id : null,
-        clinicaId: isVet ? null : entity.id,
-        planId: plan.id,
-        status: 'active',
+      const sub = creating({ ...donoDaAssinatura(assinante), planId: plan.id, status: 'active' })
+      await prisma.$transaction(async (tx) => {
+        await tx.subscription.create({ data: sub })
+        await definirPlano(tx, assinante, planCode)
       })
-      const now = new Date()
-      await prisma.$transaction([
-        prisma.subscription.create({ data: sub }),
-        isVet
-          ? prisma.veterinario.update({
-              where: { id: entity.id },
-              data: updating({ subscriptionPlanCode: planCode, monthlyAppointmentsUsed: 0, monthlyAppointmentsResetAt: now }),
-            })
-          : prisma.clinica.update({ where: { id: entity.id }, data: updating({ subscriptionPlanCode: planCode }) }),
-      ])
       return created({ subscription: sub })
     }
 
@@ -60,9 +53,7 @@ export const POST = route(async (req) => {
 
     let customer: any
     try {
-      customer = isVet
-        ? await service.ensureCustomerForVeterinario(user, user.veterinario!)
-        : await service.ensureCustomerForClinica(user, user.clinica!)
+      customer = await garantirClienteAsaas(service, user, assinante)
     } catch {
       throw new Error('Erro ao cadastrar cliente no Asaas.')
     }
@@ -77,7 +68,7 @@ export const POST = route(async (req) => {
         creditCardToken,
         trialDays: plan.trialDays,
         description: `Assinatura Lince Pet ${plan.name}`,
-        externalReference: `${isVet ? 'vet' : 'clinica'}:${entity.id}`,
+        externalReference: referenciaExterna(assinante),
       })
     } catch (e: any) {
       console.error('[AssinaturasController.create] Asaas error:', e?.response?.data || e)
@@ -87,8 +78,7 @@ export const POST = route(async (req) => {
     const trialDays = plan.trialDays ?? 0
     const isTrialing = billingType === 'CREDIT_CARD' && trialDays > 0
     const sub = creating({
-      veterinarioId: isVet ? entity.id : null,
-      clinicaId: isVet ? null : entity.id,
+      ...donoDaAssinatura(assinante),
       planId: plan.id,
       asaasSubscriptionId: asaasSub.id,
       asaasCustomerId: customer.id,

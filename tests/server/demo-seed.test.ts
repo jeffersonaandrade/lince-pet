@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { especialidadesVeterinarias } from '@/data/especialidades'
-import { CLINICAS, PETS, TUTORES, VETERINARIOS } from '../../prisma/demo'
+import { CLINICAS, PETS, PRESTADORES, TUTORES, VETERINARIOS } from '../../prisma/demo'
+import { TIPOS_SERVICO } from '../../prisma/catalogo'
 
 describe('seed de demonstração', () => {
   it('espalha tutores, veterinários e clínicas por cidades e planos diferentes', () => {
@@ -24,6 +25,19 @@ describe('seed de demonstração', () => {
     expect(usadas.filter((nome) => !oficiais.has(nome))).toEqual([])
     for (const tutor of TUTORES) {
       expect(PETS[tutor.email]?.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('tem um prestador de cada tipo do catálogo, com serviços coerentes com a modalidade', () => {
+    expect(new Set(PRESTADORES.map((p) => p.tipo))).toEqual(new Set(TIPOS_SERVICO.map((t) => t.slug)))
+    expect(PRESTADORES.every((p) => p.email.includes('mockup'))).toBe(true)
+    for (const p of PRESTADORES) {
+      const modalidade = TIPOS_SERVICO.find((t) => t.slug === p.tipo)!.modalidade
+      expect(p.servicos.length).toBeGreaterThan(0)
+      for (const s of p.servicos) {
+        if (modalidade === 'duracao') expect(s.duracaoMin).toBeGreaterThan(0)
+        else expect(s.duracaoMin ?? null).toBeNull()
+      }
     }
   })
 })
