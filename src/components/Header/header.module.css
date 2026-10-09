@@ -161,6 +161,12 @@
   background: var(--primary-dark);
 }
 
+.accountActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
 .userSection {
   position: relative;
   display: flex;
@@ -533,6 +539,7 @@
     font-size: 0.9rem;
   }
 
+  .desktopBell,
   .userSection {
     display: none;
   }

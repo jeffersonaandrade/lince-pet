@@ -197,7 +197,13 @@ export default function Header() {
           {loading ? (
             <div style={{ width: 100 }}></div>
           ) : user ? (
-            <>
+            <div className={styles.accountActions}>
+              <div className={styles.desktopBell}>
+                <NotificationBell
+                  unreadCount={globalUnreadCount}
+                  onUnreadCountChange={setGlobalUnreadCount}
+                />
+              </div>
               <div className={styles.userSection} ref={dropdownRef}>
                 <button
                   className={styles.userButton}
@@ -255,14 +261,6 @@ export default function Header() {
                         <span>Histórico</span>
                       </button>
                     </Link>
-                    
-                    <NotificationBell
-                      variant="dropdown"
-                      className={styles.dropdownItem}
-                      onNavigate={() => setIsDropdownOpen(false)}
-                      unreadCount={globalUnreadCount}
-                      onUnreadCountChange={setGlobalUnreadCount}
-                    />
                     <div className={styles.dropdownDivider}></div>
                     <button
                       className={styles.dropdownItem}
@@ -274,7 +272,7 @@ export default function Header() {
                   </div>
                 )}
               </div>
-            </>
+            </div>
           ) : (
             <div className={styles.authButtons}>
               <Link href="/login" className={styles.loginLink}>
