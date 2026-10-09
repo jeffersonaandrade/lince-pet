@@ -1,3 +1,4 @@
+import { after } from 'next/server'
 import { DateTime } from 'luxon'
 import { prisma } from '@/server/db'
 import { ApiRequest, badRequest, notFound, ok, route, serverError, unauthorized } from '@/server/http'
@@ -5,6 +6,7 @@ import { updating } from '@/server/lucid'
 import { requireUser } from '@/server/auth/session'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { notifications } from '@/server/services/notifications'
+import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
 import { nomeCompleto, podeSerCancelado, prepareDataConsulta } from '@/server/services/agendamentos'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 
@@ -82,6 +84,8 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
     if (result instanceof Response) return result
     const agendamento = result
     const data = dataConsultaObj.toFormat('dd/MM/yyyy')
+
+    after(() => notificarAgendamento('remarcacao', agendamento.id, ['tutor', 'profissional']))
 
     try {
       const veterinario = agendamento.veterinarioId

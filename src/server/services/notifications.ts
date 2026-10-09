@@ -4,7 +4,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { env } from '../env'
 import { escapeHtml, sendMail } from './mail'
-import { sendTemplateMessage } from './whatsapp'
 import { appointmentConfirmation } from '../emails/appointment_confirmation'
 import { appointmentCancellation } from '../emails/appointment_cancellation'
 import { appointmentRescheduled } from '../emails/appointment_rescheduled'
@@ -75,10 +74,9 @@ function buildLogoHtml(style: string): string | undefined {
   return undefined
 }
 
-/** Envia email de confirmação de agendamento para o tutor (+ WhatsApp se houver telefone). */
+/** Envia email de confirmação de agendamento para o tutor (o WhatsApp fica em whatsapp-notificacoes). */
 async function sendAppointmentConfirmation(
   email: string,
-  phone: string | undefined | null,
   payload: {
     nomeTutor: string
     nomeVeterinario: string
@@ -102,33 +100,6 @@ async function sendAppointmentConfirmation(
       html: appointmentConfirmation({ ...payload, verificationCode: code, logoHtml }),
     })
     console.log(`✅ [NotificationService] Email de confirmação enviado para ${email}`)
-
-    if (phone) {
-      try {
-        console.log(`📱 [NotificationService] Tentando enviar WhatsApp para ${phone}`)
-        await sendTemplateMessage(
-          phone,
-          'confirmacao_agendamento',
-          [
-            {
-              type: 'body',
-              parameters: [
-                { type: 'text', text: payload.nomeTutor },
-                { type: 'text', text: payload.nomeVeterinario },
-                { type: 'text', text: payload.data },
-                { type: 'text', text: payload.horario },
-              ],
-            },
-          ],
-          'pt_BR'
-        )
-        console.log(`✅ [NotificationService] WhatsApp enviado para ${phone}`)
-      } catch (wsError: any) {
-        console.error(
-          `❌ [NotificationService] Falha WhatsApp: ${wsError?.response?.data?.error?.message || wsError.message}`
-        )
-      }
-    }
 
     return { success: true }
   } catch (error: any) {

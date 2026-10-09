@@ -6,10 +6,10 @@ import { prisma } from '@/server/db'
 import { ApiRequest, badRequest, created, notFound, ok, route, serverError, unauthorized } from '@/server/http'
 import { creating, updating } from '@/server/lucid'
 import { requireUser } from '@/server/auth/session'
-import { canCreateAppointment, hasFeature } from '@/server/services/subscription'
+import { canCreateAppointment } from '@/server/services/subscription'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { notifications } from '@/server/services/notifications'
-import { sendTemplateMessage } from '@/server/services/whatsapp'
+import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import {
   consumeDataConsulta,
@@ -199,12 +199,8 @@ export const POST = route(async (req) => {
         observacoes: agendamento.observacoes,
       }
 
-      const hasWhatsapp = await hasFeature(veterinario, 'whatsapp_notifications')
-      const phoneToSend = hasWhatsapp ? user.celular : null
-
       const tutorEmailRes = await notifications.sendAppointmentConfirmation(
         tutorEmail,
-        phoneToSend,
         payload,
         agendamento.startCode || undefined
       )
@@ -243,20 +239,10 @@ export const POST = route(async (req) => {
       console.error('❌ [Agendamento] Erro crítico ao processar notificações:', e)
     }
 
-    try {
-      const tutorCelular = user.celular
-      if (tutorCelular) {
-        after(
-          sendTemplateMessage(tutorCelular, 'hello_world')
-            .then((res) => console.log('✅ WhatsApp enviado:', res?.messages?.[0]?.id))
-            .catch((err) => console.error('⚠️ Falha no envio de WhatsApp:', err.message))
-        )
-      } else {
-        console.warn('⚠️ Tutor sem celular cadastrado, pulei envio de WhatsApp.')
-      }
-    } catch (e) {
-      console.error('Erro ao instanciar/usar WhatsappService:', e)
-    }
+    after(async () => {
+      await notificarAgendamento('confirmacao', agendamento.id, ['tutor'])
+      await notificarAgendamento('novo_agendamento', agendamento.id, ['profissional'])
+    })
 
     const { googleCalendar } = await import('@/server/services/google-calendar')
     after(

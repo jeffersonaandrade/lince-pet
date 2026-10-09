@@ -118,6 +118,48 @@ impl.update({
     "tests_server_prontuario_test": ["rule_prontuario_acesso", "rule_prontuario_sem_nota_privada"],
 })
 
+whatsapp_nodes = [
+    rule("rule_whatsapp_numero_central", "WhatsApp: um numero central da Lince Pet",
+         "Todas as mensagens saem de um unico numero da plataforma para tutores, vets e clinicas; profissional nao conecta numero proprio."),
+    rule("rule_whatsapp_provedor_agnostico", "WhatsApp: provedor agnostico (driver por WHATSAPP_PROVIDER)",
+         "Interface WhatsAppProvider; padrao 'log' so registra; trocar Z-API/UltraMsg/Evolution = novo driver. Provedor nao oficial tem risco de banimento."),
+    rule("rule_whatsapp_eventos_destinatarios", "WhatsApp: eventos e destinatarios",
+         "Confirmacao (tutor) e novo agendamento (profissional) na criacao; lembretes 24h/2h (tutor); cancelamento pelo tutor (profissional); cancelamento por bloqueio (tutor); remarcacao (ambos). Profissional = celular do vet ou WhatsApp da clinica."),
+    rule("rule_whatsapp_regra_plano", "WhatsApp: so com plano do vet ou da clinica",
+         "Envia se o vet OU a clinica da consulta tiver a feature whatsapp_notifications; senao registra ignorado/sem_plano."),
+    rule("rule_whatsapp_opt_out", "WhatsApp: opt-out do tutor no perfil (padrao ligado)",
+         "tutores.whatsapp_opt_in em Perfil > Notificacoes; desligado bloqueia so o tutor; e-mail/in-app seguem; profissional continua recebendo."),
+    rule("rule_whatsapp_lembretes_24h_2h", "WhatsApp: lembretes 24h e 2h via cron protegido",
+         "GET /api/cron/lembretes-whatsapp com Bearer CRON_SECRET a cada 15 min; janela 24h (24h a 2h antes) e 2h (ate o inicio); consulta criada apos a janela abrir pula aquele lembrete."),
+    rule("rule_whatsapp_idempotencia", "WhatsApp: envio idempotente e registrado",
+         "whatsapp_envios com unique (consulta, evento, destinatario, data+hora); cron repetido nao duplica; remarcacao muda a referencia; status enviado/falhou/ignorado."),
+    rule("rule_whatsapp_nao_bloqueia", "WhatsApp: falha nunca bloqueia o fluxo",
+         "Envio em after(), ate 2 tentativas so para erro temporario (429/5xx/rede); erro do provedor e registrado e nao derruba agendamento/cancelamento/remarcacao."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in whatsapp_nodes if n["id"] not in nodes_ids]
+whatsapp_rules = [n["id"] for n in whatsapp_nodes]
+new_edges += [edge("concept_regras_de_negocio", r) for r in whatsapp_rules]
+new_edges += [edge("rule_whatsapp_eventos_destinatarios", r) for r in whatsapp_rules if r != "rule_whatsapp_eventos_destinatarios"]
+new_edges += [edge("rule_whatsapp_eventos_destinatarios", "rule_bloqueio_cancela_consultas", "references")]
+impl.update({
+    "src_server_services_whatsapp": ["rule_whatsapp_provedor_agnostico", "rule_whatsapp_numero_central", "rule_whatsapp_nao_bloqueia"],
+    "src_server_services_whatsapp_mensagens": ["rule_whatsapp_eventos_destinatarios"],
+    "src_server_services_whatsapp_notificacoes": [
+        "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_regra_plano", "rule_whatsapp_opt_out",
+        "rule_whatsapp_idempotencia", "rule_whatsapp_nao_bloqueia",
+    ],
+    "src_server_services_whatsapp_lembretes": ["rule_whatsapp_lembretes_24h_2h", "rule_whatsapp_idempotencia"],
+    "src_app_api_cron_lembretes_whatsapp_route": ["rule_whatsapp_lembretes_24h_2h"],
+    "netlify_functions_lembretes_whatsapp": ["rule_whatsapp_lembretes_24h_2h"],
+    "src_app_api_agendamentos_route": ["rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia"],
+    "src_app_api_agendamentos_id_cancelar_route": ["rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia"],
+    "src_app_api_agendamentos_id_reagendar_route": ["rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios"],
+    "src_app_api_tutor_profile_route": ["rule_whatsapp_opt_out"],
+    "src_app_dashboard_tutor_perfil_page": ["rule_whatsapp_opt_out"],
+    "tests_server_whatsapp_test": whatsapp_rules,
+})
+new_edges += [edge("src_server_services_bloqueios", "rule_whatsapp_eventos_destinatarios", "implements")]
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

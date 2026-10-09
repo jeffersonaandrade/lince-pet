@@ -9,7 +9,9 @@ type VetUsage = {
   monthlyAppointmentsResetAt: Date | null
 }
 
-const findPlan = (vet: VetUsage) =>
+type ComPlano = Pick<VetUsage, 'subscriptionPlanCode'>
+
+const findPlan = (vet: ComPlano) =>
   prisma.subscriptionPlan.findUnique({ where: { code: vet.subscriptionPlanCode || 'free' } })
 
 const saveUsage = (vet: VetUsage, data: Partial<VetUsage>) => {
@@ -56,7 +58,8 @@ export async function decrementUsage(vet: VetUsage) {
   }
 }
 
-export async function hasFeature(vet: VetUsage, featureName: string) {
+/** Aceita veterinário ou clínica (ambos têm subscriptionPlanCode). */
+export async function hasFeature(vet: ComPlano, featureName: string) {
   const plan = await findPlan(vet)
   if (!plan?.features) return false
   try {

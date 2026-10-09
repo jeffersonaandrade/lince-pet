@@ -59,19 +59,19 @@ export default function PrivacyPolicy() {
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>4. Integração com API do WhatsApp</h2>
+        <h2 className={styles.sectionTitle}>4. Avisos por WhatsApp</h2>
         <p className={styles.paragraph}>
-          O Lince Pet utiliza a API Oficial do WhatsApp Business (fornecida pela Meta) para facilitar a comunicação e agendamentos. Ao utilizar nossos serviços, você concorda que:
+          O Lince Pet envia avisos de consultas por WhatsApp a partir de um número central da plataforma, por meio de um provedor de mensagens parceiro. Ao utilizar nossos serviços, você concorda que:
         </p>
         <ul className={styles.list}>
           <li className={styles.listItem}>
-            Podemos enviar notificações sobre seus agendamentos, lembretes e atualizações de serviço via WhatsApp.
+            Podemos enviar avisos sobre seus agendamentos (confirmação, lembretes 24h e 2h antes, cancelamento e remarcação). Não enviamos mensagens de marketing por WhatsApp.
           </li>
           <li className={styles.listItem}>
-            Seu número de telefone será processado em conformidade com as políticas de dados da Meta e do WhatsApp.
+            Seu número de celular e os dados da consulta (nome, pet, profissional, data, hora e local) são compartilhados com o provedor parceiro apenas para a entrega desses avisos, e também estão sujeitos às políticas do WhatsApp.
           </li>
           <li className={styles.listItem}>
-            Você pode optar por não receber estas mensagens a qualquer momento, respondendo às mensagens ou ajustando suas configurações de notificação.
+            Você pode deixar de receber esses avisos a qualquer momento em Perfil &gt; Notificações. O e-mail e os avisos no aplicativo continuam ativos.
           </li>
         </ul>
       </div>

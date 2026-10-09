@@ -6,7 +6,7 @@ import type { Agendamento, Clinica, Pet, Tutor, User, Veterinario } from '@prism
 import { prisma } from '../db'
 import { env, requiredEnv } from '../env'
 import { updating } from '../lucid'
-import { consumeDataConsulta } from './agendamentos'
+import { consumeDataConsulta, inicioDaConsulta } from './agendamentos'
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
@@ -148,11 +148,7 @@ async function refreshAccessToken(user: CalendarUser): Promise<string> {
 
 /** Data da consulta + "HH:MM" interpretados em America/Sao_Paulo. */
 function buildEventDateTime(dataConsulta: DateTime, horarioConsulta: string): DateTime {
-  const [hours, minutes] = horarioConsulta.split(':').map(Number)
-  return DateTime.fromObject(
-    { year: dataConsulta.year, month: dataConsulta.month, day: dataConsulta.day, hour: hours, minute: minutes },
-    { zone: 'America/Sao_Paulo' }
-  )
+  return inicioDaConsulta(dataConsulta.toISODate()!, horarioConsulta)
 }
 
 type EventContext = {

@@ -29,7 +29,7 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 
 - **Login:** `POST /api/auth/login` grava o cookie `auth_token`; `GET /api/auth/me` devolve o usuário; o frontend não guarda token.
 - **Google:** login social em `/api/auth/google/*` (state em cookie) e Calendar em `/api/google/calendar/*` (state JWT).
-- **Agendamento:** `POST /api/agendamentos` checa limite do plano, grava, notifica (in-app, e-mail, WhatsApp) e cria evento no Google Calendar via `after()`.
+- **Agendamento:** `POST /api/agendamentos` checa limite do plano, grava, notifica (in-app, e-mail; WhatsApp conforme "Notificações por WhatsApp") e cria evento no Google Calendar via `after()`.
 - **Assinaturas:** `/api/assinaturas/*` cria/atualiza no Asaas; `POST /api/webhooks/asaas` é idempotente via `webhook_events.event_id`.
 - **Uploads:** multipart -> `UploadedFile` -> S3 (`src/server/services/storage.ts`).
 - **Agenda:** a grade semanal fica em `veterinario_enderecos.horarios_funcionamento` (presencial) e `veterinarios.horarios_online`, editada no Perfil. Bloqueios pontuais ficam em `bloqueios_agenda` (`src/server/services/bloqueios.ts`). `GET /api/agendamentos/disponibilidade/:vet` devolve `horarios_ocupados` (consultas + bloqueios), `horarios_bloqueados` e `dia_bloqueado`.
@@ -68,6 +68,16 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Sem nota privada:** o prontuário nunca inclui a anotação privada (`agendamento_anotacoes`). O plano registrado na anotação é dado financeiro do vet; o plano clínico fica no registro.
 - **Pet novo:** começa com o prontuário vazio e acumula uma entrada por consulta não cancelada.
 
+### Notificações por WhatsApp
+
+- **Número central:** todas as mensagens saem de um único número da Lince Pet, que distribui avisos para tutores, vets e clínicas. Vet e clínica não conectam número próprio.
+- **Provedor agnóstico:** `src/server/services/whatsapp.ts` define `WhatsAppProvider` e escolhe o driver por `WHATSAPP_PROVIDER` (padrão `log`, que só registra). Trocar de provedor (Z-API, UltraMsg, Evolution...) = novo driver, sem mexer nos fluxos. Provedores não oficiais têm risco de banimento do número.
+- **Eventos e destinatários:** confirmação (tutor) e novo agendamento (profissional) na criação; lembretes 24h e 2h antes (tutor); cancelamento pelo tutor (profissional); cancelamento por bloqueio de agenda (tutor, com o motivo); remarcação (tutor e profissional). Profissional = celular do vet, ou o WhatsApp da clínica se o vet não tiver celular.
+- **Plano:** só envia se o vet **ou** a clínica da consulta tiver a feature `whatsapp_notifications`. Sem plano: registra `ignorado/sem_plano`.
+- **Opt-out:** `tutores.whatsapp_opt_in` (padrão ligado), alterado em Perfil > Notificações. Desligado: o tutor não recebe nada por WhatsApp (e-mail e in-app seguem); o profissional continua recebendo.
+- **Lembretes:** `GET /api/cron/lembretes-whatsapp` (Bearer `CRON_SECRET`; sem segredo configurado, 401), a cada 15 min (`vercel.json` ou `netlify/functions/lembretes-whatsapp.mts`). Janela 24h: entre 24h e 2h antes; janela 2h: até o início. Consulta criada depois que a janela abriu não recebe aquele lembrete (a confirmação já cobre).
+- **Idempotência e registro:** cada envio grava `whatsapp_envios` com chave única (consulta, evento, destinatário, data+hora da consulta). Repetir o cron não duplica; remarcar muda a referência e libera novos lembretes. Status: `enviado`, `falhou` (com erro) ou `ignorado` (`sem_plano`, `opt_out`, `sem_celular`).
+- **Não bloqueia o fluxo:** envio roda em `after()`, com até 2 tentativas só para erro temporário (429/5xx/rede). Falha do provedor nunca derruba agendamento, cancelamento ou remarcação.
 
 ## Testes
 

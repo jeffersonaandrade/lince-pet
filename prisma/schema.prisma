@@ -69,6 +69,8 @@ model Tutor {
   genero        String?
   createdAt     DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
+  /// 1 = aceita avisos de consultas por WhatsApp (opt-out no perfil)
+  whatsappOptIn Int       @default(1) @map("whatsapp_opt_in") @db.TinyInt
 
   user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   agendamentos Agendamento[]
@@ -402,6 +404,7 @@ model Agendamento {
   avaliacao       Avaliacao?
   anotacao        AgendamentoAnotacao?
   registroClinico RegistroClinico?
+  whatsappEnvios  WhatsappEnvio[]
 
   @@map("agendamentos")
 }
@@ -425,6 +428,34 @@ model AgendamentoAnotacao {
 
   @@index([veterinarioId])
   @@map("agendamento_anotacoes")
+}
+
+/// Log de envios de WhatsApp. A unique (agendamento, evento, destinatario, referencia) garante envio único por janela;
+/// `referencia` = data+hora da consulta no envio, então uma remarcação libera novos lembretes.
+model WhatsappEnvio {
+  id                String    @id @db.Char(36)
+  agendamentoId     String?   @map("agendamento_id") @db.Char(36)
+  /// confirmacao | novo_agendamento | lembrete_24h | lembrete_2h | cancelamento | remarcacao
+  evento            String    @db.VarChar(30)
+  /// tutor | profissional
+  destinatario      String    @db.VarChar(20)
+  referencia        String    @db.VarChar(20)
+  telefone          String?   @db.VarChar(20)
+  /// enviado | falhou | ignorado
+  status            String    @db.VarChar(20)
+  /// sem_plano | opt_out | sem_celular | erro
+  motivo            String?   @db.VarChar(30)
+  provider          String?   @db.VarChar(30)
+  providerMessageId String?   @map("provider_message_id") @db.VarChar(255)
+  tentativas        Int       @default(0)
+  erro              String?   @db.Text
+  createdAt         DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt         DateTime? @map("updated_at") @db.Timestamp(0)
+
+  agendamento Agendamento? @relation(fields: [agendamentoId], references: [id], onDelete: SetNull)
+
+  @@unique([agendamentoId, evento, destinatario, referencia], map: "whatsapp_envios_idempotencia_key")
+  @@map("whatsapp_envios")
 }
 
 /// Registro clínico da consulta: compõe o prontuário do pet (visível ao tutor e a vets/clínicas que atendem o pet).

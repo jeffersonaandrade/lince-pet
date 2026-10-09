@@ -9,6 +9,7 @@ import { creating, updating } from '../lucid'
 import { inAppNotifications } from './in-app-notifications'
 import { notifications } from './notifications'
 import { nomeCompleto, prepareDateTimeString } from './agendamentos'
+import { notificarAgendamento } from './whatsapp-notificacoes'
 
 /**
  * Bloqueio da agenda do veterinário. Não altera a grade semanal (horarios_funcionamento / horarios_online).
@@ -271,6 +272,7 @@ async function notificarTutores(veterinarioId: string, conflitos: Conflito[], mo
     } catch (error) {
       console.error('❌ [Bloqueio] Erro ao notificar tutor do cancelamento:', error)
     }
+    await notificarAgendamento('cancelamento', a.id, ['tutor'], { motivo: motivo || MOTIVO_CANCELAMENTO_BLOQUEIO })
   }
 }
 

@@ -1,171 +1,6 @@
 {
   "communities": {
     "0": [
-      "lottie_react",
-      "public_lottieloading_pet_loading",
-      "ref_react",
-      "src_app_clinicas_id_page",
-      "src_app_clinicas_id_page_clinicprofilepage",
-      "src_app_clinicas_id_page_clinicprofilepage_loadclinic",
-      "src_app_clinicas_id_page_comodidades_list",
-      "src_app_clinicas_id_page_getcomodidadelabel",
-      "src_app_clinicas_id_page_module",
-      "src_app_dashboard_tutor_appointmentitem",
-      "src_app_dashboard_tutor_appointmentitem_appointmentitem",
-      "src_app_dashboard_tutor_appointmentitem_appointmentitemprops",
-      "src_app_dashboard_tutor_favoriteslist",
-      "src_app_dashboard_tutor_favoriteslist_favoriteitem",
-      "src_app_dashboard_tutor_favoriteslist_favoriteslist",
-      "src_app_dashboard_tutor_page",
-      "src_app_dashboard_tutor_page_especies",
-      "src_app_dashboard_tutor_page_pet",
-      "src_app_dashboard_tutor_page_porte_opcoes",
-      "src_app_dashboard_tutor_page_racas_por_especie",
-      "src_app_dashboard_tutor_page_tutordashboard",
-      "src_app_dashboard_tutor_tutor_module",
-      "src_app_veterinario_id_page",
-      "src_app_veterinario_id_page_location",
-      "src_app_veterinario_id_page_veterinario",
-      "src_app_veterinario_id_page_veterinarioprofile",
-      "src_app_veterinario_id_veterinario_module",
-      "src_components_loadinganimation_loadinganimation",
-      "src_components_loadinganimation_loadinganimation_loadinganimation",
-      "src_components_minicalendar_minicalendar",
-      "src_components_minicalendar_minicalendar_minicalendarprops",
-      "src_components_minicalendar_minicalendar_module",
-      "src_components_successscreen_success_module",
-      "src_components_successscreen_successscreen",
-      "src_components_successscreen_successscreen_props",
-      "src_components_successscreen_successscreen_successscreen",
-      "src_components_sucessanimation_successanimation",
-      "src_components_sucessanimation_successanimation_successanimation",
-      "src_components_ui_lottieloading_lottieloading",
-      "src_components_ui_lottieloading_lottieloading_lottie",
-      "src_components_ui_lottieloading_lottieloading_lottieloading",
-      "src_components_ui_lottieloading_lottieloading_lottieloadingprops",
-      "src_components_ui_modalportal",
-      "src_components_ui_modalportal_modalportal",
-      "src_hook_useimageeditor",
-      "src_hook_useimageeditor_useimageeditor",
-      "src_hook_useimageeditor_useimageeditorreturn",
-      "src_services_agendamentos_agendamentos",
-      "src_services_agendamentos_agendamentos_agendamentodata",
-      "src_services_agendamentos_agendamentos_agendamentoresponse",
-      "src_services_agendamentos_agendamentos_agendamentosservice",
-      "src_services_agendamentos_agendamentos_agendamentosservice_cancelaragendamento",
-      "src_services_agendamentos_agendamentos_agendamentosservice_criaragendamento",
-      "src_services_agendamentos_agendamentos_agendamentosservice_filtrarhorariosdisponiveis",
-      "src_services_agendamentos_agendamentos_agendamentosservice_formatardatabrasil",
-      "src_services_agendamentos_agendamentos_agendamentosservice_listaragendamentos",
-      "src_services_agendamentos_agendamentos_agendamentosservice_reagendaragendamento",
-      "src_services_agendamentos_agendamentos_agendamentosservice_validardataagendamento",
-      "src_services_agendamentos_agendamentos_agendamentosservice_verificardisponibilidade",
-      "src_services_agendamentos_agendamentos_disponibilidaderesponse",
-      "src_services_agendamentos_agendamentos_listaagendamentosresponse",
-      "src_services_avaliacoes_avaliacoes_avaliacoesservice",
-      "src_services_avaliacoes_avaliacoes_avaliacoesservice_criaravaliacao",
-      "src_services_avaliacoes_avaliacoes_avaliacoesservice_listarminhasrecentes",
-      "src_services_avaliacoes_avaliacoes_avaliacoesservice_listarminhasrecentesclinica",
-      "src_services_avaliacoes_avaliacoes_avaliacoesservice_listarporclinica",
-      "src_services_avaliacoes_avaliacoes_avaliacoesservice_listarporveterinario",
-      "src_services_avaliacoes_avaliacoes_avaliacoesservice_mediaclinica",
-      "src_services_avaliacoes_avaliacoes_avaliacoesservice_mediaveterinario",
-      "src_services_clinicas_clinicas_getclinicabyid",
-      "src_services_favorites_favorites",
-      "src_services_favorites_favorites_checkfavoriteresponse",
-      "src_services_favorites_favorites_favoritesservice",
-      "src_services_pets_pets",
-      "src_services_pets_pets_petrecord",
-      "src_services_pets_pets_petsservice",
-      "src_services_pets_pets_petsservice_criarpet",
-      "src_services_pets_pets_petsservice_editarpet",
-      "src_services_pets_pets_petsservice_excluirpet",
-      "src_services_pets_pets_petsservice_listarpets",
-      "src_services_pets_pets_petsservice_uploadfoto",
-      "src_services_pets_pets_petsservice_uploadfotofromcanvas",
-      "src_services_veterinarios_veterinarios_getveterinariobyid",
-      "src_utils_formatters_abbreviateaddress"
-    ],
-    "1": [
-      "concept_regras_de_negocio",
-      "ref_luxon",
-      "rule_bloqueio_cancela_consultas",
-      "rule_bloqueio_diario_ou_periodo",
-      "rule_bloqueio_intervalo_horarios",
-      "rule_bloqueio_pontual_agenda",
-      "rule_bloqueio_quem_pode",
-      "rule_bloqueio_recorrente_semanal",
-      "rule_bloqueio_sem_estorno",
-      "rule_bloqueio_todos_locais",
-      "rule_bloqueio_trava_backend",
-      "src_app_api_agendamentos_id_cancelar_route",
-      "src_app_api_agendamentos_id_cancelar_route_patch",
-      "src_app_api_agendamentos_id_reagendar_route",
-      "src_app_api_agendamentos_route",
-      "src_app_api_agendamentos_route_get",
-      "src_app_api_agendamentos_route_str",
-      "src_app_api_clinicas_veterinarios_veterinario_id_bloqueios_route",
-      "src_app_api_clinicas_veterinarios_veterinario_id_bloqueios_route_get",
-      "src_app_api_clinicas_veterinarios_veterinario_id_bloqueios_route_post",
-      "src_server_services_agendamentos",
-      "src_server_services_agendamentos_consumedataconsulta",
-      "src_server_services_agendamentos_japassou",
-      "src_server_services_agendamentos_nomecompleto",
-      "src_server_services_agendamentos_podesercancelado",
-      "src_server_services_agendamentos_preparedataconsulta",
-      "src_server_services_agendamentos_preparedatetimestring",
-      "src_server_services_bloqueios",
-      "src_server_services_bloqueios_assertvinculoaceito",
-      "src_server_services_bloqueios_bloqueiocobredata",
-      "src_server_services_bloqueios_bloqueioinput",
-      "src_server_services_bloqueios_bloqueiolike",
-      "src_server_services_bloqueios_bloqueiosdoperiodo",
-      "src_server_services_bloqueios_bloqueiovalidator",
-      "src_server_services_bloqueios_buscarconflitos",
-      "src_server_services_bloqueios_conflito",
-      "src_server_services_bloqueios_criarbloqueio",
-      "src_server_services_bloqueios_diadasemana",
-      "src_server_services_bloqueios_diainteirobloqueado",
-      "src_server_services_bloqueios_diassemanadobloqueio",
-      "src_server_services_bloqueios_horarioestabloqueado",
-      "src_server_services_bloqueios_horariosbloqueadosnadata",
-      "src_server_services_bloqueios_horariosdobloqueio",
-      "src_server_services_bloqueios_invalid",
-      "src_server_services_bloqueios_ishorariobloqueado",
-      "src_server_services_bloqueios_isodate",
-      "src_server_services_bloqueios_listarbloqueios",
-      "src_server_services_bloqueios_mensagem_horario_bloqueado",
-      "src_server_services_bloqueios_motivo_cancelamento_bloqueio",
-      "src_server_services_bloqueios_normalizarhorario",
-      "src_server_services_bloqueios_notificartutores",
-      "src_server_services_bloqueios_serializebloqueio",
-      "src_server_services_bloqueios_serializeconflito",
-      "src_server_services_bloqueios_status_ativos",
-      "src_server_services_bloqueios_validarbloqueio",
-      "src_server_services_in_app_notifications",
-      "src_server_services_in_app_notifications_appointmentparams",
-      "src_server_services_in_app_notifications_create",
-      "src_server_services_in_app_notifications_inappnotifications",
-      "src_server_services_in_app_notifications_stars",
-      "src_server_services_notifications_notifications",
-      "src_server_services_subscription",
-      "src_server_services_subscription_cancreateappointment",
-      "src_server_services_subscription_decrementusage",
-      "src_server_services_subscription_findplan",
-      "src_server_services_subscription_hasfeature",
-      "src_server_services_subscription_incrementusage",
-      "src_server_services_subscription_resetmonthlycounterifneeded",
-      "src_server_services_subscription_saveusage",
-      "src_server_services_subscription_vetusage",
-      "tests_server_bloqueios_test",
-      "tests_server_bloqueios_test_diainteiro",
-      "tests_server_bloqueios_test_periodoparcial",
-      "tests_server_bloqueios_test_semana",
-      "tests_server_bloqueios_test_soalgunshorarios"
-    ],
-    "2": [
-      "ref_lucide_react",
-      "ref_moment",
       "src_app_dashboard_clinica_clinica_module",
       "src_app_dashboard_clinica_page",
       "src_app_dashboard_clinica_page_calendarevent",
@@ -199,6 +34,14 @@
       "src_components_tutorcontact_tutorcontact",
       "src_components_tutorcontact_tutorcontact_tutorcontact",
       "src_components_tutorcontact_tutorcontact_tutorcontactprops",
+      "src_services_avaliacoes_avaliacoes_avaliacoesservice",
+      "src_services_avaliacoes_avaliacoes_avaliacoesservice_criaravaliacao",
+      "src_services_avaliacoes_avaliacoes_avaliacoesservice_listarminhasrecentes",
+      "src_services_avaliacoes_avaliacoes_avaliacoesservice_listarminhasrecentesclinica",
+      "src_services_avaliacoes_avaliacoes_avaliacoesservice_listarporclinica",
+      "src_services_avaliacoes_avaliacoes_avaliacoesservice_listarporveterinario",
+      "src_services_avaliacoes_avaliacoes_avaliacoesservice_mediaclinica",
+      "src_services_avaliacoes_avaliacoes_avaliacoesservice_mediaveterinario",
       "src_services_clinicas_dashboard",
       "src_services_clinicas_dashboard_agendamentodashboard",
       "src_services_clinicas_dashboard_clinicadashboardservice",
@@ -224,170 +67,12 @@
       "src_services_veterinarios_dashboard_veterinariodashboardservice_concluiragendamento",
       "src_services_veterinarios_dashboard_veterinariodashboardservice_iniciaragendamento",
       "src_services_veterinarios_veterinarios_uploadprofilephoto",
-      "src_utils_formatters",
       "src_utils_formatters_formatdatetoiso",
       "src_utils_formatters_formateventtitle",
-      "src_utils_formatters_formatphone",
       "src_utils_formatters_normalizename",
-      "src_utils_formatters_towhatsapplink",
-      "tests_utils_formatters_test"
+      "src_utils_formatters_towhatsapplink"
     ],
-    "3": [
-      "src_app_api_agendamentos_id_avaliacao_route",
-      "src_app_api_agendamentos_id_avaliacao_route_post",
-      "src_app_api_agendamentos_id_avaliacao_route_statusnormalizado",
-      "src_app_api_agendamentos_route_post",
-      "src_app_api_favorites_route",
-      "src_app_api_favorites_route_get",
-      "src_app_api_favorites_route_post",
-      "src_app_api_notifications_id_read_route",
-      "src_app_api_notifications_id_read_route_patch",
-      "src_app_api_notifications_route",
-      "src_app_api_notifications_route_get",
-      "src_app_api_onboarding_photo_route",
-      "src_app_api_onboarding_photo_route_options",
-      "src_app_api_onboarding_photo_route_post",
-      "src_app_api_onboarding_upload_generic_route",
-      "src_app_api_onboarding_upload_generic_route_options",
-      "src_app_api_onboarding_upload_generic_route_post",
-      "src_app_api_veterinarios_bloqueios_id_route",
-      "src_app_api_veterinarios_bloqueios_id_route_delete",
-      "src_app_api_veterinarios_bloqueios_route",
-      "src_app_api_veterinarios_bloqueios_route_get",
-      "src_app_api_veterinarios_bloqueios_route_post",
-      "src_app_api_veterinarios_locations_id_photo_route",
-      "src_app_api_veterinarios_locations_id_photo_route_post",
-      "src_app_api_veterinarios_locations_id_route",
-      "src_app_api_veterinarios_locations_id_route_put",
-      "src_app_api_veterinarios_locations_route",
-      "src_app_api_veterinarios_locations_route_post",
-      "src_app_api_veterinarios_route_post",
-      "src_app_api_veterinarios_schedule_route",
-      "src_app_api_veterinarios_schedule_route_diasemanamap",
-      "src_app_api_veterinarios_schedule_route_diasemanareversemap",
-      "src_app_api_veterinarios_schedule_route_get",
-      "src_app_api_veterinarios_schedule_route_put",
-      "src_server_http_apirequest_from",
-      "src_server_http_conflict",
-      "src_server_http_convertemptystrings",
-      "src_server_http_created",
-      "src_server_http_emptytonull",
-      "src_server_http_notfound",
-      "src_server_lucid",
-      "src_server_lucid_creating",
-      "src_server_lucid_now",
-      "src_server_lucid_pageparams",
-      "src_server_lucid_paginate",
-      "src_server_lucid_tonumber",
-      "src_server_lucid_uuid",
-      "src_server_services_storage_uploadveterinariophoto",
-      "src_server_services_veterinarios_findenderecoprincipalouativo",
-      "src_server_services_veterinarios_findveterinariobyuser"
-    ],
-    "4": [
-      "src_app_onboarding_onboarding_module",
-      "src_app_onboarding_page",
-      "src_app_onboarding_page_especialidade",
-      "src_app_onboarding_page_locationdata",
-      "src_app_onboarding_page_locationmodaldata",
-      "src_app_onboarding_page_onboardingpage",
-      "src_app_onboarding_page_onboardingstep",
-      "src_app_onboarding_page_onboardingsteps",
-      "src_app_signup_clinica_clinica_signup_module",
-      "src_app_signup_clinica_page",
-      "src_app_signup_clinica_page_clinicasignup",
-      "src_app_signup_clinica_page_page",
-      "src_app_signup_veterinario_page",
-      "src_app_signup_veterinario_page_page",
-      "src_app_signup_veterinario_page_plansmetadata",
-      "src_app_signup_veterinario_page_veterinariosignup",
-      "src_app_signup_veterinario_veterinario_signup_module",
-      "src_components_imageeditor_imageeditor",
-      "src_components_imageeditor_imageeditor_imageeditor",
-      "src_components_imageeditor_imageeditor_imageeditorprops",
-      "src_components_imageeditor_imageeditor_module",
-      "src_components_profileimageuploader_profileimageuploader",
-      "src_components_profileimageuploader_profileimageuploader_module",
-      "src_components_profileimageuploader_profileimageuploader_profileimageuploader",
-      "src_components_profileimageuploader_profileimageuploader_profileimageuploaderprops",
-      "src_components_ui_tooltip_tooltip",
-      "src_components_ui_tooltip_tooltip_module",
-      "src_components_ui_tooltip_tooltip_tooltip",
-      "src_components_ui_tooltip_tooltip_tooltipprops",
-      "src_services_external_brazilapi_fetchcep",
-      "src_services_veterinarios_veterinarios",
-      "src_services_veterinarios_veterinarios_completeveterinarioonboarding",
-      "src_services_veterinarios_veterinarios_createveterinario",
-      "src_services_veterinarios_veterinarios_experience",
-      "src_services_veterinarios_veterinarios_getonboardingprogress",
-      "src_services_veterinarios_veterinarios_step4location",
-      "src_services_veterinarios_veterinarios_submitonboardingstep",
-      "src_services_veterinarios_veterinarios_submitonboardingstep1",
-      "src_services_veterinarios_veterinarios_submitonboardingstep2",
-      "src_services_veterinarios_veterinarios_submitonboardingstep3",
-      "src_services_veterinarios_veterinarios_submitonboardingstep4",
-      "src_services_veterinarios_veterinarios_submitonboardingstep5",
-      "src_services_veterinarios_veterinarios_submitonboardingstep6",
-      "src_services_veterinarios_veterinarios_submitonboardingstep7",
-      "src_services_veterinarios_veterinarios_uploadonboardinggeneric",
-      "src_services_veterinarios_veterinarios_uploadonboardingphoto",
-      "src_services_veterinarios_veterinarios_veterinariosignup",
-      "src_services_veterinarios_veterinarios_veterinariosignupdata",
-      "src_utils_formatters_formatcep",
-      "src_utils_formatters_removemask"
-    ],
-    "5": [
-      "ref_node_path",
-      "ref_vitest",
-      "rule_anotacao_campos",
-      "rule_anotacao_historico_por_pet",
-      "rule_anotacao_nao_altera_pagamento",
-      "rule_anotacao_privada_visibilidade",
-      "rule_anotacao_quando_pode",
-      "src_app_api_veterinarios_agendamentos_id_anotacao_route",
-      "src_app_api_veterinarios_agendamentos_id_anotacao_route_get",
-      "src_app_api_veterinarios_agendamentos_id_anotacao_route_put",
-      "src_server_auth_session_currentuser",
-      "src_server_http_httperror",
-      "src_server_http_httperror_constructor",
-      "src_server_services_anotacoes",
-      "src_server_services_anotacoes_anotacaovalidator",
-      "src_server_services_anotacoes_findagendamentodovet",
-      "src_server_services_anotacoes_formas_pagamento",
-      "src_server_services_anotacoes_historicodopet",
-      "src_server_services_anotacoes_max_observacoes",
-      "src_server_services_anotacoes_mensagem_anotacao_indisponivel",
-      "src_server_services_anotacoes_obteranotacao",
-      "src_server_services_anotacoes_podeanotar",
-      "src_server_services_anotacoes_salvaranotacao",
-      "src_server_services_anotacoes_serializeanotacao",
-      "src_server_services_anotacoes_status_pagamento",
-      "src_server_services_anotacoes_validaranotacao",
-      "src_server_services_veterinario_dashboard_statusnormalizado",
-      "src_server_services_vinculos",
-      "src_server_services_vinculos_aceitarvinculo",
-      "src_server_services_vinculos_nomeveterinario",
-      "src_server_services_vinculos_recusarvinculo",
-      "src_server_services_vinculos_rownotfound",
-      "src_server_services_vinculos_veterinariodousuario",
-      "tests_contract_cases",
-      "tests_contract_cases_contractcase",
-      "tests_contract_cases_contractcases",
-      "tests_contract_cases_role",
-      "tests_contract_contract_test",
-      "tests_contract_contract_test_adonis",
-      "tests_contract_contract_test_call",
-      "tests_contract_contract_test_enabled",
-      "tests_contract_contract_test_fillpath",
-      "tests_contract_contract_test_next",
-      "tests_contract_contract_test_shape",
-      "tests_server_anotacoes_test",
-      "tests_server_anotacoes_test_iniciado",
-      "tests_server_anotacoes_test_prismamock",
-      "tests_server_http_test",
-      "vitest_config"
-    ],
-    "6": [
+    "1": [
       "src_components_anotacaoprivada_anotacaoprivada",
       "src_components_anotacaoprivada_anotacaoprivada_anotacaoprivada",
       "src_components_anotacaoprivada_anotacaoprivada_forma_opcoes",
@@ -400,21 +85,36 @@
       "src_components_anotacaoprivada_historicoanotacoes_props",
       "src_components_anotacaoprivada_historicoanotacoes_resumopagamento",
       "src_components_anotacaoprivada_historicoanotacoes_status_pagamento_label",
-      "src_components_bloqueioagenda_bloqueioagendamodal",
-      "src_components_bloqueioagenda_bloqueioagendamodal_bloqueioagendamodal",
-      "src_components_bloqueioagenda_bloqueioagendamodal_diadasemana",
-      "src_components_bloqueioagenda_bloqueioagendamodal_end_slots",
-      "src_components_bloqueioagenda_bloqueioagendamodal_formatardata",
-      "src_components_bloqueioagenda_bloqueioagendamodal_hojeiso",
       "src_components_bloqueioagenda_bloqueioagendamodal_props",
-      "src_components_bloqueioagenda_bloqueioagendamodal_time_slots",
       "src_components_bloqueioagenda_bloqueioslista",
       "src_components_bloqueioagenda_bloqueioslista_bloqueioslista",
       "src_components_bloqueioagenda_bloqueioslista_descreverhorarios",
       "src_components_bloqueioagenda_bloqueioslista_descreverperiodo",
       "src_components_bloqueioagenda_bloqueioslista_formatardata",
       "src_components_bloqueioagenda_bloqueioslista_props",
+      "src_components_prontuario_prontuariopet",
+      "src_components_prontuario_prontuariopet_campos",
+      "src_components_prontuario_prontuariopet_formatardata",
+      "src_components_prontuario_prontuariopet_itemconsulta",
+      "src_components_prontuario_prontuariopet_prontuariopet",
+      "src_components_prontuario_prontuariopet_props",
+      "src_components_prontuario_prontuariopet_ultimopeso",
+      "src_components_prontuario_registroclinicoform",
+      "src_components_prontuario_registroclinicoform_campos_texto",
+      "src_components_prontuario_registroclinicoform_campotexto",
+      "src_components_prontuario_registroclinicoform_hojeiso",
+      "src_components_prontuario_registroclinicoform_props",
+      "src_components_prontuario_registroclinicoform_registroclinicoform",
+      "src_components_prontuario_registroclinicoform_vazio",
       "src_hook_api_createapiinstance",
+      "src_services_pets_prontuario",
+      "src_services_pets_prontuario_consultaprontuario",
+      "src_services_pets_prontuario_max_texto_registro",
+      "src_services_pets_prontuario_peso_maximo_kg",
+      "src_services_pets_prontuario_prontuario",
+      "src_services_pets_prontuario_prontuarioservice",
+      "src_services_pets_prontuario_registroclinico",
+      "src_services_pets_prontuario_registroclinicopayload",
       "src_services_veterinarios_anotacoes",
       "src_services_veterinarios_anotacoes_anotacaohistorico",
       "src_services_veterinarios_anotacoes_anotacaopayload",
@@ -437,158 +137,140 @@
       "src_services_veterinarios_bloqueios_mapeardiasbloqueados",
       "src_services_veterinarios_bloqueios_toiso"
     ],
-    "7": [
-      "next_config",
-      "next_config_nextconfig",
-      "ref_next",
-      "src_app_explorar_explorar_module",
-      "src_app_explorar_page",
-      "src_app_explorar_page_clinica",
-      "src_app_explorar_page_explorarcontent",
-      "src_app_explorar_page_explorarpage",
-      "src_app_explorar_page_veterinario",
-      "src_app_not_found",
-      "src_app_not_found_notfound",
-      "src_app_notfound_module",
-      "src_app_page",
-      "src_app_page_home",
-      "src_app_page_module",
-      "src_app_politica_de_privacidade_page",
-      "src_app_politica_de_privacidade_page_metadata",
-      "src_app_politica_de_privacidade_page_privacypolicy",
-      "src_app_politica_de_privacidade_privacy_module",
-      "src_app_signup_page",
-      "src_app_signup_page_cadastropage",
-      "src_app_signup_page_featureicon",
-      "src_app_signup_page_module",
-      "src_app_termos_de_uso_page",
-      "src_app_termos_de_uso_page_metadata",
-      "src_app_termos_de_uso_page_termosdeuso",
-      "src_components_home_platformfeatures_platformfeatures",
-      "src_components_home_platformfeatures_platformfeatures_module",
-      "src_components_home_platformfeatures_platformfeatures_platformfeatures",
-      "src_components_home_searchbar_searchbar_searchbar",
-      "src_components_home_typewritertitle_typewriter_module",
-      "src_components_home_typewritertitle_typewritertitle",
-      "src_components_home_typewritertitle_typewritertitle_sentences",
-      "src_components_home_typewritertitle_typewritertitle_typewritertitle",
-      "src_components_routeprotection_onboardingredirect",
-      "src_components_routeprotection_onboardingredirect_onboardingredirect",
-      "src_components_routeprotection_onboardingredirect_onboardingredirectprops",
-      "src_components_ui_skeleton_skeleton",
-      "src_components_ui_skeleton_skeleton_module",
-      "src_components_ui_skeleton_skeleton_skeleton",
-      "src_components_ui_skeleton_skeleton_skeletonprops",
-      "src_components_ui_userimage_userimage",
-      "src_components_ui_userimage_userimage_module",
-      "src_components_ui_userimage_userimage_userimage",
-      "src_components_ui_userimage_userimage_userimageprops",
-      "src_services_clinicas_clinicas_searchclinicas",
-      "src_services_veterinarios_veterinarios_searchveterinarios"
+    "2": [
+      "rule_anotacao_campos",
+      "rule_anotacao_historico_por_pet",
+      "rule_anotacao_nao_altera_pagamento",
+      "rule_anotacao_privada_visibilidade",
+      "rule_anotacao_quando_pode",
+      "rule_prontuario_acesso",
+      "rule_prontuario_autor",
+      "rule_prontuario_pet_novo_vazio",
+      "rule_prontuario_registro_campos",
+      "rule_prontuario_sem_nota_privada",
+      "rule_prontuario_tutor_ve_tudo",
+      "src_app_api_pets_id_prontuario_route",
+      "src_app_api_pets_id_prontuario_route_get",
+      "src_app_api_veterinarios_agendamentos_id_anotacao_route",
+      "src_app_api_veterinarios_agendamentos_id_anotacao_route_get",
+      "src_app_api_veterinarios_agendamentos_id_anotacao_route_put",
+      "src_server_auth_session_currentuser",
+      "src_server_http_httperror",
+      "src_server_http_httperror_constructor",
+      "src_server_services_anotacoes",
+      "src_server_services_anotacoes_anotacaovalidator",
+      "src_server_services_anotacoes_findagendamentodovet",
+      "src_server_services_anotacoes_formas_pagamento",
+      "src_server_services_anotacoes_historicodopet",
+      "src_server_services_anotacoes_max_observacoes",
+      "src_server_services_anotacoes_mensagem_anotacao_indisponivel",
+      "src_server_services_anotacoes_obteranotacao",
+      "src_server_services_anotacoes_podeanotar",
+      "src_server_services_anotacoes_salvaranotacao",
+      "src_server_services_anotacoes_serializeanotacao",
+      "src_server_services_anotacoes_status_pagamento",
+      "src_server_services_anotacoes_validaranotacao",
+      "src_server_services_prontuario",
+      "src_server_services_prontuario_assertacessoprontuario",
+      "src_server_services_prontuario_findagendamentodovet",
+      "src_server_services_prontuario_max_texto_registro",
+      "src_server_services_prontuario_nao_cancelado",
+      "src_server_services_prontuario_nao_encontrado",
+      "src_server_services_prontuario_nomecompleto",
+      "src_server_services_prontuario_obterregistro",
+      "src_server_services_prontuario_peso_maximo_kg",
+      "src_server_services_prontuario_prontuariodopet",
+      "src_server_services_prontuario_registrovalidator",
+      "src_server_services_prontuario_salvarregistro",
+      "src_server_services_prontuario_serializepetprontuario",
+      "src_server_services_prontuario_serializeregistro",
+      "src_server_services_prontuario_texto",
+      "src_server_services_prontuario_validarregistro",
+      "src_server_services_vinculos",
+      "src_server_services_vinculos_aceitarvinculo",
+      "src_server_services_vinculos_nomeveterinario",
+      "src_server_services_vinculos_recusarvinculo",
+      "src_server_services_vinculos_rownotfound",
+      "src_server_services_vinculos_veterinariodousuario",
+      "tests_server_anotacoes_test",
+      "tests_server_anotacoes_test_iniciado",
+      "tests_server_anotacoes_test_prismamock",
+      "tests_server_prontuario_test",
+      "tests_server_prontuario_test_pet",
+      "tests_server_prontuario_test_prismamock",
+      "tests_server_prontuario_test_user"
     ],
-    "8": [
-      "public_doctor",
-      "public_explore",
-      "public_frame_43",
-      "public_hospital",
-      "public_img_iconsilver",
-      "public_img_nameiconheader",
-      "public_lincepet",
-      "src_app_globals",
-      "src_app_layout",
-      "src_app_layout_fredoka",
-      "src_app_layout_inter",
-      "src_app_layout_metadata",
-      "src_app_layout_rootlayout",
-      "src_app_layout_viewport",
-      "src_components_footer_footer",
-      "src_components_footer_footer_footer",
-      "src_components_footer_footer_module",
-      "src_components_header_header",
-      "src_components_header_header_header",
-      "src_components_header_header_module",
-      "src_components_notificationbell_clinicrequestmodal",
-      "src_components_notificationbell_clinicrequestmodal_clinicrequestmodal",
-      "src_components_notificationbell_clinicrequestmodal_clinicrequestmodalprops",
-      "src_components_notificationbell_clinicrequestmodal_module",
-      "src_components_notificationbell_notificationbell",
-      "src_components_notificationbell_notificationbell_default_config",
-      "src_components_notificationbell_notificationbell_module",
-      "src_components_notificationbell_notificationbell_notification_config",
-      "src_components_notificationbell_notificationbell_notificationbell",
-      "src_components_notificationbell_notificationbell_notificationbellprops",
-      "src_components_notificationbell_notificationbell_timeago",
-      "src_contexts_authcontext",
-      "src_contexts_authcontext_authcontext",
-      "src_contexts_authcontext_authcontexttype",
-      "src_contexts_authcontext_authprovider",
-      "src_contexts_authcontext_user",
-      "src_services_auth_auth_logout",
-      "src_services_notifications_notifications",
-      "src_services_notifications_notifications_notificationitem",
-      "src_services_notifications_notifications_notificationspaginatedresponse",
-      "src_services_notifications_notifications_notificationsservice",
-      "src_services_notifications_notifications_notificationsservice_acceptcliniclink",
-      "src_services_notifications_notifications_notificationsservice_getunreadcount",
-      "src_services_notifications_notifications_notificationsservice_list",
-      "src_services_notifications_notifications_notificationsservice_markallasread",
-      "src_services_notifications_notifications_notificationsservice_markasread",
-      "src_services_notifications_notifications_notificationsservice_rejectcliniclink"
-    ],
-    "9": [
+    "3": [
       "src_app_api_agendamentos_disponibilidade_veterinario_id_route",
-      "src_app_api_agendamentos_disponibilidade_veterinario_id_route_get",
       "src_app_api_assinaturas_id_route",
-      "src_app_api_assinaturas_id_route_delete",
       "src_app_api_assinaturas_id_upgrade_route",
+      "src_app_api_assinaturas_planos_route",
       "src_app_api_assinaturas_route",
       "src_app_api_assinaturas_status_route",
-      "src_app_api_assinaturas_status_route_get",
-      "src_app_api_auth_forgot_password_route",
-      "src_app_api_auth_forgot_password_route_post",
-      "src_app_api_clinicas_avaliacoes_recentes_route",
-      "src_app_api_clinicas_avaliacoes_recentes_route_get",
-      "src_app_api_clinicas_register_route",
-      "src_app_api_clinicas_register_route_post",
+      "src_app_api_auth_logout_route",
+      "src_app_api_auth_logout_route_post",
+      "src_app_api_auth_me_route",
+      "src_app_api_auth_me_route_get",
+      "src_app_api_clinicas_agendamentos_route",
+      "src_app_api_clinicas_bloqueios_id_route",
+      "src_app_api_clinicas_dashboard_estatisticas_route",
+      "src_app_api_clinicas_onboarding_complete_route",
+      "src_app_api_clinicas_professionals_id_route",
+      "src_app_api_clinicas_professionals_search_route",
+      "src_app_api_especialidades_route",
+      "src_app_api_favorites_check_route",
       "src_app_api_favorites_id_route",
-      "src_app_api_favorites_id_route_delete",
       "src_app_api_google_calendar_auth_route",
-      "src_app_api_google_calendar_auth_route_get",
+      "src_app_api_google_calendar_disconnect_route",
+      "src_app_api_notifications_id_read_route",
       "src_app_api_notifications_read_all_route",
-      "src_app_api_notifications_read_all_route_patch",
-      "src_app_api_veterinarios_avaliacoes_recentes_route",
-      "src_app_api_veterinarios_avaliacoes_recentes_route_get",
-      "src_app_api_veterinarios_id_route",
-      "src_app_api_veterinarios_id_route_get",
+      "src_app_api_notifications_unread_count_route",
+      "src_app_api_onboarding_photo_route",
+      "src_app_api_onboarding_photo_route_options",
+      "src_app_api_planos_route",
+      "src_app_api_tutor_profile_route",
+      "src_app_api_veterinarios_bloqueios_id_route",
+      "src_app_api_veterinarios_locations_id_photo_route",
+      "src_app_api_veterinarios_locations_id_route",
+      "src_app_api_veterinarios_search_route",
+      "src_app_api_veterinarios_vinculos_clinicaid_aceitar_route",
+      "src_app_api_veterinarios_vinculos_clinicaid_recusar_route",
+      "src_server_auth_jwt_auth_cookie",
+      "src_server_auth_session",
+      "src_server_auth_session_clearauthcookie",
+      "src_server_db",
+      "src_server_db_createclient",
+      "src_server_db_globalforprisma",
+      "src_server_db_prisma",
       "src_server_http",
       "src_server_http_apirequest",
       "src_server_http_apirequest_all",
       "src_server_http_apirequest_constructor",
-      "src_server_http_apirequest_header",
       "src_server_http_apirequest_only",
       "src_server_http_apirequest_qs",
-      "src_server_http_badrequest",
       "src_server_http_fileoptions",
       "src_server_http_forbidden",
       "src_server_http_nocontent",
+      "src_server_http_route",
       "src_server_http_routecontext",
-      "src_server_http_servererror",
       "src_server_http_setdeep",
       "src_server_services_asaas_billingtype",
-      "src_server_services_clinicas_clinicaregistrationdata",
-      "src_server_services_clinicas_registerclinica",
-      "src_server_services_clinicas_statuserror"
+      "src_server_services_auth_getuserprofile",
+      "src_server_services_tutor",
+      "src_server_services_tutor_tutorregistrationdata"
     ],
-    "10": [
-      "src_app_api_agendamentos_id_reagendar_route_patch",
-      "src_app_api_clinicas_agendamentos_route",
+    "4": [
+      "ref_prisma_client",
+      "src_app_api_api_webhooks_asaas_route",
+      "src_app_api_assinaturas_id_route_delete",
+      "src_app_api_assinaturas_planos_route_get",
       "src_app_api_clinicas_agendamentos_route_get",
-      "src_app_api_clinicas_bloqueios_id_route",
-      "src_app_api_clinicas_bloqueios_id_route_delete",
-      "src_app_api_clinicas_dashboard_estatisticas_route",
       "src_app_api_clinicas_dashboard_estatisticas_route_get",
-      "src_app_api_clinicas_onboarding_complete_route",
+      "src_app_api_clinicas_id_route",
+      "src_app_api_clinicas_id_route_get",
       "src_app_api_clinicas_onboarding_complete_route_post",
+      "src_app_api_clinicas_onboarding_progress_route",
+      "src_app_api_clinicas_onboarding_progress_route_get",
       "src_app_api_clinicas_onboarding_step1_route",
       "src_app_api_clinicas_onboarding_step1_route_post",
       "src_app_api_clinicas_onboarding_step2_route",
@@ -602,72 +284,239 @@
       "src_app_api_clinicas_professionals_route",
       "src_app_api_clinicas_professionals_route_get",
       "src_app_api_clinicas_professionals_route_post",
+      "src_app_api_clinicas_route",
+      "src_app_api_clinicas_route_get",
       "src_app_api_clinicas_upload_photo_route",
       "src_app_api_clinicas_upload_photo_route_post",
-      "src_app_api_veterinarios_vinculos_clinicaid_aceitar_route",
-      "src_app_api_veterinarios_vinculos_clinicaid_aceitar_route_patch",
-      "src_app_api_veterinarios_vinculos_clinicaid_recusar_route",
-      "src_app_api_veterinarios_vinculos_clinicaid_recusar_route_patch",
-      "src_server_auth_session_requireuser",
+      "src_app_api_planos_route_get",
+      "src_app_api_webhooks_asaas_ping_route",
+      "src_app_api_webhooks_asaas_ping_route_get",
+      "src_app_api_webhooks_asaas_route",
+      "src_app_api_webhooks_asaas_route_get",
+      "src_app_api_webhooks_asaas_route_post",
+      "src_server_http_ok",
       "src_server_http_unauthorized",
       "src_server_lucid_updating",
       "src_server_services_clinicas",
       "src_server_services_clinicas_dirtyfields",
+      "src_server_services_clinicas_especialidadesporentidade",
       "src_server_services_clinicas_formatdataconsulta",
+      "src_server_services_clinicas_mediaavaliacoes",
       "src_server_services_clinicas_mysqldatetime",
       "src_server_services_clinicas_saveclinica",
       "src_server_services_clinicas_saveuser",
+      "src_server_services_clinicas_serializeclinica",
+      "src_server_services_clinicas_serializeendereco",
+      "src_server_services_clinicas_serializerelateduser",
       "src_server_services_clinicas_str",
       "src_server_services_clinicas_syncespecialidadesclinica",
       "src_server_services_clinicas_syncplanosclinica",
       "src_server_services_clinicas_tojsoncolumn",
       "src_server_services_storage_uploadclinicaphoto"
     ],
-    "11": [
-      "src_app_api_onboarding_complete_route",
-      "src_app_api_onboarding_complete_route_post",
-      "src_app_api_onboarding_step1_route",
-      "src_app_api_onboarding_step1_route_post",
-      "src_app_api_onboarding_step2_route",
-      "src_app_api_onboarding_step2_route_post",
-      "src_app_api_onboarding_step3_route",
-      "src_app_api_onboarding_step3_route_post",
-      "src_app_api_onboarding_step4_route",
-      "src_app_api_onboarding_step4_route_post",
-      "src_app_api_onboarding_step5_route",
-      "src_app_api_onboarding_step5_route_post",
-      "src_app_api_onboarding_step6_route",
-      "src_app_api_onboarding_step6_route_post",
-      "src_app_api_onboarding_step7_route",
-      "src_app_api_onboarding_step7_route_post",
-      "src_server_services_onboarding",
-      "src_server_services_onboarding_completeonboarding",
-      "src_server_services_onboarding_deleteveterinario",
-      "src_server_services_onboarding_getprogress",
-      "src_server_services_onboarding_nextstep",
-      "src_server_services_onboarding_processstep1",
-      "src_server_services_onboarding_processstep2",
-      "src_server_services_onboarding_processstep3",
-      "src_server_services_onboarding_processstep4",
-      "src_server_services_onboarding_processstep5",
-      "src_server_services_onboarding_processstep6",
-      "src_server_services_onboarding_processstep7",
-      "src_server_services_onboarding_result",
-      "src_server_services_onboarding_rownotfound",
-      "src_server_services_onboarding_validateprevioussteps",
-      "src_server_services_onboarding_vetof",
-      "src_server_services_veterinarios_findveterinarios",
-      "src_server_validators_onboarding",
-      "src_server_validators_onboarding_horario",
-      "src_server_validators_onboarding_step1validator",
-      "src_server_validators_onboarding_step2validator",
-      "src_server_validators_onboarding_step3validator",
-      "src_server_validators_onboarding_step4validator",
-      "src_server_validators_onboarding_step5validator",
-      "src_server_validators_onboarding_step6validator",
-      "src_server_validators_onboarding_step7validator"
+    "5": [
+      "src_app_api_agendamentos_disponibilidade_veterinario_id_route_get",
+      "src_app_api_assinaturas_status_route_get",
+      "src_app_api_clinicas_bloqueios_id_route_delete",
+      "src_app_api_clinicas_professionals_id_route_delete",
+      "src_app_api_clinicas_professionals_search_route_get",
+      "src_app_api_clinicas_veterinarios_veterinario_id_bloqueios_route",
+      "src_app_api_clinicas_veterinarios_veterinario_id_bloqueios_route_get",
+      "src_app_api_clinicas_veterinarios_veterinario_id_bloqueios_route_post",
+      "src_app_api_favorites_check_route_get",
+      "src_app_api_favorites_id_route_delete",
+      "src_app_api_favorites_route",
+      "src_app_api_favorites_route_get",
+      "src_app_api_favorites_route_post",
+      "src_app_api_google_calendar_auth_route_get",
+      "src_app_api_google_calendar_disconnect_route_post",
+      "src_app_api_notifications_id_read_route_patch",
+      "src_app_api_notifications_read_all_route_patch",
+      "src_app_api_notifications_unread_count_route_get",
+      "src_app_api_onboarding_photo_route_post",
+      "src_app_api_pets_route_get",
+      "src_app_api_pets_route_post",
+      "src_app_api_tutor_profile_route_get",
+      "src_app_api_tutor_profile_route_parabool",
+      "src_app_api_tutor_profile_route_put",
+      "src_app_api_veterinarios_bloqueios_id_route_delete",
+      "src_app_api_veterinarios_bloqueios_route",
+      "src_app_api_veterinarios_bloqueios_route_get",
+      "src_app_api_veterinarios_bloqueios_route_post",
+      "src_app_api_veterinarios_locations_id_photo_route_post",
+      "src_app_api_veterinarios_locations_id_route_put",
+      "src_app_api_veterinarios_locations_route",
+      "src_app_api_veterinarios_locations_route_post",
+      "src_app_api_veterinarios_route_post",
+      "src_app_api_veterinarios_schedule_route",
+      "src_app_api_veterinarios_schedule_route_diasemanamap",
+      "src_app_api_veterinarios_schedule_route_diasemanareversemap",
+      "src_app_api_veterinarios_schedule_route_get",
+      "src_app_api_veterinarios_schedule_route_put",
+      "src_app_api_veterinarios_vinculos_clinicaid_aceitar_route_patch",
+      "src_app_api_veterinarios_vinculos_clinicaid_recusar_route_patch",
+      "src_server_auth_session_requireuser",
+      "src_server_http_apirequest_from",
+      "src_server_http_conflict",
+      "src_server_http_convertemptystrings",
+      "src_server_http_created",
+      "src_server_http_emptytonull",
+      "src_server_http_notfound",
+      "src_server_services_bloqueios_assertvinculoaceito",
+      "src_server_services_bloqueios_criarbloqueio",
+      "src_server_services_bloqueios_listarbloqueios",
+      "src_server_services_bloqueios_serializebloqueio",
+      "src_server_services_veterinarios_findenderecoprincipalouativo",
+      "src_server_services_veterinarios_findveterinariobyuser"
     ],
-    "12": [
+    "6": [
+      "src_app_onboarding_onboarding_module",
+      "src_app_onboarding_page",
+      "src_app_onboarding_page_especialidade",
+      "src_app_onboarding_page_locationdata",
+      "src_app_onboarding_page_locationmodaldata",
+      "src_app_onboarding_page_onboardingpage",
+      "src_app_onboarding_page_onboardingstep",
+      "src_app_onboarding_page_onboardingsteps",
+      "src_app_signup_clinica_clinica_signup_module",
+      "src_app_signup_clinica_page",
+      "src_app_signup_clinica_page_clinicasignup",
+      "src_app_signup_clinica_page_page",
+      "src_app_signup_veterinario_page",
+      "src_app_signup_veterinario_page_page",
+      "src_app_signup_veterinario_page_plansmetadata",
+      "src_app_signup_veterinario_page_veterinariosignup",
+      "src_app_signup_veterinario_veterinario_signup_module",
+      "src_components_ui_customcheckbox_customcheckbox",
+      "src_components_ui_customcheckbox_customcheckbox_customcheckbox",
+      "src_components_ui_customcheckbox_customcheckbox_customcheckboxprops",
+      "src_components_ui_customcheckbox_customcheckbox_module",
+      "src_components_ui_tooltip_tooltip",
+      "src_components_ui_tooltip_tooltip_module",
+      "src_components_ui_tooltip_tooltip_tooltip",
+      "src_components_ui_tooltip_tooltip_tooltipprops",
+      "src_services_external_brazilapi",
+      "src_services_external_brazilapi_fetchcep",
+      "src_services_veterinarios_veterinarios",
+      "src_services_veterinarios_veterinarios_completeveterinarioonboarding",
+      "src_services_veterinarios_veterinarios_createveterinario",
+      "src_services_veterinarios_veterinarios_experience",
+      "src_services_veterinarios_veterinarios_getonboardingprogress",
+      "src_services_veterinarios_veterinarios_step4location",
+      "src_services_veterinarios_veterinarios_submitonboardingstep",
+      "src_services_veterinarios_veterinarios_submitonboardingstep1",
+      "src_services_veterinarios_veterinarios_submitonboardingstep2",
+      "src_services_veterinarios_veterinarios_submitonboardingstep3",
+      "src_services_veterinarios_veterinarios_submitonboardingstep4",
+      "src_services_veterinarios_veterinarios_submitonboardingstep5",
+      "src_services_veterinarios_veterinarios_submitonboardingstep6",
+      "src_services_veterinarios_veterinarios_submitonboardingstep7",
+      "src_services_veterinarios_veterinarios_uploadonboardinggeneric",
+      "src_services_veterinarios_veterinarios_uploadonboardingphoto",
+      "src_services_veterinarios_veterinarios_veterinariosignup",
+      "src_services_veterinarios_veterinarios_veterinariosignupdata",
+      "src_utils_errorhandler",
+      "src_utils_errorhandler_apierror",
+      "src_utils_errorhandler_errorstate",
+      "src_utils_errorhandler_handleapierror",
+      "src_utils_formatters",
+      "src_utils_formatters_formatcep",
+      "src_utils_formatters_formatphone",
+      "src_utils_formatters_removemask"
+    ],
+    "7": [
+      "ref_axios",
+      "ref_node_path",
+      "ref_vitest",
+      "src_app_api_assinaturas_id_upgrade_route_patch",
+      "src_app_api_assinaturas_route_post",
+      "src_server_services_asaas",
+      "src_server_services_asaas_asaasenv",
+      "src_server_services_asaas_asaasservice",
+      "src_server_services_asaas_asaasservice_cancelsubscription",
+      "src_server_services_asaas_asaasservice_constructor",
+      "src_server_services_asaas_asaasservice_createpixpayment",
+      "src_server_services_asaas_asaasservice_createsubscription",
+      "src_server_services_asaas_asaasservice_ensurecustomerforclinica",
+      "src_server_services_asaas_asaasservice_ensurecustomerfortutor",
+      "src_server_services_asaas_asaasservice_ensurecustomerforveterinario",
+      "src_server_services_asaas_asaasservice_findcustomer",
+      "src_server_services_asaas_asaasservice_getpixqrcode",
+      "src_server_services_asaas_asaasservice_getsubscription",
+      "src_server_services_asaas_asaasservice_getsubscriptionpayments",
+      "src_server_services_asaas_asaasservice_updatesubscription",
+      "src_server_services_asaas_asaasservice_upsertcustomer",
+      "src_server_services_asaas_createsubscriptioninput",
+      "src_server_services_asaas_customeruser",
+      "src_server_services_asaas_getcheckouturl",
+      "src_server_services_asaas_normalize",
+      "src_server_services_asaas_webhook",
+      "src_server_services_asaas_webhook_asaaseventkey",
+      "src_server_services_asaas_webhook_downgradevet",
+      "src_server_services_asaas_webhook_handleasaasevent",
+      "src_server_services_asaas_webhook_isuniqueviolation",
+      "src_server_services_asaas_webhook_processevent",
+      "src_server_services_asaas_webhook_tx",
+      "tests_contract_cases",
+      "tests_contract_cases_contractcase",
+      "tests_contract_cases_contractcases",
+      "tests_contract_cases_role",
+      "tests_contract_contract_test",
+      "tests_contract_contract_test_adonis",
+      "tests_contract_contract_test_call",
+      "tests_contract_contract_test_enabled",
+      "tests_contract_contract_test_fillpath",
+      "tests_contract_contract_test_next",
+      "tests_contract_contract_test_shape",
+      "tests_server_asaas_webhook_test",
+      "tests_utils_formatters_test",
+      "vitest_config"
+    ],
+    "8": [
+      "src_app_dashboard_tutor_perfil_page",
+      "src_app_dashboard_tutor_perfil_page_perfiltutor",
+      "src_app_dashboard_tutor_perfil_page_toast",
+      "src_app_dashboard_tutor_perfil_perfil_module",
+      "src_app_forgot_password_forgot_module",
+      "src_app_forgot_password_page",
+      "src_app_forgot_password_page_forgotpasswordpage",
+      "src_app_login_login_module",
+      "src_app_login_page",
+      "src_app_login_page_loginpage",
+      "src_app_signup_social_page",
+      "src_app_signup_social_page_socialsignupcontent",
+      "src_app_signup_social_page_socialsignuppage",
+      "src_app_signup_social_social_module",
+      "src_app_signup_tutor_page",
+      "src_app_signup_tutor_page_rationale_74",
+      "src_app_signup_tutor_page_tutorsignup",
+      "src_app_signup_tutor_tutor_signup_module",
+      "src_components_ui_customselect_custom_select_module",
+      "src_components_ui_customselect_customselect",
+      "src_components_ui_customselect_customselect_customselect",
+      "src_components_ui_customselect_customselect_customselectprops",
+      "src_components_ui_customselect_customselect_selectoption",
+      "src_contexts_authcontext",
+      "src_contexts_authcontext_authcontext",
+      "src_contexts_authcontext_authcontexttype",
+      "src_contexts_authcontext_authprovider",
+      "src_hook_api",
+      "src_hook_api_api",
+      "src_hook_api_api_base_url",
+      "src_services_assinaturas_assinaturas",
+      "src_services_assinaturas_assinaturas_billingtype",
+      "src_services_auth_auth",
+      "src_services_auth_auth_forgotpassword",
+      "src_services_auth_auth_login",
+      "src_services_auth_auth_logout",
+      "src_services_auth_auth_tutorsignup",
+      "src_services_auth_auth_tutorsignupdata",
+      "src_services_avaliacoes_avaliacoes",
+      "src_services_avaliacoes_avaliacoes_criaravaliacaopayload",
+      "src_services_tutor_tutor",
+      "src_services_tutor_tutor_tutorservice"
+    ],
+    "9": [
       "ref_node_fs",
       "ref_server_only",
       "src_server_emails_appointment_cancellation",
@@ -705,50 +554,58 @@
       "src_server_services_notifications_sendpixpaymentemail",
       "src_server_services_notifications_sendresult",
       "src_server_services_notifications_todatauri",
+      "src_server_validators_avaliacao",
+      "src_server_validators_avaliacao_createavaliacaovalidator",
       "src_server_validators_clinica",
       "src_server_validators_clinica_createclinicavalidator"
     ],
-    "13": [
-      "concept_adonis_scrypt_compat",
-      "concept_httponly_cookie_auth",
-      "ref_adonisjs_hash",
-      "ref_jose",
-      "ref_jsonwebtoken",
-      "src_app_api_tutor_register_route",
-      "src_app_api_tutor_register_route_post",
-      "src_server_auth_jwt",
-      "src_server_auth_jwt_generatetoken",
-      "src_server_auth_jwt_secret",
-      "src_server_auth_jwt_token_max_age_seconds",
-      "src_server_auth_jwt_tokenpayload",
-      "src_server_auth_jwt_usertype",
-      "src_server_auth_jwt_verifytoken",
-      "src_server_auth_password",
-      "src_server_auth_password_hashpassword",
-      "src_server_auth_password_scrypt",
-      "src_server_auth_password_verifypassword",
-      "src_server_auth_session_authenticate",
-      "src_server_auth_session_extracttoken",
-      "src_server_auth_session_loaduser",
-      "src_server_auth_session_optionaluser",
-      "src_server_auth_session_tokenfromcookie",
-      "src_server_http_apirequest_cookie",
-      "src_server_http_apirequest_input",
-      "src_server_services_auth",
-      "src_server_services_auth_findentityid",
-      "src_server_services_auth_forgotpassword",
-      "src_server_services_auth_login",
-      "src_server_services_auth_tokenfor",
-      "src_server_services_auth_verifycredentials",
-      "src_server_services_mail_defaultfrom",
-      "src_server_services_tutor",
-      "src_server_services_tutor_registertutor",
-      "src_server_services_tutor_tutorregistrationdata",
-      "src_server_validators_tutor",
-      "src_server_validators_tutor_createtutorvalidator",
-      "tests_server_auth_test"
+    "10": [
+      "src_app_dashboard_tutor_appointmentitem",
+      "src_app_dashboard_tutor_appointmentitem_appointmentitem",
+      "src_app_dashboard_tutor_appointmentitem_appointmentitemprops",
+      "src_app_dashboard_tutor_favoriteslist",
+      "src_app_dashboard_tutor_favoriteslist_favoriteitem",
+      "src_app_dashboard_tutor_favoriteslist_favoriteslist",
+      "src_app_dashboard_tutor_page",
+      "src_app_dashboard_tutor_page_especies",
+      "src_app_dashboard_tutor_page_pet",
+      "src_app_dashboard_tutor_page_porte_opcoes",
+      "src_app_dashboard_tutor_page_racas_por_especie",
+      "src_app_dashboard_tutor_page_tutordashboard",
+      "src_app_dashboard_tutor_tutor_module",
+      "src_components_imageeditor_imageeditor",
+      "src_components_imageeditor_imageeditor_imageeditor",
+      "src_components_imageeditor_imageeditor_imageeditorprops",
+      "src_components_imageeditor_imageeditor_module",
+      "src_components_profileimageuploader_profileimageuploader",
+      "src_components_profileimageuploader_profileimageuploader_module",
+      "src_components_profileimageuploader_profileimageuploader_profileimageuploader",
+      "src_components_profileimageuploader_profileimageuploader_profileimageuploaderprops",
+      "src_services_agendamentos_agendamentos",
+      "src_services_agendamentos_agendamentos_agendamentodata",
+      "src_services_agendamentos_agendamentos_agendamentoresponse",
+      "src_services_agendamentos_agendamentos_agendamentosservice",
+      "src_services_agendamentos_agendamentos_agendamentosservice_cancelaragendamento",
+      "src_services_agendamentos_agendamentos_agendamentosservice_filtrarhorariosdisponiveis",
+      "src_services_agendamentos_agendamentos_agendamentosservice_formatardatabrasil",
+      "src_services_agendamentos_agendamentos_agendamentosservice_listaragendamentos",
+      "src_services_agendamentos_agendamentos_agendamentosservice_reagendaragendamento",
+      "src_services_agendamentos_agendamentos_agendamentosservice_validardataagendamento",
+      "src_services_agendamentos_agendamentos_disponibilidaderesponse",
+      "src_services_agendamentos_agendamentos_listaagendamentosresponse",
+      "src_services_pets_pets_petsservice",
+      "src_services_pets_pets_petsservice_criarpet",
+      "src_services_pets_pets_petsservice_editarpet",
+      "src_services_pets_pets_petsservice_excluirpet",
+      "src_services_pets_pets_petsservice_listarpets",
+      "src_services_pets_pets_petsservice_uploadfoto",
+      "src_services_pets_pets_petsservice_uploadfotofromcanvas",
+      "src_services_veterinarios_veterinarios_getveterinariobyid"
     ],
-    "14": [
+    "11": [
+      "next_config",
+      "next_config_nextconfig",
+      "ref_next",
       "src_app_clinicas_page",
       "src_app_clinicas_page_clinicspage",
       "src_app_dashboard_clinica_alterar_plano_alterar_plano_module",
@@ -780,186 +637,29 @@
       "src_hook_usefeaturegate",
       "src_hook_usefeaturegate_featurename",
       "src_hook_usefeaturegate_usefeaturegate",
-      "src_services_assinaturas_assinaturas",
       "src_services_assinaturas_assinaturas_assinaturasservice",
-      "src_services_assinaturas_assinaturas_billingtype",
-      "src_utils_errorhandler",
-      "src_utils_errorhandler_apierror",
-      "src_utils_errorhandler_errorstate",
-      "src_utils_errorhandler_handleapierror"
+      "src_services_veterinarios_profile",
+      "src_services_veterinarios_profile_veterinariohorario",
+      "src_services_veterinarios_profile_veterinarioprofileservice",
+      "src_services_veterinarios_profile_veterinarioprofileupdate"
     ],
-    "15": [
-      "src_app_api_veterinarios_profile_route",
-      "src_app_api_veterinarios_profile_route_put",
-      "src_app_api_veterinarios_search_route",
-      "src_app_api_veterinarios_search_route_get",
-      "src_server_auth_session_publicuser",
-      "src_server_auth_session_serializeuser",
-      "src_server_services_veterinarios",
-      "src_server_services_veterinarios_datecolumn",
-      "src_server_services_veterinarios_db",
-      "src_server_services_veterinarios_dirtyfields",
-      "src_server_services_veterinarios_enderecowritedata",
-      "src_server_services_veterinarios_formatveterinariodata",
-      "src_server_services_veterinarios_getveterinariobyid",
-      "src_server_services_veterinarios_lucidmerge",
-      "src_server_services_veterinarios_mergeendereco",
-      "src_server_services_veterinarios_mergeexperiencia",
-      "src_server_services_veterinarios_parsejsonsafe",
-      "src_server_services_veterinarios_preload",
-      "src_server_services_veterinarios_rawjsoncolumn",
-      "src_server_services_veterinarios_registerveterinario",
-      "src_server_services_veterinarios_replaceexperiencias",
-      "src_server_services_veterinarios_saveusernome",
-      "src_server_services_veterinarios_saveveterinario",
-      "src_server_services_veterinarios_searchfilters",
-      "src_server_services_veterinarios_searchveterinarios",
-      "src_server_services_veterinarios_serializeendereco",
-      "src_server_services_veterinarios_serializeexperiencia",
-      "src_server_services_veterinarios_serializeveterinario",
-      "src_server_services_veterinarios_statuserror",
-      "src_server_services_veterinarios_syncespecialidadesveterinario",
-      "src_server_services_veterinarios_syncplanosveterinario",
-      "src_server_services_veterinarios_timestamp_columns",
-      "src_server_services_veterinarios_todatecolumn",
-      "src_server_services_veterinarios_tojsoncolumn",
-      "src_server_services_veterinarios_totinyint",
-      "src_server_services_veterinarios_veterinarioloaded"
-    ],
-    "16": [
-      "ref_prisma_client",
-      "src_app_api_assinaturas_id_upgrade_route_patch",
-      "src_app_api_assinaturas_route_post",
-      "src_server_services_asaas",
-      "src_server_services_asaas_asaasenv",
-      "src_server_services_asaas_asaasservice",
-      "src_server_services_asaas_asaasservice_cancelsubscription",
-      "src_server_services_asaas_asaasservice_constructor",
-      "src_server_services_asaas_asaasservice_createpixpayment",
-      "src_server_services_asaas_asaasservice_createsubscription",
-      "src_server_services_asaas_asaasservice_ensurecustomerforclinica",
-      "src_server_services_asaas_asaasservice_ensurecustomerfortutor",
-      "src_server_services_asaas_asaasservice_ensurecustomerforveterinario",
-      "src_server_services_asaas_asaasservice_findcustomer",
-      "src_server_services_asaas_asaasservice_getpixqrcode",
-      "src_server_services_asaas_asaasservice_getsubscription",
-      "src_server_services_asaas_asaasservice_getsubscriptionpayments",
-      "src_server_services_asaas_asaasservice_updatesubscription",
-      "src_server_services_asaas_asaasservice_upsertcustomer",
-      "src_server_services_asaas_createsubscriptioninput",
-      "src_server_services_asaas_customeruser",
-      "src_server_services_asaas_getcheckouturl",
-      "src_server_services_asaas_normalize",
-      "src_server_services_asaas_webhook",
-      "src_server_services_asaas_webhook_asaaseventkey",
-      "src_server_services_asaas_webhook_downgradevet",
-      "src_server_services_asaas_webhook_handleasaasevent",
-      "src_server_services_asaas_webhook_isuniqueviolation",
-      "src_server_services_asaas_webhook_processevent",
-      "src_server_services_asaas_webhook_tx",
-      "tests_server_asaas_webhook_test"
-    ],
-    "17": [
-      "src_app_api_api_webhooks_asaas_route",
-      "src_app_api_assinaturas_planos_route",
-      "src_app_api_assinaturas_planos_route_get",
-      "src_app_api_auth_login_route",
-      "src_app_api_auth_login_route_post",
-      "src_app_api_auth_reset_password_route",
-      "src_app_api_auth_reset_password_route_post",
-      "src_app_api_clinicas_id_nota_media_route",
-      "src_app_api_clinicas_id_nota_media_route_get",
-      "src_app_api_clinicas_professionals_id_route",
-      "src_app_api_clinicas_professionals_id_route_delete",
-      "src_app_api_favorites_check_route",
-      "src_app_api_favorites_check_route_get",
-      "src_app_api_google_calendar_disconnect_route",
-      "src_app_api_google_calendar_disconnect_route_post",
-      "src_app_api_notifications_unread_count_route",
-      "src_app_api_notifications_unread_count_route_get",
-      "src_app_api_planos_route",
-      "src_app_api_planos_route_get",
-      "src_app_api_tutor_profile_route",
-      "src_app_api_tutor_profile_route_put",
-      "src_app_api_veterinarios_id_nota_media_route",
-      "src_app_api_veterinarios_id_nota_media_route_get",
-      "src_app_api_webhooks_asaas_ping_route",
-      "src_app_api_webhooks_asaas_ping_route_get",
-      "src_app_api_webhooks_asaas_route",
-      "src_app_api_webhooks_asaas_route_get",
-      "src_app_api_webhooks_asaas_route_post",
-      "src_server_http_ok",
-      "src_server_http_route",
-      "src_server_services_auth_resetpassword"
-    ],
-    "18": [
-      "src_app_dashboard_clinica_perfil_page",
-      "src_app_dashboard_clinica_perfil_page_comodidades_map",
-      "src_app_dashboard_clinica_perfil_page_dias_keys",
-      "src_app_dashboard_clinica_perfil_page_dias_semana_map",
-      "src_app_dashboard_clinica_perfil_page_especialidade",
-      "src_app_dashboard_clinica_perfil_page_perfilclinica",
-      "src_app_dashboard_clinica_perfil_page_toast",
-      "src_app_dashboard_clinica_perfil_perfil_module",
-      "src_app_onboarding_clinica_clinica_onboarding_module",
-      "src_app_onboarding_clinica_page",
-      "src_app_onboarding_clinica_page_clinicaonboardingpage",
-      "src_app_onboarding_clinica_page_comodidades_list",
-      "src_app_onboarding_clinica_page_dias_semana_map",
-      "src_app_onboarding_clinica_page_especialidade",
-      "src_app_onboarding_clinica_page_onboardingstep",
-      "src_app_onboarding_clinica_page_onboardingsteps",
-      "src_components_ui_customcheckbox_customcheckbox",
-      "src_components_ui_customcheckbox_customcheckbox_customcheckbox",
-      "src_components_ui_customcheckbox_customcheckbox_customcheckboxprops",
-      "src_components_ui_customcheckbox_customcheckbox_module",
-      "src_services_clinicas_clinicas",
-      "src_services_clinicas_clinicas_completeclinicaonboarding",
-      "src_services_clinicas_clinicas_getclinicaonboardingprogress",
-      "src_services_clinicas_clinicas_submitclinicaonboardingstep1",
-      "src_services_clinicas_clinicas_submitclinicaonboardingstep2",
-      "src_services_clinicas_clinicas_submitclinicaonboardingstep3",
-      "src_services_clinicas_clinicas_submitclinicaonboardingstep4",
-      "src_services_clinicas_clinicas_submitclinicaonboardingstep5",
-      "src_services_veterinarios_veterinarios_getespecialidades",
-      "src_services_veterinarios_veterinarios_getplanos"
-    ],
-    "19": [
-      "ref_node_crypto",
-      "src_app_api_google_calendar_callback_route",
-      "src_app_api_google_calendar_callback_route_calendarstate",
-      "src_app_api_google_calendar_callback_route_decodestate",
-      "src_app_api_google_calendar_callback_route_get",
-      "src_app_api_google_calendar_callback_route_withparam",
-      "src_server_env",
-      "src_server_env_env",
-      "src_server_env_requiredenv",
-      "src_server_services_google_calendar_getauthurl",
-      "src_server_services_mail",
-      "src_server_services_mail_resend",
-      "src_server_services_storage",
-      "src_server_services_storage_bucket",
-      "src_server_services_storage_deleteobject",
-      "src_server_services_storage_publicbaseurl",
-      "src_server_services_storage_region",
-      "src_server_services_storage_s3",
-      "src_server_services_storage_storagefile",
-      "src_server_services_storage_storagefolder",
-      "src_server_services_storage_tostoragefile",
-      "src_server_services_storage_uploadpetphoto",
-      "src_server_services_storage_uploadphoto",
-      "src_server_services_storage_uploadtutorphoto",
-      "src_server_services_whatsapp",
-      "src_server_services_whatsapp_formatphonenumber",
-      "src_server_services_whatsapp_sendtemplatemessage",
-      "src_server_services_whatsapp_whatsapp"
-    ],
-    "20": [
+    "12": [
       "ref_react_dom",
+      "src_app_page",
+      "src_app_page_home",
+      "src_app_page_module",
+      "src_components_home_platformfeatures_platformfeatures",
+      "src_components_home_platformfeatures_platformfeatures_module",
+      "src_components_home_platformfeatures_platformfeatures_platformfeatures",
       "src_components_home_searchbar_searchbar",
       "src_components_home_searchbar_searchbar_module",
+      "src_components_home_searchbar_searchbar_searchbar",
       "src_components_home_searchbar_searchbar_searchbarprops",
       "src_components_home_searchbar_searchbar_userlocation",
+      "src_components_home_typewritertitle_typewriter_module",
+      "src_components_home_typewritertitle_typewritertitle",
+      "src_components_home_typewritertitle_typewritertitle_sentences",
+      "src_components_home_typewritertitle_typewritertitle_typewritertitle",
       "src_components_ui_citysearchsection",
       "src_components_ui_citysearchsection_citysearchsection",
       "src_components_ui_citysearchsection_citysearchsectionprops",
@@ -983,74 +683,69 @@
       "src_data_planos_saude_planosaudeanimal",
       "src_data_planos_saude_planossaudeanimal"
     ],
-    "21": [
-      "src_app_forgot_password_forgot_module",
-      "src_app_forgot_password_page",
-      "src_app_forgot_password_page_forgotpasswordpage",
-      "src_app_login_login_module",
-      "src_app_login_page",
-      "src_app_login_page_loginpage",
-      "src_app_reset_password_page",
-      "src_app_reset_password_page_resetpasswordform",
-      "src_app_reset_password_page_resetpasswordpage",
-      "src_app_reset_password_reset_module",
-      "src_app_signup_tutor_page",
-      "src_app_signup_tutor_page_rationale_74",
-      "src_app_signup_tutor_page_tutorsignup",
-      "src_app_signup_tutor_tutor_signup_module",
-      "src_components_minicalendar_minicalendar_minicalendar",
-      "src_components_ui_customselect_custom_select_module",
-      "src_components_ui_customselect_customselect",
-      "src_components_ui_customselect_customselect_customselect",
-      "src_components_ui_customselect_customselect_customselectprops",
-      "src_components_ui_customselect_customselect_selectoption",
-      "src_services_auth_auth",
-      "src_services_auth_auth_forgotpassword",
-      "src_services_auth_auth_login",
-      "src_services_auth_auth_resetpassword",
-      "src_services_auth_auth_tutorsignup",
-      "src_services_auth_auth_tutorsignupdata"
+    "13": [
+      "src_app_api_onboarding_progress_route",
+      "src_app_api_onboarding_progress_route_get",
+      "src_app_api_onboarding_step1_route",
+      "src_app_api_onboarding_step1_route_post",
+      "src_app_api_onboarding_step2_route",
+      "src_app_api_onboarding_step2_route_post",
+      "src_app_api_onboarding_step4_route",
+      "src_app_api_onboarding_step4_route_post",
+      "src_app_api_onboarding_step5_route",
+      "src_app_api_onboarding_step5_route_post",
+      "src_app_api_onboarding_step6_route",
+      "src_app_api_onboarding_step6_route_post",
+      "src_app_api_onboarding_step7_route",
+      "src_app_api_onboarding_step7_route_post",
+      "src_app_api_veterinarios_id_route",
+      "src_app_api_veterinarios_id_route_delete",
+      "src_server_services_onboarding",
+      "src_server_services_onboarding_deleteveterinario",
+      "src_server_services_onboarding_getprogress",
+      "src_server_services_onboarding_nextstep",
+      "src_server_services_onboarding_processstep1",
+      "src_server_services_onboarding_processstep2",
+      "src_server_services_onboarding_processstep4",
+      "src_server_services_onboarding_processstep5",
+      "src_server_services_onboarding_processstep6",
+      "src_server_services_onboarding_processstep7",
+      "src_server_services_onboarding_result",
+      "src_server_services_onboarding_rownotfound",
+      "src_server_services_onboarding_validateprevioussteps",
+      "src_server_services_onboarding_vetof",
+      "src_server_validators_onboarding",
+      "src_server_validators_onboarding_horario",
+      "src_server_validators_onboarding_step1validator",
+      "src_server_validators_onboarding_step2validator",
+      "src_server_validators_onboarding_step4validator",
+      "src_server_validators_onboarding_step5validator",
+      "src_server_validators_onboarding_step6validator",
+      "src_server_validators_onboarding_step7validator"
     ],
-    "22": [
-      "src_app_api_especialidades_route",
-      "src_app_api_pets_id_photo_route",
-      "src_app_api_pets_id_photo_route_post",
-      "src_app_api_pets_id_route",
-      "src_app_api_pets_id_route_delete",
-      "src_app_api_pets_id_route_patch",
-      "src_app_api_pets_route",
-      "src_app_api_pets_route_get",
-      "src_app_api_pets_route_post",
-      "src_app_api_tutor_profile_photo_route",
-      "src_app_api_tutor_profile_photo_route_post",
-      "src_server_db",
-      "src_server_db_createclient",
-      "src_server_db_globalforprisma",
-      "src_server_db_prisma",
-      "src_server_services_pets",
-      "src_server_services_pets_firstfile",
-      "src_server_services_pets_ismultipart",
-      "src_server_services_pets_photo_options",
-      "src_server_services_pets_requiretutorof",
-      "src_server_services_pets_requiretutorpet",
-      "src_server_services_pets_tophotoupload",
-      "src_server_validators_pet",
-      "src_server_validators_pet_createpetvalidator",
-      "src_server_validators_pet_updatepetvalidator"
-    ],
-    "23": [
+    "14": [
+      "src_app_api_auth_reset_password_route",
+      "src_app_api_auth_reset_password_route_post",
+      "src_app_api_onboarding_upload_generic_route",
+      "src_app_api_onboarding_upload_generic_route_options",
+      "src_app_api_onboarding_upload_generic_route_post",
       "src_app_api_veterinarios_agendamentos_id_anotacao_historico_route",
       "src_app_api_veterinarios_agendamentos_id_anotacao_historico_route_get",
       "src_app_api_veterinarios_agendamentos_id_concluir_route",
       "src_app_api_veterinarios_agendamentos_id_concluir_route_patch",
       "src_app_api_veterinarios_agendamentos_id_iniciar_route",
       "src_app_api_veterinarios_agendamentos_id_iniciar_route_patch",
+      "src_app_api_veterinarios_agendamentos_id_registro_route",
+      "src_app_api_veterinarios_agendamentos_id_registro_route_get",
+      "src_app_api_veterinarios_agendamentos_id_registro_route_put",
       "src_app_api_veterinarios_agendamentos_route",
       "src_app_api_veterinarios_agendamentos_route_get",
       "src_app_api_veterinarios_dashboard_estatisticas_route",
       "src_app_api_veterinarios_dashboard_estatisticas_route_get",
       "src_app_api_veterinarios_profile_photo_route",
       "src_app_api_veterinarios_profile_photo_route_post",
+      "src_server_http_badrequest",
+      "src_server_services_storage_uploadveterinariophoto",
       "src_server_services_veterinario_dashboard",
       "src_server_services_veterinario_dashboard_agendamentoserror",
       "src_server_services_veterinario_dashboard_estatisticas",
@@ -1063,17 +758,329 @@
       "src_server_services_veterinario_dashboard_photo_fields",
       "src_server_services_veterinario_dashboard_photo_options",
       "src_server_services_veterinario_dashboard_pickphoto",
+      "src_server_services_veterinario_dashboard_statusnormalizado",
       "src_server_services_veterinario_dashboard_veterinario"
     ],
+    "15": [
+      "lottie_react",
+      "public_lottieloading_pet_loading",
+      "ref_moment",
+      "src_app_clinicas_id_page",
+      "src_app_clinicas_id_page_clinicprofilepage",
+      "src_app_clinicas_id_page_clinicprofilepage_loadclinic",
+      "src_app_clinicas_id_page_comodidades_list",
+      "src_app_clinicas_id_page_getcomodidadelabel",
+      "src_app_clinicas_id_page_module",
+      "src_app_veterinario_id_page",
+      "src_app_veterinario_id_page_location",
+      "src_app_veterinario_id_page_veterinario",
+      "src_app_veterinario_id_page_veterinarioprofile",
+      "src_app_veterinario_id_veterinario_module",
+      "src_components_header_header_header",
+      "src_components_minicalendar_minicalendar",
+      "src_components_minicalendar_minicalendar_minicalendar",
+      "src_components_minicalendar_minicalendar_minicalendarprops",
+      "src_components_minicalendar_minicalendar_module",
+      "src_components_ui_lottieloading_lottieloading",
+      "src_components_ui_lottieloading_lottieloading_lottie",
+      "src_components_ui_lottieloading_lottieloading_lottieloading",
+      "src_components_ui_lottieloading_lottieloading_lottieloadingprops",
+      "src_components_ui_modalportal",
+      "src_components_ui_modalportal_modalportal",
+      "src_contexts_authcontext_user",
+      "src_services_agendamentos_agendamentos_agendamentosservice_criaragendamento",
+      "src_services_agendamentos_agendamentos_agendamentosservice_verificardisponibilidade",
+      "src_services_clinicas_clinicas_getclinicabyid",
+      "src_services_favorites_favorites",
+      "src_services_favorites_favorites_checkfavoriteresponse",
+      "src_services_favorites_favorites_favoritesservice",
+      "src_services_pets_pets",
+      "src_services_pets_pets_petrecord",
+      "src_utils_formatters_abbreviateaddress"
+    ],
+    "16": [
+      "public_doctor",
+      "public_explore",
+      "public_frame_43",
+      "public_hospital",
+      "public_img_iconsilver",
+      "public_img_nameiconheader",
+      "public_lincepet",
+      "ref_lucide_react",
+      "src_app_not_found",
+      "src_app_not_found_notfound",
+      "src_app_notfound_module",
+      "src_components_header_header",
+      "src_components_header_header_module",
+      "src_components_notificationbell_clinicrequestmodal",
+      "src_components_notificationbell_clinicrequestmodal_clinicrequestmodal",
+      "src_components_notificationbell_clinicrequestmodal_clinicrequestmodalprops",
+      "src_components_notificationbell_clinicrequestmodal_module",
+      "src_components_notificationbell_notificationbell",
+      "src_components_notificationbell_notificationbell_default_config",
+      "src_components_notificationbell_notificationbell_module",
+      "src_components_notificationbell_notificationbell_notification_config",
+      "src_components_notificationbell_notificationbell_notificationbell",
+      "src_components_notificationbell_notificationbell_notificationbellprops",
+      "src_components_notificationbell_notificationbell_timeago",
+      "src_services_notifications_notifications",
+      "src_services_notifications_notifications_notificationitem",
+      "src_services_notifications_notifications_notificationspaginatedresponse",
+      "src_services_notifications_notifications_notificationsservice",
+      "src_services_notifications_notifications_notificationsservice_acceptcliniclink",
+      "src_services_notifications_notifications_notificationsservice_getunreadcount",
+      "src_services_notifications_notifications_notificationsservice_list",
+      "src_services_notifications_notifications_notificationsservice_markallasread",
+      "src_services_notifications_notifications_notificationsservice_markasread",
+      "src_services_notifications_notifications_notificationsservice_rejectcliniclink"
+    ],
+    "17": [
+      "src_app_api_veterinarios_id_route_get",
+      "src_app_api_veterinarios_profile_route",
+      "src_app_api_veterinarios_profile_route_put",
+      "src_server_auth_session_publicuser",
+      "src_server_auth_session_serializeuser",
+      "src_server_services_veterinarios",
+      "src_server_services_veterinarios_datecolumn",
+      "src_server_services_veterinarios_db",
+      "src_server_services_veterinarios_dirtyfields",
+      "src_server_services_veterinarios_enderecowritedata",
+      "src_server_services_veterinarios_findveterinarios",
+      "src_server_services_veterinarios_formatveterinariodata",
+      "src_server_services_veterinarios_getveterinariobyid",
+      "src_server_services_veterinarios_lucidmerge",
+      "src_server_services_veterinarios_mergeendereco",
+      "src_server_services_veterinarios_mergeexperiencia",
+      "src_server_services_veterinarios_parsejsonsafe",
+      "src_server_services_veterinarios_preload",
+      "src_server_services_veterinarios_rawjsoncolumn",
+      "src_server_services_veterinarios_replaceexperiencias",
+      "src_server_services_veterinarios_saveusernome",
+      "src_server_services_veterinarios_saveveterinario",
+      "src_server_services_veterinarios_searchfilters",
+      "src_server_services_veterinarios_searchveterinarios",
+      "src_server_services_veterinarios_serializeendereco",
+      "src_server_services_veterinarios_serializeexperiencia",
+      "src_server_services_veterinarios_serializeveterinario",
+      "src_server_services_veterinarios_syncespecialidadesveterinario",
+      "src_server_services_veterinarios_syncplanosveterinario",
+      "src_server_services_veterinarios_timestamp_columns",
+      "src_server_services_veterinarios_todatecolumn",
+      "src_server_services_veterinarios_tojsoncolumn",
+      "src_server_services_veterinarios_totinyint",
+      "src_server_services_veterinarios_veterinarioloaded"
+    ],
+    "18": [
+      "concept_adonis_scrypt_compat",
+      "concept_httponly_cookie_auth",
+      "src_app_api_auth_login_route",
+      "src_app_api_auth_login_route_post",
+      "src_app_api_clinicas_register_route",
+      "src_app_api_clinicas_register_route_post",
+      "src_server_auth_jwt",
+      "src_server_auth_jwt_generatetoken",
+      "src_server_auth_jwt_secret",
+      "src_server_auth_jwt_token_max_age_seconds",
+      "src_server_auth_jwt_tokenpayload",
+      "src_server_auth_jwt_usertype",
+      "src_server_auth_jwt_verifytoken",
+      "src_server_auth_password",
+      "src_server_auth_password_hashpassword",
+      "src_server_auth_password_scrypt",
+      "src_server_auth_password_verifypassword",
+      "src_server_auth_session_setauthcookie",
+      "src_server_services_auth",
+      "src_server_services_auth_findentityid",
+      "src_server_services_auth_login",
+      "src_server_services_auth_resetpassword",
+      "src_server_services_auth_tokenfor",
+      "src_server_services_auth_verifycredentials",
+      "src_server_services_clinicas_clinicaregistrationdata",
+      "src_server_services_clinicas_registerclinica",
+      "src_server_services_clinicas_statuserror",
+      "src_server_validators_auth",
+      "src_server_validators_auth_loginuservalidator",
+      "tests_server_auth_test"
+    ],
+    "19": [
+      "netlify_functions_lembretes_whatsapp",
+      "netlify_functions_lembretes_whatsapp_config",
+      "netlify_functions_lembretes_whatsapp_handler",
+      "rule_whatsapp_eventos_destinatarios",
+      "rule_whatsapp_idempotencia",
+      "rule_whatsapp_lembretes_24h_2h",
+      "rule_whatsapp_nao_bloqueia",
+      "rule_whatsapp_numero_central",
+      "rule_whatsapp_opt_out",
+      "rule_whatsapp_provedor_agnostico",
+      "rule_whatsapp_regra_plano",
+      "src_app_api_cron_lembretes_whatsapp_route",
+      "src_app_api_cron_lembretes_whatsapp_route_dynamic",
+      "src_app_api_cron_lembretes_whatsapp_route_get",
+      "src_app_api_cron_lembretes_whatsapp_route_maxduration",
+      "src_server_services_agendamentos_fuso_consulta",
+      "src_server_services_agendamentos_iniciodaconsulta",
+      "src_server_services_whatsapp_lembretes",
+      "src_server_services_whatsapp_lembretes_cronautorizado",
+      "src_server_services_whatsapp_lembretes_lembretedevido",
+      "src_server_services_whatsapp_lembretes_processarlembretes",
+      "src_server_services_whatsapp_lembretes_status_ativos",
+      "src_server_services_whatsapp_notificacoes_carregaragendamento",
+      "tests_server_whatsapp_test",
+      "tests_server_whatsapp_test_agendamento",
+      "tests_server_whatsapp_test_duplicado",
+      "tests_server_whatsapp_test_enviarmock",
+      "tests_server_whatsapp_test_planos",
+      "tests_server_whatsapp_test_prismamock"
+    ],
+    "20": [
+      "src_app_api_auth_forgot_password_route",
+      "src_app_api_auth_forgot_password_route_post",
+      "src_app_api_clinicas_avaliacoes_recentes_route",
+      "src_app_api_clinicas_avaliacoes_recentes_route_get",
+      "src_app_api_clinicas_id_avaliacoes_route",
+      "src_app_api_clinicas_id_avaliacoes_route_get",
+      "src_app_api_clinicas_id_nota_media_route",
+      "src_app_api_clinicas_id_nota_media_route_get",
+      "src_app_api_veterinarios_avaliacoes_recentes_route",
+      "src_app_api_veterinarios_avaliacoes_recentes_route_get",
+      "src_app_api_veterinarios_id_avaliacoes_route",
+      "src_app_api_veterinarios_id_avaliacoes_route_get",
+      "src_app_api_veterinarios_id_nota_media_route",
+      "src_app_api_veterinarios_id_nota_media_route_get",
+      "src_app_api_veterinarios_search_route_get",
+      "src_server_http_servererror",
+      "src_server_services_avaliacoes",
+      "src_server_services_avaliacoes_avaliacaocomrelacoes",
+      "src_server_services_avaliacoes_formatdataconsulta",
+      "src_server_services_avaliacoes_listaravaliacoes",
+      "src_server_services_avaliacoes_media",
+      "src_server_services_avaliacoes_petresumo",
+      "src_server_services_avaliacoes_quando",
+      "src_server_services_avaliacoes_serializarclinica",
+      "src_server_services_avaliacoes_serializarveterinario",
+      "src_server_services_avaliacoes_tutorresumo"
+    ],
+    "21": [
+      "src_app_dashboard_clinica_perfil_page",
+      "src_app_dashboard_clinica_perfil_page_comodidades_map",
+      "src_app_dashboard_clinica_perfil_page_dias_keys",
+      "src_app_dashboard_clinica_perfil_page_dias_semana_map",
+      "src_app_dashboard_clinica_perfil_page_especialidade",
+      "src_app_dashboard_clinica_perfil_page_perfilclinica",
+      "src_app_dashboard_clinica_perfil_page_toast",
+      "src_app_dashboard_clinica_perfil_perfil_module",
+      "src_app_onboarding_clinica_clinica_onboarding_module",
+      "src_app_onboarding_clinica_page",
+      "src_app_onboarding_clinica_page_clinicaonboardingpage",
+      "src_app_onboarding_clinica_page_comodidades_list",
+      "src_app_onboarding_clinica_page_dias_semana_map",
+      "src_app_onboarding_clinica_page_especialidade",
+      "src_app_onboarding_clinica_page_onboardingstep",
+      "src_app_onboarding_clinica_page_onboardingsteps",
+      "src_services_clinicas_clinicas",
+      "src_services_clinicas_clinicas_completeclinicaonboarding",
+      "src_services_clinicas_clinicas_getclinicaonboardingprogress",
+      "src_services_clinicas_clinicas_submitclinicaonboardingstep1",
+      "src_services_clinicas_clinicas_submitclinicaonboardingstep2",
+      "src_services_clinicas_clinicas_submitclinicaonboardingstep3",
+      "src_services_clinicas_clinicas_submitclinicaonboardingstep4",
+      "src_services_clinicas_clinicas_submitclinicaonboardingstep5",
+      "src_services_veterinarios_veterinarios_getespecialidades",
+      "src_services_veterinarios_veterinarios_getplanos"
+    ],
+    "22": [
+      "src_server_services_bloqueios",
+      "src_server_services_bloqueios_bloqueiocobredata",
+      "src_server_services_bloqueios_bloqueioinput",
+      "src_server_services_bloqueios_bloqueiolike",
+      "src_server_services_bloqueios_bloqueiosdoperiodo",
+      "src_server_services_bloqueios_bloqueiovalidator",
+      "src_server_services_bloqueios_buscarconflitos",
+      "src_server_services_bloqueios_conflito",
+      "src_server_services_bloqueios_diadasemana",
+      "src_server_services_bloqueios_diainteirobloqueado",
+      "src_server_services_bloqueios_diassemanadobloqueio",
+      "src_server_services_bloqueios_horariosbloqueadosnadata",
+      "src_server_services_bloqueios_horariosdobloqueio",
+      "src_server_services_bloqueios_invalid",
+      "src_server_services_bloqueios_ishorariobloqueado",
+      "src_server_services_bloqueios_isodate",
+      "src_server_services_bloqueios_motivo_cancelamento_bloqueio",
+      "src_server_services_bloqueios_normalizarhorario",
+      "src_server_services_bloqueios_serializeconflito",
+      "src_server_services_bloqueios_status_ativos",
+      "src_server_services_bloqueios_validarbloqueio",
+      "tests_server_bloqueios_test",
+      "tests_server_bloqueios_test_diainteiro",
+      "tests_server_bloqueios_test_periodoparcial",
+      "tests_server_bloqueios_test_semana",
+      "tests_server_bloqueios_test_soalgunshorarios"
+    ],
+    "23": [
+      "ref_jose",
+      "src_app_api_google_calendar_callback_route",
+      "src_app_api_google_calendar_callback_route_calendarstate",
+      "src_app_api_google_calendar_callback_route_decodestate",
+      "src_app_api_google_calendar_callback_route_get",
+      "src_app_api_google_calendar_callback_route_withparam",
+      "src_server_env",
+      "src_server_env_env",
+      "src_server_env_requiredenv",
+      "src_server_services_google_calendar",
+      "src_server_services_google_calendar_addeventtousercalendar",
+      "src_server_services_google_calendar_buildeventdatetime",
+      "src_server_services_google_calendar_calendaragendamento",
+      "src_server_services_google_calendar_calendaruser",
+      "src_server_services_google_calendar_createeventforappointment",
+      "src_server_services_google_calendar_eventcontext",
+      "src_server_services_google_calendar_exchangecodefortokens",
+      "src_server_services_google_calendar_finduserwithtokens",
+      "src_server_services_google_calendar_getauthurl",
+      "src_server_services_google_calendar_refreshaccesstoken",
+      "src_server_services_google_calendar_saveuser",
+      "src_server_services_google_calendar_with_tokens",
+      "src_server_services_mail",
+      "src_server_services_mail_defaultfrom",
+      "src_server_services_mail_resend"
+    ],
     "24": [
+      "ref_luxon",
+      "src_app_api_agendamentos_id_cancelar_route",
+      "src_app_api_agendamentos_id_cancelar_route_patch",
+      "src_app_api_agendamentos_id_reagendar_route",
+      "src_app_api_agendamentos_id_reagendar_route_patch",
+      "src_app_api_agendamentos_route",
+      "src_app_api_agendamentos_route_get",
+      "src_app_api_agendamentos_route_post",
+      "src_app_api_agendamentos_route_str",
+      "src_server_services_agendamentos",
+      "src_server_services_agendamentos_consumedataconsulta",
+      "src_server_services_agendamentos_japassou",
+      "src_server_services_agendamentos_nomecompleto",
+      "src_server_services_agendamentos_podesercancelado",
+      "src_server_services_agendamentos_preparedataconsulta",
+      "src_server_services_agendamentos_preparedatetimestring",
+      "src_server_services_bloqueios_horarioestabloqueado",
+      "src_server_services_bloqueios_mensagem_horario_bloqueado",
+      "src_server_services_bloqueios_notificartutores",
+      "src_server_services_in_app_notifications",
+      "src_server_services_in_app_notifications_appointmentparams",
+      "src_server_services_in_app_notifications_inappnotifications",
+      "src_server_services_in_app_notifications_stars",
+      "src_server_services_notifications_notifications",
+      "src_server_services_whatsapp_notificacoes_notificaragendamento"
+    ],
+    "25": [
       "package",
       "package_name",
       "package_private",
       "package_version",
-      "ref_aws_sdk_client_s3",
+      "ref_adonisjs_hash",
       "ref_aws_sdk_s3_request_presigner",
       "ref_eslint",
       "ref_eslint_config_next",
+      "ref_jsonwebtoken",
       "ref_lottie_react",
       "ref_postcss",
       "ref_prisma",
@@ -1090,7 +1097,33 @@
       "ref_types_react_dom",
       "ref_typescript"
     ],
-    "25": [
+    "26": [
+      "ref_react",
+      "src_app_politica_de_privacidade_page",
+      "src_app_politica_de_privacidade_page_metadata",
+      "src_app_politica_de_privacidade_page_privacypolicy",
+      "src_app_politica_de_privacidade_privacy_module",
+      "src_app_reset_password_page",
+      "src_app_reset_password_page_resetpasswordform",
+      "src_app_reset_password_page_resetpasswordpage",
+      "src_app_reset_password_reset_module",
+      "src_app_termos_de_uso_page",
+      "src_app_termos_de_uso_page_metadata",
+      "src_app_termos_de_uso_page_termosdeuso",
+      "src_components_loadinganimation_loadinganimation",
+      "src_components_loadinganimation_loadinganimation_loadinganimation",
+      "src_components_successscreen_success_module",
+      "src_components_successscreen_successscreen",
+      "src_components_successscreen_successscreen_props",
+      "src_components_successscreen_successscreen_successscreen",
+      "src_components_sucessanimation_successanimation",
+      "src_components_sucessanimation_successanimation_successanimation",
+      "src_hook_useimageeditor",
+      "src_hook_useimageeditor_useimageeditor",
+      "src_hook_useimageeditor_useimageeditorreturn",
+      "src_services_auth_auth_resetpassword"
+    ],
+    "27": [
       "src_app_api_auth_google_callback_route",
       "src_app_api_auth_google_callback_route_get",
       "src_app_api_auth_google_redirect_route",
@@ -1108,14 +1141,14 @@
       "src_server_auth_google_googlecallbackurl",
       "src_server_auth_google_googleuser",
       "src_server_auth_google_setstatecookie",
-      "src_server_auth_session_setauthcookie",
       "src_server_emails_forgot_password",
       "src_server_emails_forgot_password_forgotpasswordemail",
       "src_server_env_isproduction",
+      "src_server_services_auth_forgotpassword",
       "tests_server_auth_flow_test",
       "tests_server_auth_flow_test_qs"
     ],
-    "26": [
+    "28": [
       "package_dependencies",
       "package_dependencies_adonisjs_hash",
       "package_dependencies_aws_sdk_client_s3",
@@ -1138,29 +1171,71 @@
       "package_dependencies_server_only",
       "package_dependencies_vinejs_vine"
     ],
-    "27": [
-      "src_app_dashboard_tutor_perfil_page",
-      "src_app_dashboard_tutor_perfil_page_perfiltutor",
-      "src_app_dashboard_tutor_perfil_page_toast",
-      "src_app_dashboard_tutor_perfil_perfil_module",
-      "src_app_signup_social_page",
-      "src_app_signup_social_page_socialsignupcontent",
-      "src_app_signup_social_page_socialsignuppage",
-      "src_app_signup_social_social_module",
-      "src_hook_api",
-      "src_hook_api_api",
-      "src_hook_api_api_base_url",
-      "src_services_avaliacoes_avaliacoes",
-      "src_services_avaliacoes_avaliacoes_criaravaliacaopayload",
-      "src_services_external_brazilapi",
-      "src_services_tutor_tutor",
-      "src_services_tutor_tutor_tutorservice",
-      "src_services_veterinarios_profile",
-      "src_services_veterinarios_profile_veterinariohorario",
-      "src_services_veterinarios_profile_veterinarioprofileservice",
-      "src_services_veterinarios_profile_veterinarioprofileupdate"
+    "29": [
+      "src_server_services_whatsapp_mensagens",
+      "src_server_services_whatsapp_mensagens_dadosmensagem",
+      "src_server_services_whatsapp_mensagens_destinatario",
+      "src_server_services_whatsapp_mensagens_detalhes",
+      "src_server_services_whatsapp_mensagens_eventowhatsapp",
+      "src_server_services_whatsapp_mensagens_montarmensagem",
+      "src_server_services_whatsapp_normalizartelefonee164",
+      "src_server_services_whatsapp_notificacoes",
+      "src_server_services_whatsapp_notificacoes_agendamentowhatsapp",
+      "src_server_services_whatsapp_notificacoes_dadosdamensagem",
+      "src_server_services_whatsapp_notificacoes_enviarpara",
+      "src_server_services_whatsapp_notificacoes_feature_whatsapp",
+      "src_server_services_whatsapp_notificacoes_formatardata",
+      "src_server_services_whatsapp_notificacoes_include",
+      "src_server_services_whatsapp_notificacoes_isduplicado",
+      "src_server_services_whatsapp_notificacoes_referenciadaconsulta",
+      "src_server_services_whatsapp_notificacoes_reservar",
+      "src_server_services_whatsapp_notificacoes_resultadoenvio",
+      "src_server_services_whatsapp_notificacoes_telefonede",
+      "src_server_services_whatsapp_provideratual"
     ],
-    "28": [
+    "30": [
+      "src_app_api_pets_id_photo_route",
+      "src_app_api_pets_id_photo_route_post",
+      "src_app_api_pets_id_route",
+      "src_app_api_pets_id_route_delete",
+      "src_app_api_pets_id_route_patch",
+      "src_app_api_pets_route",
+      "src_app_api_tutor_profile_photo_route",
+      "src_app_api_tutor_profile_photo_route_post",
+      "src_server_services_pets",
+      "src_server_services_pets_firstfile",
+      "src_server_services_pets_ismultipart",
+      "src_server_services_pets_photo_options",
+      "src_server_services_pets_requiretutorof",
+      "src_server_services_pets_requiretutorpet",
+      "src_server_services_pets_tophotoupload",
+      "src_server_services_storage_uploadpetphoto",
+      "src_server_validators_pet",
+      "src_server_validators_pet_createpetvalidator",
+      "src_server_validators_pet_updatepetvalidator"
+    ],
+    "31": [
+      "src_app_explorar_explorar_module",
+      "src_app_explorar_page",
+      "src_app_explorar_page_clinica",
+      "src_app_explorar_page_explorarcontent",
+      "src_app_explorar_page_explorarpage",
+      "src_app_explorar_page_veterinario",
+      "src_components_routeprotection_onboardingredirect",
+      "src_components_routeprotection_onboardingredirect_onboardingredirect",
+      "src_components_routeprotection_onboardingredirect_onboardingredirectprops",
+      "src_components_ui_skeleton_skeleton",
+      "src_components_ui_skeleton_skeleton_module",
+      "src_components_ui_skeleton_skeleton_skeleton",
+      "src_components_ui_skeleton_skeleton_skeletonprops",
+      "src_components_ui_userimage_userimage",
+      "src_components_ui_userimage_userimage_module",
+      "src_components_ui_userimage_userimage_userimage",
+      "src_components_ui_userimage_userimage_userimageprops",
+      "src_services_clinicas_clinicas_searchclinicas",
+      "src_services_veterinarios_veterinarios_searchveterinarios"
+    ],
+    "32": [
       "tsconfig",
       "tsconfig_compileroptions",
       "tsconfig_compileroptions_allowjs",
@@ -1181,7 +1256,7 @@
       "tsconfig_exclude",
       "tsconfig_include"
     ],
-    "29": [
+    "33": [
       "agents_skills_release_it_release_it_api_and_contract_rules",
       "agents_skills_release_it_release_it_cache_rules",
       "agents_skills_release_it_release_it_code_generation_rules",
@@ -1201,27 +1276,7 @@
       "agents_skills_release_it_release_it_stability_mindset_rules",
       "agents_skills_release_it_release_it_testing_rules"
     ],
-    "30": [
-      "concept_adonis_api_contract",
-      "concept_asaas_idempotency",
-      "concept_contract_tests",
-      "concept_google_oauth",
-      "concept_legacy_removed",
-      "concept_lucid_compat",
-      "concept_nextjs_fullstack_backend",
-      "concept_prisma_baseline",
-      "concept_prisma_mysql",
-      "concept_resend_email",
-      "concept_s3_uploads",
-      "concept_side_effects_after",
-      "concept_user_profile_lists",
-      "concept_vinejs_validation",
-      "docs_arquitetura",
-      "src_server_http_handleerror",
-      "src_server_lucid_serialize",
-      "src_server_services_google_calendar_googlecalendar"
-    ],
-    "31": [
+    "34": [
       "agents_skills_vercel_composition_patterns_agents",
       "agents_skills_vercel_composition_patterns_agents_1_1_avoid_boolean_prop_proliferation",
       "agents_skills_vercel_composition_patterns_agents_1_2_use_compound_components",
@@ -1240,7 +1295,26 @@
       "agents_skills_vercel_composition_patterns_agents_references",
       "agents_skills_vercel_composition_patterns_agents_table_of_contents"
     ],
-    "32": [
+    "35": [
+      "concept_regras_de_negocio",
+      "rule_bloqueio_cancela_consultas",
+      "rule_bloqueio_diario_ou_periodo",
+      "rule_bloqueio_intervalo_horarios",
+      "rule_bloqueio_pontual_agenda",
+      "rule_bloqueio_quem_pode",
+      "rule_bloqueio_recorrente_semanal",
+      "rule_bloqueio_sem_estorno",
+      "rule_bloqueio_todos_locais",
+      "rule_bloqueio_trava_backend",
+      "src_components_bloqueioagenda_bloqueioagendamodal",
+      "src_components_bloqueioagenda_bloqueioagendamodal_bloqueioagendamodal",
+      "src_components_bloqueioagenda_bloqueioagendamodal_diadasemana",
+      "src_components_bloqueioagenda_bloqueioagendamodal_end_slots",
+      "src_components_bloqueioagenda_bloqueioagendamodal_formatardata",
+      "src_components_bloqueioagenda_bloqueioagendamodal_hojeiso",
+      "src_components_bloqueioagenda_bloqueioagendamodal_time_slots"
+    ],
+    "36": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_architectural_baseline",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_code_generation_rules",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_distribution_rules",
@@ -1258,7 +1332,7 @@
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_session_state_and_base_pattern_index",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_testing_rules"
     ],
-    "33": [
+    "37": [
       "agents_skills_refactoring_refactoring_class_and_module_rules",
       "agents_skills_refactoring_refactoring_code_generation_rules",
       "agents_skills_refactoring_refactoring_data_and_mutation_rules",
@@ -1276,7 +1350,7 @@
       "agents_skills_refactoring_refactoring_testing_rules",
       "agents_skills_refactoring_refactoring_what_counts_as_refactoring"
     ],
-    "34": [
+    "38": [
       "agents_skills_vercel_react_best_practices_agents_5_10_subscribe_to_derived_state",
       "agents_skills_vercel_react_best_practices_agents_5_11_use_functional_setstate_updates",
       "agents_skills_vercel_react_best_practices_agents_5_12_use_lazy_state_initialization",
@@ -1294,7 +1368,7 @@
       "agents_skills_vercel_react_best_practices_agents_5_9_split_combined_hook_computations",
       "agents_skills_vercel_react_best_practices_agents_5_re_render_optimization"
     ],
-    "35": [
+    "39": [
       "package_devdependencies",
       "package_devdependencies_eslint",
       "package_devdependencies_eslint_config_next",
@@ -1312,43 +1386,7 @@
       "package_devdependencies_typescript",
       "package_devdependencies_vitest"
     ],
-    "36": [
-      "ref_axios",
-      "src_app_api_especialidades_route_get",
-      "src_app_api_external_cep_cep_route",
-      "src_app_api_external_cep_cep_route_get",
-      "src_app_api_external_cnpj_cnpj_route",
-      "src_app_api_external_cnpj_cnpj_route_get",
-      "src_app_api_onboarding_progress_route",
-      "src_app_api_onboarding_progress_route_get",
-      "src_app_api_veterinarios_id_route_delete",
-      "src_server_http_json",
-      "src_server_http_unprocessable",
-      "src_server_services_brazilapi",
-      "src_server_services_brazilapi_api",
-      "src_server_services_brazilapi_fetchcep",
-      "src_server_services_brazilapi_fetchcnpj",
-      "src_server_services_brazilapi_isnotfoundortimeout"
-    ],
-    "37": [
-      "ref_vinejs_vine",
-      "src_app_api_veterinarios_route",
-      "src_app_api_veterinarios_route_get",
-      "src_server_services_onboarding_listveterinarios",
-      "src_server_services_veterinarios_veterinarioregistrationdata",
-      "src_server_validators_auth",
-      "src_server_validators_auth_loginuservalidator",
-      "src_server_validators_avaliacao",
-      "src_server_validators_avaliacao_createavaliacaovalidator",
-      "src_server_validators_endereco",
-      "src_server_validators_endereco_createenderecovalidator",
-      "src_server_validators_endereco_updateenderecovalidator",
-      "src_server_validators_veterinario",
-      "src_server_validators_veterinario_createveterinarioregistrationvalidator",
-      "src_server_validators_veterinario_uniqueemailexceptparam",
-      "src_server_validators_veterinario_updateuservalidator"
-    ],
-    "38": [
+    "40": [
       "agents_skills_vercel_react_best_practices_agents_7_10_hoist_regexp_creation",
       "agents_skills_vercel_react_best_practices_agents_7_11_use_flatmap_to_map_and_filter_in_one_pass",
       "agents_skills_vercel_react_best_practices_agents_7_12_use_loop_for_min_max_instead_of_sort",
@@ -1365,7 +1403,7 @@
       "agents_skills_vercel_react_best_practices_agents_7_9_early_return_from_functions",
       "agents_skills_vercel_react_best_practices_agents_7_javascript_performance"
     ],
-    "39": [
+    "41": [
       "agents_skills_vercel_react_best_practices_skill",
       "agents_skills_vercel_react_best_practices_skill_1_eliminating_waterfalls_critical",
       "agents_skills_vercel_react_best_practices_skill_2_bundle_size_optimization_critical",
@@ -1382,23 +1420,40 @@
       "agents_skills_vercel_react_best_practices_skill_vercel_react_best_practices",
       "agents_skills_vercel_react_best_practices_skill_when_to_apply"
     ],
-    "40": [
-      "src_app_api_clinicas_id_avaliacoes_route",
-      "src_app_api_clinicas_id_avaliacoes_route_get",
-      "src_app_api_veterinarios_id_avaliacoes_route",
-      "src_app_api_veterinarios_id_avaliacoes_route_get",
-      "src_server_services_avaliacoes",
-      "src_server_services_avaliacoes_avaliacaocomrelacoes",
-      "src_server_services_avaliacoes_formatdataconsulta",
-      "src_server_services_avaliacoes_listaravaliacoes",
-      "src_server_services_avaliacoes_media",
-      "src_server_services_avaliacoes_petresumo",
-      "src_server_services_avaliacoes_quando",
-      "src_server_services_avaliacoes_serializarclinica",
-      "src_server_services_avaliacoes_serializarveterinario",
-      "src_server_services_avaliacoes_tutorresumo"
+    "42": [
+      "src_app_api_agendamentos_id_avaliacao_route",
+      "src_app_api_agendamentos_id_avaliacao_route_post",
+      "src_app_api_agendamentos_id_avaliacao_route_statusnormalizado",
+      "src_app_api_notifications_route",
+      "src_app_api_notifications_route_get",
+      "src_server_lucid",
+      "src_server_lucid_creating",
+      "src_server_lucid_now",
+      "src_server_lucid_pageparams",
+      "src_server_lucid_paginate",
+      "src_server_lucid_tonumber",
+      "src_server_lucid_uuid",
+      "src_server_services_in_app_notifications_create",
+      "src_server_services_veterinarios_registerveterinario",
+      "src_server_services_veterinarios_statuserror"
     ],
-    "41": [
+    "43": [
+      "concept_adonis_api_contract",
+      "concept_asaas_idempotency",
+      "concept_contract_tests",
+      "concept_google_oauth",
+      "concept_legacy_removed",
+      "concept_nextjs_fullstack_backend",
+      "concept_prisma_baseline",
+      "concept_prisma_mysql",
+      "concept_resend_email",
+      "concept_side_effects_after",
+      "concept_user_profile_lists",
+      "concept_vinejs_validation",
+      "docs_arquitetura",
+      "src_server_services_google_calendar_googlecalendar"
+    ],
+    "44": [
       "agents_skills_clean_architecture_clean_architecture_architecture_economics_and_priority",
       "agents_skills_clean_architecture_clean_architecture_boundary_cost_deployment_and_operations",
       "agents_skills_clean_architecture_clean_architecture_final_instruction",
@@ -1413,7 +1468,7 @@
       "agents_skills_clean_architecture_clean_architecture_services_distribution_and_embedded_boundaries",
       "agents_skills_clean_architecture_clean_architecture_when_tradeoffs_are_necessary"
     ],
-    "42": [
+    "45": [
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_code_generation_rules",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_default_workflow_for_legacy_changes",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_dependency_breaking_technique_index",
@@ -1428,22 +1483,37 @@
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_test_selection_and_understanding_rules",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_testing_rules"
     ],
-    "43": [
-      "src_app_api_clinicas_id_route",
-      "src_app_api_clinicas_id_route_get",
-      "src_app_api_clinicas_onboarding_progress_route",
-      "src_app_api_clinicas_onboarding_progress_route_get",
-      "src_app_api_clinicas_professionals_search_route",
-      "src_app_api_clinicas_professionals_search_route_get",
-      "src_app_api_clinicas_route",
-      "src_app_api_clinicas_route_get",
-      "src_server_services_clinicas_especialidadesporentidade",
-      "src_server_services_clinicas_mediaavaliacoes",
-      "src_server_services_clinicas_serializeclinica",
-      "src_server_services_clinicas_serializeendereco",
-      "src_server_services_clinicas_serializerelateduser"
+    "46": [
+      "concept_s3_uploads",
+      "ref_aws_sdk_client_s3",
+      "src_server_services_storage",
+      "src_server_services_storage_bucket",
+      "src_server_services_storage_deleteobject",
+      "src_server_services_storage_publicbaseurl",
+      "src_server_services_storage_region",
+      "src_server_services_storage_s3",
+      "src_server_services_storage_storagefile",
+      "src_server_services_storage_storagefolder",
+      "src_server_services_storage_tostoragefile",
+      "src_server_services_storage_uploadphoto",
+      "src_server_services_storage_uploadtutorphoto"
     ],
-    "44": [
+    "47": [
+      "ref_node_crypto",
+      "src_server_services_whatsapp",
+      "src_server_services_whatsapp_drivers",
+      "src_server_services_whatsapp_enviarcomretry",
+      "src_server_services_whatsapp_errotemporario",
+      "src_server_services_whatsapp_esperar",
+      "src_server_services_whatsapp_logprovider",
+      "src_server_services_whatsapp_max_tentativas",
+      "src_server_services_whatsapp_mensagemdeerro",
+      "src_server_services_whatsapp_whatsapperror",
+      "src_server_services_whatsapp_whatsapperror_constructor",
+      "src_server_services_whatsapp_whatsappprovider",
+      "src_server_services_whatsapp_whatsappprovider_enviar"
+    ],
+    "48": [
       "agents_skills_refactoring_refactoring_code_smell_policy",
       "agents_skills_refactoring_refactoring_data_clumps_and_primitive_obsession",
       "agents_skills_refactoring_refactoring_divergent_change",
@@ -1457,7 +1527,7 @@
       "agents_skills_refactoring_refactoring_switch_statements_and_conditionals",
       "agents_skills_refactoring_refactoring_temporary_fields_and_weird_lifecycles"
     ],
-    "45": [
+    "49": [
       "agents_skills_vercel_react_best_practices_agents_6_10_use_react_dom_resource_hints",
       "agents_skills_vercel_react_best_practices_agents_6_11_use_usetransition_over_manual_loading_states",
       "agents_skills_vercel_react_best_practices_agents_6_1_animate_svg_wrapper_instead_of_svg_element",
@@ -1471,7 +1541,21 @@
       "agents_skills_vercel_react_best_practices_agents_6_9_use_explicit_conditional_rendering",
       "agents_skills_vercel_react_best_practices_agents_6_rendering_performance"
     ],
-    "46": [
+    "50": [
+      "concept_lucid_compat",
+      "src_app_api_especialidades_route_get",
+      "src_app_api_onboarding_complete_route",
+      "src_app_api_onboarding_complete_route_post",
+      "src_app_api_onboarding_step3_route",
+      "src_app_api_onboarding_step3_route_post",
+      "src_server_http_json",
+      "src_server_http_unprocessable",
+      "src_server_lucid_serialize",
+      "src_server_services_onboarding_completeonboarding",
+      "src_server_services_onboarding_processstep3",
+      "src_server_validators_onboarding_step3validator"
+    ],
+    "51": [
       "src_server_http_apirequest_file",
       "src_server_http_formatbytes",
       "src_server_http_parsesize",
@@ -1485,21 +1569,7 @@
       "src_server_http_uploadedfile_type",
       "src_server_http_uploadedfile_validate"
     ],
-    "47": [
-      "src_server_services_google_calendar",
-      "src_server_services_google_calendar_addeventtousercalendar",
-      "src_server_services_google_calendar_buildeventdatetime",
-      "src_server_services_google_calendar_calendaragendamento",
-      "src_server_services_google_calendar_calendaruser",
-      "src_server_services_google_calendar_createeventforappointment",
-      "src_server_services_google_calendar_eventcontext",
-      "src_server_services_google_calendar_exchangecodefortokens",
-      "src_server_services_google_calendar_finduserwithtokens",
-      "src_server_services_google_calendar_refreshaccesstoken",
-      "src_server_services_google_calendar_saveuser",
-      "src_server_services_google_calendar_with_tokens"
-    ],
-    "48": [
+    "52": [
       "agents_skills_vercel_composition_patterns_skill",
       "agents_skills_vercel_composition_patterns_skill_1_component_architecture_high",
       "agents_skills_vercel_composition_patterns_skill_2_state_management_medium",
@@ -1512,7 +1582,7 @@
       "agents_skills_vercel_composition_patterns_skill_rule_categories_by_priority",
       "agents_skills_vercel_composition_patterns_skill_when_to_apply"
     ],
-    "49": [
+    "53": [
       "agents_skills_vercel_react_best_practices_agents_3_10_use_after_for_non_blocking_operations",
       "agents_skills_vercel_react_best_practices_agents_3_1_authenticate_server_actions_like_api_routes",
       "agents_skills_vercel_react_best_practices_agents_3_2_avoid_duplicate_serialization_in_rsc_props",
@@ -1525,7 +1595,20 @@
       "agents_skills_vercel_react_best_practices_agents_3_9_per_request_deduplication_with_react_cache",
       "agents_skills_vercel_react_best_practices_agents_3_server_side_performance"
     ],
-    "50": [
+    "54": [
+      "src_server_services_subscription",
+      "src_server_services_subscription_cancreateappointment",
+      "src_server_services_subscription_complano",
+      "src_server_services_subscription_decrementusage",
+      "src_server_services_subscription_findplan",
+      "src_server_services_subscription_hasfeature",
+      "src_server_services_subscription_incrementusage",
+      "src_server_services_subscription_resetmonthlycounterifneeded",
+      "src_server_services_subscription_saveusage",
+      "src_server_services_subscription_vetusage",
+      "src_server_services_whatsapp_notificacoes_planopermitewhatsapp"
+    ],
+    "55": [
       "agents_skills_clean_architecture_clean_architecture",
       "agents_skills_clean_architecture_clean_architecture_mini",
       "agents_skills_clean_architecture_clean_architecture_mini_decision_rules",
@@ -1537,7 +1620,7 @@
       "agents_skills_clean_architecture_skill",
       "agents_skills_clean_architecture_skill_clean_architecture_skill"
     ],
-    "51": [
+    "56": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_mini",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_mini_decision_rules",
@@ -1549,7 +1632,7 @@
       "agents_skills_patterns_of_enterprise_application_architecture_skill",
       "agents_skills_patterns_of_enterprise_application_architecture_skill_patterns_of_enterprise_application_architecture_skill"
     ],
-    "52": [
+    "57": [
       "agents_skills_refactoring_refactoring",
       "agents_skills_refactoring_refactoring_mini",
       "agents_skills_refactoring_refactoring_mini_decision_rules",
@@ -1561,7 +1644,7 @@
       "agents_skills_refactoring_skill",
       "agents_skills_refactoring_skill_refactoring_skill"
     ],
-    "53": [
+    "58": [
       "agents_skills_release_it_release_it",
       "agents_skills_release_it_release_it_mini",
       "agents_skills_release_it_release_it_mini_decision_rules",
@@ -1573,7 +1656,7 @@
       "agents_skills_release_it_skill",
       "agents_skills_release_it_skill_release_it_skill"
     ],
-    "54": [
+    "59": [
       "agents_skills_vercel_composition_patterns_readme",
       "agents_skills_vercel_composition_patterns_readme_component_architecture_critical",
       "agents_skills_vercel_composition_patterns_readme_core_principles",
@@ -1585,7 +1668,7 @@
       "agents_skills_vercel_composition_patterns_readme_state_management_high",
       "agents_skills_vercel_composition_patterns_readme_structure"
     ],
-    "55": [
+    "60": [
       "agents_skills_vercel_react_best_practices_agents",
       "agents_skills_vercel_react_best_practices_agents_4_1_deduplicate_global_event_listeners",
       "agents_skills_vercel_react_best_practices_agents_4_2_use_passive_event_listeners_for_scrolling_performance",
@@ -1597,7 +1680,7 @@
       "agents_skills_vercel_react_best_practices_agents_references",
       "agents_skills_vercel_react_best_practices_agents_table_of_contents"
     ],
-    "56": [
+    "61": [
       "agents_skills_vercel_react_best_practices_rules_sections",
       "agents_skills_vercel_react_best_practices_rules_sections_1_eliminating_waterfalls_async",
       "agents_skills_vercel_react_best_practices_rules_sections_2_bundle_size_optimization_bundle",
@@ -1609,7 +1692,7 @@
       "agents_skills_vercel_react_best_practices_rules_sections_8_advanced_patterns_advanced",
       "agents_skills_vercel_react_best_practices_rules_sections_sections"
     ],
-    "57": [
+    "62": [
       "agents_skills_working_effectively_with_legacy_code_skill",
       "agents_skills_working_effectively_with_legacy_code_skill_working_effectively_with_legacy_code_skill",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code",
@@ -1621,7 +1704,19 @@
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_mini_trigger_rules",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_mini_when_to_use"
     ],
-    "58": [
+    "63": [
+      "src_app_globals",
+      "src_app_layout",
+      "src_app_layout_fredoka",
+      "src_app_layout_inter",
+      "src_app_layout_metadata",
+      "src_app_layout_rootlayout",
+      "src_app_layout_viewport",
+      "src_components_footer_footer",
+      "src_components_footer_footer_footer",
+      "src_components_footer_footer_module"
+    ],
+    "64": [
       "package_scripts",
       "package_scripts_build",
       "package_scripts_db_pull",
@@ -1632,7 +1727,18 @@
       "package_scripts_test",
       "package_scripts_test_contract"
     ],
-    "59": [
+    "65": [
+      "src_app_api_external_cep_cep_route",
+      "src_app_api_external_cep_cep_route_get",
+      "src_app_api_external_cnpj_cnpj_route",
+      "src_app_api_external_cnpj_cnpj_route_get",
+      "src_server_services_brazilapi",
+      "src_server_services_brazilapi_api",
+      "src_server_services_brazilapi_fetchcep",
+      "src_server_services_brazilapi_fetchcnpj",
+      "src_server_services_brazilapi_isnotfoundortimeout"
+    ],
+    "66": [
       "agents_skills_clean_architecture_clean_architecture_controller_centric_logic",
       "agents_skills_clean_architecture_clean_architecture_database_leakage",
       "agents_skills_clean_architecture_clean_architecture_direction_violations",
@@ -1642,7 +1748,7 @@
       "agents_skills_clean_architecture_clean_architecture_layer_bypass",
       "agents_skills_clean_architecture_clean_architecture_utility_dumping_grounds"
     ],
-    "60": [
+    "67": [
       "eslint_config",
       "eslint_config_compat",
       "eslint_config_dirname",
@@ -1652,17 +1758,37 @@
       "ref_path",
       "ref_url"
     ],
-    "61": [
-      "src_app_api_auth_logout_route",
-      "src_app_api_auth_logout_route_post",
-      "src_app_api_auth_me_route",
-      "src_app_api_auth_me_route_get",
-      "src_server_auth_jwt_auth_cookie",
-      "src_server_auth_session",
-      "src_server_auth_session_clearauthcookie",
-      "src_server_services_auth_getuserprofile"
+    "68": [
+      "ref_vinejs_vine",
+      "src_app_api_tutor_register_route",
+      "src_app_api_tutor_register_route_post",
+      "src_server_http_handleerror",
+      "src_server_services_tutor_registertutor",
+      "src_server_validators_tutor",
+      "src_server_validators_tutor_createtutorvalidator",
+      "tests_server_http_test"
     ],
-    "62": [
+    "69": [
+      "src_app_api_veterinarios_route",
+      "src_app_api_veterinarios_route_get",
+      "src_server_services_onboarding_listveterinarios",
+      "src_server_services_veterinarios_veterinarioregistrationdata",
+      "src_server_validators_veterinario",
+      "src_server_validators_veterinario_createveterinarioregistrationvalidator",
+      "src_server_validators_veterinario_uniqueemailexceptparam",
+      "src_server_validators_veterinario_updateuservalidator"
+    ],
+    "70": [
+      "src_server_auth_session_authenticate",
+      "src_server_auth_session_extracttoken",
+      "src_server_auth_session_loaduser",
+      "src_server_auth_session_optionaluser",
+      "src_server_auth_session_tokenfromcookie",
+      "src_server_http_apirequest_cookie",
+      "src_server_http_apirequest_header",
+      "src_server_http_apirequest_input"
+    ],
+    "71": [
       "agents_skills_clean_architecture_clean_architecture_1_define_the_use_case_first",
       "agents_skills_clean_architecture_clean_architecture_2_use_plain_models_at_boundaries",
       "agents_skills_clean_architecture_clean_architecture_3_create_ports_for_volatile_dependencies",
@@ -1671,7 +1797,7 @@
       "agents_skills_clean_architecture_clean_architecture_6_keep_boundaries_visible",
       "agents_skills_clean_architecture_clean_architecture_code_generation_rules"
     ],
-    "63": [
+    "72": [
       "agents_skills_clean_architecture_clean_architecture_nano",
       "agents_skills_clean_architecture_clean_architecture_nano_decision_rules",
       "agents_skills_clean_architecture_clean_architecture_nano_final_checklist",
@@ -1680,7 +1806,7 @@
       "agents_skills_clean_architecture_clean_architecture_nano_trigger_rules",
       "agents_skills_clean_architecture_clean_architecture_nano_when_to_use"
     ],
-    "64": [
+    "73": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_controller_centric_enterprise_app",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_distributed_object_fantasy",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_forbidden_patterns",
@@ -1689,7 +1815,7 @@
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_orm_driven_everything",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_unclear_transaction_ownership"
     ],
-    "65": [
+    "74": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_nano",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_nano_decision_rules",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_nano_final_checklist",
@@ -1698,7 +1824,7 @@
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_nano_trigger_rules",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_nano_when_to_use"
     ],
-    "66": [
+    "75": [
       "agents_skills_refactoring_refactoring_nano",
       "agents_skills_refactoring_refactoring_nano_decision_rules",
       "agents_skills_refactoring_refactoring_nano_final_checklist",
@@ -1707,7 +1833,7 @@
       "agents_skills_refactoring_refactoring_nano_trigger_rules",
       "agents_skills_refactoring_refactoring_nano_when_to_use"
     ],
-    "67": [
+    "76": [
       "agents_skills_release_it_release_it_nano",
       "agents_skills_release_it_release_it_nano_decision_rules",
       "agents_skills_release_it_release_it_nano_final_checklist",
@@ -1716,7 +1842,7 @@
       "agents_skills_release_it_release_it_nano_trigger_rules",
       "agents_skills_release_it_release_it_nano_when_to_use"
     ],
-    "68": [
+    "77": [
       "agents_skills_vercel_react_best_practices_agents_1_1_check_cheap_conditions_before_async_flags",
       "agents_skills_vercel_react_best_practices_agents_1_2_defer_await_until_needed",
       "agents_skills_vercel_react_best_practices_agents_1_3_dependency_based_parallelization",
@@ -1725,7 +1851,7 @@
       "agents_skills_vercel_react_best_practices_agents_1_6_strategic_suspense_boundaries",
       "agents_skills_vercel_react_best_practices_agents_1_eliminating_waterfalls"
     ],
-    "69": [
+    "78": [
       "agents_skills_vercel_react_best_practices_agents_2_1_avoid_barrel_file_imports",
       "agents_skills_vercel_react_best_practices_agents_2_2_conditional_module_loading",
       "agents_skills_vercel_react_best_practices_agents_2_3_defer_non_critical_third_party_libraries",
@@ -1734,7 +1860,7 @@
       "agents_skills_vercel_react_best_practices_agents_2_6_preload_based_on_user_intent",
       "agents_skills_vercel_react_best_practices_agents_2_bundle_size_optimization"
     ],
-    "70": [
+    "79": [
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_nano",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_nano_decision_rules",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_nano_final_checklist",
@@ -1743,7 +1869,7 @@
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_nano_trigger_rules",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_nano_when_to_use"
     ],
-    "71": [
+    "80": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_active_record",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_data_mapper",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_persistence_pattern_rules",
@@ -1751,7 +1877,7 @@
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_row_data_gateway",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_table_data_gateway"
     ],
-    "72": [
+    "81": [
       "agents_skills_refactoring_refactoring_abstracting_too_early",
       "agents_skills_refactoring_refactoring_big_bang_rewrite",
       "agents_skills_refactoring_refactoring_forbidden_patterns",
@@ -1759,7 +1885,7 @@
       "agents_skills_refactoring_refactoring_refactoring_theater",
       "agents_skills_refactoring_refactoring_untested_structural_surgery"
     ],
-    "73": [
+    "82": [
       "agents_skills_refactoring_refactoring_composing_methods",
       "agents_skills_refactoring_refactoring_generalization_and_big_refactorings",
       "agents_skills_refactoring_refactoring_moving_features",
@@ -1767,7 +1893,7 @@
       "agents_skills_refactoring_refactoring_refactoring_catalog_index",
       "agents_skills_refactoring_refactoring_simplifying_calls_and_conditionals"
     ],
-    "74": [
+    "83": [
       "agents_skills_refactoring_refactoring_data_refactorings",
       "agents_skills_refactoring_refactoring_extraction_refactorings",
       "agents_skills_refactoring_refactoring_movement_refactorings",
@@ -1775,7 +1901,7 @@
       "agents_skills_refactoring_refactoring_preferred_refactoring_moves",
       "agents_skills_refactoring_refactoring_simplification_refactorings"
     ],
-    "75": [
+    "84": [
       "agents_skills_release_it_release_it_additional_stability_patterns",
       "agents_skills_release_it_release_it_back_pressure",
       "agents_skills_release_it_release_it_demand_control",
@@ -1783,7 +1909,7 @@
       "agents_skills_release_it_release_it_load_shedding",
       "agents_skills_release_it_release_it_queues"
     ],
-    "76": [
+    "85": [
       "agents_skills_release_it_release_it_blast_radius_amplification",
       "agents_skills_release_it_release_it_collapse_by_queue",
       "agents_skills_release_it_release_it_forbidden_patterns",
@@ -1791,7 +1917,7 @@
       "agents_skills_release_it_release_it_retry_storms",
       "agents_skills_release_it_release_it_silent_failure"
     ],
-    "77": [
+    "86": [
       "agents_skills_vercel_composition_patterns_rules_sections",
       "agents_skills_vercel_composition_patterns_rules_sections_1_component_architecture_architecture",
       "agents_skills_vercel_composition_patterns_rules_sections_2_state_management_state",
@@ -1799,7 +1925,7 @@
       "agents_skills_vercel_composition_patterns_rules_sections_4_react_19_apis_react19",
       "agents_skills_vercel_composition_patterns_rules_sections_sections"
     ],
-    "78": [
+    "87": [
       "agents_skills_vercel_react_best_practices_readme",
       "agents_skills_vercel_react_best_practices_readme_creating_a_new_rule",
       "agents_skills_vercel_react_best_practices_readme_getting_started",
@@ -1807,7 +1933,7 @@
       "agents_skills_vercel_react_best_practices_readme_rule_file_structure",
       "agents_skills_vercel_react_best_practices_readme_structure"
     ],
-    "79": [
+    "88": [
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_constructors_doing_too_much",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_database_heavy_code",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_handling_risky_areas",
@@ -1815,7 +1941,7 @@
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_static_and_global_dependencies",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_ui_or_framework_code"
     ],
-    "80": [
+    "89": [
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_extract_and_override_call",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_preferred_legacy_techniques",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_sprout_class",
@@ -1823,582 +1949,597 @@
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_wrap_class",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_wrap_method"
     ],
-    "81": [
+    "90": [
       "agents_skills_clean_architecture_clean_architecture_application_layer",
       "agents_skills_clean_architecture_clean_architecture_domain_layer",
       "agents_skills_clean_architecture_clean_architecture_infrastructure_layer",
       "agents_skills_clean_architecture_clean_architecture_interface_adapters_layer",
       "agents_skills_clean_architecture_clean_architecture_required_layer_responsibilities"
     ],
-    "82": [
+    "91": [
       "agents_skills_clean_architecture_clean_architecture_architecture_heuristics",
       "agents_skills_clean_architecture_clean_architecture_dependency_direction",
       "agents_skills_clean_architecture_clean_architecture_feature_first_structure",
       "agents_skills_clean_architecture_clean_architecture_policy_vs_detail",
       "agents_skills_clean_architecture_clean_architecture_stable_core_replaceable_edge"
     ],
-    "83": [
+    "92": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_additional_offline_concurrency_patterns",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_concurrency_and_transaction_rules",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_optimistic_offline_lock",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_pessimistic_locking",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_transaction_boundaries"
     ],
-    "84": [
+    "93": [
       "agents_skills_release_it_release_it_bulkheads_and_isolation",
       "agents_skills_release_it_release_it_circuit_breakers_and_fast_failure",
       "agents_skills_release_it_release_it_dependency_protection_rules",
       "agents_skills_release_it_release_it_retries_must_be_disciplined",
       "agents_skills_release_it_release_it_timeouts_are_mandatory"
     ],
-    "85": [
+    "94": [
       "agents_skills_vercel_react_best_practices_agents_8_1_do_not_put_effect_events_in_dependency_arrays",
       "agents_skills_vercel_react_best_practices_agents_8_2_initialize_app_once_not_per_mount",
       "agents_skills_vercel_react_best_practices_agents_8_3_store_event_handlers_in_refs",
       "agents_skills_vercel_react_best_practices_agents_8_4_useeffectevent_for_stable_callback_refs",
       "agents_skills_vercel_react_best_practices_agents_8_advanced_patterns"
     ],
-    "86": [
+    "95": [
       "agents_skills_web_design_guidelines_skill",
       "agents_skills_web_design_guidelines_skill_guidelines_source",
       "agents_skills_web_design_guidelines_skill_how_it_works",
       "agents_skills_web_design_guidelines_skill_usage",
       "agents_skills_web_design_guidelines_skill_web_interface_guidelines"
     ],
-    "87": [
+    "96": [
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_construction_problems",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_dependency_breaking_rules",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_hard_outputs",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_hidden_inputs",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_required_moves"
     ],
-    "88": [
+    "97": [
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_cosmetic_refactoring_only",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_forbidden_patterns",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_hidden_dependency_expansion",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_no_safety_change",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_rewrite_as_the_first_move"
     ],
-    "89": [
+    "98": [
       "ref_country_state_city",
       "src_components_cityautocomplete_cityautocomplete",
       "src_components_cityautocomplete_cityautocomplete_cityautocomplete",
       "src_components_cityautocomplete_cityautocomplete_cityautocompleteprops",
       "src_components_cityautocomplete_cityautocomplete_cityoption"
     ],
-    "90": [
+    "99": [
       "agents_skills_clean_architecture_clean_architecture_adapter_tests",
       "agents_skills_clean_architecture_clean_architecture_core_tests_first",
       "agents_skills_clean_architecture_clean_architecture_test_through_supported_boundaries",
       "agents_skills_clean_architecture_clean_architecture_testing_rules"
     ],
-    "91": [
+    "100": [
       "agents_skills_clean_architecture_clean_architecture_preferred_default_shapes",
       "agents_skills_clean_architecture_clean_architecture_preferred_dependency_pattern",
       "agents_skills_clean_architecture_clean_architecture_preferred_feature_shape",
       "agents_skills_clean_architecture_clean_architecture_preferred_use_case_shape"
     ],
-    "92": [
+    "101": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_application_workflow_rules",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_data_transfer_object",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_remote_facade",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_service_layer"
     ],
-    "93": [
+    "102": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_choosing_the_business_logic_pattern",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_domain_model",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_table_module",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_transaction_script"
     ],
-    "94": [
+    "103": [
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_identity_caching_and_unit_of_work_rules",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_identity_map",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_lazy_load",
       "agents_skills_patterns_of_enterprise_application_architecture_patterns_of_enterprise_application_architecture_unit_of_work"
     ],
-    "95": [
+    "104": [
       "agents_skills_refactoring_refactoring_commit_and_patch_discipline",
       "agents_skills_refactoring_refactoring_preparatory_refactoring",
       "agents_skills_refactoring_refactoring_safety_rules",
       "agents_skills_refactoring_refactoring_tests_and_verification"
     ],
-    "96": [
+    "105": [
       "agents_skills_release_it_release_it_logging",
       "agents_skills_release_it_release_it_metrics",
       "agents_skills_release_it_release_it_observability_is_part_of_the_design",
       "agents_skills_release_it_release_it_operational_visibility_rules"
     ],
-    "97": [
+    "106": [
       "agents_skills_vercel_react_best_practices_rules_async_cheap_condition_before_await",
       "agents_skills_vercel_react_best_practices_rules_async_cheap_condition_before_await_check_cheap_conditions_before_async_flags",
       "agents_skills_vercel_react_best_practices_rules_async_defer_await",
       "agents_skills_vercel_react_best_practices_rules_async_defer_await_defer_await_until_needed"
     ],
-    "98": [
+    "107": [
       "agents_skills_vercel_react_best_practices_rules_bundle_analyzable_paths",
       "agents_skills_vercel_react_best_practices_rules_bundle_analyzable_paths_file_system_paths",
       "agents_skills_vercel_react_best_practices_rules_bundle_analyzable_paths_import_paths",
       "agents_skills_vercel_react_best_practices_rules_bundle_analyzable_paths_prefer_statically_analyzable_paths"
     ],
-    "99": [
+    "108": [
       "agents_skills_vercel_react_best_practices_rules_server_hoist_static_io",
       "agents_skills_vercel_react_best_practices_rules_server_hoist_static_io_hoist_static_i_o_to_module_level",
       "agents_skills_vercel_react_best_practices_rules_server_no_shared_module_state",
       "agents_skills_vercel_react_best_practices_rules_server_no_shared_module_state_avoid_shared_module_state_for_request_data"
     ],
-    "100": [
+    "109": [
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_characterization_tests",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_new_behavior_tests",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_testability_improvements",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_testing_strategy_rules"
     ],
-    "101": [
+    "110": [
+      "src_app_signup_page",
+      "src_app_signup_page_cadastropage",
+      "src_app_signup_page_featureicon",
+      "src_app_signup_page_module"
+    ],
+    "111": [
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_required_behavior",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_seam_rules",
       "agents_skills_working_effectively_with_legacy_code_working_effectively_with_legacy_code_what_counts_as_a_useful_seam"
     ],
-    "102": [
+    "112": [
       "src_data_cidades_famosas",
       "src_data_cidades_famosas_cidadefamosa",
       "src_data_cidades_famosas_cidadesfamosasbrasil"
     ],
-    "103": [
+    "113": [
       "src_data_doencas",
       "src_data_doencas_doencapet",
       "src_data_doencas_doencaspets"
     ],
-    "104": [
+    "114": [
+      "src_server_validators_endereco",
+      "src_server_validators_endereco_createenderecovalidator",
+      "src_server_validators_endereco_updateenderecovalidator"
+    ],
+    "115": [
       "agents_skills_release_it_release_it_restartable_automation",
       "agents_skills_release_it_release_it_runtime_state_and_restart_safety_rules"
     ],
-    "105": [
+    "116": [
       "agents_skills_vercel_composition_patterns_rules_architecture_avoid_boolean_props",
       "agents_skills_vercel_composition_patterns_rules_architecture_avoid_boolean_props_avoid_boolean_prop_proliferation"
     ],
-    "106": [
+    "117": [
       "agents_skills_vercel_composition_patterns_rules_architecture_compound_components",
       "agents_skills_vercel_composition_patterns_rules_architecture_compound_components_use_compound_components"
     ],
-    "107": [
+    "118": [
       "agents_skills_vercel_composition_patterns_rules_patterns_children_over_render_props",
       "agents_skills_vercel_composition_patterns_rules_patterns_children_over_render_props_prefer_children_over_render_props"
     ],
-    "108": [
+    "119": [
       "agents_skills_vercel_composition_patterns_rules_patterns_explicit_variants",
       "agents_skills_vercel_composition_patterns_rules_patterns_explicit_variants_create_explicit_component_variants"
     ],
-    "109": [
+    "120": [
       "agents_skills_vercel_composition_patterns_rules_react19_no_forwardref",
       "agents_skills_vercel_composition_patterns_rules_react19_no_forwardref_react_19_api_changes"
     ],
-    "110": [
+    "121": [
       "agents_skills_vercel_composition_patterns_rules_state_context_interface",
       "agents_skills_vercel_composition_patterns_rules_state_context_interface_define_generic_context_interfaces_for_dependency_injection"
     ],
-    "111": [
+    "122": [
       "agents_skills_vercel_composition_patterns_rules_state_decouple_implementation",
       "agents_skills_vercel_composition_patterns_rules_state_decouple_implementation_decouple_state_management_from_ui"
     ],
-    "112": [
+    "123": [
       "agents_skills_vercel_composition_patterns_rules_state_lift_state",
       "agents_skills_vercel_composition_patterns_rules_state_lift_state_lift_state_into_provider_components"
     ],
-    "113": [
+    "124": [
       "agents_skills_vercel_composition_patterns_rules_template",
       "agents_skills_vercel_composition_patterns_rules_template_rule_title_here"
     ],
-    "114": [
+    "125": [
       "agents_skills_vercel_react_best_practices_rules_advanced_effect_event_deps",
       "agents_skills_vercel_react_best_practices_rules_advanced_effect_event_deps_do_not_put_effect_events_in_dependency_arrays"
     ],
-    "115": [
+    "126": [
       "agents_skills_vercel_react_best_practices_rules_advanced_event_handler_refs",
       "agents_skills_vercel_react_best_practices_rules_advanced_event_handler_refs_store_event_handlers_in_refs"
     ],
-    "116": [
+    "127": [
       "agents_skills_vercel_react_best_practices_rules_advanced_init_once",
       "agents_skills_vercel_react_best_practices_rules_advanced_init_once_initialize_app_once_not_per_mount"
     ],
-    "117": [
+    "128": [
       "agents_skills_vercel_react_best_practices_rules_advanced_use_latest",
       "agents_skills_vercel_react_best_practices_rules_advanced_use_latest_useeffectevent_for_stable_callback_refs"
     ],
-    "118": [
+    "129": [
       "agents_skills_vercel_react_best_practices_rules_async_api_routes",
       "agents_skills_vercel_react_best_practices_rules_async_api_routes_prevent_waterfall_chains_in_api_routes"
     ],
-    "119": [
+    "130": [
       "agents_skills_vercel_react_best_practices_rules_async_dependencies",
       "agents_skills_vercel_react_best_practices_rules_async_dependencies_dependency_based_parallelization"
     ],
-    "120": [
+    "131": [
       "agents_skills_vercel_react_best_practices_rules_async_parallel",
       "agents_skills_vercel_react_best_practices_rules_async_parallel_promise_all_for_independent_operations"
     ],
-    "121": [
+    "132": [
       "agents_skills_vercel_react_best_practices_rules_async_suspense_boundaries",
       "agents_skills_vercel_react_best_practices_rules_async_suspense_boundaries_strategic_suspense_boundaries"
     ],
-    "122": [
+    "133": [
       "agents_skills_vercel_react_best_practices_rules_bundle_barrel_imports",
       "agents_skills_vercel_react_best_practices_rules_bundle_barrel_imports_avoid_barrel_file_imports"
     ],
-    "123": [
+    "134": [
       "agents_skills_vercel_react_best_practices_rules_bundle_conditional",
       "agents_skills_vercel_react_best_practices_rules_bundle_conditional_conditional_module_loading"
     ],
-    "124": [
+    "135": [
       "agents_skills_vercel_react_best_practices_rules_bundle_defer_third_party",
       "agents_skills_vercel_react_best_practices_rules_bundle_defer_third_party_defer_non_critical_third_party_libraries"
     ],
-    "125": [
+    "136": [
       "agents_skills_vercel_react_best_practices_rules_bundle_dynamic_imports",
       "agents_skills_vercel_react_best_practices_rules_bundle_dynamic_imports_dynamic_imports_for_heavy_components"
     ],
-    "126": [
+    "137": [
       "agents_skills_vercel_react_best_practices_rules_bundle_preload",
       "agents_skills_vercel_react_best_practices_rules_bundle_preload_preload_based_on_user_intent"
     ],
-    "127": [
+    "138": [
       "agents_skills_vercel_react_best_practices_rules_client_event_listeners",
       "agents_skills_vercel_react_best_practices_rules_client_event_listeners_deduplicate_global_event_listeners"
     ],
-    "128": [
+    "139": [
       "agents_skills_vercel_react_best_practices_rules_client_localstorage_schema",
       "agents_skills_vercel_react_best_practices_rules_client_localstorage_schema_version_and_minimize_localstorage_data"
     ],
-    "129": [
+    "140": [
       "agents_skills_vercel_react_best_practices_rules_client_passive_event_listeners",
       "agents_skills_vercel_react_best_practices_rules_client_passive_event_listeners_use_passive_event_listeners_for_scrolling_performance"
     ],
-    "130": [
+    "141": [
       "agents_skills_vercel_react_best_practices_rules_client_swr_dedup",
       "agents_skills_vercel_react_best_practices_rules_client_swr_dedup_use_swr_for_automatic_deduplication"
     ],
-    "131": [
+    "142": [
       "agents_skills_vercel_react_best_practices_rules_js_batch_dom_css",
       "agents_skills_vercel_react_best_practices_rules_js_batch_dom_css_avoid_layout_thrashing"
     ],
-    "132": [
+    "143": [
       "agents_skills_vercel_react_best_practices_rules_js_cache_function_results",
       "agents_skills_vercel_react_best_practices_rules_js_cache_function_results_cache_repeated_function_calls"
     ],
-    "133": [
+    "144": [
       "agents_skills_vercel_react_best_practices_rules_js_cache_property_access",
       "agents_skills_vercel_react_best_practices_rules_js_cache_property_access_cache_property_access_in_loops"
     ],
-    "134": [
+    "145": [
       "agents_skills_vercel_react_best_practices_rules_js_cache_storage",
       "agents_skills_vercel_react_best_practices_rules_js_cache_storage_cache_storage_api_calls"
     ],
-    "135": [
+    "146": [
       "agents_skills_vercel_react_best_practices_rules_js_combine_iterations",
       "agents_skills_vercel_react_best_practices_rules_js_combine_iterations_combine_multiple_array_iterations"
     ],
-    "136": [
+    "147": [
       "agents_skills_vercel_react_best_practices_rules_js_early_exit",
       "agents_skills_vercel_react_best_practices_rules_js_early_exit_early_return_from_functions"
     ],
-    "137": [
+    "148": [
       "agents_skills_vercel_react_best_practices_rules_js_flatmap_filter",
       "agents_skills_vercel_react_best_practices_rules_js_flatmap_filter_use_flatmap_to_map_and_filter_in_one_pass"
     ],
-    "138": [
+    "149": [
       "agents_skills_vercel_react_best_practices_rules_js_hoist_regexp",
       "agents_skills_vercel_react_best_practices_rules_js_hoist_regexp_hoist_regexp_creation"
     ],
-    "139": [
+    "150": [
       "agents_skills_vercel_react_best_practices_rules_js_index_maps",
       "agents_skills_vercel_react_best_practices_rules_js_index_maps_build_index_maps_for_repeated_lookups"
     ],
-    "140": [
+    "151": [
       "agents_skills_vercel_react_best_practices_rules_js_length_check_first",
       "agents_skills_vercel_react_best_practices_rules_js_length_check_first_early_length_check_for_array_comparisons"
     ],
-    "141": [
+    "152": [
       "agents_skills_vercel_react_best_practices_rules_js_min_max_loop",
       "agents_skills_vercel_react_best_practices_rules_js_min_max_loop_use_loop_for_min_max_instead_of_sort"
     ],
-    "142": [
+    "153": [
       "agents_skills_vercel_react_best_practices_rules_js_request_idle_callback",
       "agents_skills_vercel_react_best_practices_rules_js_request_idle_callback_defer_non_critical_work_with_requestidlecallback"
     ],
-    "143": [
+    "154": [
       "agents_skills_vercel_react_best_practices_rules_js_set_map_lookups",
       "agents_skills_vercel_react_best_practices_rules_js_set_map_lookups_use_set_map_for_o_1_lookups"
     ],
-    "144": [
+    "155": [
       "agents_skills_vercel_react_best_practices_rules_js_tosorted_immutable",
       "agents_skills_vercel_react_best_practices_rules_js_tosorted_immutable_use_tosorted_instead_of_sort_for_immutability"
     ],
-    "145": [
+    "156": [
       "agents_skills_vercel_react_best_practices_rules_rendering_activity",
       "agents_skills_vercel_react_best_practices_rules_rendering_activity_use_activity_component_for_show_hide"
     ],
-    "146": [
+    "157": [
       "agents_skills_vercel_react_best_practices_rules_rendering_animate_svg_wrapper",
       "agents_skills_vercel_react_best_practices_rules_rendering_animate_svg_wrapper_animate_svg_wrapper_instead_of_svg_element"
     ],
-    "147": [
+    "158": [
       "agents_skills_vercel_react_best_practices_rules_rendering_conditional_render",
       "agents_skills_vercel_react_best_practices_rules_rendering_conditional_render_use_explicit_conditional_rendering"
     ],
-    "148": [
+    "159": [
       "agents_skills_vercel_react_best_practices_rules_rendering_content_visibility",
       "agents_skills_vercel_react_best_practices_rules_rendering_content_visibility_css_content_visibility_for_long_lists"
     ],
-    "149": [
+    "160": [
       "agents_skills_vercel_react_best_practices_rules_rendering_hoist_jsx",
       "agents_skills_vercel_react_best_practices_rules_rendering_hoist_jsx_hoist_static_jsx_elements"
     ],
-    "150": [
+    "161": [
       "agents_skills_vercel_react_best_practices_rules_rendering_hydration_no_flicker",
       "agents_skills_vercel_react_best_practices_rules_rendering_hydration_no_flicker_prevent_hydration_mismatch_without_flickering"
     ],
-    "151": [
+    "162": [
       "agents_skills_vercel_react_best_practices_rules_rendering_hydration_suppress_warning",
       "agents_skills_vercel_react_best_practices_rules_rendering_hydration_suppress_warning_suppress_expected_hydration_mismatches"
     ],
-    "152": [
+    "163": [
       "agents_skills_vercel_react_best_practices_rules_rendering_resource_hints",
       "agents_skills_vercel_react_best_practices_rules_rendering_resource_hints_use_react_dom_resource_hints"
     ],
-    "153": [
+    "164": [
       "agents_skills_vercel_react_best_practices_rules_rendering_script_defer_async",
       "agents_skills_vercel_react_best_practices_rules_rendering_script_defer_async_use_defer_or_async_on_script_tags"
     ],
-    "154": [
+    "165": [
       "agents_skills_vercel_react_best_practices_rules_rendering_svg_precision",
       "agents_skills_vercel_react_best_practices_rules_rendering_svg_precision_optimize_svg_precision"
     ],
-    "155": [
+    "166": [
       "agents_skills_vercel_react_best_practices_rules_rendering_usetransition_loading",
       "agents_skills_vercel_react_best_practices_rules_rendering_usetransition_loading_use_usetransition_over_manual_loading_states"
     ],
-    "156": [
+    "167": [
       "agents_skills_vercel_react_best_practices_rules_rerender_defer_reads",
       "agents_skills_vercel_react_best_practices_rules_rerender_defer_reads_defer_state_reads_to_usage_point"
     ],
-    "157": [
+    "168": [
       "agents_skills_vercel_react_best_practices_rules_rerender_dependencies",
       "agents_skills_vercel_react_best_practices_rules_rerender_dependencies_narrow_effect_dependencies"
     ],
-    "158": [
+    "169": [
       "agents_skills_vercel_react_best_practices_rules_rerender_derived_state",
       "agents_skills_vercel_react_best_practices_rules_rerender_derived_state_subscribe_to_derived_state"
     ],
-    "159": [
+    "170": [
       "agents_skills_vercel_react_best_practices_rules_rerender_derived_state_no_effect",
       "agents_skills_vercel_react_best_practices_rules_rerender_derived_state_no_effect_calculate_derived_state_during_rendering"
     ],
-    "160": [
+    "171": [
       "agents_skills_vercel_react_best_practices_rules_rerender_functional_setstate",
       "agents_skills_vercel_react_best_practices_rules_rerender_functional_setstate_use_functional_setstate_updates"
     ],
-    "161": [
+    "172": [
       "agents_skills_vercel_react_best_practices_rules_rerender_lazy_state_init",
       "agents_skills_vercel_react_best_practices_rules_rerender_lazy_state_init_use_lazy_state_initialization"
     ],
-    "162": [
+    "173": [
       "agents_skills_vercel_react_best_practices_rules_rerender_memo",
       "agents_skills_vercel_react_best_practices_rules_rerender_memo_extract_to_memoized_components"
     ],
-    "163": [
+    "174": [
       "agents_skills_vercel_react_best_practices_rules_rerender_memo_with_default_value",
       "agents_skills_vercel_react_best_practices_rules_rerender_memo_with_default_value_extract_default_non_primitive_parameter_value_from_memoized_component_to_constant"
     ],
-    "164": [
+    "175": [
       "agents_skills_vercel_react_best_practices_rules_rerender_move_effect_to_event",
       "agents_skills_vercel_react_best_practices_rules_rerender_move_effect_to_event_put_interaction_logic_in_event_handlers"
     ],
-    "165": [
+    "176": [
       "agents_skills_vercel_react_best_practices_rules_rerender_no_inline_components",
       "agents_skills_vercel_react_best_practices_rules_rerender_no_inline_components_don_t_define_components_inside_components"
     ],
-    "166": [
+    "177": [
       "agents_skills_vercel_react_best_practices_rules_rerender_simple_expression_in_memo",
       "agents_skills_vercel_react_best_practices_rules_rerender_simple_expression_in_memo_do_not_wrap_a_simple_expression_with_a_primitive_result_type_in_usememo"
     ],
-    "167": [
+    "178": [
       "agents_skills_vercel_react_best_practices_rules_rerender_split_combined_hooks",
       "agents_skills_vercel_react_best_practices_rules_rerender_split_combined_hooks_split_combined_hook_computations"
     ],
-    "168": [
+    "179": [
       "agents_skills_vercel_react_best_practices_rules_rerender_transitions",
       "agents_skills_vercel_react_best_practices_rules_rerender_transitions_use_transitions_for_non_urgent_updates"
     ],
-    "169": [
+    "180": [
       "agents_skills_vercel_react_best_practices_rules_rerender_use_deferred_value",
       "agents_skills_vercel_react_best_practices_rules_rerender_use_deferred_value_use_usedeferredvalue_for_expensive_derived_renders"
     ],
-    "170": [
+    "181": [
       "agents_skills_vercel_react_best_practices_rules_rerender_use_ref_transient_values",
       "agents_skills_vercel_react_best_practices_rules_rerender_use_ref_transient_values_use_useref_for_transient_values"
     ],
-    "171": [
+    "182": [
       "agents_skills_vercel_react_best_practices_rules_server_after_nonblocking",
       "agents_skills_vercel_react_best_practices_rules_server_after_nonblocking_use_after_for_non_blocking_operations"
     ],
-    "172": [
+    "183": [
       "agents_skills_vercel_react_best_practices_rules_server_auth_actions",
       "agents_skills_vercel_react_best_practices_rules_server_auth_actions_authenticate_server_actions_like_api_routes"
     ],
-    "173": [
+    "184": [
       "agents_skills_vercel_react_best_practices_rules_server_cache_lru",
       "agents_skills_vercel_react_best_practices_rules_server_cache_lru_cross_request_lru_caching"
     ],
-    "174": [
+    "185": [
       "agents_skills_vercel_react_best_practices_rules_server_cache_react",
       "agents_skills_vercel_react_best_practices_rules_server_cache_react_per_request_deduplication_with_react_cache"
     ],
-    "175": [
+    "186": [
       "agents_skills_vercel_react_best_practices_rules_server_dedup_props",
       "agents_skills_vercel_react_best_practices_rules_server_dedup_props_avoid_duplicate_serialization_in_rsc_props"
     ],
-    "176": [
+    "187": [
       "agents_skills_vercel_react_best_practices_rules_server_parallel_fetching",
       "agents_skills_vercel_react_best_practices_rules_server_parallel_fetching_parallel_data_fetching_with_component_composition"
     ],
-    "177": [
+    "188": [
       "agents_skills_vercel_react_best_practices_rules_server_parallel_nested_fetching",
       "agents_skills_vercel_react_best_practices_rules_server_parallel_nested_fetching_parallel_nested_data_fetching"
     ],
-    "178": [
+    "189": [
       "agents_skills_vercel_react_best_practices_rules_server_serialization",
       "agents_skills_vercel_react_best_practices_rules_server_serialization_minimize_serialization_at_rsc_boundaries"
     ],
-    "179": [
+    "190": [
       "agents_skills_vercel_react_best_practices_rules_template",
       "agents_skills_vercel_react_best_practices_rules_template_rule_title_here"
     ],
-    "180": [
+    "191": [
       "postcss_config",
       "postcss_config_config"
     ],
-    "181": [
+    "192": [
       "src_components_successscreen_readme",
       "src_components_successscreen_readme_successscreen"
     ],
-    "182": [
+    "193": [
+      "vercel",
+      "vercel_crons"
+    ],
+    "194": [
       "tests_stubs_server_only"
     ]
   },
   "cohesion": {
-    "0": 0.04847963281698221,
-    "1": 0.06558558558558558,
-    "2": 0.05834464043419267,
-    "3": 0.10285714285714286,
-    "4": 0.08408163265306122,
-    "5": 0.07312925170068027,
-    "6": 0.07712765957446809,
-    "7": 0.06290471785383904,
-    "8": 0.06753006475485661,
-    "9": 0.1207897793263647,
-    "10": 0.14169570267131243,
-    "11": 0.12311265969802555,
-    "12": 0.1282051282051282,
-    "13": 0.09246088193456614,
-    "14": 0.09388335704125178,
-    "15": 0.11746031746031746,
-    "16": 0.11827956989247312,
-    "17": 0.12473118279569892,
-    "18": 0.1471264367816092,
-    "19": 0.1455026455026455,
-    "20": 0.10826210826210826,
-    "21": 0.12,
-    "22": 0.20666666666666667,
-    "23": 0.17,
-    "24": 0.08695652173913043,
-    "25": 0.1976284584980237,
-    "26": 0.09523809523809523,
-    "27": 0.15789473684210525,
-    "28": 0.10526315789473684,
-    "29": 0.1111111111111111,
-    "30": 0.1437908496732026,
-    "31": 0.11764705882352941,
-    "32": 0.125,
-    "33": 0.125,
-    "34": 0.125,
-    "35": 0.125,
-    "36": 0.225,
-    "37": 0.14166666666666666,
-    "38": 0.13333333333333333,
-    "39": 0.13333333333333333,
-    "40": 0.3516483516483517,
-    "41": 0.15384615384615385,
-    "42": 0.15384615384615385,
-    "43": 0.358974358974359,
-    "44": 0.16666666666666666,
-    "45": 0.16666666666666666,
-    "46": 0.18181818181818182,
-    "47": 0.2727272727272727,
-    "48": 0.18181818181818182,
-    "49": 0.18181818181818182,
-    "50": 0.2,
-    "51": 0.2,
-    "52": 0.2,
-    "53": 0.2,
-    "54": 0.2,
+    "0": 0.04886128364389234,
+    "1": 0.05427547363031234,
+    "2": 0.07213114754098361,
+    "3": 0.13157894736842105,
+    "4": 0.10957910014513789,
+    "5": 0.10522496371552975,
+    "6": 0.09143686502177069,
+    "7": 0.06956521739130435,
+    "8": 0.08478513356562137,
+    "9": 0.11829268292682926,
+    "10": 0.07926829268292683,
+    "11": 0.08502024291497975,
+    "12": 0.08108108108108109,
+    "13": 0.13229018492176386,
+    "14": 0.13333333333333333,
+    "15": 0.11596638655462185,
+    "16": 0.08912655971479501,
+    "17": 0.12477718360071301,
+    "18": 0.14022988505747128,
+    "19": 0.1206896551724138,
+    "20": 0.20923076923076922,
+    "21": 0.17846153846153845,
+    "22": 0.13538461538461538,
+    "23": 0.16666666666666666,
+    "24": 0.22666666666666666,
+    "25": 0.08333333333333333,
+    "26": 0.11594202898550725,
+    "27": 0.18972332015810275,
+    "28": 0.09523809523809523,
+    "29": 0.16842105263157894,
+    "30": 0.2631578947368421,
+    "31": 0.15789473684210525,
+    "32": 0.10526315789473684,
+    "33": 0.1111111111111111,
+    "34": 0.11764705882352941,
+    "35": 0.22058823529411764,
+    "36": 0.125,
+    "37": 0.125,
+    "38": 0.125,
+    "39": 0.125,
+    "40": 0.13333333333333333,
+    "41": 0.13333333333333333,
+    "42": 0.21904761904761905,
+    "43": 0.18681318681318682,
+    "44": 0.15384615384615385,
+    "45": 0.15384615384615385,
+    "46": 0.2692307692307692,
+    "47": 0.20512820512820512,
+    "48": 0.16666666666666666,
+    "49": 0.16666666666666666,
+    "50": 0.24242424242424243,
+    "51": 0.18181818181818182,
+    "52": 0.18181818181818182,
+    "53": 0.18181818181818182,
+    "54": 0.2909090909090909,
     "55": 0.2,
     "56": 0.2,
     "57": 0.2,
-    "58": 0.2222222222222222,
-    "59": 0.25,
-    "60": 0.25,
-    "61": 0.42857142857142855,
-    "62": 0.2857142857142857,
-    "63": 0.2857142857142857,
-    "64": 0.2857142857142857,
-    "65": 0.2857142857142857,
-    "66": 0.2857142857142857,
-    "67": 0.2857142857142857,
-    "68": 0.2857142857142857,
-    "69": 0.2857142857142857,
+    "58": 0.2,
+    "59": 0.2,
+    "60": 0.2,
+    "61": 0.2,
+    "62": 0.2,
+    "63": 0.24444444444444444,
+    "64": 0.2222222222222222,
+    "65": 0.4444444444444444,
+    "66": 0.25,
+    "67": 0.25,
+    "68": 0.32142857142857145,
+    "69": 0.32142857142857145,
     "70": 0.2857142857142857,
-    "71": 0.3333333333333333,
-    "72": 0.3333333333333333,
-    "73": 0.3333333333333333,
-    "74": 0.3333333333333333,
-    "75": 0.3333333333333333,
-    "76": 0.3333333333333333,
-    "77": 0.3333333333333333,
-    "78": 0.3333333333333333,
-    "79": 0.3333333333333333,
+    "71": 0.2857142857142857,
+    "72": 0.2857142857142857,
+    "73": 0.2857142857142857,
+    "74": 0.2857142857142857,
+    "75": 0.2857142857142857,
+    "76": 0.2857142857142857,
+    "77": 0.2857142857142857,
+    "78": 0.2857142857142857,
+    "79": 0.2857142857142857,
     "80": 0.3333333333333333,
-    "81": 0.4,
-    "82": 0.4,
-    "83": 0.4,
-    "84": 0.4,
-    "85": 0.4,
-    "86": 0.4,
-    "87": 0.4,
-    "88": 0.4,
-    "89": 0.4,
-    "90": 0.5,
-    "91": 0.5,
-    "92": 0.5,
-    "93": 0.5,
-    "94": 0.5,
-    "95": 0.5,
-    "96": 0.5,
-    "97": 0.5,
-    "98": 0.5,
+    "81": 0.3333333333333333,
+    "82": 0.3333333333333333,
+    "83": 0.3333333333333333,
+    "84": 0.3333333333333333,
+    "85": 0.3333333333333333,
+    "86": 0.3333333333333333,
+    "87": 0.3333333333333333,
+    "88": 0.3333333333333333,
+    "89": 0.3333333333333333,
+    "90": 0.4,
+    "91": 0.4,
+    "92": 0.4,
+    "93": 0.4,
+    "94": 0.4,
+    "95": 0.4,
+    "96": 0.4,
+    "97": 0.4,
+    "98": 0.4,
     "99": 0.5,
     "100": 0.5,
-    "101": 0.6666666666666666,
-    "102": 0.6666666666666666,
-    "103": 0.6666666666666666,
-    "104": 1.0,
-    "105": 1.0,
-    "106": 1.0,
-    "107": 1.0,
-    "108": 1.0,
-    "109": 1.0,
-    "110": 1.0,
-    "111": 1.0,
-    "112": 1.0,
-    "113": 1.0,
-    "114": 1.0,
+    "101": 0.5,
+    "102": 0.5,
+    "103": 0.5,
+    "104": 0.5,
+    "105": 0.5,
+    "106": 0.5,
+    "107": 0.5,
+    "108": 0.5,
+    "109": 0.5,
+    "110": 0.6666666666666666,
+    "111": 0.6666666666666666,
+    "112": 0.6666666666666666,
+    "113": 0.6666666666666666,
+    "114": 0.6666666666666666,
     "115": 1.0,
     "116": 1.0,
     "117": 1.0,
@@ -2466,18 +2607,30 @@
     "179": 1.0,
     "180": 1.0,
     "181": 1.0,
-    "182": 1.0
+    "182": 1.0,
+    "183": 1.0,
+    "184": 1.0,
+    "185": 1.0,
+    "186": 1.0,
+    "187": 1.0,
+    "188": 1.0,
+    "189": 1.0,
+    "190": 1.0,
+    "191": 1.0,
+    "192": 1.0,
+    "193": 1.0,
+    "194": 1.0
   },
   "gods": [
     {
       "id": "src_server_auth_session_requireuser",
       "label": "requireUser()",
-      "degree": 154
+      "degree": 160
     },
     {
       "id": "src_server_http_ok",
       "label": "ok()",
-      "degree": 145
+      "degree": 153
     },
     {
       "id": "src_server_http_servererror",
@@ -2487,32 +2640,32 @@
     {
       "id": "src_server_http_route",
       "label": "route()",
-      "degree": 95
+      "degree": 98
     },
     {
       "id": "src_server_http_apirequest",
       "label": "ApiRequest",
-      "degree": 92
-    },
-    {
-      "id": "src_server_db_prisma",
-      "label": "prisma",
-      "degree": 72
+      "degree": 95
     },
     {
       "id": "src_server_lucid_updating",
       "label": "updating()",
-      "degree": 71
+      "degree": 75
+    },
+    {
+      "id": "src_server_db_prisma",
+      "label": "prisma",
+      "degree": 75
     },
     {
       "id": "src_server_http_badrequest",
       "label": "badRequest()",
-      "degree": 64
+      "degree": 67
     },
     {
       "id": "ref_react",
       "label": "react",
-      "degree": 60
+      "degree": 62
     },
     {
       "id": "src_server_http_notfound",
@@ -2544,17 +2697,6 @@
       "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities; peripheral node `E-mails via Resend com templates Edge convertidos` unexpectedly reaches hub `sendMail()`"
     },
     {
-      "source": "Uploads multipart para S3/CloudFront",
-      "target": "uploadPhoto()",
-      "source_files": [
-        "docs/ARQUITETURA.md",
-        "src/server/services/storage.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "implements",
-      "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities; peripheral node `Uploads multipart para S3/CloudFront` unexpectedly reaches hub `uploadPhoto()`"
-    },
-    {
       "source": "Webhook Asaas idempotente via webhook_events.event_id",
       "target": "POST",
       "source_files": [
@@ -2575,13 +2717,24 @@
       "confidence": "EXTRACTED",
       "relation": "implements",
       "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Auth por JWT em cookie httpOnly auth_token",
+      "target": "AuthProvider()",
+      "source_files": [
+        "docs/ARQUITETURA.md",
+        "src/contexts/AuthContext.tsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "implements",
+      "why": "crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities"
     }
   ],
   "questions": [
     {
       "type": "bridge_node",
-      "question": "Why does `next` connect `next` to `react`, `services/bloqueios.ts`, `dashboard/veterinario/page.tsx`, `onboarding/page.tsx`, `services/anotacoes.ts`, `AuthContext.tsx`, `http.ts`, `useAuth`, `onboarding/clinica/page.tsx`, `storage.ts`, `SearchBar.tsx`, `signup/tutor/page.tsx`, `package.json`, `google.ts`, `api.tsx`, `session.ts`?",
-      "why": "High betweenness centrality (0.178) - this node is a cross-community bridge."
+      "question": "Why does `next` connect `next` to `dashboard/veterinario/page.tsx`, `http.ts`, `onboarding/page.tsx`, `AuthContext.tsx`, `dashboard/tutor/page.tsx`, `SearchBar.tsx`, `veterinario/[id]/page.tsx`, `lucide-react`, `onboarding/clinica/page.tsx`, `services/bloqueios.ts`, `google-calendar.ts`, `api/agendamentos/route.ts`, `package.json`, `react`, `google.ts`, `explorar/page.tsx`, `layout.tsx`, `@vinejs/vine`, `signup/page.tsx`?",
+      "why": "High betweenness centrality (0.167) - this node is a cross-community bridge."
     },
     {
       "type": "isolated_nodes",
@@ -2590,28 +2743,28 @@
     },
     {
       "type": "low_cohesion",
-      "question": "Should `react` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.04847963281698221 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "bridge_node",
-      "question": "Why does `server-only` connect `server-only` to `services/bloqueios.ts`, `.from`, `services/anotacoes.ts`, `http.ts`, `requireUser`, `services/onboarding.ts`, `services/auth.ts`, `services/veterinarios.ts`, `AsaasService`, `storage.ts`, `db.ts`, `veterinario-dashboard.ts`, `package.json`, `google.ts`, `json`, `veterinarios/route.ts`, `services/avaliacoes.ts`, `google-calendar.ts`, `session.ts`?",
-      "why": "High betweenness centrality (0.033) - this node is a cross-community bridge."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `services/bloqueios.ts` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.06558558558558558 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "bridge_node",
-      "question": "Why does `react` connect `react` to `dashboard/veterinario/page.tsx`, `onboarding/page.tsx`, `BloqueioAgendaModal.tsx`, `next`, `AuthContext.tsx`, `useAuth`, `onboarding/clinica/page.tsx`, `SearchBar.tsx`, `signup/tutor/page.tsx`, `package.json`, `CityAutocomplete.tsx`, `api.tsx`?",
-      "why": "High betweenness centrality (0.033) - this node is a cross-community bridge."
-    },
-    {
-      "type": "low_cohesion",
       "question": "Should `dashboard/veterinario/page.tsx` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.05834464043419267 - nodes in this community are weakly interconnected."
+      "why": "Cohesion score 0.04886128364389234 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `server-only` connect `server-only` to `services/prontuario.ts`, `http.ts`, `ok`, `AsaasService`, `services/onboarding.ts`, `badRequest`, `services/veterinarios.ts`, `services/auth.ts`, `whatsapp.test.ts`, `serverError`, `services/bloqueios.ts`, `google-calendar.ts`, `api/agendamentos/route.ts`, `package.json`, `google.ts`, `whatsapp-notificacoes.ts`, `pets/[id]/photo/route.ts`, `lucid.ts`, `storage.ts`, `whatsapp.ts`, `subscription.ts`, `services/brazilapi.ts`, `@vinejs/vine`, `veterinarios/route.ts`, `endereco.ts`?",
+      "why": "High betweenness centrality (0.053) - this node is a cross-community bridge."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `veterinarios/bloqueios.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.05427547363031234 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `react` connect `react` to `dashboard/veterinario/page.tsx`, `veterinarios/bloqueios.ts`, `CityAutocomplete.tsx`, `Regras de negocio (docs/ARQUITETURA.md)`, `onboarding/page.tsx`, `AuthContext.tsx`, `dashboard/tutor/page.tsx`, `next`, `SearchBar.tsx`, `veterinario/[id]/page.tsx`, `lucide-react`, `onboarding/clinica/page.tsx`, `package.json`, `explorar/page.tsx`?",
+      "why": "High betweenness centrality (0.040) - this node is a cross-community bridge."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `services/prontuario.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07213114754098361 - nodes in this community are weakly interconnected."
     }
   ]
 }

@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/lembretes-whatsapp",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}

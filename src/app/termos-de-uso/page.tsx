@@ -45,14 +45,14 @@ export default function TermosDeUso() {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>4. Integrações de Terceiros e APIs (Google e WhatsApp)</h2>
         <p className={styles.paragraph}>
-          Nossos serviços utilizam integrações com plataformas de terceiros, como a API do Google (Google Calendário) e do WhatsApp (Meta):
+          Nossos serviços utilizam integrações com plataformas de terceiros, como a API do Google (Google Calendário) e um provedor de mensagens parceiro para o WhatsApp:
         </p>
         <ul className={styles.list}>
           <li className={styles.listItem}>
             <strong>Google:</strong> A integração com o Google Calendário permite a sincronização de agendas. O uso e a transferência de informações recebidas das APIs do Google estão de acordo com a <a href="/politica-de-privacidade" className={styles.link}>Política de Privacidade</a> do Lince Pet e as políticas do próprio Google.
           </li>
           <li className={styles.listItem}>
-            <strong>WhatsApp:</strong> Ao aceitar receber notificações, mensagens automáticas de lembretes poderão ser enviadas para o seu número cadastrado.
+            <strong>WhatsApp:</strong> O número da Lince Pet envia avisos automáticos sobre suas consultas (confirmação, lembretes, cancelamento e remarcação) para o celular cadastrado, quando o profissional tem esse recurso no plano. Não enviamos mensagens de marketing por WhatsApp. Tutores podem desativar os avisos em Perfil &gt; Notificações.
           </li>
         </ul>
       </div>
