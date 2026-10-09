@@ -7,6 +7,8 @@ import { requireUser } from '@/server/auth/session'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { notifications } from '@/server/services/notifications'
 import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
+import { podeEnviarEmail } from '@/server/services/canais-notificacao'
+import { googleCalendar } from '@/server/services/google-calendar'
 import {
   consumeDataConsulta,
   nomeCompleto,
@@ -68,6 +70,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
     const { agendamento, motivo } = result
 
     after(() => notificarAgendamento('cancelamento', agendamento.id, ['profissional'], { motivo: motivo || null }))
+    after(() => googleCalendar.sincronizarEvento(agendamento.id, 'cancelar'))
 
     try {
       const veterinario = agendamento.veterinarioId
@@ -94,11 +97,12 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         motivo: motivo || null,
       }
 
-      console.log(`📧 [Agendamento] Enviando email de cancelamento para o tutor: ${user.email}`)
-      await notifications.sendAppointmentCancellation(user.email, { ...emailPayload, isVeterinario: false })
-
-      console.log(`📧 [Agendamento] Enviando email de cancelamento para o veterinário: ${vetUser.email}`)
-      await notifications.sendAppointmentCancellation(vetUser.email, { ...emailPayload, isVeterinario: true })
+      if (podeEnviarEmail(user)) {
+        await notifications.sendAppointmentCancellation(user.email, { ...emailPayload, isVeterinario: false })
+      }
+      if (podeEnviarEmail(vetUser)) {
+        await notifications.sendAppointmentCancellation(vetUser.email, { ...emailPayload, isVeterinario: true })
+      }
     } catch (notifError) {
       console.error('❌ [Agendamento] Erro ao enviar notificações de cancelamento:', notifError)
     }

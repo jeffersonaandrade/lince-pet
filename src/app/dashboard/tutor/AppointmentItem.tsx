@@ -118,6 +118,17 @@ export function AppointmentItem({
           </div>
         </div>
 
+        {agendamento.codigo_inicio ? (
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-dashed border-orange-300 bg-orange-50 px-4 py-3">
+            <span className="text-sm text-slate-600">
+              Código de início: informe ao veterinário no atendimento
+            </span>
+            <span className="font-mono text-lg font-bold tracking-[0.3em] text-orange-600">
+              {agendamento.codigo_inicio}
+            </span>
+          </div>
+        ) : null}
+
         {/* Footer Actions */}
         <div className={styles.appointmentFooter} style={{ marginTop: '1rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
           {finalCanRate && (

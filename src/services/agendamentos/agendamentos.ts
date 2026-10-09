@@ -44,6 +44,8 @@ export interface ListaAgendamentosResponse {
     pode_cancelar: boolean;
     ja_passou: boolean;
     avaliado?: boolean;
+    /** Código que o tutor informa ao vet para iniciar a consulta (só em consultas futuras não iniciadas). */
+    codigo_inicio?: string | null;
     veterinario: {
       id: string;
       nome: string;

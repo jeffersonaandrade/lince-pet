@@ -72,6 +72,9 @@ model User {
   googleRefreshToken       String?   @map("google_refresh_token") @db.Text
   googleTokenExpiresAt     DateTime? @map("google_token_expires_at") @db.Timestamp(0)
   googleCalendarAuthorized Int?      @default(0) @map("google_calendar_authorized") @db.TinyInt
+  /// Canais de aviso de consultas (1 = ligado). O Google Agenda vale enquanto a conta estiver conectada.
+  notificarEmail           Int       @default(1) @map("notificar_email") @db.TinyInt
+  notificarWhatsapp        Int       @default(1) @map("notificar_whatsapp") @db.TinyInt
 
   // TODO(verify): no Lucid são hasOne, mas user_id não tem UNIQUE nas migrations, então o Prisma exige lista.
   tutor               Tutor[]
@@ -80,6 +83,7 @@ model User {
   payments            Payment[]
   notifications       Notification[]
   passwordResetTokens PasswordResetToken[]
+  googleEventos       AgendamentoGoogleEvento[]
 
   @@index([userType])
   @@index([email])
@@ -96,8 +100,6 @@ model Tutor {
   genero        Genero?
   createdAt     DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
-  /// 1 = aceita avisos de consultas por WhatsApp (opt-out no perfil)
-  whatsappOptIn Int       @default(1) @map("whatsapp_opt_in") @db.TinyInt
 
   user         User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   agendamentos Agendamento[]
@@ -429,8 +431,26 @@ model Agendamento {
   anotacao        AgendamentoAnotacao?
   registroClinico RegistroClinico?
   whatsappEnvios  WhatsappEnvio[]
+  googleEventos   AgendamentoGoogleEvento[]
 
   @@map("agendamentos")
+}
+
+/// Evento criado no Google Agenda de um participante; permite atualizar (remarcação) e apagar (cancelamento).
+model AgendamentoGoogleEvento {
+  id            String    @id @db.Char(36)
+  agendamentoId String    @map("agendamento_id") @db.Char(36)
+  userId        String    @map("user_id") @db.Char(36)
+  googleEventId String    @map("google_event_id") @db.VarChar(1024)
+  createdAt     DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime? @map("updated_at") @db.Timestamp(0)
+
+  agendamento Agendamento @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([agendamentoId, userId], map: "agendamento_google_eventos_agendamento_user_key")
+  @@index([userId])
+  @@map("agendamento_google_eventos")
 }
 
 /// Anotação privada do veterinário sobre a consulta. Nunca expor para tutor ou clínica.

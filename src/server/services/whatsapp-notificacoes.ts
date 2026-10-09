@@ -4,12 +4,13 @@ import { prisma } from '../db'
 import { creating, updating } from '../lucid'
 import { nomeCompleto } from './agendamentos'
 import { hasFeature } from './subscription'
+import { canaisDe } from './canais-notificacao'
 import { enviarComRetry, normalizarTelefoneE164, providerAtual } from './whatsapp'
 import { montarMensagem, type Destinatario, type EventoWhatsapp } from './whatsapp-mensagens'
 
 /**
  * Orquestra os avisos de WhatsApp do agendamento. Regras: plano do vet ou da clínica com
- * `whatsapp_notifications`, opt-out do tutor, celular válido e envio único por
+ * `whatsapp_notifications`, canal WhatsApp ligado por quem recebe (tutor ou vet), celular válido e envio único por
  * (agendamento, evento, destinatário, referência). Nunca lança erro: tudo vai para `whatsapp_envios`.
  */
 
@@ -94,9 +95,10 @@ async function enviarPara(
     telefone: telefoneDe(a, para),
   }
 
+  const quemRecebe = para === 'tutor' ? a.tutor?.user : a.veterinario?.user
   const motivoIgnorado = !planoOk
     ? 'sem_plano'
-    : para === 'tutor' && a.tutor && a.tutor.whatsappOptIn === 0
+    : quemRecebe && !canaisDe(quemRecebe).whatsapp
       ? 'opt_out'
       : !base.telefone
         ? 'sem_celular'

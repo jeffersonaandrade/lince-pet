@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { TutorService } from "@/services/tutor/tutor";
-import { api } from "@/hook/api";
+import { PreferenciasNotificacao, ConexaoGoogleAgenda } from "@/components/PreferenciasNotificacao/PreferenciasNotificacao";
 import styles from "./perfil.module.css";
 
 function Toast({
@@ -25,7 +25,6 @@ export default function PerfilTutor() {
 
     const [isSaving, setIsSaving] = useState(false);
     const [nome, setNome] = useState("");
-    const [whatsappOptIn, setWhatsappOptIn] = useState(true);
 
     // Unsaved changes tracking
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -60,15 +59,12 @@ export default function PerfilTutor() {
         if (user.nome) {
             setNome(user.nome);
         }
-        TutorService.getPreferencias()
-            .then((p) => setWhatsappOptIn(p.whatsapp_opt_in))
-            .catch(() => {});
     }, [user, loading, router]);
 
     const handleSaveAll = async () => {
         try {
             setIsSaving(true);
-            await TutorService.updateProfile({ nome, whatsapp_opt_in: whatsappOptIn });
+            await TutorService.updateProfile({ nome });
             if (updateUser && user) updateUser({ ...user, nome });
             setHasUnsavedChanges(false);
             showToast("Informações salvas com sucesso!");
@@ -126,27 +122,14 @@ export default function PerfilTutor() {
                 </div>
 
                 <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Notificações</h2>
-                    <label className="flex cursor-pointer items-start gap-3">
-                        <input
-                            type="checkbox"
-                            className="mt-1 h-4 w-4 accent-orange-500"
-                            checked={whatsappOptIn}
-                            onChange={(e) => setWhatsappOptIn(e.target.checked)}
+                    <PreferenciasNotificacao onAviso={showToast}>
+                        <ConexaoGoogleAgenda
+                            conectado={Boolean(user?.googleCalendarAuthorized)}
+                            onAlterado={checkAuth}
+                            onAviso={showToast}
                         />
-                        <span className="flex flex-col gap-1">
-                            <span className="text-sm font-semibold text-slate-800">
-                                Receber avisos de consultas por WhatsApp
-                            </span>
-                            <span className="text-xs text-slate-500">
-                                Confirmação, lembretes (24h e 2h antes), cancelamento e remarcação, enviados pelo número
-                                da Lince Pet para o celular do seu cadastro. O e-mail e os avisos no app continuam.
-                            </span>
-                        </span>
-                    </label>
+                    </PreferenciasNotificacao>
                 </div>
-
-                {/* ── Integrações Removidas do Tutor ────────────────────────────────────────── */}
 
                 <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', paddingBottom: '2rem' }}>
                     <button

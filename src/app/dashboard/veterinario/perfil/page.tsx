@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { VeterinarioProfileService } from "@/services/veterinarios/profile";
 import { getOnboardingProgress, getEspecialidades, getPlanos, type Experience } from "@/services/veterinarios/veterinarios";
-import { Clock, ChevronDown, ChevronUp, Plus, X, Trash2, Calendar, Crown } from "lucide-react";
+import { Clock, ChevronDown, ChevronUp, Plus, X, Trash2, Crown } from "lucide-react";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
-import { api, API_BASE_URL } from "@/hook/api";
+import { PreferenciasNotificacao, ConexaoGoogleAgenda } from "@/components/PreferenciasNotificacao/PreferenciasNotificacao";
 import { AssinaturasService } from "@/services/assinaturas/assinaturas";
 import styles from "./perfil.module.css";
 import { useFeatureGate } from "@/hook/useFeatureGate";
@@ -68,7 +68,6 @@ export default function PerfilVeterinario() {
   const assinaturas = AssinaturasService();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [vetPlanoAtual, setVetPlanoAtual] = useState<string | null>(null);
   
   const { hasFeature } = useFeatureGate();
@@ -97,53 +96,6 @@ export default function PerfilVeterinario() {
     const first = sorted[0];
     return (first && (first.code || first.name)) || null;
   }, []);
-
-  // Handle Google Calendar redirect callback parameters
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const calendarResult = params.get("google_calendar");
-      const calendarError = params.get("google_calendar_error");
-
-      if (calendarResult === "success") {
-        showToast("Google Calendar conectado com sucesso!");
-        // Remove query params from URL without reloading
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, "", newUrl);
-        // Reload user details
-        if (checkAuth) checkAuth();
-      } else if (calendarError) {
-        showToast("Falha ao autorizar o Google Calendar.", "error");
-        const newUrl = window.location.pathname;
-        window.history.replaceState({}, "", newUrl);
-      }
-    }
-  }, [checkAuth]);
-
-  const handleConnectCalendar = () => {
-    const redirectTo = window.location.origin + window.location.pathname;
-    window.location.href = `${API_BASE_URL}/google/calendar/auth?redirect_to=${encodeURIComponent(redirectTo)}`;
-  };
-
-  const handleDisconnectCalendar = async () => {
-    if (!window.confirm("Deseja realmente desconectar seu Google Calendar?")) {
-      return;
-    }
-
-    try {
-      setIsDisconnecting(true);
-      const response = await api.post("/google/calendar/disconnect");
-      if (response.status === 200) {
-        showToast("Google Calendar desconectado com sucesso!");
-        if (checkAuth) await checkAuth();
-      }
-    } catch (error) {
-      console.error("Erro ao desconectar Google Calendar:", error);
-      showToast("Erro ao desconectar o Google Calendar.", "error");
-    } finally {
-      setIsDisconnecting(false);
-    }
-  };
 
   // Profile data
   const [nome, setNome] = useState("");
@@ -581,66 +533,30 @@ export default function PerfilVeterinario() {
 
         </div>
 
-        {/* ── Integrações ────────────────────────────────────────── */}
+        {/* ── Avisos de consulta ────────────────────────────────────────── */}
         <div className={styles.section}>
-          <h2 className={styles.sectionTitle}>Integrações</h2>
-          <p className={styles.sectionDescription}>
-            Conecte ferramentas externas para melhorar sua experiência no Lince Pet.
-          </p>
-
-          <div className={styles.calendarIntegrationCard}>
-            <div className={styles.calendarIconContainer}>
-              <Calendar size={24} color="#4285f4" />
-            </div>
-            <div className={styles.calendarDetails}>
-              <h3 className={styles.calendarCardTitle}>Google Calendar</h3>
-              <p className={styles.calendarCardDescription}>
-                Sincronize suas consultas automaticamente com sua agenda do Google. 
-                Quando uma consulta for agendada ou reagendada, ela será marcada no seu calendário.
-              </p>
-              {user?.googleCalendarAuthorized ? (
-                <span className={`${styles.calendarStatus} ${styles.connected}`}>
-                  ● Conectado
-                </span>
-              ) : (
-                <span className={`${styles.calendarStatus} ${styles.disconnected}`}>
-                  ● Não conectado
-                </span>
-              )}
-            </div>
-            <div>
-              {!canUseCalendar ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+          <PreferenciasNotificacao onAviso={showToast}>
+            <ConexaoGoogleAgenda
+              conectado={Boolean(user?.googleCalendarAuthorized)}
+              onAlterado={checkAuth}
+              onAviso={showToast}
+              bloqueio={
+                canUseCalendar ? undefined : (
                   <button
-                    className={styles.connectCalendarButton}
+                    type="button"
                     onClick={() => {
-                      setPremiumModalFeature("Sincronização com Google Calendar");
+                      setPremiumModalFeature("Sincronização com Google Agenda");
                       setPremiumModalPlan("Pro");
                       setIsPremiumModalOpen(true);
                     }}
-                    style={{ backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    className="flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
                   >
-                    <Crown size={20} /> Assinar Pro
+                    <Crown size={18} /> Assinar Pro
                   </button>
-                </div>
-              ) : user?.googleCalendarAuthorized ? (
-                <button
-                  className={styles.disconnectCalendarButton}
-                  onClick={handleDisconnectCalendar}
-                  disabled={isDisconnecting}
-                >
-                  {isDisconnecting ? "Desconectando..." : "Desconectar"}
-                </button>
-              ) : (
-                <button
-                  className={styles.connectCalendarButton}
-                  onClick={handleConnectCalendar}
-                >
-                  Conectar Agenda
-                </button>
-              )}
-            </div>
-          </div>
+                )
+              }
+            />
+          </PreferenciasNotificacao>
         </div>
 
         {/* Especialidades Section */}

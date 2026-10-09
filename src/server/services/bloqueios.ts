@@ -10,6 +10,8 @@ import { inAppNotifications } from './in-app-notifications'
 import { notifications } from './notifications'
 import { nomeCompleto, prepareDateTimeString } from './agendamentos'
 import { notificarAgendamento } from './whatsapp-notificacoes'
+import { podeEnviarEmail } from './canais-notificacao'
+import { googleCalendar } from './google-calendar'
 
 /**
  * Bloqueio da agenda do veterinário. Não altera a grade semanal (horarios_funcionamento / horarios_online).
@@ -151,7 +153,9 @@ export async function buscarConflitos(veterinarioId: string, input: BloqueioInpu
       status: { in: STATUS_ATIVOS },
     },
     include: {
-      tutor: { include: { user: { select: { id: true, nome: true, sobrenome: true, email: true } } } },
+      tutor: {
+        include: { user: { select: { id: true, nome: true, sobrenome: true, email: true, notificarEmail: true } } },
+      },
       pet: { select: { nome: true } },
     },
     orderBy: [{ dataConsulta: 'asc' }, { horarioConsulta: 'asc' }],
@@ -250,6 +254,7 @@ async function notificarTutores(veterinarioId: string, conflitos: Conflito[], mo
   const veterinarioNome = vet?.user ? nomeCompleto(vet.user) : 'Veterinário'
 
   for (const a of conflitos) {
+    await googleCalendar.sincronizarEvento(a.id, 'cancelar')
     const tutorUser = a.tutor?.user
     if (!tutorUser) continue
     const data = a.dataConsulta ? DateTime.fromISO(a.dataConsulta).toFormat('dd/MM/yyyy') : ''
@@ -261,14 +266,16 @@ async function notificarTutores(veterinarioId: string, conflitos: Conflito[], mo
         horarioConsulta: a.horarioConsulta || '',
         agendamentoId: a.id,
       })
-      await notifications.sendAppointmentCancellation(tutorUser.email, {
-        nomeTutor: tutorUser.nome,
-        nomeVeterinario: veterinarioNome,
-        data,
-        horario: a.horarioConsulta,
-        motivo: motivo || MOTIVO_CANCELAMENTO_BLOQUEIO,
-        isVeterinario: false,
-      })
+      if (podeEnviarEmail(tutorUser)) {
+        await notifications.sendAppointmentCancellation(tutorUser.email, {
+          nomeTutor: tutorUser.nome,
+          nomeVeterinario: veterinarioNome,
+          data,
+          horario: a.horarioConsulta,
+          motivo: motivo || MOTIVO_CANCELAMENTO_BLOQUEIO,
+          isVeterinario: false,
+        })
+      }
     } catch (error) {
       console.error('❌ [Bloqueio] Erro ao notificar tutor do cancelamento:', error)
     }

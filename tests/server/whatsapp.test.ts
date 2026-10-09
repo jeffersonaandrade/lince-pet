@@ -36,7 +36,7 @@ function agendamento(over: Record<string, unknown> = {}) {
     localEndereco: null,
     tipoConsulta: 'presencial',
     createdAt: new Date('2026-10-01T12:00:00Z'),
-    tutor: { id: 't1', whatsappOptIn: 1, user: { nome: 'Ana', sobrenome: 'Lima', celular: '(81) 99999-0000' } },
+    tutor: { id: 't1', user: { nome: 'Ana', sobrenome: 'Lima', celular: '(81) 99999-0000', notificarWhatsapp: 1 } },
     pet: { nome: 'Rex' },
     veterinario: { id: 'v1', subscriptionPlanCode: 'pro', user: { nome: 'Dr. João', sobrenome: null, celular: '81988887777' } },
     clinica: null,
@@ -110,11 +110,22 @@ describe('notificarAgendamento', () => {
   })
 
   it('opt-out bloqueia o tutor, mas o profissional recebe', async () => {
-    const a = agendamento({ tutor: { id: 't1', whatsappOptIn: 0, user: { nome: 'Ana', sobrenome: null, celular: '81999990000' } } })
+    const a = agendamento({ tutor: { id: 't1', user: { nome: 'Ana', sobrenome: null, celular: '81999990000', notificarWhatsapp: 0 } } })
     const r = await notificarAgendamento('remarcacao', a as never, ['tutor', 'profissional'])
     expect(r).toEqual({ tutor: 'ignorado', profissional: 'enviado' })
     expect(enviarMock).toHaveBeenCalledTimes(1)
     expect(enviarMock.mock.calls[0][0]).toBe('5581988887777')
+  })
+
+  it('vet com WhatsApp desligado não recebe, nem pelo número da clínica', async () => {
+    const a = agendamento({
+      veterinario: { id: 'v1', subscriptionPlanCode: 'pro', user: { nome: 'X', sobrenome: null, celular: null, notificarWhatsapp: 0 } },
+      clinica: { subscriptionPlanCode: 'clinic', whatsapp: '81977776666', nomeClinica: 'C' },
+    })
+    const r = await notificarAgendamento('novo_agendamento', a as never, ['profissional'])
+    expect(r.profissional).toBe('ignorado')
+    expect(enviarMock).not.toHaveBeenCalled()
+    expect(prismaMock.whatsappEnvio.create.mock.calls[0][0].data).toMatchObject({ motivo: 'opt_out' })
   })
 
   it('falha do provedor é registrada e não lança erro', async () => {

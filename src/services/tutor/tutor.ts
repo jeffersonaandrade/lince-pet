@@ -3,13 +3,8 @@ import { api } from "@/hook/api";
 
 
 export const TutorService = {
-  async updateProfile(data: { nome?: string; whatsapp_opt_in?: boolean }): Promise<void> {
+  async updateProfile(data: { nome?: string }): Promise<void> {
     await api.put("/tutor/profile", data);
-  },
-
-  async getPreferencias(): Promise<{ whatsapp_opt_in: boolean }> {
-    const res = await api.get("/tutor/profile");
-    return { whatsapp_opt_in: res.data?.whatsapp_opt_in !== false };
   },
 
   async uploadProfilePhoto(file: File): Promise<{ url: string }> {

@@ -10,6 +10,7 @@ import { canCreateAppointment } from '@/server/services/subscription'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { notifications } from '@/server/services/notifications'
 import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
+import { podeEnviarEmail } from '@/server/services/canais-notificacao'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import {
   consumeDataConsulta,
@@ -188,7 +189,6 @@ export const POST = route(async (req) => {
 
     try {
       const tutorEmail = user.email
-      console.log('📨 [NotificationService] Iniciando envio de confirmação para', tutorEmail)
       const payload = {
         nomeTutor: user.nome,
         nomeVeterinario: nomeCompleto(vetUser),
@@ -199,32 +199,36 @@ export const POST = route(async (req) => {
         observacoes: agendamento.observacoes,
       }
 
-      const tutorEmailRes = await notifications.sendAppointmentConfirmation(
-        tutorEmail,
-        payload,
-        agendamento.startCode || undefined
-      )
+      if (podeEnviarEmail(user)) {
+        const tutorEmailRes = await notifications.sendAppointmentConfirmation(
+          tutorEmail,
+          payload,
+          agendamento.startCode || undefined
+        )
 
-      if (tutorEmailRes.success) {
-        console.log('✅ [NotificationService] Email de confirmação enviado com sucesso')
-      } else {
-        console.error('❌ [NotificationService] Falha no envio de e-mail ao tutor:', tutorEmailRes.error)
+        if (tutorEmailRes.success) {
+          console.log('✅ [NotificationService] Email de confirmação enviado com sucesso')
+        } else {
+          console.error('❌ [NotificationService] Falha no envio de e-mail ao tutor:', tutorEmailRes.error)
+        }
       }
 
-      const vetEmailRes = await notifications.sendNewAppointmentToVeterinarian(vetUser.email, {
-        nomeVeterinario: nomeCompleto(vetUser),
-        nomeTutor: nomeCompleto(user),
-        data: dataFormatada,
-        horario: agendamento.horarioConsulta,
-        tipo: agendamento.tipoConsulta,
-        localNome: agendamento.localNome,
-        observacoes: agendamento.observacoes,
-        contatoTutor: { email: user.email, celular: user.celular },
-      })
-      if (vetEmailRes.success) {
-        console.log('✅ [NotificationService] Email ao veterinário enviado com sucesso')
-      } else {
-        console.error('❌ [NotificationService] Falha no envio de e-mail ao veterinário:', vetEmailRes.error)
+      if (podeEnviarEmail(vetUser)) {
+        const vetEmailRes = await notifications.sendNewAppointmentToVeterinarian(vetUser.email, {
+          nomeVeterinario: nomeCompleto(vetUser),
+          nomeTutor: nomeCompleto(user),
+          data: dataFormatada,
+          horario: agendamento.horarioConsulta,
+          tipo: agendamento.tipoConsulta,
+          localNome: agendamento.localNome,
+          observacoes: agendamento.observacoes,
+          contatoTutor: { email: user.email, celular: user.celular },
+        })
+        if (vetEmailRes.success) {
+          console.log('✅ [NotificationService] Email ao veterinário enviado com sucesso')
+        } else {
+          console.error('❌ [NotificationService] Falha no envio de e-mail ao veterinário:', vetEmailRes.error)
+        }
       }
 
       await inAppNotifications.notifyNewAppointmentToVet({
@@ -341,6 +345,9 @@ export const GET = route(async (req) => {
     const agendamentosFormatados = agendamentos.map((agendamento) => {
       const dataConsulta = consumeDataConsulta(agendamento.dataConsulta)
       if (!agendamento.createdAt) throw new TypeError('createdAt nulo')
+      const passou = jaPassou(dataConsulta, agendamento.horarioConsulta)
+      const codigoVisivel =
+        !passou && !agendamento.startCodeUsedAt && !['cancelado', 'cancelada'].includes(agendamento.status)
       return {
         id: agendamento.id,
         data_consulta: dataConsulta!.toFormat('dd/MM/yyyy'),
@@ -352,7 +359,8 @@ export const GET = route(async (req) => {
         local_nome: agendamento.localNome,
         local_endereco: agendamento.localEndereco,
         pode_cancelar: podeSerCancelado(agendamento.status),
-        ja_passou: jaPassou(dataConsulta, agendamento.horarioConsulta),
+        ja_passou: passou,
+        codigo_inicio: codigoVisivel ? agendamento.startCode : null,
         avaliado: avaliadosSet.has(agendamento.id),
         clinica_id: agendamento.clinicaId,
         clinica_foto: agendamento.clinica?.fotoPerfil || null,

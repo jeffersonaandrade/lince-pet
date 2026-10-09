@@ -7,6 +7,8 @@ import { requireUser } from '@/server/auth/session'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { notifications } from '@/server/services/notifications'
 import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
+import { podeEnviarEmail } from '@/server/services/canais-notificacao'
+import { googleCalendar } from '@/server/services/google-calendar'
 import { nomeCompleto, podeSerCancelado, prepareDataConsulta } from '@/server/services/agendamentos'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 
@@ -86,6 +88,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
     const data = dataConsultaObj.toFormat('dd/MM/yyyy')
 
     after(() => notificarAgendamento('remarcacao', agendamento.id, ['tutor', 'profissional']))
+    after(() => googleCalendar.sincronizarEvento(agendamento.id, 'atualizar'))
 
     try {
       const veterinario = agendamento.veterinarioId
@@ -93,24 +96,28 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         : null
       const vetUser = veterinario!.user!
 
-      await notifications.sendAppointmentRescheduled(user.email, {
-        nomeTutor: user.nome,
-        nomeVeterinario: nomeCompleto(vetUser),
-        data,
-        horario: agendamento.horarioConsulta,
-        tipo: agendamento.tipoConsulta,
-        localNome: agendamento.localNome,
-        verificationCode: agendamento.startCode || '',
-      })
+      if (podeEnviarEmail(user)) {
+        await notifications.sendAppointmentRescheduled(user.email, {
+          nomeTutor: user.nome,
+          nomeVeterinario: nomeCompleto(vetUser),
+          data,
+          horario: agendamento.horarioConsulta,
+          tipo: agendamento.tipoConsulta,
+          localNome: agendamento.localNome,
+          verificationCode: agendamento.startCode || '',
+        })
+      }
 
-      await notifications.sendAppointmentRescheduledToVeterinarian(vetUser.email, {
-        nomeVeterinario: nomeCompleto(vetUser),
-        nomeTutor: nomeCompleto(user),
-        data,
-        horario: agendamento.horarioConsulta,
-        tipo: agendamento.tipoConsulta,
-        localNome: agendamento.localNome,
-      })
+      if (podeEnviarEmail(vetUser)) {
+        await notifications.sendAppointmentRescheduledToVeterinarian(vetUser.email, {
+          nomeVeterinario: nomeCompleto(vetUser),
+          nomeTutor: nomeCompleto(user),
+          data,
+          horario: agendamento.horarioConsulta,
+          tipo: agendamento.tipoConsulta,
+          localNome: agendamento.localNome,
+        })
+      }
 
       await inAppNotifications.notifyAppointmentRescheduledToVet({
         veterinarioUserId: vetUser.id,
