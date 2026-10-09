@@ -4,6 +4,7 @@ import { prisma } from '../db'
 import { updating } from '../lucid'
 import { AsaasService } from './asaas'
 import { PLANO_PADRAO, assinanteDaAssinatura, assinaturasDo, definirPlano, planoAtualDe } from './assinante'
+import { fimDoPeriodo } from './assinatura-regras'
 
 type Tx = Prisma.TransactionClient
 
@@ -52,149 +53,103 @@ export async function handleAsaasEvent(payload: any): Promise<boolean> {
   return true
 }
 
-async function downgradeVet(tx: Tx, subId: string, veterinarioId: string, reason: string) {
-  const others = await tx.subscription.count({ where: { veterinarioId, status: 'active', id: { not: subId } } })
-  if (others > 0) return
-  const vet = await tx.veterinario.findUnique({ where: { id: veterinarioId } })
-  if (vet && vet.subscriptionPlanCode !== 'none') {
-    await tx.veterinario.update({ where: { id: vet.id }, data: updating({ subscriptionPlanCode: 'none' }) })
-    console.log(`[Webhook Asaas] Veterinário ${vet.id} rebaixado para plano none devido a ${reason}.`)
+/** Pagamento da cobrança confirmado: ativa a assinatura e aplica o plano. */
+export const EVENTOS_PAGO = ['PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED']
+/** Inadimplência: fatura vencida, estorno, chargeback ou recebimento desfeito. */
+export const EVENTOS_INADIMPLENTE = [
+  'PAYMENT_OVERDUE',
+  'PAYMENT_REFUNDED',
+  'PAYMENT_CHARGEBACK_REQUESTED',
+  'PAYMENT_RECEIVED_IN_CASH_UNDONE',
+]
+/** Assinatura encerrada no Asaas. */
+export const EVENTOS_ENCERRADA = ['SUBSCRIPTION_DELETED', 'SUBSCRIPTION_INACTIVATED']
+
+type SubLocal = Prisma.SubscriptionGetPayload<object>
+
+/** Volta ao plano padrão do tipo, salvo se o dono ainda tiver outra assinatura ativa. */
+async function rebaixar(tx: Tx, sub: SubLocal, motivo: string) {
+  const dono = assinanteDaAssinatura(sub)
+  if (!dono) return
+  const outrasAtivas = await tx.subscription.count({
+    where: { ...assinaturasDo(dono), status: 'active', id: { not: sub.id } },
+  })
+  if (outrasAtivas > 0) return
+  const padrao = PLANO_PADRAO[dono.tipo]
+  const atual = await planoAtualDe(tx, dono)
+  if (atual !== undefined && atual !== padrao) {
+    await definirPlano(tx, dono, padrao, false)
+    console.log(`[Webhook Asaas] ${dono.tipo} ${dono.id} voltou ao plano ${padrao} (${motivo}).`)
   }
 }
 
-async function downgradePrestador(tx: Tx, subId: string, prestadorId: string, reason: string) {
-  const others = await tx.subscription.count({ where: { prestadorId, status: 'active', id: { not: subId } } })
-  if (others > 0) return
-  const dono = { tipo: 'prestador' as const, id: prestadorId }
+async function ativarPorPagamento(tx: Tx, sub: SubLocal, payment: any) {
+  if (sub.status === 'canceled' || sub.status === 'expired') {
+    console.warn(`[Webhook Asaas] Pagamento ${payment?.id} de assinatura encerrada ${sub.id}; nada a ativar.`)
+    return
+  }
+  const periodo = payment?.dueDate
+    ? { currentPeriodStart: new Date(`${payment.dueDate}T00:00:00Z`), currentPeriodEnd: fimDoPeriodo(payment.dueDate) }
+    : {}
+  await tx.subscription.update({ where: { id: sub.id }, data: updating({ status: 'active', ...periodo }) })
+
+  const dono = assinanteDaAssinatura(sub)
+  if (!dono) return
+
+  const antigas = await tx.subscription.findMany({
+    where: { id: { not: sub.id }, ...assinaturasDo(dono), status: { in: ['active', 'pending', 'past_due'] } },
+  })
+  if (antigas.length > 0) {
+    const service = new AsaasService()
+    for (const antiga of antigas) {
+      if (antiga.asaasSubscriptionId) {
+        try {
+          await service.cancelSubscription(antiga.asaasSubscriptionId)
+        } catch (e) {
+          console.error(`[Webhook Asaas] Falha ao cancelar ${antiga.asaasSubscriptionId} no Asaas:`, e)
+        }
+      }
+      await tx.subscription.update({
+        where: { id: antiga.id },
+        data: updating({ status: 'canceled', canceledAt: new Date() }),
+      })
+    }
+  }
+
+  const plan = await tx.subscriptionPlan.findUnique({ where: { id: sub.planId } })
+  if (!plan) return
   const atual = await planoAtualDe(tx, dono)
-  if (atual !== undefined && atual !== PLANO_PADRAO.prestador) {
-    await definirPlano(tx, dono, PLANO_PADRAO.prestador, false)
-    console.log(`[Webhook Asaas] Prestador ${prestadorId} rebaixado para plano ${PLANO_PADRAO.prestador} devido a ${reason}.`)
+  if (atual !== undefined && atual !== plan.code) {
+    await definirPlano(tx, dono, plan.code)
+    console.log(`[Webhook Asaas] ${dono.tipo} ${dono.id} no plano ${plan.code} (pagamento confirmado).`)
   }
 }
 
 async function processEvent(tx: Tx, payload: any, eventType: string) {
-  const isPaymentConfirmed = ['PAYMENT_CONFIRMED', 'PAYMENT_RECEIVED'].includes(eventType)
-  const isPaymentOverdue = ['PAYMENT_OVERDUE'].includes(eventType)
+  const asaasSubId: string | undefined = payload?.payment?.subscription || payload?.subscription?.id
+  if (!asaasSubId) return
+  const sub = await tx.subscription.findFirst({ where: { asaasSubscriptionId: asaasSubId } })
+  if (!sub) return
 
-  if (payload?.payment?.subscription) {
-    const localSub = await tx.subscription.findFirst({ where: { asaasSubscriptionId: payload.payment.subscription } })
-
-    if (localSub) {
-      if (isPaymentConfirmed) {
-        await tx.subscription.update({ where: { id: localSub.id }, data: updating({ status: 'active' }) })
-        console.log(`[Webhook Asaas] Assinatura ${localSub.id} ativada via pagamento.`)
-
-        const dono = assinanteDaAssinatura(localSub)
-        const otherActiveSubs = dono
-          ? await tx.subscription.findMany({
-              where: { id: { not: localSub.id }, ...assinaturasDo(dono), status: { in: ['active', 'pending'] } },
-            })
-          : []
-
-        if (otherActiveSubs.length > 0) {
-          const service = new AsaasService()
-          for (const otherSub of otherActiveSubs) {
-            if (otherSub.asaasSubscriptionId) {
-              try {
-                await service.cancelSubscription(otherSub.asaasSubscriptionId)
-              } catch {}
-            }
-            await tx.subscription.update({
-              where: { id: otherSub.id },
-              data: updating({ status: 'canceled', canceledAt: new Date() }),
-            })
-          }
-          console.log(
-            `[Webhook Asaas] Foram canceladas ${otherActiveSubs.length} assinaturas antigas devido à ativação do novo plano.`
-          )
-        }
-
-        if (localSub.planId) {
-          const plan = await tx.subscriptionPlan.findUnique({ where: { id: localSub.planId } })
-
-          if (localSub.veterinarioId && plan) {
-            const vet = await tx.veterinario.findUnique({ where: { id: localSub.veterinarioId } })
-            if (vet && vet.subscriptionPlanCode !== plan.code) {
-              await tx.veterinario.update({
-                where: { id: vet.id },
-                data: updating({
-                  subscriptionPlanCode: plan.code,
-                  monthlyAppointmentsUsed: 0,
-                  monthlyAppointmentsResetAt: new Date(),
-                }),
-              })
-              console.log(`[Webhook Asaas] Veterinário ${vet.id} atualizado para plano ${plan.code}.`)
-            }
-          }
-
-          if (localSub.clinicaId && plan) {
-            const clinica = await tx.clinica.findUnique({ where: { id: localSub.clinicaId } })
-            if (clinica && clinica.subscriptionPlanCode !== plan.code) {
-              await tx.clinica.update({ where: { id: clinica.id }, data: updating({ subscriptionPlanCode: plan.code }) })
-              console.log(`[Webhook Asaas] Clínica ${clinica.id} atualizada para plano ${plan.code}.`)
-            }
-          }
-
-          if (localSub.prestadorId && plan) {
-            const atual = await planoAtualDe(tx, { tipo: 'prestador', id: localSub.prestadorId })
-            if (atual !== undefined && atual !== plan.code) {
-              await definirPlano(tx, { tipo: 'prestador', id: localSub.prestadorId }, plan.code)
-              console.log(`[Webhook Asaas] Prestador ${localSub.prestadorId} atualizado para plano ${plan.code}.`)
-            }
-          }
-        }
-      } else if (isPaymentOverdue) {
-        await tx.subscription.update({ where: { id: localSub.id }, data: updating({ status: 'past_due' }) })
-        console.log(`[Webhook Asaas] Assinatura ${localSub.id} atrasada.`)
-
-        if (localSub.veterinarioId) await downgradeVet(tx, localSub.id, localSub.veterinarioId, 'atraso')
-        if (localSub.prestadorId) await downgradePrestador(tx, localSub.id, localSub.prestadorId, 'atraso')
-
-        if (localSub.clinicaId) {
-          const clinica = await tx.clinica.findUnique({ where: { id: localSub.clinicaId } })
-          if (clinica && clinica.subscriptionPlanCode !== 'starter') {
-            await tx.clinica.update({ where: { id: clinica.id }, data: updating({ subscriptionPlanCode: 'starter' }) })
-            console.log(`[Webhook Asaas] Clínica ${clinica.id} rebaixada para plano starter devido a atraso.`)
-          }
-        }
-      }
-    }
+  if (payload?.payment && EVENTOS_PAGO.includes(eventType)) {
+    await ativarPorPagamento(tx, sub, payload.payment)
+    return
   }
 
-  if (['SUBSCRIPTION_CREATED', 'SUBSCRIPTION_UPDATED'].includes(eventType)) {
-    const asaasSubId = payload?.subscription?.id
-    if (asaasSubId && payload?.subscription?.status === 'ACTIVE') {
-      const localSub = await tx.subscription.findFirst({ where: { asaasSubscriptionId: asaasSubId } })
-      if (localSub) {
-        console.log(
-          `[Webhook Asaas] Evento de assinatura ${eventType} recebido para ${localSub.id}. Benefícios e ativação ocorrerão no evento PAYMENT_CONFIRMED.`
-        )
-      }
-    }
+  if (payload?.payment && EVENTOS_INADIMPLENTE.includes(eventType)) {
+    if (sub.status === 'canceled' || sub.status === 'expired') return
+    await tx.subscription.update({ where: { id: sub.id }, data: updating({ status: 'past_due' }) })
+    await rebaixar(tx, sub, eventType)
+    return
   }
 
-  if (eventType === 'SUBSCRIPTION_DELETED') {
-    const asaasSubId = payload?.subscription?.id
-    if (asaasSubId) {
-      const localSub = await tx.subscription.findFirst({ where: { asaasSubscriptionId: asaasSubId } })
-      if (localSub) {
-        await tx.subscription.update({
-          where: { id: localSub.id },
-          data: updating({ status: 'canceled', canceledAt: new Date() }),
-        })
-        console.log(`[Webhook Asaas] Assinatura ${localSub.id} cancelada.`)
-
-        if (localSub.veterinarioId) await downgradeVet(tx, localSub.id, localSub.veterinarioId, 'cancelamento')
-        if (localSub.prestadorId) await downgradePrestador(tx, localSub.id, localSub.prestadorId, 'cancelamento')
-
-        if (localSub.clinicaId) {
-          const clinica = await tx.clinica.findUnique({ where: { id: localSub.clinicaId } })
-          if (clinica && clinica.subscriptionPlanCode !== 'starter') {
-            await tx.clinica.update({ where: { id: clinica.id }, data: updating({ subscriptionPlanCode: 'starter' }) })
-          }
-        }
-      }
+  if (EVENTOS_ENCERRADA.includes(eventType)) {
+    if (sub.status !== 'canceled') {
+      await tx.subscription.update({
+        where: { id: sub.id },
+        data: updating({ status: 'canceled', canceledAt: sub.canceledAt ?? new Date() }),
+      })
     }
+    await rebaixar(tx, sub, eventType)
   }
 }

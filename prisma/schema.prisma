@@ -835,6 +835,7 @@ model SubscriptionPlan {
   searchPriority          Int?      @default(0) @map("search_priority")
   trialDays               Int?      @default(0) @map("trial_days")
   active                  Int?      @default(1) @db.SmallInt
+  maxVeterinarios         Int?      @map("max_veterinarios")
   createdAt               DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt               DateTime? @map("updated_at") @db.Timestamp(0)
 

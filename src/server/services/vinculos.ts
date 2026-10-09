@@ -4,6 +4,7 @@ import { HttpError } from '../http'
 import { creating, updating } from '../lucid'
 import type { CurrentUser } from '../auth/session'
 import { inAppNotifications } from './in-app-notifications'
+import { garantirVagaNaEquipe } from './clinica-equipe'
 
 const rowNotFound = () => new HttpError(404, { status: 404, message: 'Row not found' })
 
@@ -25,6 +26,7 @@ export async function aceitarVinculo(currentUser: CurrentUser, clinicaId: string
 
   const clinica = await prisma.clinica.findUnique({ where: { id: clinicaId } })
   if (!clinica) throw rowNotFound()
+  await garantirVagaNaEquipe(clinicaId, vet.id)
 
   await prisma.$transaction(async (tx) => {
     await tx.veterinarioClinica.updateMany({

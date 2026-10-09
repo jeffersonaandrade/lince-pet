@@ -18,40 +18,9 @@ import Tooltip from "@/components/ui/Tooltip/Tooltip";
 import styles from "./veterinario-signup.module.css";
 import Image from "next/image";
 import { AssinaturasService } from "@/services/assinaturas/assinaturas";
+import { PLANOS_VETERINARIO } from "@/config/planos";
 
-const plansMetadata = [
-  {
-    code: "pro",
-    name: "Pro",
-    description: "Conheça o LincePet",
-    iconPath: "/iconPlans/Plan2.svg",
-    defaultPrice: "R$ 59",
-    buttonText: "Assinar plano",
-    benefits: [
-      "Todos os benefícios do plano gratuito",
-      "Agendamentos ilimitados",
-      "Bloqueio de horário personalizado",
-      "Dashboard de métricas nível básico",
-      "Busca prioritária no explorar",
-      "Teste grátis por 7 dias"
-    ]
-  },
-  {
-    code: "pro_plus",
-    name: "Pro+",
-    description: "Conheça o LincePet",
-    iconPath: "/iconPlans/Plan3.svg",
-    defaultPrice: "R$ 99",
-    buttonText: "Assinar plano",
-    benefits: [
-      "Todos os benefícios dos planos anteriores",
-      "Topo da categoria de busca",
-      "Agendamentos ilimitados",
-      "Dashboard de métricas nível completo",
-      "Teste grátis por 7 dias"
-    ]
-  }
-];
+const plansMetadata = PLANOS_VETERINARIO;
 
 function VeterinarioSignup() {
   const router = useRouter();
@@ -241,6 +210,7 @@ function VeterinarioSignup() {
   // Modo troca de plano: força step 4, carrega planos do backend e pré-seleciona plano atual
   useEffect(() => {
     if (!changePlanMode) return;
+    router.replace("/dashboard/veterinario/alterar-plano");
     setCurrentStep(3);
     (async () => {
       try {
@@ -606,7 +576,7 @@ function VeterinarioSignup() {
                     }
 
                     const isSelected = selectedPlan === plan.code;
-                    const isPro = plan.code === "pro";
+                    const isPro = plan.code === "vet_starter";
                     
                     return (
                       <div

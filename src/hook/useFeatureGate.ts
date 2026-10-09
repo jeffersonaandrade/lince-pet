@@ -17,8 +17,8 @@ export function useFeatureGate() {
     // Default to free if no plan
     const planCode = user.subscriptionPlanCode || 'free';
     
-    const isPro = planCode === 'pro';
-    const isProPlus = planCode === 'pro_plus';
+    const isProPlus = planCode === 'vet_pro' || planCode === 'pro_plus';
+    const isPro = planCode === 'vet_starter' || planCode === 'pro' || isProPlus;
 
     switch (feature) {
       case 'agendamentos_ilimitados':

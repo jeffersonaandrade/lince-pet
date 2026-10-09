@@ -453,6 +453,8 @@ export default function VeterinarioDashboard() {
   const friendlyPlanName = (raw: string | null): string => {
     if (!raw || raw === "none" || raw === "free") return "Sem plano";
     const code = String(raw).toLowerCase();
+    if (code === "vet_starter") return "Vet Starter";
+    if (code === "vet_pro") return "Vet Pro";
     const withoutPrefix = code.replace(/^vet[_-]/, "");
     const map: Record<string, string> = {
       light: "Vet Light",
@@ -481,7 +483,10 @@ export default function VeterinarioDashboard() {
   // Mapeia código do plano para o ícone SVG local (public/iconPlans/)
   const planIconPath = (raw: string | null): string | null => {
     if (!raw || raw === "none" || raw === "free") return null;
-    const code = String(raw).toLowerCase().replace(/^vet[_-]/, "");
+    const lower = String(raw).toLowerCase();
+    if (lower === "vet_starter") return "/iconPlans/Plan2.svg";
+    if (lower === "vet_pro") return "/iconPlans/Plan3.svg";
+    const code = lower.replace(/^vet[_-]/, "");
     const iconMap: Record<string, string> = {
       light: "/iconPlans/Plan1.svg",
       start: "/iconPlans/Plan1.svg",

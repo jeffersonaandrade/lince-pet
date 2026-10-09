@@ -19,8 +19,14 @@ export type PlanoAssinaturaSeed = {
   searchPriority: number
   trialDays: number
   active: number
+  /** Só clínica: vets vinculados (aceitos + pendentes); null = ilimitado. */
+  maxVeterinarios: number | null
 }
 
+/**
+ * `free` e `pro` são os planos do prestador (target `veterinario` por legado).
+ * Veterinário assina `vet_starter` ou `vet_pro`; `pro_plus` fica inativo.
+ */
 export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
   {
     code: 'free',
@@ -34,6 +40,7 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     searchPriority: 0,
     trialDays: 0,
     active: 1,
+    maxVeterinarios: null,
   },
   {
     code: 'pro',
@@ -47,6 +54,7 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     searchPriority: 1,
     trialDays: 14,
     active: 1,
+    maxVeterinarios: null,
   },
   {
     code: 'pro_plus',
@@ -59,26 +67,14 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     features: ['complete_profile', 'featured_search', 'whatsapp_notifications', 'complete_dashboard'],
     searchPriority: 2,
     trialDays: 14,
-    active: 1,
+    active: 0,
+    maxVeterinarios: null,
   },
   {
-    code: 'starter',
-    name: 'Starter',
-    targetType: 'clinica',
-    priceCents: 7500,
-    currency: 'brl',
-    cycle: 'MONTHLY',
-    monthlyAppointmentLimit: null,
-    features: ['basic_profile', 'qr_code'],
-    searchPriority: 0,
-    trialDays: 14,
-    active: 1,
-  },
-  {
-    code: 'clinic',
-    name: 'Clinic',
-    targetType: 'clinica',
-    priceCents: 13500,
+    code: 'vet_starter',
+    name: 'Vet Starter',
+    targetType: 'veterinario',
+    priceCents: 3990,
     currency: 'brl',
     cycle: 'MONTHLY',
     monthlyAppointmentLimit: null,
@@ -86,12 +82,55 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     searchPriority: 1,
     trialDays: 14,
     active: 1,
+    maxVeterinarios: null,
+  },
+  {
+    code: 'vet_pro',
+    name: 'Vet Pro',
+    targetType: 'veterinario',
+    priceCents: 5990,
+    currency: 'brl',
+    cycle: 'MONTHLY',
+    monthlyAppointmentLimit: null,
+    features: ['complete_profile', 'featured_search', 'whatsapp_notifications', 'complete_dashboard', 'financial_module'],
+    searchPriority: 2,
+    trialDays: 14,
+    active: 1,
+    maxVeterinarios: null,
+  },
+  {
+    code: 'starter',
+    name: 'Pequena',
+    targetType: 'clinica',
+    priceCents: 9990,
+    currency: 'brl',
+    cycle: 'MONTHLY',
+    monthlyAppointmentLimit: null,
+    features: ['basic_profile', 'qr_code', 'whatsapp_notifications'],
+    searchPriority: 0,
+    trialDays: 14,
+    active: 1,
+    maxVeterinarios: 5,
+  },
+  {
+    code: 'clinic',
+    name: 'Média',
+    targetType: 'clinica',
+    priceCents: 14990,
+    currency: 'brl',
+    cycle: 'MONTHLY',
+    monthlyAppointmentLimit: null,
+    features: ['complete_profile', 'whatsapp_notifications', 'basic_dashboard'],
+    searchPriority: 1,
+    trialDays: 14,
+    active: 1,
+    maxVeterinarios: 15,
   },
   {
     code: 'clinic_pro',
-    name: 'Clinic Pro',
+    name: 'Grande',
     targetType: 'clinica',
-    priceCents: 20900,
+    priceCents: 21990,
     currency: 'brl',
     cycle: 'MONTHLY',
     monthlyAppointmentLimit: null,
@@ -99,6 +138,7 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     searchPriority: 2,
     trialDays: 14,
     active: 1,
+    maxVeterinarios: null,
   },
 ]
 

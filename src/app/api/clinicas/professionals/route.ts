@@ -1,9 +1,9 @@
 import { prisma } from '@/server/db'
-import { ApiRequest, badRequest, ok, route, serverError, unauthorized } from '@/server/http'
+import { ApiRequest, HttpError, badRequest, ok, route, serverError, unauthorized } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { serializeRelatedUser } from '@/server/services/clinicas'
-import { listarEquipe } from '@/server/services/clinica-equipe'
+import { garantirVagaNaEquipe, listarEquipe } from '@/server/services/clinica-equipe'
 
 export const GET = route(async (req) => {
   const currentUser = await requireUser(await ApiRequest.from(req))
@@ -49,6 +49,8 @@ export const POST = route(async (req) => {
       })
     }
 
+    await garantirVagaNaEquipe(clinica.id)
+
     await prisma.veterinarioClinica.create({
       data: { clinicaId: clinica.id, veterinarioId: vetId, status: 'pendente', ativo: 0 },
     })
@@ -68,6 +70,7 @@ export const POST = route(async (req) => {
 
     return ok({ message: 'Solicitação de vínculo enviada com sucesso' })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error(error)
     return serverError({ message: 'Erro ao vincular veterinário' })
   }

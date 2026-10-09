@@ -163,19 +163,17 @@ export default function ClinicaDashboard() {
   const [clinicaPlanoAtual, setClinicaPlanoAtual] = useState<string | null>(null);
 
   const friendlyPlanName = (planCode: string | null) => {
-    if (!planCode) return "Starter";
-    if (planCode === "free" || planCode === "starter") return "Starter";
-    if (planCode === "clinic") return "Clinic";
-    if (planCode === "clinic_pro") return "Clinic Pro";
-    return planCode;
+    if (planCode === "starter") return "Pequena";
+    if (planCode === "clinic") return "Média";
+    if (planCode === "clinic_pro") return "Grande";
+    return "Sem plano";
   };
 
   const planIconPath = (planCode: string | null) => {
-    if (!planCode) return "/iconPlans/Plan1.svg";
-    if (planCode === "free" || planCode === "starter") return "/iconPlans/Plan1.svg";
+    if (planCode === "starter") return "/iconPlans/Plan1.svg";
     if (planCode === "clinic") return "/iconPlans/Plan2.svg";
     if (planCode === "clinic_pro") return "/iconPlans/Plan3.svg";
-    return "/iconPlans/Plan1.svg";
+    return null;
   };
 
   // Search Professionals
@@ -195,7 +193,7 @@ export default function ClinicaDashboard() {
         try {
           const assinaturas = AssinaturasService();
           const data = await assinaturas.obterStatus();
-          setClinicaPlanoAtual(data?.plan?.code || "starter");
+          setClinicaPlanoAtual(data?.plan?.code || null);
         } catch (err) {
           console.error("Failed to load subscription status", err);
         }

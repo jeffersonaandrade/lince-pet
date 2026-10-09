@@ -2,10 +2,12 @@ import 'server-only'
 import axios, { type AxiosInstance } from 'axios'
 import type { Clinica, Prestador, Tutor, User, Veterinario } from '@prisma/client'
 import { env } from '../env'
+import { dataLocal } from './assinatura-regras'
 
 type AsaasEnv = 'sandbox' | 'production'
 
-export type BillingType = 'PIX' | 'BOLETO' | 'CREDIT_CARD'
+/** UNDEFINED: o cliente escolhe Pix, boleto ou cartão na fatura do Asaas. */
+export type BillingType = 'PIX' | 'BOLETO' | 'CREDIT_CARD' | 'UNDEFINED'
 
 export type CreateSubscriptionInput = {
   customerId: string
@@ -180,22 +182,17 @@ export class AsaasService {
     )
   }
 
-  async createSubscription(input: CreateSubscriptionInput & { trialDays?: number | null }) {
+  /** `nextDueDate` é o vencimento da 1a fatura: fim do teste ou hoje (padrão). */
+  async createSubscription(input: CreateSubscriptionInput) {
     const payload: any = {
       customer: input.customerId,
       value: input.value,
       cycle: input.cycle || 'MONTHLY',
       description: input.description || undefined,
-      billingType: input.billingType || undefined,
+      billingType: input.billingType || 'UNDEFINED',
       creditCardToken: input.creditCardToken || undefined,
-      nextDueDate: input.nextDueDate || undefined,
+      nextDueDate: input.nextDueDate || dataLocal(new Date()),
       externalReference: input.externalReference || undefined,
-    }
-
-    if (input.billingType === 'CREDIT_CARD' && input.trialDays && input.trialDays > 0) {
-      const dueDate = new Date()
-      dueDate.setDate(dueDate.getDate() + input.trialDays)
-      payload.nextDueDate = dueDate.toISOString().split('T')[0]
     }
 
     const res = await this.http.post('/subscriptions', payload)
@@ -262,6 +259,16 @@ export async function getCheckoutUrl(service: AsaasService, asaasSubscriptionId:
   payments.sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime())
   const target = payments.find((p) => p.status === 'PENDING' || p.status === 'OVERDUE') || payments[0]
   return target?.invoiceUrl || null
+}
+
+/** URL da fatura em aberto (pendente ou vencida); null se não houver nada a pagar. */
+export async function getPendingInvoiceUrl(service: AsaasService, asaasSubscriptionId: string): Promise<string | null> {
+  const paymentsData = await service.getSubscriptionPayments(asaasSubscriptionId)
+  const payments: any[] = paymentsData?.data || []
+  const abertas = payments
+    .filter((p) => p.status === 'PENDING' || p.status === 'OVERDUE')
+    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+  return abertas[0]?.invoiceUrl || null
 }
 
 export default AsaasService

@@ -34,7 +34,7 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 - **Login:** `POST /api/auth/login` grava o cookie `auth_token`; `GET /api/auth/me` devolve o usuário; o frontend não guarda token.
 - **Google:** login social em `/api/auth/google/*` (state em cookie) e Calendar em `/api/google/calendar/*` (state JWT).
 - **Agendamento:** `POST /api/agendamentos` checa limite do plano, grava, notifica (in-app; e-mail e WhatsApp conforme "Canais de aviso e Google Agenda") e cria evento no Google Agenda via `after()`.
-- **Assinaturas:** `/api/assinaturas/*` cria/atualiza no Asaas; `POST /api/webhooks/asaas` é idempotente via `webhook_events.event_id`.
+- **Assinaturas:** `/api/assinaturas/*` são wrappers finos de `src/server/services/assinaturas.ts` (contratar, trocar, cancelar), que cria/cancela no Asaas; `POST /api/webhooks/asaas` é idempotente via `webhook_events.event_id` e é quem aplica plano/status (ver "Assinatura").
 - **Uploads:** multipart -> `UploadedFile` -> S3 (`src/server/services/storage.ts`).
 - **Agenda:** a grade semanal fica em `veterinario_enderecos.horarios_funcionamento` (presencial) e `veterinarios.horarios_online`, editada no Perfil. Bloqueios pontuais ficam em `bloqueios_agenda` (`src/server/services/bloqueios.ts`). `GET /api/agendamentos/disponibilidade/:vet` devolve `horarios_ocupados` (consultas + bloqueios), `horarios_bloqueados` e `dia_bloqueado`.
 
@@ -76,6 +76,22 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 
 - **Lista:** `GET /api/clinicas/professionals` e `GET /api/veterinarios` (clínica) devolvem os veterinários com vínculo `aceito` (`src/server/services/clinica-equipe.ts`).
 - **Remover = desfazer vínculo:** `DELETE /api/clinicas/professionals/:id` e `DELETE /api/veterinarios/:id` apagam só o vínculo com aquele veterinário. A conta, as consultas e o histórico do veterinário permanecem. Sem vínculo: 404.
+- **Limite de veterinários:** ver "Assinatura".
+
+### Assinatura
+
+- **Provedor único:** Asaas (conta existente). Documentação consultada pelo MCP do Asaas (`.cursor/mcp.json`, `https://docs.asaas.com/mcp`). Regras puras em `src/server/services/assinatura-regras.ts`, fluxo em `src/server/services/assinaturas.ts`, eventos em `src/server/services/asaas-webhook.ts`.
+- **Catálogo:** veterinário `vet_starter` (R$ 39,90) e `vet_pro` (R$ 59,90, módulo financeiro); clínica `starter` Pequena (R$ 99,90, até 5 vets), `clinic` Média (R$ 149,90, até 15 vets), `clinic_pro` Grande (R$ 219,90, ilimitado); prestador `free`/`pro`. Cada tipo só contrata os planos dele. Assinaturas já existentes no Asaas mantêm o valor antigo.
+- **Sem plano:** veterinário e clínica começam em `none` e não têm os recursos pagos até assinar. Prestador começa em `free`.
+- **Cobrança:** fatura do Asaas com `billingType UNDEFINED` (o usuário escolhe Pix, boleto ou cartão na fatura), sempre mensal. A plataforma não coleta cartão.
+- **Teste grátis:** 14 dias, sem cartão, só na primeira assinatura paga (dono sem nenhuma assinatura com `asaasSubscriptionId`). O plano ativa na hora e a primeira fatura vence no 14º dia. Sem pagamento, vira inadimplente e perde o plano.
+- **Plano só muda após pagamento:** fora do teste, contratar ou trocar cria a assinatura `pending` e devolve o link da fatura; o plano só é aplicado em `PAYMENT_CONFIRMED`/`PAYMENT_RECEIVED`. Ao ativar, as outras assinaturas do mesmo dono são canceladas (Asaas e local). Assinatura cancelada/expirada ignora pagamento atrasado.
+- **Status:** `active` = ativa, `pending` = pendente, `past_due` = inadimplente, `canceled`/`expired` = cancelada. `GET /api/assinaturas/status` devolve o rótulo, fim do teste, troca pendente e o link da fatura em aberto.
+- **Inadimplência:** `PAYMENT_OVERDUE`, `PAYMENT_REFUNDED`, `PAYMENT_CHARGEBACK_REQUESTED` e `PAYMENT_RECEIVED_IN_CASH_UNDONE` marcam `past_due` e devolvem o dono ao plano padrão, salvo se ele tiver outra assinatura ativa. Pagar a fatura reativa.
+- **Cancelamento:** cancelar remove o plano na hora (sem período restante) e cancela no Asaas. `SUBSCRIPTION_DELETED`/`SUBSCRIPTION_INACTIVATED` marcam `canceled` e rebaixam, com a mesma checagem de outra assinatura ativa. Trocar para `none`/plano grátis = cancelar.
+- **Limite de vets da clínica:** convite (`POST /api/clinicas/professionals`) e aceite de vínculo contam vínculos `aceito` + `pendente`; acima de `maxVeterinarios` ou sem plano pago: 403. Vínculos já existentes não são desfeitos.
+- **Webhook:** `asaas-access-token` precisa bater com `ASAAS_WEBHOOK_TOKEN`; em `ASAAS_ENV=production` o token é obrigatório. Eventos repetidos são ignorados por `webhook_events.event_id`.
+- **Busca de veterinários:** não filtra mais por créditos; `vet_pro` aparece antes de `vet_starter`.
 
 ### Site institucional e links
 
@@ -90,7 +106,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 ### Catálogo inicial do banco
 
 - **Banco vazio:** `npx prisma db seed` (`prisma/seed.ts`) grava o que o baseline `0_init` não traz: planos de assinatura, especialidades oficiais, planos de saúde e diferenciais de clínica. Sem isso, a listagem de planos e o cadastro de especialidades ficam vazios.
-- **Planos de assinatura:** `free`, `pro`, `pro_plus`, `starter`, `clinic`, `clinic_pro`, com preço em centavos, limite mensal, features, prioridade de busca e trial do banco que já rodava o Adonis (incluindo os ajustes feitos em migration). Upsert por `code`, sem trocar o id. O texto de `/precos` continua em `src/config/planos.ts`.
+- **Planos de assinatura:** `prisma/catalogo.ts` (`vet_starter`, `vet_pro`, `starter`, `clinic`, `clinic_pro`, `free`, `pro` e o legado `pro_plus` inativo), com preço em centavos, limite mensal, features, prioridade de busca, trial e `maxVeterinarios`. Upsert por `code`, sem trocar o id. O texto de `/precos` continua em `src/config/planos.ts`.
 - **Especialidades:** a lista de `src/data/especialidades.ts` (a mesma da migration que populava `especialidades`). Upsert por nome; não apaga nomes extras que já existam.
 - **Planos de saúde e diferenciais:** os nomes que o `mockup_seeder` criava para o perfil (`planos` e `diferenciais`). Upsert/first-or-create por nome.
 - **Demonstração:** o mesmo comando cria tutores, veterinários, clínicas, pets, consultas (pendente, confirmada, realizada e cancelada), avaliações, favoritos, prontuário, uma anotação privada e um bloqueio de agenda. Cidades e especialidades variadas. E-mails terminam em `mockup`. Senha de todas essas contas: `senha123`. Não altera senha de quem já existe.

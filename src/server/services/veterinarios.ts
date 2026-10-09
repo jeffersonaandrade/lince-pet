@@ -15,6 +15,7 @@ import { serializeUser, type PublicUser } from '../auth/session'
 import { hashPassword } from '../auth/password'
 import { creating, updating } from '../lucid'
 import { canCreateAppointment } from './subscription'
+import { PLANO_PADRAO } from './assinante'
 
 type Db = Prisma.TransactionClient | typeof prisma
 
@@ -310,6 +311,7 @@ export async function registerVeterinario(data: VeterinarioRegistrationData) {
           atendeOnline: 0,
           atendeDomicilio: 0,
           fotoUrl: data.profilePicUrl || null,
+          subscriptionPlanCode: PLANO_PADRAO.veterinario,
         }),
       })
     })
@@ -332,7 +334,7 @@ export type SearchFilters = {
 }
 
 export async function searchVeterinarios(filters: SearchFilters) {
-  const conds: Prisma.Sql[] = [Prisma.sql`v.creditos > 0`]
+  const conds: Prisma.Sql[] = [Prisma.sql`TRUE`]
   if (filters.search) {
     const like = `%${filters.search}%`
     conds.push(Prisma.sql`(EXISTS (SELECT 1 FROM users u WHERE u.id = v.user_id AND CONCAT(u.nome, ' ', u.sobrenome) ILIKE ${like}) OR v.bio ILIKE ${like})`)
@@ -354,8 +356,8 @@ export async function searchVeterinarios(filters: SearchFilters) {
     SELECT v.id FROM veterinarios v
     WHERE ${Prisma.join(conds, ' AND ')}
     ORDER BY CASE
-      WHEN v.subscription_plan_code = 'pro_plus' THEN 1
-      WHEN v.subscription_plan_code = 'pro' THEN 2
+      WHEN v.subscription_plan_code IN ('vet_pro', 'pro_plus') THEN 1
+      WHEN v.subscription_plan_code IN ('vet_starter', 'pro') THEN 2
       ELSE 3
     END ASC`
 

@@ -30,6 +30,7 @@ async function seedPlanosAssinatura() {
         searchPriority: plan.searchPriority,
         trialDays: plan.trialDays,
         active: plan.active,
+        maxVeterinarios: plan.maxVeterinarios,
         createdAt: agoraUpdate,
         updatedAt: agoraUpdate,
       },
@@ -44,6 +45,7 @@ async function seedPlanosAssinatura() {
         searchPriority: plan.searchPriority,
         trialDays: plan.trialDays,
         active: plan.active,
+        maxVeterinarios: plan.maxVeterinarios,
         updatedAt: agoraUpdate,
       },
     })

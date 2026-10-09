@@ -9,36 +9,38 @@ export type PlanoMetadata = {
   benefits: string[]
 }
 
+/** Teste grátis da primeira assinatura paga (dias); a 1a fatura vence no fim do teste. */
+export const DIAS_TESTE_GRATIS = 14
+
 export const PLANOS_VETERINARIO: PlanoMetadata[] = [
   {
-    code: 'pro',
-    name: 'Pro',
-    description: 'Conheça o LincePet',
+    code: 'vet_starter',
+    name: 'Vet Starter',
+    description: 'Plano inicial',
     iconPath: '/iconPlans/Plan2.svg',
-    defaultPrice: 'R$ 59',
+    defaultPrice: 'R$ 39,90',
     buttonText: 'Assinar plano',
     benefits: [
-      'Todos os benefícios do plano gratuito',
       'Agendamentos ilimitados',
       'Bloqueio de horário personalizado',
       'Dashboard de métricas nível básico',
       'Busca prioritária no explorar',
-      'Teste grátis por 7 dias',
+      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
     ],
   },
   {
-    code: 'pro_plus',
-    name: 'Pro+',
-    description: 'Conheça o LincePet',
+    code: 'vet_pro',
+    name: 'Vet Pro',
+    description: 'Com Módulo Financeiro',
     iconPath: '/iconPlans/Plan3.svg',
-    defaultPrice: 'R$ 99',
+    defaultPrice: 'R$ 59,90',
     buttonText: 'Assinar plano',
     benefits: [
-      'Todos os benefícios dos planos anteriores',
+      'Todos os benefícios do Vet Starter',
+      'Módulo Financeiro',
       'Topo da categoria de busca',
-      'Agendamentos ilimitados',
       'Dashboard de métricas nível completo',
-      'Teste grátis por 7 dias',
+      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
     ],
   },
 ]
@@ -46,40 +48,44 @@ export const PLANOS_VETERINARIO: PlanoMetadata[] = [
 export const PLANOS_CLINICA: PlanoMetadata[] = [
   {
     code: 'starter',
-    name: 'Starter',
-    description: 'Conheça o LincePet Clínica',
+    name: 'Pequena',
+    description: 'Até 5 veterinários',
     iconPath: '/iconPlans/Plan1.svg',
-    defaultPrice: 'R$ 75',
+    defaultPrice: 'R$ 99,90',
     buttonText: 'Assinar plano',
-    benefits: ['Posição padrão na busca', 'Cadastro de 1 Veterinário', 'Notificações por e-mail', 'QR Code / Link da clínica'],
+    benefits: [
+      'Até 5 veterinários na equipe',
+      'Notificações por e-mail e WhatsApp',
+      'QR Code / Link da clínica',
+      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
+    ],
   },
   {
     code: 'clinic',
-    name: 'Clinic',
-    description: 'O essencial para sua clínica',
+    name: 'Média',
+    description: 'De 6 a 15 veterinários',
     iconPath: '/iconPlans/Plan2.svg',
-    defaultPrice: 'R$ 149',
+    defaultPrice: 'R$ 149,90',
     buttonText: 'Assinar plano',
     benefits: [
-      'Todos os benefícios do plano gratuito',
-      'Até 5 Veterinários na equipe',
+      'Até 15 veterinários na equipe',
       'Dashboard de métricas nível básico',
       'Busca prioritária no explorar',
+      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
     ],
   },
   {
     code: 'clinic_pro',
-    name: 'Clinic Pro',
-    description: 'Controle total e destaque máximo',
+    name: 'Grande',
+    description: 'Veterinários ilimitados',
     iconPath: '/iconPlans/Plan3.svg',
-    defaultPrice: 'R$ 299',
+    defaultPrice: 'R$ 219,90',
     buttonText: 'Assinar plano',
     benefits: [
-      'Todos os benefícios dos planos anteriores',
       'Veterinários ilimitados na equipe',
       'Topo da categoria de busca',
       'Dashboard de métricas nível completo',
-      'Suporte prioritário 24/7',
+      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
     ],
   },
 ]

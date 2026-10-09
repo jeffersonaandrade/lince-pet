@@ -5,6 +5,7 @@ import { prisma } from '../db'
 import { serializeUser } from '../auth/session'
 import { hashPassword } from '../auth/password'
 import { creating, updating } from '../lucid'
+import { PLANO_PADRAO } from './assinante'
 
 /** Colunas que existem no banco mas não no model Lucid (não eram serializadas). */
 export function serializeClinica<T extends Partial<Clinica>>(clinica: T) {
@@ -178,6 +179,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
           horariosFuncionamento: Prisma.DbNull,
           onboardingComplete: 0,
           isVerified: 0,
+          subscriptionPlanCode: PLANO_PADRAO.clinica,
         }),
       })
     })

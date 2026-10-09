@@ -3,7 +3,9 @@ import { NextRequest } from 'next/server'
 
 const prismaMock = vi.hoisted(() => ({
   veterinario: { delete: vi.fn() },
-  veterinarioClinica: { findMany: vi.fn(), deleteMany: vi.fn() },
+  veterinarioClinica: { findMany: vi.fn(), deleteMany: vi.fn(), count: vi.fn() },
+  clinica: { findUnique: vi.fn() },
+  subscriptionPlan: { findUnique: vi.fn() },
 }))
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 
@@ -13,7 +15,7 @@ vi.mock('@/server/auth/session', async (importOriginal) => ({
   requireUser: vi.fn(async () => sessao.user),
 }))
 
-import { listarEquipe, removerDaEquipe } from '@/server/services/clinica-equipe'
+import { garantirVagaNaEquipe, listarEquipe, removerDaEquipe } from '@/server/services/clinica-equipe'
 import { GET as listarRoute } from '@/app/api/veterinarios/route'
 import { DELETE as removerRoute } from '@/app/api/veterinarios/[id]/route'
 
@@ -59,5 +61,41 @@ describe('equipe da clínica', () => {
     prismaMock.veterinarioClinica.deleteMany.mockResolvedValue({ count: 0 })
     const res = await removerRoute(req('DELETE'), { params: Promise.resolve({ id: 'vet-x' }) })
     expect(res.status).toBe(404)
+  })
+})
+
+describe('limite de vets pelo plano da clínica', () => {
+  const comPlano = (code: string | null, max: number | null, vinculados: number) => {
+    prismaMock.clinica.findUnique.mockResolvedValue({ subscriptionPlanCode: code })
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue(code ? { code, maxVeterinarios: max } : null)
+    prismaMock.veterinarioClinica.count.mockResolvedValue(vinculados)
+  }
+
+  it('clínica sem plano pago não vincula', async () => {
+    comPlano('none', null, 0)
+    await expect(garantirVagaNaEquipe('cli-1')).rejects.toMatchObject({ status: 403 })
+    expect(prismaMock.subscriptionPlan.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('Pequena barra o 6o vet (aceitos + pendentes)', async () => {
+    comPlano('starter', 5, 5)
+    await expect(garantirVagaNaEquipe('cli-1')).rejects.toMatchObject({ status: 403 })
+    comPlano('starter', 5, 4)
+    await expect(garantirVagaNaEquipe('cli-1')).resolves.toBeUndefined()
+    expect(prismaMock.veterinarioClinica.count.mock.calls.at(-1)![0].where).toEqual({
+      clinicaId: 'cli-1',
+      status: { in: ['aceito', 'pendente'] },
+    })
+  })
+
+  it('no aceite, o convite do próprio vet não conta', async () => {
+    comPlano('clinic', 15, 14)
+    await garantirVagaNaEquipe('cli-1', 'vet-9')
+    expect(prismaMock.veterinarioClinica.count.mock.calls[0][0].where.veterinarioId).toEqual({ not: 'vet-9' })
+  })
+
+  it('Grande é ilimitado', async () => {
+    comPlano('clinic_pro', null, 300)
+    await expect(garantirVagaNaEquipe('cli-1')).resolves.toBeUndefined()
   })
 })

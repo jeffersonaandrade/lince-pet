@@ -16,7 +16,6 @@ const PLANO_PAGO = "pro";
 
 export function CardPlano() {
   const [status, setStatus] = useState<Status | null>(null);
-  const [pagamento, setPagamento] = useState<"CREDIT_CARD" | "PIX">("CREDIT_CARD");
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
@@ -37,10 +36,11 @@ export function CardPlano() {
     setErro(null);
     try {
       const servico = AssinaturasService();
-      const resposta = subscription?.asaasSubscriptionId
-        ? await servico.upgrade(subscription.id, { planCode: PLANO_PAGO, billingType: pagamento })
-        : await servico.criarAssinatura({ planCode: PLANO_PAGO, billingType: pagamento });
+      const resposta = subscription
+        ? await servico.upgrade(subscription.id, { planCode: PLANO_PAGO })
+        : await servico.criarAssinatura({ planCode: PLANO_PAGO });
       if (resposta?.checkoutUrl) window.location.href = resposta.checkoutUrl;
+      else setStatus(await servico.obterStatus());
     } catch (e) {
       setErro(handleApiError(e).message);
     } finally {
@@ -75,21 +75,9 @@ export function CardPlano() {
           <Alerta tipo="info">Pagamento em processamento. O plano muda assim que for confirmado.</Alerta>
         ) : (
           <>
-            <p className="text-sm text-slate-500">No plano Pro você recebe pedidos sem limite mensal.</p>
-            <div className="flex gap-2">
-              {(["CREDIT_CARD", "PIX"] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setPagamento(t)}
-                  className={`flex-1 rounded-xl border px-3 py-2 text-sm font-semibold ${
-                    pagamento === t ? "border-orange-500 bg-orange-50 text-orange-700" : "border-slate-200 text-slate-600"
-                  }`}
-                >
-                  {t === "PIX" ? "PIX" : "Cartão"}
-                </button>
-              ))}
-            </div>
+            <p className="text-sm text-slate-500">
+              No plano Pro você recebe pedidos sem limite mensal. Pague com Pix, boleto ou cartão na fatura do Asaas.
+            </p>
             <button className={botaoPrimario} disabled={enviando} onClick={assinar}>
               {enviando ? "Abrindo pagamento..." : "Assinar Pro"}
             </button>

@@ -209,8 +209,8 @@ impl.update({
 seed_nodes = [
     rule("rule_seed_banco_vazio", "Seed Prisma popula catalogo de um banco vazio",
          "npx prisma db seed grava planos de assinatura, especialidades oficiais, planos de saude e diferenciais. Sem isso a listagem de planos e o cadastro de especialidades ficam vazios."),
-    rule("rule_seed_planos_assinatura", "Planos de assinatura do seed seguem o banco do Adonis",
-         "free, pro, pro_plus, starter, clinic, clinic_pro com preco, limite, features, prioridade e trial ja ajustados. Upsert por code sem trocar id. /precos continua em src/config/planos.ts."),
+    rule("rule_seed_planos_assinatura", "Planos de assinatura do seed vem de prisma/catalogo.ts",
+         "vet_starter, vet_pro, starter, clinic, clinic_pro, free, pro e pro_plus (inativo) com preco, limite, features, prioridade, trial e maxVeterinarios. Upsert por code sem trocar id. /precos continua em src/config/planos.ts."),
     rule("rule_seed_demonstracao", "Seed de demonstracao e idempotente e so usa e-mails mockup",
          "prisma db seed cria tutores, vets, clinicas, pets, consultas, avaliacoes, favoritos, prontuario e um bloqueio. Senha senha123 so nas contas novas com e-mail mockup; nao troca senha existente e nao duplica."),
 ]
@@ -410,6 +410,71 @@ impl.update({
     "src_app_explorar_page": impl.get("src_app_explorar_page", []) + ["rule_explorar_ordenacao"],
     "src_components_prestador_listaprofissionais": impl.get("src_components_prestador_listaprofissionais", []) + ["rule_explorar_ordenacao"],
 })
+
+assinatura_nodes = [
+    rule("rule_assinatura_catalogo", "Assinatura: catalogo e precos por tipo de conta",
+         "Vet: vet_starter R$ 39,90, vet_pro R$ 59,90 (modulo financeiro). Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e clinica sem plano = none, sem recursos pagos. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json)."),
+    rule("rule_assinatura_fatura_asaas", "Assinatura: fatura Asaas UNDEFINED, sempre mensal",
+         "billingType UNDEFINED (usuario escolhe Pix, boleto ou cartao na fatura do Asaas), ciclo MONTHLY; plataforma nao coleta cartao."),
+    rule("rule_assinatura_trial_unico", "Assinatura: teste gratis de 14 dias so na primeira assinatura, sem cartao",
+         "Dono sem nenhuma assinatura com asaasSubscriptionId: plano ativa na hora, primeira fatura vence no dia 14; sem pagamento vira inadimplente e perde o plano."),
+    rule("rule_assinatura_plano_so_apos_pagamento", "Assinatura: plano so muda apos pagamento confirmado",
+         "Fora do teste, contratar/trocar cria assinatura pending e devolve link da fatura; plano aplicado so em PAYMENT_CONFIRMED/PAYMENT_RECEIVED; ao ativar cancela as outras do mesmo dono; cancelada/expirada ignora pagamento."),
+    rule("rule_assinatura_status", "Assinatura: status ativa/pendente/cancelada/inadimplente",
+         "active=ativa, pending=pendente, past_due=inadimplente, canceled/expired=cancelada; GET /api/assinaturas/status devolve rotulo, fim do teste, troca pendente e link da fatura em aberto."),
+    rule("rule_assinatura_inadimplencia", "Assinatura: atraso, estorno ou chargeback tiram o plano",
+         "PAYMENT_OVERDUE/REFUNDED/CHARGEBACK_REQUESTED/RECEIVED_IN_CASH_UNDONE marcam past_due e voltam ao plano padrao, salvo outra assinatura ativa; pagar reativa."),
+    rule("rule_assinatura_cancelamento", "Assinatura: cancelar remove o plano na hora",
+         "DELETE /api/assinaturas/:id cancela no Asaas e local e volta ao padrao; SUBSCRIPTION_DELETED/INACTIVATED marcam canceled e rebaixam se nao houver outra ativa; trocar para none/gratis = cancelar."),
+    rule("rule_assinatura_limite_vets_clinica", "Assinatura: limite de vets da clinica pelo plano",
+         "Convite e aceite contam vinculos aceito+pendente; acima de maxVeterinarios (5/15/ilimitado) ou clinica sem plano pago = 403; vinculos existentes nao sao desfeitos."),
+    rule("rule_assinatura_webhook_token", "Assinatura: webhook Asaas autenticado e idempotente",
+         "asaas-access-token deve bater com ASAAS_WEBHOOK_TOKEN, obrigatorio com ASAAS_ENV=production; eventos repetidos ignorados por webhook_events.event_id."),
+    rule("rule_busca_sem_filtro_creditos", "Busca de veterinarios sem filtro de creditos",
+         "Removido v.creditos > 0 da busca; ordenacao por plano: vet_pro antes de vet_starter."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in assinatura_nodes if n["id"] not in nodes_ids]
+assinatura_rules = [n["id"] for n in assinatura_nodes]
+new_edges += [edge("concept_regras_de_negocio", r) for r in assinatura_rules]
+new_edges += [edge("rule_assinatura_plano_so_apos_pagamento", r) for r in assinatura_rules if r != "rule_assinatura_plano_so_apos_pagamento"]
+new_edges += [edge("rule_prestador_limite_plano", "rule_assinatura_plano_so_apos_pagamento", "references")]
+new_edges += [edge("rule_seed_planos_assinatura", "rule_assinatura_catalogo", "references")]
+assinatura_impl = {
+    "prisma_catalogo": ["rule_assinatura_catalogo", "rule_assinatura_trial_unico", "rule_assinatura_limite_vets_clinica"],
+    "src_config_planos": ["rule_assinatura_catalogo"],
+    "src_server_services_assinante": ["rule_assinatura_catalogo"],
+    "src_server_services_asaas": ["rule_assinatura_fatura_asaas"],
+    "src_server_services_assinatura_regras": [
+        "rule_assinatura_trial_unico", "rule_assinatura_status", "rule_assinatura_limite_vets_clinica",
+        "rule_assinatura_webhook_token", "rule_assinatura_catalogo",
+    ],
+    "src_server_services_assinaturas": [
+        "rule_assinatura_catalogo", "rule_assinatura_fatura_asaas", "rule_assinatura_trial_unico",
+        "rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_cancelamento",
+    ],
+    "src_server_services_asaas_webhook": [
+        "rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_inadimplencia",
+        "rule_assinatura_cancelamento", "rule_assinatura_webhook_token",
+    ],
+    "src_app_api_assinaturas_route": ["rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_trial_unico"],
+    "src_app_api_assinaturas_id_upgrade_route": ["rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_cancelamento"],
+    "src_app_api_assinaturas_id_route": ["rule_assinatura_cancelamento"],
+    "src_app_api_assinaturas_status_route": ["rule_assinatura_status", "rule_assinatura_trial_unico"],
+    "src_app_api_webhooks_asaas_route": ["rule_assinatura_webhook_token"],
+    "src_server_services_clinica_equipe": ["rule_assinatura_limite_vets_clinica"],
+    "src_server_services_vinculos": ["rule_assinatura_limite_vets_clinica"],
+    "src_app_api_clinicas_professionals_route": ["rule_assinatura_limite_vets_clinica"],
+    "src_server_services_veterinarios": ["rule_busca_sem_filtro_creditos", "rule_assinatura_catalogo"],
+    "src_server_services_clinicas": ["rule_assinatura_catalogo"],
+    "src_components_assinatura_alterarplano": ["rule_assinatura_fatura_asaas", "rule_assinatura_trial_unico"],
+    "src_components_assinatura_statusassinaturaaviso": ["rule_assinatura_status", "rule_assinatura_inadimplencia"],
+    "tests_server_assinaturas_test": ["rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_trial_unico", "rule_assinatura_cancelamento"],
+    "tests_server_assinatura_regras_test": ["rule_assinatura_status", "rule_assinatura_webhook_token", "rule_assinatura_limite_vets_clinica"],
+    "tests_server_asaas_webhook_test": ["rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_inadimplencia", "rule_assinatura_cancelamento"],
+}
+for code_id, rs in assinatura_impl.items():
+    impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
