@@ -96,6 +96,14 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Demonstração:** o mesmo comando cria tutores, veterinários, clínicas, pets, consultas (pendente, confirmada, realizada e cancelada), avaliações, favoritos, prontuário, uma anotação privada e um bloqueio de agenda. Cidades e especialidades variadas. E-mails terminam em `mockup`. Senha de todas essas contas: `senha123`. Não altera senha de quem já existe.
 - **Idempotente:** rodar de novo não duplica linha.
 
+### Busca por plano de saúde
+
+- **Mesma lista do cadastro:** o filtro "Plano de Saúde" em `/explorar` lista os nomes da tabela `planos` (`GET /api/planos`), os mesmos que veterinário e clínica marcam no onboarding e no perfil. Não há lista fixa à parte.
+- **Só quem aceita:** `GET /api/veterinarios/search?plano=` e `GET /api/clinicas?plano=` devolvem apenas quem tem aquele nome em `veterinario_planos` ou `clinica_planos`. A comparação não diferencia maiúsculas.
+- **Sem exemplo:** se ninguém aceita o plano, `/explorar` fica vazio. Não entra profissional fictício.
+- **Perfil e card da busca:** `/veterinario/[id]`, `/clinicas/[id]` e os cards de veterinário e de clínica em `/explorar` mostram só os planos ligados àquele cadastro.
+- **Ordenação:** o ícone de filtro na barra de `/explorar` ordena a aba atual (veterinários, clínicas e profissionais pet) por nome ou por nota, crescente ou decrescente. A ordem fica na URL (`ordem=nome|nota`, `direcao=asc|desc`) e não dispara nova busca. Sem esses parâmetros, a lista começa pela maior nota. Empate de nota desempata pelo nome. Nota ausente conta como zero.
+
 ### Notificações por WhatsApp
 
 - **Número central:** todas as mensagens saem de um único número da Lince Pet, que distribui avisos para tutores, vets e clínicas. Vet e clínica não conectam número próprio.

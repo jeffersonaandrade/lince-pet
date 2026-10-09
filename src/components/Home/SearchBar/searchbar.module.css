@@ -122,8 +122,6 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 15px var(--shadow-light);
-  margin-left: 1rem;
-  margin-right: 1rem;
   flex-shrink: 0;
   transition: all 0.3s ease;
 }
@@ -135,6 +133,76 @@
 
 .searchButton svg {
   color: white;
+}
+
+.barActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+}
+
+.sortRoot {
+  position: relative;
+}
+
+.filterButton {
+  background: white;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--primary);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.filterButton:hover,
+.filterButtonActive {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.sortPanel {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  right: 0;
+  z-index: 40;
+  width: 196px;
+  padding: 0.35rem;
+  background: white;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  box-shadow: 0 8px 30px var(--shadow-medium);
+}
+
+.sortOption {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  text-align: left;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.sortOption:hover,
+.sortOptionActive {
+  background: var(--primary-light);
+  color: var(--primary-dark);
 }
 
 .searchDropdown {
@@ -244,12 +312,21 @@
     width: 100%;
   }
 
+  .barActions {
+    width: 100%;
+    justify-content: flex-end;
+    margin: 0;
+    padding: 1rem;
+  }
+
   .searchButton {
     width: 30%;
-    margin-left: 0;
-    margin-right: 0;
     height: 52px;
-    margin: 1rem;
+  }
+
+  .filterButton {
+    width: 52px;
+    height: 52px;
   }
 
   .sectionInput {

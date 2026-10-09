@@ -8,6 +8,7 @@ alwaysApply: false
 >
 > **Ajustes do projeto Lince Pet (prevalecem sobre o texto abaixo):**
 > - Estilizacao: seguir a regra do usuario (Tailwind) para codigo novo; CSS Modules existentes podem permanecer.
+> - Paginas, separacao UI/logica, hooks e estado: seguir `.cursor/rules/frontend.mdc`. Ela prevalece sobre a estrutura `src/features/` descrita abaixo.
 
 # react Best Practices
 

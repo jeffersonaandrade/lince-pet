@@ -1,0 +1,95 @@
+---
+description: Boas praticas de frontend (pagina servidor, UI separada da logica, estado).
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+>
+> **Ajustes do Lince Pet:**
+> - Hooks ficam em `src/hook/<dominio>/` (alias `@/hook`). Nao criar `src/hooks/`.
+> - HTTP fica em `src/services/<dominio>/`, usando o cliente de `src/hook/api`. Nao ha Orval nem client gerado.
+> - Estado que cruza telas usa os contextos em `src/contexts/` (hoje `AuthContext`). Nao introduzir Zustand.
+> - Componentes continuam em PascalCase (`Header/Header.tsx`); hooks em `useNome.ts`. Nao renomear arquivos existentes para kebab-case.
+> - Codigo novo usa Tailwind. CSS Modules existentes permanecem; nao reescreve-los sem pedido.
+> - Ao alterar uma pagina ou componente que ainda nao segue esta regra, extraia a interatividade e a regra de negocio no mesmo cambio. Nao reescreva telas que nao estao sendo mexidas.
+> - Esta regra prevalece sobre a estrutura `src/features/` de `react.mdc` e sobre a organizacao generica de `next-js.mdc` quando houver conflito.
+
+# Frontend
+
+Antes de refatorar uma tela, so prossiga com o caminho tecnico claro. Se a duvida mudar o desenho do componente, do hook ou do estado, pergunte antes de criar.
+
+## Paginas (`page.tsx`)
+
+- Arquivos `page.tsx` em `src/app/` nunca sao Client Components: nao use `'use client'` em `page.tsx`.
+- `page.tsx` permanece Server Component: composicao, metadata, `Suspense` e importacao dos filhos.
+- Interatividade (hooks, estado, efeitos, handlers, `useSearchParams`) vai para um componente em `components/` da rota (ex.: `src/app/explorar/components/ExplorarConteudo.tsx`) ou em `src/components/` quando for compartilhado.
+- Se a pagina inteira precisar de client, extraia o conteudo para esse componente e importe-o no `page.tsx`.
+
+```tsx
+// src/app/explorar/page.tsx
+import { Suspense } from "react";
+import ExplorarConteudo from "./components/ExplorarConteudo";
+
+export default function ExplorarPage() {
+  return (
+    <Suspense fallback={null}>
+      <ExplorarConteudo />
+    </Suspense>
+  );
+}
+```
+
+## Arquitetura de componentes
+
+- Separe UI da regra de negocio ao criar ou refatorar componentes.
+- O `.tsx` fica com markup, composicao, classes, renderizacao e decisoes estritamente de UI.
+- Componente com logica relevante tem um custom hook em `src/hook/<dominio>/`. Um unico estado trivial, sem regra de negocio, nao precisa de hook proprio.
+- O hook (`.ts`) concentra estados, efeitos, callbacks, transformacoes, formulario, navegacao, chamadas HTTP e feedback.
+- Hooks, schemas, parsers, normalizadores e logica de dominio ficam em `.ts`. `.tsx` e so UI.
+- Fluxo: `componente -> hook do componente -> funcao em src/services/<dominio> -> api de src/hook/api`.
+- Componentes auxiliares relevantes (skeletons, dialogs, formularios reutilizaveis) vao para arquivos proprios quando o componente principal acumular responsabilidades.
+- Ao implementar ou refatorar, revise responsabilidade unica e quebre o que concentrar coisas demais.
+
+```tsx
+// src/components/Prestador/PedidoServicoForm.tsx — so UI
+"use client";
+
+import { usePedidoServicoForm } from "@/hook/prestadores/usePedidoServicoForm";
+
+export default function PedidoServicoForm() {
+  const { valores, erro, enviando, aoMudar, aoEnviar } = usePedidoServicoForm();
+  return (
+    <form onSubmit={aoEnviar}>
+      {/* markup */}
+    </form>
+  );
+}
+```
+
+```ts
+// src/hook/prestadores/usePedidoServicoForm.ts — regra
+"use client";
+
+import { useState } from "react";
+import { criarPedido } from "@/services/prestadores/pedidos";
+
+export function usePedidoServicoForm() {
+  const [enviando, setEnviando] = useState(false);
+  // estado, validacao e chamada HTTP ficam aqui
+  return { enviando, aoEnviar: async () => { setEnviando(true); await criarPedido(); } };
+}
+```
+
+## Estado global vs local
+
+- Antes de criar estado, classifique: global, local de dominio ou local de componente.
+- Se cruza dominios ou telas (ex.: usuario autenticado), use o contexto em `src/contexts/`.
+- Se pertence a uma tela e e compartilhado por varios filhos, use um Context local perto dessa arvore.
+- Se so um componente ou hook usa, mantenha `useState` ou `useReducer`. Nao crie context nem store para isso.
+
+## Padroes de UI
+
+- Ao implementar ou refatorar UI, siga as skills `vercel-composition-patterns`, `vercel-react-best-practices` e `web-design-guidelines`: composicao clara, acessibilidade, semantica e componentes pequenos.
+- Prefira utilitarios em `src/lib/` para formatacao, serializacao, parsing e helpers de apresentacao compartilhados. Nao duplique a mesma funcao em paginas ou componentes.
+- Nao espalhe caminhos de pagina como strings literais. Quando o mesmo path aparecer em mais de um lugar, centralize em `src/lib/routes.ts`. Strings inline so quando o framework exigir valor estatico (ex.: `matcher` do middleware).
+- Em Tailwind, prefira a escala do tema (`min-h-88`, `h-16`, `p-4`) a valores arbitrarios (`min-h-[22rem]`), salvo quando nao houver equivalente.

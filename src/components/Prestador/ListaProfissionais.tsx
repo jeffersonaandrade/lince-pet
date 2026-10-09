@@ -7,6 +7,7 @@ import { MapPin, Star } from "lucide-react";
 import UserImage from "@/components/ui/UserImage/UserImage";
 import { PrestadoresService, type PrestadorPublico, type TipoServico } from "@/services/prestadores/prestadores";
 import { formatarPreco } from "./ui";
+import { lerOrdenacao, ordenarLista } from "@/lib/ordenacao";
 
 /** Filtros do /explorar (search e location "Cidade, UF") convertidos para a busca de prestadores. */
 function filtrosDaUrl(params: URLSearchParams) {
@@ -25,6 +26,9 @@ export default function ListaProfissionais() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tipoAtual = searchParams.get("tipo") || "";
+  const busca = searchParams.get("search") || "";
+  const localizacao = searchParams.get("location") || "";
+  const { criterio, direcao } = lerOrdenacao(searchParams);
   const [tipos, setTipos] = useState<TipoServico[]>([]);
   const [lista, setLista] = useState<PrestadorPublico[] | null>(null);
   const [erro, setErro] = useState(false);
@@ -34,12 +38,16 @@ export default function ListaProfissionais() {
   }, []);
 
   useEffect(() => {
+    const params = new URLSearchParams();
+    if (tipoAtual) params.set("tipo", tipoAtual);
+    if (busca) params.set("search", busca);
+    if (localizacao) params.set("location", localizacao);
     setLista(null);
     setErro(false);
-    PrestadoresService.buscar(filtrosDaUrl(new URLSearchParams(searchParams.toString())))
+    PrestadoresService.buscar(filtrosDaUrl(params))
       .then(setLista)
       .catch(() => setErro(true));
-  }, [searchParams]);
+  }, [tipoAtual, busca, localizacao]);
 
   const escolherTipo = (slug: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -53,6 +61,14 @@ export default function ListaProfissionais() {
     `rounded-full border px-4 py-2 text-sm font-semibold transition ${
       ativo ? "border-orange-500 bg-orange-500 text-white" : "border-slate-200 bg-white text-slate-600 hover:border-orange-300"
     }`;
+
+  const visiveis =
+    lista === null
+      ? []
+      : ordenarLista(lista, criterio, direcao, (p) => ({
+          nome: p.nome,
+          nota: p.nota_media ?? 0,
+        }));
 
   return (
     <section className="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 pb-16">
@@ -74,16 +90,16 @@ export default function ListaProfissionais() {
       ) : (
         <>
           <p className="text-sm font-semibold text-slate-600">
-            {lista.length} profissional{lista.length !== 1 ? "is" : ""} encontrado{lista.length !== 1 ? "s" : ""}
+            {visiveis.length} profissional{visiveis.length !== 1 ? "is" : ""} encontrado{visiveis.length !== 1 ? "s" : ""}
           </p>
-          {lista.length === 0 ? (
+          {visiveis.length === 0 ? (
             <div className="rounded-2xl bg-white p-8 text-center shadow-sm">
               <h3 className="text-lg font-bold text-slate-800">Nenhum profissional encontrado</h3>
               <p className="mt-1 text-sm text-slate-500">Tente outro tipo de serviço ou outra cidade.</p>
             </div>
           ) : (
             <ul className="flex flex-col gap-4">
-              {lista.map((p) => (
+              {visiveis.map((p) => (
                 <li key={p.id}>
                   <Link
                     href={`/profissionais/${p.id}`}

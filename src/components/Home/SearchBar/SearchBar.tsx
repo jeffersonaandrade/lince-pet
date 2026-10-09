@@ -1,12 +1,12 @@
 "use client";
 import { Search, Stethoscope, MapPin, Shield } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "./searchbar.module.css";
 import SearchSection from "../../ui/SearchSection";
 import CitySearchSection from "../../ui/CitySearchSection";
 import { especialidadesVeterinarias } from "../../../data/especialidades";
-import { planosSaudeAnimal } from "../../../data/planos-saude";
+import { getPlanos } from "../../../services/veterinarios/veterinarios";
 
 interface UserLocation {
   city: string;
@@ -15,15 +15,17 @@ interface UserLocation {
 
 interface SearchBarProps {
   showCatImage?: boolean;
+  extra?: ReactNode;
 }
 
-export default function SearchBar({ showCatImage = false }: SearchBarProps) {
+export default function SearchBar({ showCatImage = false, extra = null }: SearchBarProps) {
   const router = useRouter();
 
   const [searchValue, setSearchValue] = useState("");
   const [specialtyValue, setSpecialtyValue] = useState("");
   const [locationValue, setLocationValue] = useState("");
   const [plansValue, setPlansValue] = useState("");
+  const [planos, setPlanos] = useState<string[]>([]);
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
   const [searchDropdownOpen, setSearchDropdownOpen] = useState(false);
@@ -84,11 +86,26 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
     }
   }, []); // Run only once on mount
 
+  useEffect(() => {
+    let ativo = true;
+    getPlanos()
+      .then((lista: { name?: string }[]) => {
+        if (!ativo || !Array.isArray(lista)) return;
+        setPlanos(lista.flatMap((plano) => (plano?.name ? [plano.name] : [])));
+      })
+      .catch(() => {
+        if (ativo) setPlanos([]);
+      });
+    return () => {
+      ativo = false;
+    };
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const novos = new URLSearchParams();
     // Mantém a aba e o tipo de serviço escolhidos no /explorar (ex.: profissionais pet > passeador).
-    for (const chave of ["tab", "tipo"]) {
+    for (const chave of ["tab", "tipo", "ordem", "direcao"]) {
       const valor = searchParams.get(chave);
       if (valor) novos.set(chave, valor);
     }
@@ -156,7 +173,7 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
 
           <div className={styles.lastSection} ref={lastSectionRef}>
             <SearchSection
-              options={planosSaudeAnimal}
+              options={planos}
               value={plansValue}
               onChange={setPlansValue}
               placeholder="Planos de saúde"
@@ -166,7 +183,10 @@ export default function SearchBar({ showCatImage = false }: SearchBarProps) {
               onDropdownStateChange={() => { }}
               parentRef={lastSectionRef}
             />
+          </div>
 
+          <div className={styles.barActions}>
+            {extra}
             <button type="submit" className={styles.searchButton}>
               <Search size={20} />
             </button>
