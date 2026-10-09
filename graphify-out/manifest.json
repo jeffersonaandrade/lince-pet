@@ -114,10 +114,10 @@
     "semantic_hash": ""
   },
   "src/app/not-found.tsx": {
-    "mtime": 1791505311.7206745,
-    "seen": 1791506113.179234,
-    "ast_hash": "b598d0e4ae90c7d4102af1fe428c942a",
-    "semantic_hash": "b598d0e4ae90c7d4102af1fe428c942a"
+    "mtime": 1791517167.3652358,
+    "seen": 1791517425.0368567,
+    "ast_hash": "20399151a627380122677fda99cb9cce",
+    "semantic_hash": ""
   },
   "src/app/onboarding/clinica/page.tsx": {
     "mtime": 1791505312.3268018,
@@ -2325,6 +2325,12 @@
     "mtime": 1791516659.1008675,
     "seen": 1791516850.8558958,
     "ast_hash": "745946ee34823f7974b4f0eb9190bbf4",
+    "semantic_hash": ""
+  },
+  "src/app/error.tsx": {
+    "mtime": 1791517169.9813604,
+    "seen": 1791517425.0360394,
+    "ast_hash": "047e4d0e42f87c3ca701c958abf345c2",
     "semantic_hash": ""
   }
 }

@@ -1,39 +1,41 @@
 # Graph Report - Lince-Pet-main  (2026-10-09)
 
 ## Corpus Check
-- cluster-only mode — file stats not available
+- 394 files · ~168,367 words
+- Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 59 file(s) not represented in the graph (top: .css 49, .mdc 4, (none) 2)
 
 ## Summary
-- 2103 nodes · 5556 edges · 194 communities (108 shown, 86 thin omitted)
+- 2105 nodes · 5560 edges · 200 communities (113 shown, 87 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 37 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `aaff28db`
+- Built from commit: `257e3034`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- ok
+- serverError
 - services/prontuario.ts
 - dashboard/veterinario/page.tsx
 - veterinarios/bloqueios.ts
 - services/veterinarios.ts
-- session.ts
+- http.ts
 - PaginaInstitucional.tsx
-- react
-- requireUser
-- @prisma/client
+- veterinario/[id]/page.tsx
+- json
+- AsaasService
 - lucide-react
-- next
+- signup/tutor/page.tsx
 - SearchBar.tsx
 - server-only
 - useAuth
-- signup/veterinario/page.tsx
+- services/anotacoes.ts
 - services/bloqueios.ts
-- updating
+- requireUser
 - Header.tsx
-- storage.ts
+- pets/[id]/photo/route.ts
 - api/agendamentos/route.ts
 - onboarding/page.tsx
 - onboarding/clinica/page.tsx
@@ -53,14 +55,14 @@
 - 5. Re-render Optimization
 - devDependencies
 - veterinarios/route.ts
-- explorar/page.tsx
+- next
 - 7. JavaScript Performance
 - Quick Reference
 - Arquitetura Lince Pet (Next.js fullstack)
 - jwt.ts
 - @vinejs/vine
-- services/tutor.ts
-- services/avaliacoes.ts
+- creating
+- ok
 - OBEY Clean Architecture by Robert C. Martin
 - OBEY Working Effectively with Legacy Code by Michael Feathers
 - whatsapp.ts
@@ -205,6 +207,12 @@
 - postcss.config.mjs
 - SuccessScreen/README.md
 - vercel.json
+- services/clinicas.ts
+- services/onboarding.ts
+- veterinario-dashboard.ts
+- storage.ts
+- services/brazilapi.ts
+- lembretes-whatsapp.mts
 
 ## God Nodes (most connected - your core abstractions)
 1. `requireUser()` - 160 edges
@@ -215,20 +223,20 @@
 6. `prisma` - 76 edges
 7. `updating()` - 75 edges
 8. `badRequest()` - 67 edges
-9. `next` - 63 edges
-10. `react` - 63 edges
+9. `next` - 64 edges
+10. `react` - 64 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Relacoes User->tutor/veterinario/clinica como listas` --conceptually_related_to--> `requireUser()`  [INFERRED]
   docs/ARQUITETURA.md → src/server/auth/session.ts
-- `E-mails via Resend com templates Edge convertidos` --implements--> `sendMail()`  [EXTRACTED]
-  docs/ARQUITETURA.md → src/server/services/mail.ts
-- `Uploads multipart para S3/CloudFront` --implements--> `uploadPhoto()`  [EXTRACTED]
-  docs/ARQUITETURA.md → src/server/services/storage.ts
 - `Webhook Asaas idempotente via webhook_events.event_id` --implements--> `POST`  [EXTRACTED]
   docs/ARQUITETURA.md → src/app/api/webhooks/asaas/route.ts
-- `Contrato HTTP herdado do Adonis` --implements--> `ApiRequest`  [EXTRACTED]
-  docs/ARQUITETURA.md → src/server/http.ts
+- `E-mails via Resend com templates Edge convertidos` --implements--> `sendMail()`  [EXTRACTED]
+  docs/ARQUITETURA.md → src/server/services/mail.ts
+- `Efeitos colaterais com after() do Next` --implements--> `POST`  [EXTRACTED]
+  docs/ARQUITETURA.md → src/app/api/agendamentos/route.ts
+- `Auth por JWT em cookie httpOnly auth_token` --implements--> `AuthProvider()`  [EXTRACTED]
+  docs/ARQUITETURA.md → src/contexts/AuthContext.tsx
 
 ## Import Cycles
 - None detected.
@@ -236,95 +244,95 @@
 ## Hyperedges (group relationships)
 - **Pipeline de uma requisicao /api** — src_server_http_route, src_server_http_apirequest, src_server_auth_session_requireuser, src_server_db_prisma, src_server_http_json, src_server_http_handleerror [EXTRACTED 1.00]
 
-## Communities (194 total, 86 thin omitted)
+## Communities (200 total, 87 thin omitted)
 
-### Community 0 - "ok"
-Cohesion: 0.08
-Nodes (60): GET, POST, statusNormalizado(), GET, POST, POST, GET, GET (+52 more)
+### Community 0 - "serverError"
+Cohesion: 0.13
+Nodes (37): PATCH, DELETE, PATCH, POST, POST, POST, GET, POST (+29 more)
 
 ### Community 1 - "services/prontuario.ts"
-Cohesion: 0.06
-Nodes (52): GET, GET, GET, PUT, GET, PUT, GET, GET (+44 more)
+Cohesion: 0.14
+Nodes (21): GET, GET, PUT, CurrentUser, HttpError, assertAcessoProntuario(), findAgendamentoDoVet(), MAX_TEXTO_REGISTRO (+13 more)
 
 ### Community 2 - "dashboard/veterinario/page.tsx"
 Cohesion: 0.05
-Nodes (37): moment, CalendarEvent, ClinicaDashboard(), DashboardData, BLOQUEIO_SCOPE_VET, CalendarEvent, DashboardData, OnboardingData (+29 more)
+Nodes (35): CalendarEvent, ClinicaDashboard(), DashboardData, BLOQUEIO_SCOPE_VET, CalendarEvent, DashboardData, OnboardingData, OnboardingResponse (+27 more)
 
 ### Community 3 - "veterinarios/bloqueios.ts"
 Cohesion: 0.05
-Nodes (58): AnotacaoPrivada(), FORMA_OPCOES, Props, STATUS_OPCOES, FORMA_LABEL, formatarData(), HistoricoAnotacoes(), Props (+50 more)
+Nodes (60): AnotacaoPrivada(), FORMA_OPCOES, Props, STATUS_OPCOES, FORMA_LABEL, formatarData(), HistoricoAnotacoes(), Props (+52 more)
 
 ### Community 4 - "services/veterinarios.ts"
-Cohesion: 0.08
-Nodes (57): PUT, PublicUser, serializeUser(), completeOnboarding(), getProgress(), nextStep(), processStep1(), processStep2() (+49 more)
+Cohesion: 0.14
+Nodes (26): PUT, GET, PublicUser, dateColumn(), Db, dirtyFields(), enderecoWriteData(), formatVeterinarioData() (+18 more)
 
-### Community 5 - "session.ts"
-Cohesion: 0.13
-Nodes (22): GET, GET, POST, POST, GET, globalForPrisma, prisma, ApiRequest (+14 more)
+### Community 5 - "http.ts"
+Cohesion: 0.14
+Nodes (17): DELETE, GET, AUTH_COOKIE, globalForPrisma, prisma, ApiRequest, FileOptions, forbidden() (+9 more)
 
 ### Community 6 - "PaginaInstitucional.tsx"
 Cohesion: 0.10
-Nodes (36): AjudaPage(), FAQ, metadata, ComoFuncionaPage(), metadata, PERFIS, ContatoPage(), metadata (+28 more)
+Nodes (37): AjudaPage(), FAQ, metadata, ComoFuncionaPage(), metadata, PERFIS, ContatoPage(), metadata (+29 more)
 
-### Community 7 - "react"
-Cohesion: 0.08
-Nodes (29): react, ClinicProfilePage(), loadClinic(), COMODIDADES_LIST, getComodidadeLabel(), Location, Veterinario, VeterinarioProfile() (+21 more)
+### Community 7 - "veterinario/[id]/page.tsx"
+Cohesion: 0.06
+Nodes (37): moment, ClinicProfilePage(), loadClinic(), COMODIDADES_LIST, getComodidadeLabel(), AppointmentItem(), AppointmentItemProps, FavoriteItem (+29 more)
 
-### Community 8 - "requireUser"
-Cohesion: 0.10
-Nodes (31): DELETE, GET, POST, GET, GET, DELETE, GET, POST (+23 more)
+### Community 8 - "json"
+Cohesion: 0.11
+Nodes (20): GET, POST, POST, POST, POST, POST, POST, POST (+12 more)
 
-### Community 9 - "@prisma/client"
-Cohesion: 0.09
-Nodes (22): axios, @prisma/client, PATCH, POST, GET, GET, AsaasEnv, AsaasService (+14 more)
+### Community 9 - "AsaasService"
+Cohesion: 0.11
+Nodes (12): axios, AsaasEnv, AsaasService, CreateSubscriptionInput, CustomerUser, normalize(), asaasEventKey(), downgradeVet() (+4 more)
 
 ### Community 10 - "lucide-react"
-Cohesion: 0.08
-Nodes (19): lucide-react, AppointmentItem(), AppointmentItemProps, FavoriteItem, FavoritesList(), ESPECIES, Pet, PORTE_OPCOES (+11 more)
+Cohesion: 0.11
+Nodes (15): lucide-react, DIAS_SEMANA_KEYS, DIAS_SEMANA_MAP, Endereco, Especialidade, PerfilVeterinario(), Toast(), ImageEditor() (+7 more)
 
-### Community 11 - "next"
-Cohesion: 0.08
-Nodes (18): nextConfig, next, ForgotPasswordPage(), LoginPage(), metadata, ResetPasswordForm(), ResetPasswordPage(), TutorSignup() (+10 more)
+### Community 11 - "signup/tutor/page.tsx"
+Cohesion: 0.12
+Nodes (14): ForgotPasswordPage(), LoginPage(), ResetPasswordForm(), ResetPasswordPage(), TutorSignup(), CustomSelect(), CustomSelectProps, SelectOption (+6 more)
 
 ### Community 12 - "SearchBar.tsx"
 Cohesion: 0.08
 Nodes (23): react-dom, Home(), PlatformFeatures(), SearchBar(), SearchBarProps, UserLocation, sentences, TypewriterTitle() (+15 more)
 
 ### Community 13 - "server-only"
-Cohesion: 0.14
+Cohesion: 0.15
 Nodes (28): server-only, appointmentCancellation(), AppointmentCancellationData, appointmentConfirmation(), AppointmentConfirmationData, appointmentRescheduled(), AppointmentRescheduledData, appointmentRescheduledVet() (+20 more)
 
 ### Community 14 - "useAuth"
-Cohesion: 0.09
-Nodes (25): ClinicsPage(), DIAS_SEMANA_KEYS, DIAS_SEMANA_MAP, Endereco, Especialidade, PerfilVeterinario(), Toast(), fredoka (+17 more)
+Cohesion: 0.11
+Nodes (19): ClinicsPage(), AlterarPlanoContent(), AlterarPlanoPage(), AlterarPlanoContent(), AlterarPlanoPage(), fredoka, inter, metadata (+11 more)
 
-### Community 15 - "signup/veterinario/page.tsx"
-Cohesion: 0.13
-Nodes (22): AlterarPlanoContent(), AlterarPlanoPage(), AlterarPlanoContent(), AlterarPlanoPage(), ClinicaSignup(), Page(), Page(), plansMetadata (+14 more)
+### Community 15 - "services/anotacoes.ts"
+Cohesion: 0.14
+Nodes (17): GET, PUT, anotacaoValidator, findAgendamentoDoVet(), FORMAS_PAGAMENTO, historicoDoPet(), MAX_OBSERVACOES, MENSAGEM_ANOTACAO_INDISPONIVEL (+9 more)
 
 ### Community 16 - "services/bloqueios.ts"
 Cohesion: 0.13
-Nodes (29): GET, POST, assertVinculoAceito(), bloqueioCobreData(), BloqueioInput, BloqueioLike, bloqueioValidator, buscarConflitos() (+21 more)
+Nodes (25): prepareDateTimeString(), bloqueioCobreData(), BloqueioInput, BloqueioLike, bloqueioValidator, buscarConflitos(), Conflito, criarBloqueio() (+17 more)
 
-### Community 17 - "updating"
-Cohesion: 0.13
-Nodes (22): POST, POST, POST, POST, POST, POST, dynamic, GET (+14 more)
+### Community 17 - "requireUser"
+Cohesion: 0.11
+Nodes (38): POST, statusNormalizado(), GET, DELETE, GET, POST, POST, POST (+30 more)
 
 ### Community 18 - "Header.tsx"
 Cohesion: 0.10
 Nodes (10): ClinicRequestModal(), ClinicRequestModalProps, DEFAULT_CONFIG, NOTIFICATION_CONFIG, NotificationBell(), NotificationBellProps, timeAgo(), NotificationItem (+2 more)
 
-### Community 19 - "storage.ts"
-Cohesion: 0.16
-Nodes (22): POST, DELETE, PATCH, GET, POST, POST, firstFile(), isMultipart() (+14 more)
+### Community 19 - "pets/[id]/photo/route.ts"
+Cohesion: 0.30
+Nodes (12): POST, DELETE, PATCH, GET, POST, POST, firstFile(), isMultipart() (+4 more)
 
 ### Community 20 - "api/agendamentos/route.ts"
-Cohesion: 0.17
-Nodes (21): luxon, PATCH, PATCH, GET, POST, creating(), uuid(), consumeDataConsulta() (+13 more)
+Cohesion: 0.27
+Nodes (12): GET, PATCH, GET, POST, jaPassou(), nomeCompleto(), podeSerCancelado(), prepareDataConsulta() (+4 more)
 
 ### Community 21 - "onboarding/page.tsx"
-Cohesion: 0.14
-Nodes (21): Especialidade, LocationData, LocationModalData, OnboardingPage(), OnboardingStep, onboardingSteps, CustomCheckbox(), CustomCheckboxProps (+13 more)
+Cohesion: 0.09
+Nodes (36): Especialidade, LocationData, LocationModalData, OnboardingPage(), OnboardingStep, onboardingSteps, ClinicaSignup(), Page() (+28 more)
 
 ### Community 22 - "onboarding/clinica/page.tsx"
 Cohesion: 0.18
@@ -332,11 +340,11 @@ Nodes (21): COMODIDADES_MAP, DIAS_KEYS, DIAS_SEMANA_MAP, Especialidade, PerfilCl
 
 ### Community 23 - "package.json"
 Cohesion: 0.08
-Nodes (23): name, private, version, @adonisjs/hash, @aws-sdk/client-s3, @aws-sdk/s3-request-presigner, eslint, eslint-config-next (+15 more)
+Nodes (24): name, private, version, @adonisjs/hash, @aws-sdk/s3-request-presigner, eslint, eslint-config-next, jose (+16 more)
 
 ### Community 24 - "google-calendar.ts"
-Cohesion: 0.17
-Nodes (21): jose, CalendarState, decodeState(), GET(), withParam(), env(), isProduction, requiredEnv() (+13 more)
+Cohesion: 0.15
+Nodes (20): CalendarState, decodeState(), GET(), withParam(), isProduction, requiredEnv(), consumeDataConsulta(), addEventToUserCalendar() (+12 more)
 
 ### Community 25 - "api.tsx"
 Cohesion: 0.13
@@ -347,8 +355,8 @@ Cohesion: 0.10
 Nodes (21): dependencies, @adonisjs/hash, @aws-sdk/client-s3, @aws-sdk/s3-request-presigner, axios, country-state-city, jose, lottie-react (+13 more)
 
 ### Community 27 - "google.ts"
-Cohesion: 0.24
-Nodes (15): GET, GET, buildAuthorizeUrl(), callbackError(), clearStateCookie(), createState(), fetchGoogleUser(), frontendBaseUrl() (+7 more)
+Cohesion: 0.22
+Nodes (16): GET, GET, buildAuthorizeUrl(), callbackError(), clearStateCookie(), createState(), fetchGoogleUser(), frontendBaseUrl() (+8 more)
 
 ### Community 28 - "whatsapp-notificacoes.ts"
 Cohesion: 0.17
@@ -363,16 +371,16 @@ Cohesion: 0.11
 Nodes (18): API and Contract Rules, Cache Rules, Code Generation Rules, Data Boundary Rules, Deployment and Startup Rules, Final Instruction, Incidents, Capacity, and Runtime Control, Interconnect, Routing, Security, and Chaos Rules (+10 more)
 
 ### Community 31 - "whatsapp.test.ts"
-Cohesion: 0.18
-Nodes (10): config, cronAutorizado(), lembreteDevido(), processarLembretes(), STATUS_ATIVOS, carregarAgendamento(), notificarAgendamento(), enviarMock (+2 more)
+Cohesion: 0.17
+Nodes (15): luxon, dynamic, GET, maxDuration, FUSO_CONSULTA, inicioDaConsulta(), cronAutorizado(), lembreteDevido() (+7 more)
 
 ### Community 32 - "React Composition Patterns"
 Cohesion: 0.12
 Nodes (16): 1.1 Avoid Boolean Prop Proliferation, 1.2 Use Compound Components, 1. Component Architecture, 2.1 Decouple State Management from UI, 2.2 Define Generic Context Interfaces for Dependency Injection, 2.3 Lift State into Provider Components, 2. State Management, 3.1 Create Explicit Component Variants (+8 more)
 
 ### Community 33 - "services/auth.ts"
-Cohesion: 0.23
-Nodes (12): resend, POST, forgotPasswordEmail(), findEntityId(), forgotPassword(), login(), tokenFor(), verifyCredentials() (+4 more)
+Cohesion: 0.62
+Nodes (4): forgotPasswordEmail(), forgotPassword(), defaultFrom(), escapeHtml()
 
 ### Community 34 - "OBEY Patterns of Enterprise Application Architecture by Martin Fowler"
 Cohesion: 0.12
@@ -391,12 +399,12 @@ Cohesion: 0.12
 Nodes (16): devDependencies, eslint, eslint-config-next, @eslint/eslintrc, jsonwebtoken, postcss, tailwindcss, @tailwindcss/postcss (+8 more)
 
 ### Community 38 - "veterinarios/route.ts"
-Cohesion: 0.28
-Nodes (8): DELETE, GET, DELETE, GET, listarEquipe(), removerDaEquipe(), prismaMock, sessao
-
-### Community 39 - "explorar/page.tsx"
 Cohesion: 0.18
-Nodes (10): Clinica, ExplorarContent(), ExplorarPage(), Veterinario, Skeleton(), SkeletonProps, UserImage(), UserImageProps (+2 more)
+Nodes (15): DELETE, GET, GET, POST, listarEquipe(), removerDaEquipe(), findVeterinarios(), getVeterinarioById() (+7 more)
+
+### Community 39 - "next"
+Cohesion: 0.07
+Nodes (22): nextConfig, next, react, Clinica, ExplorarContent(), ExplorarPage(), Veterinario, metadata (+14 more)
 
 ### Community 40 - "7. JavaScript Performance"
 Cohesion: 0.13
@@ -407,24 +415,24 @@ Cohesion: 0.13
 Nodes (14): 1. Eliminating Waterfalls (CRITICAL), 2. Bundle Size Optimization (CRITICAL), 3. Server-Side Performance (HIGH), 4. Client-Side Data Fetching (MEDIUM-HIGH), 5. Re-render Optimization (MEDIUM), 6. Rendering Performance (MEDIUM), 7. JavaScript Performance (LOW-MEDIUM), 8. Advanced Patterns (LOW) (+6 more)
 
 ### Community 42 - "Arquitetura Lince Pet (Next.js fullstack)"
-Cohesion: 0.17
-Nodes (8): Testes de contrato Adonis x Next, OAuth Google (login social e Calendar), Backend em Route Handlers do Next.js, Prisma + MySQL (schema derivado das migrations do Adonis), E-mails via Resend com templates Edge convertidos, Uploads multipart para S3/CloudFront, Arquitetura Lince Pet (Next.js fullstack), googleCalendar
+Cohesion: 0.19
+Nodes (7): Testes de contrato Adonis x Next, OAuth Google (login social e Calendar), Backend em Route Handlers do Next.js, Prisma + MySQL (schema derivado das migrations do Adonis), E-mails via Resend com templates Edge convertidos, Arquitetura Lince Pet (Next.js fullstack), googleCalendar
 
 ### Community 43 - "jwt.ts"
-Cohesion: 0.19
-Nodes (11): generateToken(), secret(), TOKEN_MAX_AGE_SECONDS, TokenPayload, UserType, verifyToken(), authenticate(), extractToken() (+3 more)
+Cohesion: 0.10
+Nodes (21): POST, POST, generateToken(), secret(), TOKEN_MAX_AGE_SECONDS, TokenPayload, UserType, verifyToken() (+13 more)
 
 ### Community 45 - "@vinejs/vine"
-Cohesion: 0.13
-Nodes (10): @vinejs/vine, createAvaliacaoValidator, createClinicaValidator, createEnderecoValidator, updateEnderecoValidator, createPetValidator, updatePetValidator, createVeterinarioRegistrationValidator (+2 more)
+Cohesion: 0.11
+Nodes (12): @vinejs/vine, handleError(), createAvaliacaoValidator, createClinicaValidator, createEnderecoValidator, updateEnderecoValidator, createPetValidator, updatePetValidator (+4 more)
 
-### Community 46 - "services/tutor.ts"
-Cohesion: 0.23
-Nodes (8): POST, hashPassword(), scrypt, verifyPassword(), resetPassword(), registerTutor(), TutorRegistrationData, createTutorValidator
+### Community 46 - "creating"
+Cohesion: 0.22
+Nodes (9): POST, hashPassword(), scrypt, creating(), serialize(), uuid(), create(), registerTutor() (+1 more)
 
-### Community 47 - "services/avaliacoes.ts"
-Cohesion: 0.35
-Nodes (11): GET, GET, AvaliacaoComRelacoes, formatDataConsulta(), listarAvaliacoes(), media(), petResumo(), quando() (+3 more)
+### Community 47 - "ok"
+Cohesion: 0.12
+Nodes (27): GET, POST, GET, POST, GET, GET, GET, GET (+19 more)
 
 ### Community 48 - "OBEY Clean Architecture by Robert C. Martin"
 Cohesion: 0.15
@@ -435,7 +443,7 @@ Cohesion: 0.15
 Nodes (13): Code Generation Rules, Default Workflow for Legacy Changes, Dependency-Breaking Technique Index, Final Instruction, Legacy Refactoring Heuristics, Non-Negotiable Rules, OBEY Working Effectively with Legacy Code by Michael Feathers, Primary Directive (+5 more)
 
 ### Community 50 - "whatsapp.ts"
-Cohesion: 0.21
+Cohesion: 0.19
 Nodes (9): DRIVERS, enviarComRetry(), erroTemporario(), esperar(), logProvider, MAX_TENTATIVAS, mensagemDeErro(), WhatsAppError (+1 more)
 
 ### Community 51 - "vinculos.ts"
@@ -451,7 +459,7 @@ Cohesion: 0.17
 Nodes (12): 6.10 Use React DOM Resource Hints, 6.11 Use useTransition Over Manual Loading States, 6.1 Animate SVG Wrapper Instead of SVG Element, 6.2 CSS content-visibility for Long Lists, 6.3 Hoist Static JSX Elements, 6.4 Optimize SVG Precision, 6.5 Prevent Hydration Mismatch Without Flickering, 6.6 Suppress Expected Hydration Mismatches (+4 more)
 
 ### Community 54 - "vitest"
-Cohesion: 0.18
+Cohesion: 0.22
 Nodes (3): vitest, ARQUIVOS, raiz
 
 ### Community 55 - "UploadedFile"
@@ -670,25 +678,45 @@ Nodes (4): Characterization Tests, New Behavior Tests, Testability Improvements,
 Cohesion: 0.67
 Nodes (3): Required Behavior, Seam Rules, What Counts as a Useful Seam
 
+### Community 194 - "services/clinicas.ts"
+Cohesion: 0.21
+Nodes (18): @prisma/client, GET, GET, GET, POST, GET, serializeUser(), dirtyFields() (+10 more)
+
+### Community 195 - "services/onboarding.ts"
+Cohesion: 0.34
+Nodes (16): GET, completeOnboarding(), getProgress(), nextStep(), processStep1(), processStep2(), processStep3(), processStep4() (+8 more)
+
+### Community 196 - "veterinario-dashboard.ts"
+Cohesion: 0.23
+Nodes (14): GET, GET, GET, agendamentosError(), estatisticas(), estatisticasError(), expandStatus(), findVeterinarioByUser() (+6 more)
+
+### Community 197 - "storage.ts"
+Cohesion: 0.26
+Nodes (13): Uploads multipart para S3/CloudFront, @aws-sdk/client-s3, env(), bucket(), deleteObject(), publicBaseUrl(), region(), s3() (+5 more)
+
+### Community 198 - "services/brazilapi.ts"
+Cohesion: 0.44
+Nodes (6): GET, GET, api, fetchCep(), fetchCnpj(), isNotFoundOrTimeout()
+
 ## Knowledge Gaps
-- **16 isolated node(s):** `@aws-sdk/s3-request-presigner`, `eslint`, `eslint-config-next`, `postcss`, `prisma` (+11 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 972 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **86 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **16 isolated node(s):** `@aws-sdk/s3-request-presigner`, `prisma`, `react-big-calendar`, `recharts`, `@tailwindcss/postcss` (+11 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 973 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `next` connect `next` to `dashboard/veterinario/page.tsx`, `session.ts`, `PaginaInstitucional.tsx`, `react`, `requireUser`, `lucide-react`, `SearchBar.tsx`, `useAuth`, `signup/veterinario/page.tsx`, `services/bloqueios.ts`, `Header.tsx`, `api/agendamentos/route.ts`, `onboarding/page.tsx`, `onboarding/clinica/page.tsx`, `package.json`, `google-calendar.ts`, `api.tsx`, `google.ts`, `veterinarios/route.ts`, `explorar/page.tsx`, `vinculos.ts`, `vitest`, `signup/page.tsx`?**
-  _High betweenness centrality (0.185) - this node is a cross-community bridge._
-- **What connects `@aws-sdk/s3-request-presigner`, `eslint`, `eslint-config-next` to the rest of the system?**
+- **Why does `next` connect `next` to `dashboard/veterinario/page.tsx`, `http.ts`, `PaginaInstitucional.tsx`, `veterinario/[id]/page.tsx`, `lucide-react`, `signup/tutor/page.tsx`, `SearchBar.tsx`, `useAuth`, `services/bloqueios.ts`, `Header.tsx`, `api/agendamentos/route.ts`, `onboarding/page.tsx`, `onboarding/clinica/page.tsx`, `package.json`, `google-calendar.ts`, `api.tsx`, `google.ts`, `veterinarios/route.ts`, `@vinejs/vine`, `vinculos.ts`, `signup/page.tsx`?**
+  _High betweenness centrality (0.187) - this node is a cross-community bridge._
+- **What connects `@aws-sdk/s3-request-presigner`, `prisma`, `react-big-calendar` to the rest of the system?**
   _16 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `ok` be split into smaller, more focused modules?**
-  _Cohesion score 0.07993827160493827 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `react` to `dashboard/veterinario/page.tsx`, `veterinarios/bloqueios.ts`, `CityAutocomplete.tsx`, `PaginaInstitucional.tsx`, `explorar/page.tsx`, `lucide-react`, `next`, `SearchBar.tsx`, `useAuth`, `signup/veterinario/page.tsx`, `Header.tsx`, `onboarding/page.tsx`, `onboarding/clinica/page.tsx`, `package.json`, `api.tsx`?**
-  _High betweenness centrality (0.038) - this node is a cross-community bridge._
+- **Should `serverError` be split into smaller, more focused modules?**
+  _Cohesion score 0.12657004830917876 - nodes in this community are weakly interconnected._
+- **Why does `react` connect `next` to `dashboard/veterinario/page.tsx`, `veterinarios/bloqueios.ts`, `CityAutocomplete.tsx`, `PaginaInstitucional.tsx`, `veterinario/[id]/page.tsx`, `lucide-react`, `signup/tutor/page.tsx`, `SearchBar.tsx`, `useAuth`, `Header.tsx`, `onboarding/page.tsx`, `onboarding/clinica/page.tsx`, `package.json`, `api.tsx`?**
+  _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Should `services/prontuario.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.06151742993848257 - nodes in this community are weakly interconnected._
-- **Why does `server-only` connect `server-only` to `services/prontuario.ts`, `services/veterinarios.ts`, `session.ts`, `requireUser`, `@prisma/client`, `services/bloqueios.ts`, `updating`, `storage.ts`, `api/agendamentos/route.ts`, `package.json`, `google-calendar.ts`, `google.ts`, `whatsapp-notificacoes.ts`, `whatsapp.test.ts`, `services/auth.ts`, `veterinarios/route.ts`, `jwt.ts`, `@vinejs/vine`, `services/tutor.ts`, `services/avaliacoes.ts`, `whatsapp.ts`, `vinculos.ts`, `subscription.ts`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+  _Cohesion score 0.1350806451612903 - nodes in this community are weakly interconnected._
+- **Why does `server-only` connect `server-only` to `services/prontuario.ts`, `services/veterinarios.ts`, `http.ts`, `json`, `AsaasService`, `services/anotacoes.ts`, `services/bloqueios.ts`, `pets/[id]/photo/route.ts`, `package.json`, `google-calendar.ts`, `google.ts`, `whatsapp-notificacoes.ts`, `whatsapp.test.ts`, `services/auth.ts`, `veterinarios/route.ts`, `jwt.ts`, `@vinejs/vine`, `creating`, `ok`, `whatsapp.ts`, `vinculos.ts`, `subscription.ts`, `services/clinicas.ts`, `services/onboarding.ts`, `veterinario-dashboard.ts`, `storage.ts`, `services/brazilapi.ts`?**
+  _High betweenness centrality (0.043) - this node is a cross-community bridge._
 - **Should `dashboard/veterinario/page.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.048287971905179985 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.050921861281826165 - nodes in this community are weakly interconnected._
