@@ -1,0 +1,1261 @@
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 24px 0;
+  background: var(--background);
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.searchSection {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: center;
+}
+
+.searchBar {
+  position: relative;
+  flex: 1;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 12px 12px 44px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  background: white;
+  transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.cityFilter {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  background: white;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  min-width: 180px;
+}
+
+.cityFilter:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.results {
+  margin: 16px 0;
+}
+
+.resultsInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.resultsCount {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.clearFiltersButton {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.clearFiltersButton:hover {
+  color: var(--primary-dark);
+}
+
+.clearFiltersButtonLarge {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: background-color 0.2s ease;
+}
+
+.clearFiltersButtonLarge:hover {
+  background: var(--primary-dark);
+}
+
+.veterinariosList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.veterinarioCard {
+  background: white;
+  border: var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.cardContent {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.leftColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: min(650px, 72vw);
+}
+
+.rightColumn {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-self: flex-start;
+}
+
+.firstRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.imageContainer {
+  flex-shrink: 0;
+}
+
+.infoColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.detailsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.addressSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.addressText {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.profileImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+}
+
+.placeholderImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  background: var(--muted-background, #f8f9fa);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fef3c7;
+  padding: 4px 8px;
+  border-radius: var(--border-radius);
+  align-self: flex-start;
+}
+
+.starIcon {
+  color: #f59e0b;
+}
+
+.ratingValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.reviewCount {
+  font-size: 12px;
+  color: #92400e;
+  opacity: 0.8;
+}
+
+.nameSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.vetNome {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.verifiedBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0px;
+  border-radius: 12px;
+}
+
+
+
+.verifiedIcon {
+  color: var(--primary);
+}
+
+.verifiedText {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.clinicNameInfo {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.crmv {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.clinicStatusBadgeContainer {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.clinicStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.mapsButton {
+  background: none;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  align-self: flex-start;
+}
+
+.mapsButton:hover {
+  background: #f1f5f9;
+  border-color: var(--secondary);
+}
+
+.vetBio {
+  margin: 12px 0;
+}
+
+.vetBio p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.specialties {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0px 8px 0px;
+}
+
+.specialtyTag {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.specialtyTag:hover {
+  background: #e2e8f0;
+  border-color: var(--secondary);
+}
+
+.specialtyCount {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.expandButton {
+  background: none;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.expandButton:hover {
+  background: #f1f5f9;
+  border-color: var(--secondary);
+  color: var(--secondary);
+}
+
+.specialtyPricing {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.pricingItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.priceIcon {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.specialtyName {
+  font-size: 14px;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.specialtyPrice {
+  font-size: 16px;
+  color: #059669;
+  font-weight: 600;
+}
+
+.experience {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.clinicName {
+  margin-top: 8px;
+}
+
+.clinicLink {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.clinicLink:hover {
+  color: var(--primary-dark);
+}
+
+.fullWeekCalendar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.calendarNavigation {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.navButton {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 4px 6px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navButton:hover {
+  border-color: var(--secondary);
+  color: var(--secondary);
+  background: #f8f9fa;
+}
+
+.calendarDays {
+  display: flex;
+  gap: 6px;
+}
+
+.dayCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 6px;
+  border-radius: var(--border-radius);
+  background: white;
+  min-width: 70px;
+  flex: 1;
+  transition: background-color 0.2s ease;
+}
+
+.dayCard:hover {
+  background: #fefefe;
+}
+
+.bookingSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bookingBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dateHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 2px;
+}
+
+.dayNameText {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.dateText {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.hoursContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.hourSlot {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 3px 6px;
+  border-radius: 3px;
+  background: #f8f9fa;
+  min-width: 45px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.hourSlot:hover {
+  background: #e9ecef;
+}
+
+.closedSlot {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 3px 6px;
+  font-style: italic;
+}
+
+.appointmentBooking {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  align-self: stretch;
+  min-height: 100%;
+}
+
+.pricingHeader {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+.price {
+  font-family: var(--font-heading);
+  color: var(--primary);
+  font-size: 20px;
+  font-weight: 500;
+
+}
+
+.promoText {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.dateText {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.slotsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+}
+
+.appointmentSlot {
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--border-radius);
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.appointmentSlot:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.appointmentSlotSelected {
+  background: var(--primary-dark) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 12px rgba(230, 126, 34, 0.4);
+  border: 2px solid #fff;
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.agendarButton {
+  width: 100%;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.agendarButton:hover:not(:disabled) {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.agendarButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.noSlotsAvailable {
+  width: 100%;
+  text-align: center;
+  padding: 16px;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 14px;
+}
+
+.moreTimesButton {
+  background: #ffe4b565;
+  border: none;
+  border-radius: 20px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  padding: 10px 16px;
+  transition: all 0.2s ease;
+  flex: 0 0 calc(50% - 2px);
+  min-width: 60px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moreTimesButtonBelow {
+  background: #ffe4b565;
+  border: none;
+  border-radius: 20px;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  padding: 8px;
+  transition: color 0.2s ease;
+  width: 100%;
+  height: auto;
+}
+
+.moreTimesButton:hover,
+.moreTimesButtonBelow:hover {
+  background: #f39c1220;
+  color: var(--primary-dark);
+}
+
+.priceSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: var(--border-radius);
+  border: 1px solid #e2e8f0;
+}
+
+.priceLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+/* .price {
+  font-size: 20px;
+  font-weight: 500;
+  color: #1e293b;
+} */
+
+.noResults {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+
+.noResults h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.noResults p {
+  font-size: 14px;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  font-size: 16px;
+}
+
+.error {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+}
+
+.error h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.error p {
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.retryButton {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.retryButton:hover {
+  background: var(--primary-dark);
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 24px 0 24px;
+  margin-bottom: 20px;
+}
+
+.modalProfileInfo {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.modalImageContainer {
+  flex-shrink: 0;
+}
+
+.modalImage {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+}
+
+.modalPlaceholder {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  background: var(--muted-background, #f8f9fa);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.modalDetails {
+  flex: 1;
+}
+
+.modalNameSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.modalName {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.modalVerifiedBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  cursor: help;
+  transition: all 0.2s ease;
+}
+
+.modalVerifiedBadge:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(71, 85, 105, 0.2);
+}
+
+.modalVerifiedIcon {
+  color: #475569;
+}
+
+.modalVerifiedText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.modalLocation {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.modalRating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.modalCrmv {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.modalSpecialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.modalSpecialtyTag {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.modalSpecialtyTag:hover {
+  background: #e2e8f0;
+  border-color: var(--secondary);
+}
+
+.modalAddress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modalMapsButton {
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  transition: background-color 0.2s ease;
+}
+
+.modalMapsButton:hover {
+  background: var(--primary-dark);
+}
+
+.modalClinica {
+  font-size: 14px;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 8px;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+  background: var(--muted-background, #f8f9fa);
+}
+
+.modalBody {
+  padding: 0 24px;
+}
+
+.modalSection {
+  margin-bottom: 20px;
+}
+
+.modalSection h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.modalSection p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.modalFooter {
+  padding: 16px 24px 24px 24px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.modalPrice {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.modalScheduleBtn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: var(--border-radius);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modalScheduleBtn:hover {
+  background: var(--primary-dark);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .searchSection {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .searchBar {
+    width: 100%;
+    flex: none;
+  }
+
+  .cityFilter {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .firstRow {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  /* Center Rating */
+  .rating {
+    align-self: center;
+    margin-bottom: 8px;
+    /* Add some spacing if needed */
+  }
+
+  /* Abbreviate Verified Badge on Mobile */
+  .verifiedText,
+  .verifiedBadge span {
+    display: none;
+  }
+
+  .verifiedBadge {
+    padding: 6px;
+    /* Reduced padding for icon only */
+    border-radius: 50%;
+    /* Circle shape if preferred, or keep rounded rect */
+  }
+
+  /* Center Time Button/Slots if visible in card */
+  /* .moreTimesButton, .appointmentSlot {} - Removed empty rule */
+
+  .slotsContainer {
+    justify-content: center;
+    margin: 0 auto;
+    /* Center the container itself */
+  }
+
+  .infoColumn {
+    align-items: center;
+    text-align: center;
+  }
+
+  .secondRow {
+    margin-left: 0;
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .detailsColumn {
+    align-items: center;
+    text-align: center;
+  }
+
+  .addressSection {
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .weeklyCalendarCompact {
+    justify-content: center;
+  }
+
+  .availabilityHeader {
+    justify-content: center;
+  }
+
+  .specialties {
+    justify-content: center;
+  }
+
+  .cardContent {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .rightColumn {
+    align-items: center;
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    padding-left: 0;
+    padding-top: 16px;
+    margin-left: 0;
+    margin-top: 16px;
+    width: 100%;
+    /* Ensure full width for centering context */
+  }
+
+  /* Ensure appointment slots are centered */
+  .appointmentBooking {
+    max-width: 100%;
+    min-width: auto;
+    align-items: center;
+    /* Center children */
+  }
+
+  .slotsContainer {
+    justify-content: center;
+  }
+
+  .modalHeader {
+    padding: 20px 16px 0 16px;
+  }
+
+  .modalProfileInfo {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Center modal rating */
+  .modalRating {
+    justify-content: center;
+  }
+
+  .modalVerifiedText {
+    display: none;
+  }
+
+  .modalBody {
+    padding: 0 16px;
+  }
+
+  .modalSection h3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Center section titles in modal too if desired, user said "unify", stick to main card primarily */
+    gap: 8px;
+  }
+
+  .modalFooter {
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.availabilityGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.daySlot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.dayName {
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.dayHours {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* Tabs Section */
+.tabsContainer {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 16px;
+}
+
+.tabButton {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  color: var(--primary);
+}
+
+.activeTab {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+}

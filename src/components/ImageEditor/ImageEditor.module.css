@@ -1,0 +1,243 @@
+.editorContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow: hidden; /* Prevent background scrolling */
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+}
+
+.editorModal {
+  position: relative;
+  z-index: 1001;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.editorHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.editorTitle {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.editorClose {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.editorClose:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.editorBody {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  flex: 1;
+  overflow-y: auto;
+  background-color: #fafafa;
+}
+
+.canvasWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.canvas {
+  max-width: 100%;
+  max-height: 100%;
+  cursor: grab;
+  user-select: none;
+  touch-action: none; /* Prevent default touch behaviors like pinch-zoom */
+}
+
+.canvas:active {
+  cursor: grabbing;
+}
+
+.controlsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 250px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.controlLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+
+
+.dragHint {
+  margin: 0;
+  padding: 12px;
+  background-color: #f5f5f5;
+  border-left: 4px solid #4a90e2;
+  font-size: 13px;
+  color: #666;
+  border-radius: 4px;
+  line-height: 1.4;
+}
+
+.resetButton {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.resetButton:hover {
+  background-color: #f9f9f9;
+  border-color: #bbb;
+  color: #333;
+}
+
+.editorFooter {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+  background-color: #fafafa;
+}
+
+.cancelButton {
+  padding: 10px 24px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: white;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #f0f0f0;
+  border-color: #bbb;
+  color: #333;
+}
+
+.saveButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--primary);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.saveButton:hover {
+  background-color: var(--primary-dark);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.saveButton:active {
+  transform: translateY(1px);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .editorModal {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .editorBody {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .controlsPanel {
+    width: 100%;
+  }
+
+  .canvasWrapper {
+    min-height: 300px;
+  }
+
+  .rotationButtons {
+    flex-wrap: wrap;
+  }
+
+  .editorFooter {
+    flex-direction: column-reverse;
+  }
+
+  .cancelButton,
+  .saveButton {
+    width: 100%;
+  }
+}

@@ -1,0 +1,1891 @@
+/* ==========================================================================
+   ORIGINAL VETERINARIO STYLES (Preserved for internal components/modals)
+   ========================================================================== */
+.pageWrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  /* Off-white background */
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 20px;
+  font-family: var(--font-family);
+}
+
+.loading,
+.notFound,
+.error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 18px;
+  color: var(--text-muted);
+}
+
+.error h3 {
+  color: var(--error-color, #e74c3c);
+  margin-bottom: 16px;
+}
+
+.error p {
+  margin-bottom: 24px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  padding: 8px 12px;
+  border-radius: var(--border-radius);
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background-color: var(--primary-light);
+}
+
+.profileHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.headerRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.imageContainer {
+  flex-shrink: 0;
+}
+
+.profileImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.placeholderImage {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nameSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.verifiedBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  cursor: help;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.verifiedBadge:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(71, 85, 105, 0.2);
+}
+
+.verifiedIcon {
+  color: #475569;
+}
+
+.verifiedBadge span {
+  color: #475569;
+}
+
+.specialties {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.specialtyTag {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: default;
+}
+
+.specialtyTag:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.specialtyCount {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.locationSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.locationText {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.mapsButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--primary);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.mapsButton:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* New Meta Styles */
+.metaRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.crmvBadge,
+.experienceBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.crmvBadge {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.experienceBadge {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #dcfce7;
+}
+
+.metaIcon {
+  opacity: 0.8;
+}
+
+/* New Rating Styles */
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.runningRating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #fffbeb;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #fef3c7;
+}
+
+.ratingValue {
+  font-size: 16px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.reviewCountLabel {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-decoration-color: #e2e8f0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.reviewCountLabel:hover {
+  color: var(--primary);
+  text-decoration-color: var(--primary);
+}
+
+.bookingSection {
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+.providerCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.availabilitySection h4 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.dateRange {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.dateSelection {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.dateOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  min-width: 60px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  /* Prevent shrinking */
+}
+
+.dateOption:hover {
+  border-color: var(--primary);
+}
+
+.dateOption.selected {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.dateOption.unavailable {
+  background-color: #f5f5f5;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dateOption.unavailable:hover {
+  border-color: #e5e7eb;
+}
+
+.dayName {
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.dayNumber {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.timeSlots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.timeSlot {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--border-radius);
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.timeSlot:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.timeSlot.active {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* Estado desabilitado para horários ocupados */
+.timeSlot:disabled {
+  background-color: #f5f5f5;
+  color: #9ca3af;
+  border-color: #e5e7eb;
+  cursor: not-allowed;
+}
+
+.moreTimesBtn {
+  grid-column: span 2;
+  padding: 8px 12px;
+  border: 1px solid var(--primary);
+  border-radius: var(--border-radius);
+  background: white;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.moreTimesBtn:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary-dark);
+}
+
+.noAvailability {
+  grid-column: span 2;
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.noAvailability p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.availabilitySection {
+  position: relative;
+}
+
+.addDateBtn {
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.addDateBtn:hover {
+  background: #f1f5f9;
+  border-color: var(--primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.datePickerPopover {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pricingInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.pricing {
+  display: flex;
+  flex-direction: column;
+}
+
+.discountPrice {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.promoText {
+  font-size: 12px;
+  color: var(--primary);
+}
+
+.originalPrice {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.bookButton {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.bookButton:hover {
+  background-color: var(--primary-dark);
+}
+
+.bookButton.disable {
+  background-color: white;
+  color: var(--primary);
+  border: var(--primary) 1px solid;
+  cursor: unset;
+}
+
+.faqSection {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.faqSection h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.faqItem {
+  border: 1px solid #e5e7eb;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.faqQuestion {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border: none;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+}
+
+.faqQuestion:hover {
+  background-color: #f8fafc;
+}
+
+.faqAnswer {
+  background: #f8fafc;
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.faqAnswer p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 2rem;
+  border-bottom: 2px solid #f1f5f9;
+  margin: 1.5rem 0 2rem 0;
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabsContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.tabItem {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.5rem 0.25rem;
+  position: relative;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tabItem:hover {
+  color: var(--primary);
+}
+
+.tabActive {
+  color: var(--primary);
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: -0.6rem;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary);
+  border-radius: 2px;
+}
+
+.tabContent {
+  min-height: 300px;
+}
+
+
+.aboutContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.aboutItem {
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.aboutItem:last-child {
+  border-bottom: none;
+}
+
+.aboutItem h3 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.aboutItem p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.specialtiesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.insurancesSection {
+  padding: 20px 0;
+}
+
+.insurancesSection h3 {
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.insuranceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.insuranceCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius);
+  padding: 16px;
+  text-align: center;
+}
+
+.moreInsurances {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.locationSection h3 {
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.addressCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius);
+  padding: 20px;
+}
+
+.addressCard p {
+  margin: 0 0 4px 0;
+  color: var(--text-color);
+}
+
+.reviewsSection {
+  padding: 20px 0;
+}
+
+.reviewsOverview h3 {
+  margin: 0 0 20px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.reviewStats {
+  margin-bottom: 24px;
+}
+
+.overallRating {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.ratingNumber {
+  font-size: 48px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.ratingDetails div {
+  margin-bottom: 4px;
+  color: var(--text-muted);
+}
+
+.reviewsList {
+  display: grid;
+  gap: 16px;
+}
+
+.reviewCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--border-radius);
+  padding: 20px;
+}
+
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.reviewRating {
+  display: flex;
+  gap: 2px;
+  color: #fbbf24;
+}
+
+.verifiedPatient {
+  background-color: var(--primary-light);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.reviewComment {
+  margin: 0 0 12px 0;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
+.reviewerLine {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.reviewFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reviewDate {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .profileHeader {
+    display: flex;
+    /* Use flex instead of grid for simpler stacking */
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  /* Booking section should be full width below header */
+  .bookingSection {
+    position: relative;
+    top: 0;
+    width: 100%;
+    max-width: 500px;
+    /* Optional: limit width on larger mobile/tablets */
+    margin: 20px auto 0;
+    /* Center it */
+  }
+
+  .headerRow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 16px;
+  }
+
+  .imageContainer {
+    width: 120px;
+    /* Fixed width for image container to prevent shrinking/growth */
+    height: 120px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Ensure modal fits on mobile */
+  .agendamento {
+    width: 100%;
+    max-width: 500px;
+
+
+    padding: 20px;
+  }
+}
+
+/* Pet Image styles moved to consolidated section below */
+
+/* ==========================================================================
+   HEART ANIMATION STYLES (Global)
+   ========================================================================== */
+.heartWrapper {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Base icon styles */
+.baseHeart {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.heartPulse {
+  animation: heart-pulse 0.4s ease-out;
+}
+
+@keyframes heart-pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.3);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.heartActive {
+  fill: #ef4444;
+  color: #ef4444;
+  animation: heart-pulse 0.4s ease-out;
+}
+
+/* Original rule, outside media query */
+.agendamento {
+  background-color: #ffff;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  width: 100%;
+  /* Changed from fixed 500px */
+  max-width: 500px;
+  /* Added max-width */
+  border-radius: 10px;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .name {
+    font-size: 24px;
+  }
+
+  .details {
+    align-items: center;
+    text-align: center;
+  }
+
+  /* Center flex containers in details */
+  .nameSection,
+  .specialties,
+  .locationSection,
+  .ratingDisplay {
+    justify-content: center;
+  }
+
+  /* Abbreviate Verified Badge */
+  .verifiedBadge span {
+    display: none;
+  }
+
+  .verifiedBadge {
+    padding: 6px;
+    border-radius: 50%;
+  }
+
+  .highlightGrid,
+  .aboutContent {
+    gap: 0;
+  }
+
+  .tabNavigation {
+    padding-bottom: 12px;
+    justify-content: center;
+    /* Center tabs if possible, or keep scrollable */
+  }
+
+  /* Center booking section elements */
+  .timeSlots {
+    justify-content: center;
+  }
+
+  .dateSelection {
+    justify-content: flex-start;
+    /* Start from left to allow scrolling */
+  }
+
+  .availabilitySection h4 {
+    text-align: center;
+  }
+
+  /* Add padding to tab content sections on mobile */
+  .tabContent,
+  .aboutContent,
+  .insurancesSection,
+  .locationSection,
+  .reviewsSection {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* Modal overlay para sucesso */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Garante overlay acima de qualquer header/menu */
+  z-index: 9999;
+  padding: 20px;
+}
+
+.modalCenter {
+  max-width: 720px;
+  width: 100%;
+  outline: none;
+}
+
+.agendamento {
+  background-color: #ffff;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.scrollableContent {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 8px;
+  margin-bottom: 20px;
+}
+
+/* Scrollbar customizada */
+.scrollableContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollableContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollableContent::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+
+.scrollableContent::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+.agendamentoInfo {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+/* Campos do modal - base e foco (mesma animação, reutilizável) */
+.formField {
+  margin-bottom: 20px;
+}
+
+.fieldLabel {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.inputBase {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  outline: none;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.inputBase:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.15);
+  transform: scale(1.01);
+}
+
+/* Textarea de observações com a mesma animação de foco */
+.obsInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  outline: none;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.obsInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.15);
+  transform: scale(1.01);
+}
+
+/* Seletor de Pet */
+.petSelectGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.petCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 8px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.petCard:hover {
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.petCardSelected {
+  border-color: var(--primary);
+  background: #fff7ed;
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+.petCardSelected::after {
+  content: '✓';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--primary);
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.petImageWrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #f1f5f9;
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.petCardSelected .petImageWrapper {
+  border-color: var(--primary);
+  transform: scale(1.05);
+}
+
+.petImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.petName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+}
+
+.petCardSelected .petName {
+  color: var(--primary-dark);
+}
+
+.petAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #eee;
+}
+
+.petAvatarPlaceholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #eee;
+  font-weight: 600;
+}
+
+.petName {
+  font-size: 14px;
+  color: #111827;
+}
+
+.petImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: #fff7ed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.petCard:hover .petImagePlaceholder {
+  background: #ffedd5;
+}
+
+.noPetsBox {
+  background: #fff7ed;
+  border: 1px dashed #fdba74;
+  color: #92400e;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.addPetButton {
+  margin-top: 10px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Resumo do agendamento (mais limpo e agradável) */
+.summarySection {
+  background: #f8fafc;
+  border: 1px solid #eaebec;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.summaryHeader {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.providerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #eaebec;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  color: #374151;
+  line-height: 1;
+}
+
+.priceBlock {
+  text-align: right;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.priceSub {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+@media (max-width: 520px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .priceBlock {
+    text-align: left;
+  }
+}
+
+/* ==========================================================================
+   CLINIC PROFILE DESIGN STYLES (Appended)
+   ========================================================================== */
+
+.layoutMain {
+
+  background-color: var(--background);
+  min-height: 100vh;
+}
+
+.coverWrapper {
+  width: 100%;
+  height: 250px;
+  background-color: #eee;
+  position: relative;
+}
+
+.coverFallback {
+  width: 100%;
+  height: 100%;
+  background-image: url('/BannerVet.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.contentWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+  position: relative;
+}
+
+.headerInfo {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: -60px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 2rem;
+  position: relative;
+  z-index: 10;
+  margin-bottom: 2rem;
+}
+
+.logoWrapper {
+  margin-top: -60px;
+  background: white;
+  padding: 4px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+
+.logoFallback {
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+.titleSection {
+  flex: 1;
+  padding-top: 0.5rem;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.titleRow h1 {
+  font-size: 1.8rem;
+  color: var(--text-color);
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: orange;
+}
+
+.reviewCount {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: var(--surface);
+  border-color: var(--text-secondary);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.linkBtn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.openNow {
+  color: green;
+  font-weight: 600;
+  font-size: 0.8rem;
+  background: #e6fffa;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sidebar {
+  position: relative;
+}
+
+.stickyCard {
+  position: sticky;
+  top: 100px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+}
+
+.stickyCard h3 {
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.stickyCard p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 0.8rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 0.8rem;
+  transition: background 0.2s;
+}
+
+.primaryBtn:hover {
+  background: var(--primary-dark);
+}
+
+.outlineBtn {
+  width: 100%;
+  padding: 0.8rem;
+  background: white;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+.section p {
+  line-height: 1.4;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background: var(--surface);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.amenitiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.amenityItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+.profList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: box-shadow 0.2s;
+}
+
+.profCard:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.profAvatar {
+  width: 50px;
+  height: 50px;
+  background: #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #666;
+}
+
+.profInfo {
+  flex: 1;
+}
+
+.profInfo h3 {
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.profInfo span {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.profInfo small {
+  color: #999;
+}
+
+.bookBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.bookBtn:hover {
+  background: var(--primary-light);
+}
+
+@media (max-width: 768px) {
+  .headerInfo {
+    flex-direction: column;
+    margin-top: -30px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .logoWrapper {
+    margin-top: -60px;
+  }
+
+  .titleRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .infoGrid {
+    text-align: left;
+    /* Keep details aligned left readable */
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Enhanced Specialties Section */
+.specialtiesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.specialtyCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-color);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.specialtyCard:hover {
+  background-color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.specialtyIcon {
+  color: var(--primary);
+  background-color: rgba(230, 126, 34, 0.1);
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Locations Section */
+.locationsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.locationCard {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  transition: all 0.2s ease;
+}
+
+.locationCard:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.locationMapPreview {
+  width: 100px;
+  height: 100px;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  overflow: hidden;
+}
+
+.locationImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.locationInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.locationName {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.locationBadge {
+  font-size: 11px;
+  background-color: var(--primary);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.locationAddress {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.locationActions {
+  display: flex;
+  gap: 12px;
+}
+
+.actionLink {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actionLink:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .locationCard {
+    flex-direction: column;
+  }
+
+  .locationMapPreview {
+    width: 100%;
+    height: 120px;
+  }
+}
+
+.locationSelectionWrapper {
+  margin-bottom: 24px;
+}
+
+.locationHelpText {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  background-color: #f1f5f9;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+}
+
+.selectLocationPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  text-align: center;
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  color: #64748b;
+}
+
+.promptIcon {
+  margin-bottom: 12px;
+  color: #94a3b8;
+  opacity: 0.6;
+}
+
+.selectLocationPrompt p {
+  font-size: 14px;
+  margin: 0;
+  max-width: 220px;
+  line-height: 1.5;
+  font-weight: 500;
+}

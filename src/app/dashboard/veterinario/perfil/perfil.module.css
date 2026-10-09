@@ -1,0 +1,824 @@
+.pageBackground {
+  min-height: 100vh;
+  background-color: #f5f5f7;
+  padding: 2rem 1rem;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.backButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  color: #333;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  background-color: #f9f9f9;
+  border-color: #d0d0d0;
+}
+
+.section {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
+}
+
+.sectionDescription {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.especialidadesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.especialidadeChip {
+  padding: 0.6rem 1.2rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background-color: #f8fafc;
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.especialidadeChip:hover {
+  border-color: var(--primary);
+  background-color: #fff;
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.especialidadeChip.selected {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(230, 126, 34, 0.2); /* Assuming orange primary */
+}
+
+.saveButton {
+  padding: 0.600rem 1rem;
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+}
+
+.saveButton:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.scheduleGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.scheduleRow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.dayToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 150px;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.dayLabel {
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+
+.timeInputs {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.timeInput {
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.timeInput:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.timeSeparator {
+  color: #666;
+  font-weight: 500;
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .scheduleRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dayToggle {
+    width: 100%;
+  }
+
+  .timeInputs {
+    width: 100%;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Location selector */
+.select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* Schedule section */
+.horariosSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.daySchedule {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dayLabel {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.timeSlots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.timeSlot {
+  padding: 0.5rem 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #666;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 60px;
+  text-align: center;
+}
+
+.timeSlot:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.timeSlot.selected {
+  border-color: var(--primary);
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.noLocationsMessage {
+  color: #666;
+  font-style: italic;
+  padding: 2rem;
+  text-align: center;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .timeSlots {
+    gap: 0.4rem;
+  }
+
+  .timeSlot {
+    min-width: 50px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* Accordion Styles */
+.accordionList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.accordionItem {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.accordionItem.active {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(230, 126, 34, 0.1);
+}
+
+.accordionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  background-color: #fff;
+  transition: background-color 0.2s;
+}
+
+.accordionHeader:hover {
+  background-color: #f9f9f9;
+}
+
+.locationSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.locationTitle {
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 1rem;
+}
+
+.locationSubtitle {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.accordionIcon {
+  color: #666;
+  transition: transform 0.2s;
+}
+
+.accordionItem.active .accordionIcon {
+  transform: rotate(180deg);
+  color: var(--primary);
+}
+
+.accordionContent {
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.3s ease-out;
+  opacity: 0;
+}
+
+.accordionContent.open {
+  padding: 1.5rem;
+  max-height: 4000px; /* Increased to avoid cutting off long schedules */
+  opacity: 1;
+  border-top: 1px solid #e0e0e0;
+  overflow: visible; /* Ensure nothing is cut off */
+}
+
+/* Add Location Button */
+.addLocationButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  background-color: #fff;
+  border: 2px dashed #e0e0e0;
+  border-radius: 8px;
+  color: #666;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 1.5rem;
+}
+
+.addLocationButton:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.closeButton:hover {
+  color: #1a1a1a;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.cancelButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  color: #666;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton:hover {
+  background-color: #f5f5f7;
+  color: #333;
+}
+
+.submitButton {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.priceInputContainer {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.currencyPrefix {
+  position: absolute;
+  left: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.priceInput {
+  padding-left: 2.5rem !important;
+}
+
+/* Location Photo Styles */
+.locationPhotoSection {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.locationPhotoPreviewWrapper {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+
+.locationPhotoPreview {
+  width: 140px;
+  height: 100px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.locationPhotoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photoPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #94a3b8;
+}
+
+.photoPlaceholder span {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.photoUploadLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1.2rem;
+  background-color: #fff;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.photoUploadLabel:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.photoUploadLabel:active {
+  transform: translateY(0);
+}
+
+.locationImageUploader {
+  width: 100%;
+  max-width: 300px;
+  height: 160px;
+  margin-bottom: 1rem;
+}
+
+.fieldHelp {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.75rem;
+}
+
+.mainSaveButton {
+  padding: 10px 20px;
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainSaveButton:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.mainSaveButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* toast/feedback */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: 0.9rem 1.4rem;
+  border-radius: 10px;
+  background-color: #1e293b;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  animation: slideIn 0.25s ease;
+}
+
+.toast.success {
+  background-color: #16a34a;
+}
+
+.toast.error {
+  background-color: #dc2626;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Google Calendar Integration Card */
+.calendarIntegrationCard {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  margin-top: 1rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calendarIntegrationCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-color: #cbd5e1;
+}
+
+.calendarIconContainer {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  flex-shrink: 0;
+}
+
+.calendarDetails {
+  flex: 1;
+}
+
+.calendarCardTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.calendarCardDescription {
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.calendarStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  margin-top: 0.5rem;
+}
+
+.calendarStatus.connected {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.calendarStatus.disconnected {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.connectCalendarButton {
+  padding: 0.65rem 1.25rem;
+  background-color: #4285f4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(66, 133, 244, 0.2);
+}
+
+.connectCalendarButton:hover {
+  background-color: #357ae8;
+}
+
+.connectCalendarButton:active {
+  transform: scale(0.98);
+}
+
+.disconnectCalendarButton {
+  padding: 0.65rem 1.25rem;
+  background-color: #fff;
+  border: 1px solid #e2e8f0;
+  color: #ef4444;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s, transform 0.1s;
+}
+
+.disconnectCalendarButton:hover {
+  background-color: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.disconnectCalendarButton:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 640px) {
+  .calendarIntegrationCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .connectCalendarButton, .disconnectCalendarButton {
+    width: 100%;
+    justify-content: center;
+  }
+}

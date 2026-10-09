@@ -1,0 +1,154 @@
+.miniCalendarContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border: 1px solid #eef0f3;
+  padding: 16px;
+  width: 280px;
+  user-select: none;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.monthLabel {
+  font-weight: 700;
+  color: #1e293b;
+  text-transform: capitalize;
+  font-size: 14px;
+}
+
+.yearMonthPicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.yearSelect {
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+  background: white;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.yearSelect:hover,
+.yearSelect:focus {
+  border-color: var(--primary);
+}
+
+.navButtons {
+  display: flex;
+  gap: 4px;
+}
+
+.navBtn {
+  background: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 4px;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.navBtn:hover {
+  background: #f1f5f9;
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 8px;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.daysGrid {
+  display: grid;
+  gap: 2px;
+}
+
+.weekRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  color: #1e293b;
+}
+
+.day:hover:not(.disabled) {
+  background: #fff7ed;
+  color: var(--primary);
+}
+
+.day.otherMonth {
+  color: #cbd5e1;
+}
+
+.day.selected {
+  background: var(--primary) !important;
+  color: white !important;
+  font-weight: 700;
+}
+
+.day.today:not(.selected) {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.day.today::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+.day.disabled {
+  color: #e2e8f0;
+  cursor: not-allowed;
+  background: none !important;
+}
+
+.closeBtn {
+  margin-left: 8px;
+  color: #94a3b8;
+}
+
+.closeBtn:hover {
+  color: #ef4444;
+}

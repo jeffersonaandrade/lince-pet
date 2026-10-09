@@ -1,0 +1,36 @@
+.skeleton {
+  background: #f1f5f9;
+  background: linear-gradient(
+    90deg,
+    #f1f5f9 25%,
+    #f8fafc 50%,
+    #f1f5f9 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode compatibility */
+/* @media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: #334155;
+    background: linear-gradient(
+      90deg,
+      #334155 25%,
+      #475569 50%,
+      #334155 75%
+    );
+    background-size: 200% 100%;
+  }
+} */

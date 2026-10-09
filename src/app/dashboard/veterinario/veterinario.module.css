@@ -1,0 +1,2614 @@
+/* Container Principal */
+.contentWrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fundo de página suave para destacar os cards brancos */
+.pageBackground {
+  background: #f8fafc;
+  /* cinza bem claro para contraste com cards brancos */
+  min-height: 100vh;
+  width: 100%;
+  padding: 1rem 0;
+  /* respiro vertical fora dos cards */
+}
+
+.appointmentAddressName {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  font-family: var(--font-heading);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.namePlan{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.appointment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.appointmentAddress {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+
+.detailsConsultTitle {
+  font-size: 14px;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionInstruction {
+  margin-bottom: 20px;
+}
+
+.sectionInstruction p {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.4;
+  font-weight: 400;
+}
+
+/* Loading */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Seção de Boas-vindas */
+.welcomeSection {
+  text-align: start;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+.profileHeader {
+  display: flex;
+  align-items: flex-start;
+  /* Alinha o topo do avatar com o topo dos textos */
+  gap: 1.5rem;
+}
+
+.profileImageContainer {
+  position: relative;
+}
+
+.profileImage {
+  width: 100px;
+  /* aumentado */
+  height: 100px;
+  /* aumentado */
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profileImagePlaceholder {
+  width: 100px;
+  /* aumentado para manter consistência com a imagem */
+  height: 100px;
+  /* aumentado */
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--primary);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profileImageClickable {
+  cursor: pointer;
+}
+
+.profileChangeHint {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.profileImageUploader {
+  width: 128px;
+  height: 128px;
+}
+
+.profileInitial {
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.welcomeText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Painel à direita do cabeçalho para métricas (créditos/plano) */
+.headerRightPanel {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+  min-width: 160px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.metricBox {
+  min-width: 160px;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #eef0f3;
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06);
+  box-sizing: border-box;
+}
+
+.metricLabel {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+.metricValue {
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 18px;
+  margin-top: 4px;
+}
+
+.planLink {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2563eb;
+  text-decoration: none;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+.planLink:hover {
+  background: #eff6ff;
+}
+
+.welcomeTitle {
+  font-size: 32px;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.commentPetLine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 2px;
+}
+
+.commentPetAvatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #eee;
+}
+
+.commentPetAvatarPlaceholder {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border: 1px solid #eee;
+}
+
+.commentPetName {
+  font-size: 12px;
+  color: #374151;
+}
+
+.welcomeSubtitle {
+  font-size: 14.4px;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+/* Chips de informações no topo */
+.topInfoChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  min-width: 0;
+}
+
+.infoChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  max-width: 100%;
+}
+
+.chipText {
+  white-space: normal;
+  word-break: break-all;
+  /* Allow breaking long words if necessary, but normal wrap is preferred */
+  line-height: 1.2;
+}
+
+.creditChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--primary) 12%, white);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, white);
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.creditValue {
+  font-variant-numeric: tabular-nums;
+}
+
+.creditLabel {
+  opacity: 0.8;
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* Chip para exibir o plano atual, visual mais neutro */
+.planChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Link discreto para alterar plano */
+.linkButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px;
+  height: 28px;
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 6px;
+}
+
+.linkButton:hover {
+  background: #eff6ff;
+}
+
+.bioText {
+  margin-top: 10px;
+  color: #334155;
+  line-height: 1.5;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Layout Principal - Duas Colunas */
+.mainContent {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Coluna Esquerda - Calendário */
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.calendarCard {
+  background: white;
+  border-radius: 16px;
+  padding: 24px 32px 32px 32px;
+  /* padding-top aumentado para dar respiro do topo */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+/* Seletor de visualização (Mês / Semana / Dia / Agenda) - substitui a toolbar padrão */
+.viewToggle {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.viewButton {
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid #e6e9ef;
+  color: #334155;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.viewButtonActive {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.sectionTitle {
+  font-size: 20px;
+  color: var(--text-color);
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+.calendarContainer {
+  min-height: 400px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.calendarPlaceholder {
+  text-align: center;
+  padding: 3rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+}
+
+.calendarPlaceholder p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendarHint {
+  font-size: 0.9rem !important;
+  color: #adb5bd !important;
+  font-style: italic;
+}
+
+/* Próximas Consultas */
+.appointmentsCard {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.appointmentsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cardTitle {
+  font-size: 20px;
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.appointmentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.appointmentItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #ffffff;
+  border: 1px solid #eef0f3;
+  cursor: pointer;
+  border-radius: 14px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.appointmentTime {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, white);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, white);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.timeIcon {
+  color: inherit;
+}
+
+.appointmentTimeText {
+  font-variant-numeric: tabular-nums;
+}
+
+.appointmentDetails {
+  flex: 1;
+}
+
+.appointmentClient {
+  font-size: 0.975rem;
+  color: #0f172a;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  margin-bottom: 6px;
+}
+
+.appointmentMeta {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+
+}
+
+.consultHour {
+  background-color: var(--primary-light);
+  /* Laranja suave do site */
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  /* Borda laranja discreta */
+  border-radius: 6px;
+  color: var(--primary);
+  /* Cor principal do site */
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.appointmentStatus {
+  width: 100%;
+  display: flex;
+
+}
+
+
+.appointmentPet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.metaIcon {
+  color: #94a3b8;
+}
+
+.appointmentTypeBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  gap: 6px;
+  border-radius: 999px;
+  background: #f1f5ff;
+  color: var(--primary);
+  border: 1px solid #e3eaff;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Navegação de data para Próximas Consultas */
+.dateNav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dateButton {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dateButton:hover {
+  background: #e2e8f0;
+}
+
+.datePickerWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dateLabelButton {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  color: #0f172a;
+  min-width: 130px;
+  justify-content: center;
+}
+
+.dateLabelButton:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.calendarIcon {
+  color: var(--primary);
+  opacity: 0.8;
+}
+
+.dateLabelText {
+  font-size: 14px;
+}
+
+.hiddenDateInput {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* .todayButton {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.todayButton:hover {
+  background: color-mix(in srgb, var(--primary) 10%, white);
+} */
+
+/* Modal básico */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 10000;
+}
+
+
+.modalCard {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  /* Fix para telas pequenas ou conteúdo longo */
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #eef0f3;
+}
+
+.modalTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.modalClose {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.modalBody {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* Permite scroll se o conteúdo for muito grande */
+  overflow-y: auto;
+  flex: 1;
+}
+
+.input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  outline: none;
+  font-size: 1rem;
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.errorRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 8px;
+  color: #b91c1c;
+}
+
+.errorIcon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: inherit;
+  margin-top: 2px;
+}
+
+.modalRow {
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.modalFooter {
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid #eef0f3;
+}
+
+.primaryButton {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.6rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Status badge */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: auto;
+  /* empurra para a direita no container flex */
+}
+
+.status-concluido,
+.status-concluida {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #c8e6c9;
+}
+
+/* Alias para status 'realizado' ter o mesmo estilo de concluído */
+.status-realizado {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #c8e6c9;
+}
+
+.status-confirmado {
+  background: #e6f0ff;
+  color: #1d4ed8;
+  border-color: #bfd7ff;
+}
+
+.status-pendente {
+  background: #fff7e6;
+  color: #ad6800;
+  border-color: #ffe7ba;
+}
+
+.status-cancelado {
+  background: #fdecea;
+  color: #b42318;
+  border-color: #fac5c0;
+}
+
+/* Em Andamento */
+.status-em-andamento {
+  background: #eef2ff;
+  color: #3730a3;
+  border-color: #c7d2fe;
+}
+
+/* Coluna Direita - Informações */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Grid de Estatísticas */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.statCard {
+  background: transparent;
+  /* dentro do card 'Visão geral', não precisamos de sub-card branco */
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.statIcon {
+  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.statContent {
+  flex: 1;
+}
+
+.statNumber {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 0.3rem;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  font-weight: 500;
+}
+
+/* Card de Informações */
+.infoCard {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.infoContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.infoValue {
+  color: #7f8c8d;
+  font-size: 0.95rem;
+}
+
+.infoBadge {
+  background: #27ae60;
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Card de Comentários */
+.commentsCard {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.commentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.commentsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.commentsList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.commentsList::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.commentsList::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.commentItem {
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #f0f1f1;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.commentAuthor {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.commentTime {
+  font-size: 0.8rem;
+  color: #95a5a6;
+}
+
+.commentText {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.commentRating {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.starIcon {
+  width: 18px;
+  height: 18px;
+  color: #f39c12;
+  transition: all 0.2s ease;
+}
+
+.starIcon:hover {
+  transform: scale(1.2);
+}
+
+/* Card de Ações Rápidas */
+.actionsCard {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.actionButton {
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.actionButton:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+.actionButton:active {
+  transform: translateX(3px);
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .mainContent {
+    grid-template-columns: 1fr;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Tablet e telas médias */
+@media (max-width: 767px) and (min-width: 481px) {
+  .contentWrapper {
+    padding: 1rem;
+  }
+
+  .profileHeader {
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .profileImage,
+  .profileImagePlaceholder {
+    width: 90px;
+    height: 90px;
+  }
+
+  .welcomeText {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .headerRightPanel {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 1rem;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+
+  .calendarHeader {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .sectionTitle {
+    flex: 0 1 auto;
+  }
+
+  .viewToggle {
+    margin-left: 0;
+    flex: 0 1 auto;
+    gap: 4px;
+  }
+
+  .viewButton {
+    padding: 7px 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  .calendarContainer {
+    min-height: 360px;
+    overflow-x: auto;
+  }
+
+  /* Semana view com melhor espaço */
+  .calendarContainer[data-view="week"] :global(.rbc-calendar) {
+    min-width: auto;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-gutter) {
+    width: 40px;
+    font-size: 0.65rem;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-header .rbc-header) {
+    padding: 6px 3px;
+    font-size: 0.7rem;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-view .rbc-event) {
+    padding: 2px 4px;
+    font-size: 0.7rem;
+  }
+
+  .appointmentItem {
+    flex-direction: row;
+  }
+
+  .mainContent {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    padding: 0 12px 4rem !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+    position: relative;
+    z-index: 10;
+  }
+
+  .profileHeader {
+    gap: 1rem;
+  }
+
+  .profileImage,
+  .profileImagePlaceholder {
+    width: 80px;
+    /* ligeiramente maior também em telas médias */
+    height: 80px;
+  }
+
+  .profileInitial {
+    font-size: 1.5rem;
+  }
+
+  .welcomeTitle {
+    font-size: 1.8rem;
+  }
+
+  .welcomeSubtitle {
+    font-size: 1rem;
+  }
+
+  .mainContent {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .statCard {
+    padding: 1rem;
+  }
+
+  .statIcon {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+
+  .statNumber {
+    font-size: 1.5rem;
+  }
+
+  /* Responsividade do calendário */
+  .calendarCard {
+    padding: 1rem;
+  }
+
+  .calendarHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .viewToggle {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .viewButton {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .calendarContainer {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .coverWrapper {
+    height: 120px;
+  }
+
+  .headerInfo {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1rem 0.75rem;
+    margin-top: -30px;
+    gap: 1rem;
+    z-index: 20;
+    position: relative;
+  }
+
+  .logoWrapper {
+    margin-top: -50px;
+    width: 90px;
+    height: 90px;
+    z-index: 30;
+    position: relative;
+  }
+
+  .titleSection {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .titleRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .welcomeText {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .headerRightPanel {
+    width: 100%;
+    align-items: center;
+    margin: 0;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .metricBox {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .metricLabel {
+    font-size: 11px;
+  }
+
+  .metricValue {
+    font-size: 16px;
+  }
+
+  .contentWrapper {
+    padding: 0 10px 3rem !important;
+  }
+
+  .profileImage,
+  .profileImagePlaceholder {
+    width: 80px;
+    /* mantém um pouco maior que antes no mobile */
+    height: 80px;
+  }
+
+  .welcomeTitle {
+    font-size: 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.4rem;
+  }
+
+  .cardTitle {
+    font-size: 1.2rem;
+  }
+
+  .appointmentItem {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .appointmentTime {
+    min-width: auto;
+    align-self: flex-start;
+  }
+
+  .appointment {
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .appointmentAddressName {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .metaInfoItem {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+
+  .metaInfoText, .priceValue {
+    font-size: 11px;
+  }
+
+  .metaInfoIcon {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  /* Responsividade mobile para calendário */
+  .calendarCard,
+  .appointmentsCard,
+  .infoCard,
+  .commentsCard {
+    padding: 1.25rem 1rem !important;
+    border-radius: 12px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .calendarCard {
+    padding: 1rem 0.5rem !important;
+  }
+
+  .calendarHeader {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    flex: 0 0 auto;
+  }
+
+  .sectionTitle {
+    font-size: 1.2rem;
+    width: 100%;
+  }
+
+  .viewToggle {
+    gap: 2px;
+    display: flex;
+    flex-wrap: nowrap;
+    min-width: 0;
+    flex: 0 1 auto;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .viewButton {
+    padding: 5px 6px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 1 auto;
+    min-width: 0;
+    border: 1px solid #e6e9ef;
+  }
+
+  .calendarContainer {
+    min-height: 280px;
+    max-height: 500px;
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 414px) {
+  .contentWrapper {
+    padding: 0 8px 2rem !important;
+    position: relative;
+    z-index: 10;
+  }
+
+  .headerInfo {
+    padding: 1rem 0.5rem !important;
+  }
+
+  .calendarCard,
+  .appointmentsCard,
+  .infoCard,
+  .commentsCard {
+    padding: 1rem 0.75rem !important;
+  }
+
+  .statIcon {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.5rem !important;
+  }
+
+  .statNumber {
+    font-size: 1.25rem !important;
+  }
+}
+
+  /* Fix para scroll horizontal no mobile */
+  .calendarContainer :global(.rbc-calendar) {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Mês view - compacto */
+  .calendarContainer :global(.rbc-month-view) {
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-header) {
+    padding: 8px 0;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex: 1 0 14.28% !important;
+    max-width: 14.28% !important;
+    width: 14.28% !important;
+    background-color: #f8fafc;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    box-sizing: border-box;
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-header:last-child) {
+    border-right: none;
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-date-cell) {
+    padding: 4px 0;
+    min-height: 45px;
+    flex: 1 0 14.28% !important;
+    max-width: 14.28% !important;
+    width: 14.28% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    /* border-right: 1px solid #f1f5f9; */
+    /* border-bottom: 1px solid #f1f5f9; */
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-date-cell:last-child) {
+    border-right: none;
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-date-cell > span) {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* Regra mestre para remover bordas padrão da biblioteca que causam conflito */
+  .calendarContainer :global(.rbc-month-view *) {
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  /* Aplica flex e largura exata em todos os contêineres de linha */
+  .calendarContainer :global(.rbc-month-view .rbc-row),
+  .calendarContainer :global(.rbc-month-view .rbc-row-bg) {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    width: 100% !important;
+  }
+
+  /* Garante que todos os filhos de qualquer linha ocupem exatamente 14.28% */
+  .calendarContainer :global(.rbc-month-view .rbc-row > *),
+  .calendarContainer :global(.rbc-month-view .rbc-row-bg > *) {
+    flex: 1 0 14.28% !important;
+    max-width: 14.28% !important;
+    width: 14.28% !important;
+    box-sizing: border-box !important;
+    /* border-right: 1px solid #f1f5f9 !important; */
+    /* Divisória clara oficial */
+  }
+
+  /* Remove borda do último dia da linha */
+  .calendarContainer :global(.rbc-month-view .rbc-row > *:last-child),
+  .calendarContainer :global(.rbc-month-view .rbc-row-bg > *:last-child),
+  .calendarContainer :global(.rbc-month-view .rbc-header:last-child) {
+    border-right: none !important;
+  }
+
+  /* Ajuste específico para o Header para manter o alinhamento das bordas */
+  .calendarContainer :global(.rbc-month-view .rbc-header) {
+    border-right: 1px solid #e2e8f0 !important;
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-event) {
+    padding: 1px 2px;
+    font-size: 0.65rem;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-radius: 3px;
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-event-content) {
+    display: none !important;
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-event-label) {
+    display: inline !important;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+  }
+
+  .calendarContainer :global(.rbc-month-view .rbc-show-more) {
+    font-size: 0.6rem;
+    padding: 1px 2px;
+    cursor: pointer;
+  }
+
+  .calendarContainer[data-view="week"] {
+    min-height: 320px;
+    max-height: 420px;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Forçar o calendário semanal a ter o mesmo tamanho do mês */
+  .calendarContainer[data-view="week"] :global(.rbc-time-view) {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    overflow: visible;
+    background: #fff;
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-calendar) {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-header) {
+    border-radius: 0;
+    background: #f8f9fa;
+    display: flex !important;
+    flex-direction: row !important;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-header-gutter) {
+    width: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    flex: 0 0 32px !important;
+    background: #f8f9fa;
+    padding: 0;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-header .rbc-header) {
+    padding: 4px 1px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-align: center;
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    line-height: 1.2;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-gutter) {
+    width: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+    flex: 0 0 32px !important;
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #6b7280;
+    background: #f8f9fa;
+    padding: 0;
+    text-align: center;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-content) {
+    border-top: 1px solid #e2e8f0;
+    background: #fff;
+    display: flex !important;
+    flex-direction: row !important;
+    flex: 1;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-day-slot) {
+    border-right: 1px solid #e2e8f0;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-day-slot:last-child) {
+    border-right: none;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-slot) {
+    border-top: 1px solid #f1f5f9;
+    height: 20px;
+    flex: 0 0 20px;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-content .rbc-timeslot-group) {
+    min-height: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-view .rbc-event) {
+    padding: 0px 1px;
+    font-size: 0.55rem;
+    line-height: 1;
+    border-radius: 2px;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-time-view .rbc-event svg) {
+    display: none !important;
+  }
+
+  /* Remover espaços extras no calendário semanal */
+  .calendarContainer[data-view="week"] :global(.rbc-row-segment) {
+    padding: 0;
+  }
+
+  .calendarContainer[data-view="week"] :global(.rbc-event-label) {
+    display: none;
+  }
+
+  /* Dia view */
+  .calendarContainer[data-view="day"] {
+    min-height: 350px;
+  }
+
+  .calendarContainer[data-view="day"] :global(.rbc-time-view) {
+    border: none;
+  }
+
+  .calendarContainer[data-view="day"] :global(.rbc-time-gutter) {
+    width: 44px;
+    font-size: 0.7rem;
+  }
+
+  .calendarContainer[data-view="day"] :global(.rbc-time-header .rbc-header) {
+    padding: 4px 2px;
+    font-size: 0.75rem;
+  }
+
+  .calendarContainer[data-view="day"] :global(.rbc-time-view .rbc-event) {
+    padding: 2px 4px;
+    font-size: 0.7rem;
+  }
+
+  /* Agenda view */
+  .calendarContainer[data-view="agenda"] {
+    min-height: 300px;
+  }
+
+  .calendarContainer[data-view="agenda"] :global(.rbc-agenda-view) {
+    border: none;
+  }
+
+  .calendarContainer[data-view="agenda"] :global(.rbc-agenda-view table) {
+    font-size: 0.8rem;
+  }
+
+  .calendarContainer[data-view="agenda"] :global(.rbc-agenda-view table td) {
+    padding: 4px;
+  }
+
+  /* Remove transformações que causam bugs de layout */
+  .calendarContainer :global(.rbc-event:hover) {
+    transform: none !important;
+  }
+
+  /* Ajustes gerais para o calendário no mobile */
+  .calendarContainer :global(.rbc-header) {
+    padding: 6px 2px;
+    font-size: 0.75rem;
+  }
+
+  .calendarContainer :global(.rbc-event) {
+    font-size: 0.6rem;
+    padding: 1px 2px;
+  }
+
+  .calendarContainer :global(.rbc-date-cell) {
+    padding: 4px 2px;
+  }
+
+  /* Fix para ícones/SVG dentro de eventos causarem layout shift */
+  .calendarContainer :global(.rbc-event svg) {
+    max-width: 12px;
+    max-height: 12px;
+  }
+
+
+/* Indicadores de consulta no mês (bolinhas) */
+.monthHeader {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.dayNumber {
+  text-align: right;
+  font-weight: 700;
+  margin-bottom: 4px;
+  font-size: 0.85rem;
+  color: #1e293b;
+  padding: 4px 6px 0 0;
+  display: flex !important;
+  justify-content: flex-end;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.todayNumber {
+  background-color: var(--primary);
+  color: #ffffff !important;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  /* Alinha à direita no desktop */
+  margin-right: 2px;
+  padding: 0 !important;
+}
+
+@media (max-width: 480px) {
+  .dayNumber {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .todayNumber {
+    margin: 0 auto;
+    /* Centraliza o círculo no mobile */
+  }
+
+  .dotsContainer {
+    justify-content: center;
+    padding: 2px 0;
+  }
+}
+
+.dotsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: flex-end;
+  padding: 0 4px 4px 4px;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.plusLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+.editProfileButton {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-top: 10px;
+}
+
+.editProfileButton:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+/* ==========================================================================
+   NEW PROFILE HEADER STYLES (Matching Tutor Profile)
+   ========================================================================== */
+
+.coverWrapper {
+  width: 100%;
+  height: 250px;
+  background-color: #eee;
+  position: relative;
+  z-index: 1;
+  /* Garante que fique abaixo do conteúdo */
+}
+
+.coverFallback {
+  width: 100%;
+  height: 100%;
+  background-image: url('/BannerVet.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.contentWrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+  position: relative;
+  z-index: 10;
+  /* Garante que todo o conteúdo fique acima do banner */
+  box-sizing: border-box;
+}
+
+.headerInfo {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin-top: -80px;
+  /* Puxa para cima do banner */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 2rem;
+  position: relative;
+  z-index: 20;
+  /* Valor alto para ficar acima do banner (z-index: 1) */
+  margin-bottom: 2rem;
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  align-items: stretch;
+}
+
+.logoWrapper {
+  margin-top: -50px;
+  /* Ajustado para não subir excessivamente */
+  background: white;
+  padding: 4px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 140px;
+  height: 140px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 30;
+  /* Acima de tudo no headerInfo */
+}
+
+.titleSection {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.titleRow h1 {
+  font-size: 1.8rem;
+  color: var(--text-color);
+  margin: 0;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.titleRow p {
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* Telas médias: entre 769px e 1024px - ajustar espaçamento do header */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .headerInfo {
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .logoWrapper {
+    width: 110px;
+    height: 110px;
+  }
+
+  .titleRow {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .headerRightPanel {
+    min-width: 140px;
+  }
+
+  .editProfileButton {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .coverWrapper {
+    height: 160px;
+  }
+
+  .headerInfo {
+    flex-direction: column;
+    margin-top: -40px;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    z-index: 20;
+    position: relative;
+  }
+
+  .logoWrapper {
+    margin-top: -60px;
+    width: 120px;
+    height: 120px;
+    z-index: 30;
+    position: relative;
+  }
+
+  .titleSection {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .titleRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .welcomeText {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .headerRightPanel {
+    width: 100%;
+    align-items: center;
+    margin: 0;
+    min-width: 0;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .metricBox {
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+  }
+
+  .topInfoChips {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .infoChip {
+    max-width: 100%;
+  }
+
+  .chipText {
+    white-space: normal;
+    font-size: 0.75rem;
+  }
+
+  .bioText {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .editProfileButton {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}
+
+/* Modernização dos Detalhes da Consulta */
+.detailsConsult {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.appointmentMetaInfos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.metaInfoItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f8fafc;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.metaInfoItem:hover {
+  background-color: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.metaInfoIcon {
+  color: var(--primary);
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.metaInfoText {
+  font-size: 13px;
+  font-weight: 500;
+  color: #475569;
+}
+
+.priceValue {
+  color: #e67e22;
+  font-weight: bold;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.metaInfoSubText {
+  font-size: 12px;
+  font-weight: 400;
+  color: #94a3b8;
+  margin-left: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.porteBadge {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #475569;
+}
+
+
+.appointmentFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.typeBadge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  background-color: #f1f5f9;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.statusBadge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-realizado,
+.status-concluido,
+.status-concluida {
+  background-color: #dcfce7 !important;
+  color: #16a34a !important;
+}
+
+.status-cancelado {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+
+.status-pendente,
+.status-aguardando,
+.status-aguardanao,
+.status-aguardano {
+  background-color: #fef3c7 !important;
+  color: #d97706 !important;
+}
+
+.status-confirmado {
+  background-color: #dbeafe !important;
+  color: #2563eb !important;
+}
+
+.status-em-andamento {
+  background-color: #e0e7ff !important;
+  color: #4f46e5 !important;
+}
+
+/* ==========================================================================
+   IMPROVED MODAL STYLES
+   ========================================================================== */
+
+.modalCardLarge {
+  max-width: 650px !important;
+  width: 95% !important;
+}
+
+.modalSection {
+  margin-bottom: 12px;
+}
+
+.modalSectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.5px;
+}
+
+.modalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.infoCardSmall {
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  padding: 12px;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.infoCardFull {
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  padding: 14px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.infoCardIcon {
+  color: var(--primary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.infoCardLabel {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.infoCardValue {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.obsBox {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #92400e;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.startConsultationSection {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid #f1f5f9;
+}
+
+.startTitle {
+  font-size: 16px;
+  color: var(--text-color);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.startDescription {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 20px;
+}
+
+.codeInputWrapper {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.codeInput {
+  flex: 1;
+  padding: 14px 20px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-align: center;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #fff;
+  color: #1e293b;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.codeInput:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.startBtn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.startBtn:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+.startBtn:disabled {
+  background-color: #ffb265;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .modalGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .codeInputWrapper {
+    flex-direction: column;
+  }
+
+  .startBtn {
+    padding: 14px;
+  }
+}
+
+/* ==========================================================================
+   PET PROFILE & GALLERY STYLES
+   ========================================================================== */
+
+.petProfileWrapper {
+  display: flex;
+  gap: 20px;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  padding: 16px;
+  border-radius: 16px;
+  align-items: center;
+}
+
+.petGallery {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mainPhotoWrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background-color: #e2e8f0;
+  border: 2px solid #fff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.petMainPhoto {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.petPhotoPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.sideGallery {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gallerySlot {
+  width: 30px;
+  height: 30px;
+  background-color: #fff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: all 0.2s ease;
+}
+
+.gallerySlot:hover {
+  background-color: #f1f5f9;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.petDetailsCard {
+  flex: 1;
+}
+
+.petNameHeader {
+  font-size: 20px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.petSpecsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.petSpecItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  background: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #f1f5f9;
+}
+
+.specIcon {
+  color: var(--primary);
+  opacity: 0.7;
+}
+
+.porteBadgeSimple {
+  text-transform: capitalize;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #475569;
+}
+
+
+@media (max-width: 500px) {
+  .petProfileWrapper {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .petGallery {
+    justify-content: center;
+  }
+
+  .petSpecsRow {
+    justify-content: center;
+  }
+}
+
+.instructionsBox {
+  margin-top: 24px;
+  padding: 16px;
+  background-color: #f0fdf4;
+  border: 1px solid #dcfce7;
+  border-radius: 12px;
+}
+
+.instructionsTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #166534;
+  margin-bottom: 12px;
+}
+
+.instructionsList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.instructionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #14532d;
+  line-height: 1.5;
+}
+
+.instructionBullet {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #22c55e;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.metaInfoIcon {
+  color: var(--primary);
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.reviewItem {
+  padding: 1.25rem;
+  border: 1px solid #f0f1f1;
+  border-radius: 12px;
+  transition: background-color 0.2s;
+}
+
+.reviewItem:last-child {
+  border-bottom: none;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.reviewTutorName {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.reviewStars {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.reviewText {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #475569;
+  margin: 0;
+}
+
+.reviewDate {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.75rem;
+  font-weight: 500;
+}
+
+/* Responsividade Geral */
+

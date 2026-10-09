@@ -1,0 +1,199 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    background: white;
+    width: 100%;
+    max-width: 440px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: modalSlide 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlide {
+    from {
+        transform: translateY(20px) scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+    border-bottom: 1px solid #f3f4f6;
+    position: relative;
+}
+
+.iconWrap {
+    width: 48px;
+    height: 48px;
+    background: #fff8f0;
+    color: var(--primary);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.titleArea h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.titleArea p {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.closeBtn:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.content {
+    padding: 24px;
+}
+
+.clinicCard {
+    background: #f9fafb;
+    border: 1px solid #eaebec;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.clinicInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #9ca3af;
+    letter-spacing: 0.5px;
+}
+
+.value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.description {
+    font-size: 14px;
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.footer {
+    padding: 24px;
+    background: #f9fafb;
+    display: flex;
+    gap: 12px;
+}
+
+.rejectBtn {
+    flex: 1;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #eaebec;
+    background: white;
+    color: #374151;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rejectBtn:hover {
+    background: #f3f4f6;
+}
+
+.acceptBtn {
+    flex: 2;
+    height: 48px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.acceptBtn:hover {
+    /* background: #; */
+    transform: translateY(-1px);
+}
+
+.acceptBtn:active {
+    transform: translateY(0);
+}
+
+.acceptBtn:disabled,
+.rejectBtn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+@media (max-width: 480px) {
+    .modal {
+        max-width: none;
+        margin: 16px;
+        border-radius: 20px;
+    }
+}

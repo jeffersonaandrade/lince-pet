@@ -1,0 +1,368 @@
+/* ============================================================
+   NotificationBell — Estilos do componente de sininho 🔔
+   ============================================================ */
+
+/* Container posicional (relativo ao header) */
+.bellContainer {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Botão do sininho */
+.bellButton {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid #eaebec;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bellButton:hover {
+    background: #f3f4f6;
+    color: #e67e22;
+    border-color: #d1d5db;
+}
+
+/* Badge vermelho com contador */
+.badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    line-height: 1;
+    animation: badgePop 0.3s ease;
+}
+
+@keyframes badgePop {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Estilos para a versão Mobile (dentro do menu lateral) */
+.mobileBellContainer {
+    position: relative;
+    width: 100%;
+}
+
+.mobileMenuBtn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 0.95rem;
+    height: 48px;
+    border-radius: 10px;
+    color: #374151;
+    text-decoration: none;
+    border: 1px solid #eaebec;
+    font-weight: 600;
+    font-size: 16px;
+    font-family: inherit;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+    transition: background 0.2s;
+}
+
+.mobileMenuBtn:hover {
+    background: #f9fafb;
+}
+
+.mobileMenuIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+}
+
+.mobileMenuBadge {
+    margin-left: auto;
+    background: #ef4444;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+/* Estilos para a versão Dropdown (dentro do header) */
+.dropdownBellContainer {
+    position: relative;
+    width: 100%;
+}
+
+.dropdownBadge {
+    margin-left: auto;
+    background: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+
+/* Painel dropdown */
+.panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 380px;
+    max-height: 480px;
+    background: white;
+    border: 1px solid #eaebec;
+    border-radius: 14px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12),
+        0 4px 12px rgba(0, 0, 0, 0.06);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: panelSlideIn 0.2s ease;
+}
+
+@keyframes panelSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Header do painel */
+.panelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.panelTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.markAllBtn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: none;
+    background: #f0fdf4;
+    color: #16a34a;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.markAllBtn:hover {
+    background: #dcfce7;
+}
+
+.markAllBtn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* Lista de notificações */
+.notificationList {
+    overflow-y: auto;
+    flex: 1;
+    max-height: 400px;
+}
+
+/* Cada item de notificação */
+.notificationItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border: none;
+    border-bottom: 1px solid #f9fafb;
+    background: white;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: background 0.15s ease;
+}
+
+.notificationItem:hover {
+    background: #fafafa;
+}
+
+.notificationItem:last-child {
+    border-bottom: none;
+}
+
+/* Notificação não lida — fundo mais destacado */
+.notificationItem.unread {
+    background: #fef9f3;
+}
+
+.notificationItem.unread:hover {
+    background: #fdf0e0;
+}
+
+/* Ícone do tipo de notificação */
+.iconWrap {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Conteúdo textual */
+.notifContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    /* para truncar texto se necessário */
+}
+
+.notifTitle {
+    font-size: 13px;
+    font-weight: 650;
+    color: #111827;
+    line-height: 1.3;
+}
+
+.notifMessage {
+    font-size: 12.5px;
+    color: #6b7280;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.notifTime {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+/* Bolinha de não-lida */
+.unreadDot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    background: #e67e22;
+    border-radius: 50%;
+    margin-top: 6px;
+}
+
+/* Estado vazio */
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 48px 20px;
+    color: #9ca3af;
+}
+
+.emptyState p {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Animação de loading (3 pontos pulsando) */
+.loadingDots {
+    display: flex;
+    gap: 6px;
+}
+
+.loadingDots span {
+    width: 8px;
+    height: 8px;
+    background: #d1d5db;
+    border-radius: 50%;
+    animation: dotPulse 1.2s ease-in-out infinite;
+}
+
+.loadingDots span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.loadingDots span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes dotPulse {
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ============================================================
+   Responsivo — Mobile
+   ============================================================ */
+@media (max-width: 768px) {
+    .panel {
+        position: fixed;
+        top: 70px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+        max-height: calc(100vh - 90px);
+        border-radius: 16px;
+        z-index: 200;
+    }
+}

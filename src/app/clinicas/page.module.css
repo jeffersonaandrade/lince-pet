@@ -1,0 +1,28 @@
+.container {
+  padding-top: 80px; /* Space for fixed header */
+  min-height: 100vh;
+  background-color: var(--background);
+}
+
+.hero {
+  text-align: center;
+  padding: 4rem 1rem;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.hero h1 {
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.hero p {
+  color: var(--text-secondary);
+}
+
+.list {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}

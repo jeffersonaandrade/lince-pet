@@ -1,0 +1,161 @@
+import React from "react";
+import styles from "./tutor.module.css";
+import {
+  Clock,
+  MapPin,
+  Dog,
+  AlertCircle,
+  CreditCard,
+  Maximize2
+} from "lucide-react";
+
+interface AppointmentItemProps {
+  agendamento: any;
+  statusBadge: (status?: string) => React.ReactNode;
+  onCancel: (id: string) => void;
+  onRate?: (agendamento: any) => void;
+  onReschedule?: (agendamento: any) => void;
+  canRate?: boolean; // Keep for compatibility
+  isRated?: boolean; // Keep for compatibility
+}
+
+export function AppointmentItem({
+  agendamento,
+  statusBadge,
+  onCancel,
+  onRate,
+  onReschedule,
+  canRate,
+  isRated,
+}: AppointmentItemProps) {
+  const vetName = `${agendamento.veterinario.nome} ${agendamento.veterinario.sobrenome || ""}`.trim();
+  const locationName = agendamento.local_nome || "Local não informado";
+  const locationAddress = agendamento.local_endereco || "";
+  const hour = agendamento.horario_consulta?.substring(0, 5) || "--:--";
+  const pet = agendamento.pet;
+  const canCancel = agendamento.pode_cancelar;
+
+  // Use props if provided, otherwise derive from agendamento
+  const finalCanRate = canRate !== undefined ? canRate : (agendamento.ja_passou && !agendamento.avaliado && agendamento.status === "realizado");
+  const finalIsRated = isRated !== undefined ? isRated : agendamento.avaliado;
+
+  return (
+    <div className={styles.appointmentItem}>
+      <div className={styles.appointmentDetailSection}>
+        {/* Main Info Row */}
+        <div className={styles.appointmentMainInfo}>
+          <div>
+            <div className={styles.appointmentLocationName}>
+              <MapPin size={18} className={styles.metaIcon} />
+              {locationName}
+            </div>
+            {locationAddress && (
+              <div className={styles.appointmentLocationAddress}>
+                {locationAddress}
+              </div>
+            )}
+            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>
+                Dr(a). {vetName}
+              </span>
+            </div>
+          </div>
+          <div className={styles.consultTime}>
+            <Clock size={14} style={{ marginRight: 6 }} />
+            {hour}
+          </div>
+        </div>
+
+        <div className={styles.detailsDivider} />
+
+        {/* Details Section */}
+        <div>
+          <div className={styles.detailsLabel}>
+            <AlertCircle size={14} />
+            Detalhes do agendamento
+          </div>
+
+          <div className={styles.metaGrid}>
+            {/* Pet Info */}
+            <div className={styles.metaItem} title="Pet">
+              <div className={styles.metaIcon}><Dog size={16} /></div>
+              <div className={styles.metaText}>{pet?.nome || "Pet não informado"}</div>
+              {pet?.especie && (
+                <div className={styles.metaText} style={{ opacity: 0.6, fontSize: '0.8rem' }}>
+                  ({pet.especie}{pet.raca ? ` - ${pet.raca}` : ""})
+                </div>
+              )}
+            </div>
+
+            {/* Porte */}
+            {pet?.porte && (
+              <div className={styles.metaItem} title="Porte">
+                <div className={styles.metaIcon}><Maximize2 size={16} /></div>
+                <span
+                  className={styles.porteBadgeSmall}
+                  data-porte={pet.porte.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")}
+                >
+                  Porte {pet.porte}
+                </span>
+              </div>
+            )}
+
+            {/* Price */}
+            <div className={styles.metaItem} title="Valor">
+              <div className={styles.metaIcon}><CreditCard size={16} /></div>
+              <span className={styles.priceText}>
+                {agendamento.preco_consulta
+                  ? `R$ ${Number(agendamento.preco_consulta).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+                  : "Não informado"
+                }
+              </span>
+            </div>
+
+            {/* Status */}
+            <div className={styles.metaItem}>
+              {statusBadge(agendamento.status)}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className={styles.appointmentFooter} style={{ marginTop: '1rem', borderTop: '1px solid #f1f5f9', paddingTop: '1rem', display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+          {finalCanRate && (
+            <button
+              onClick={() => onRate?.(agendamento)}
+              className={styles.primaryButton}
+              style={{ padding: '0.5rem 1rem', fontSize: '0.85rem' }}
+            >
+              Avaliar Consulta
+            </button>
+          )}
+
+          {finalIsRated && (
+            <span style={{ fontSize: '0.85rem', color: '#16a34a', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Avaliado
+            </span>
+          )}
+          { }
+          {canCancel && (
+            <>
+              <button
+                onClick={() => onReschedule?.(agendamento)}
+                className={styles.secondaryButton}
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#e67e22', borderColor: '#f8e8daff', background: '#fff' }}
+              >
+                Reagendar
+              </button>
+              <button
+                onClick={() => onCancel(agendamento.id)}
+                className={styles.secondaryButton}
+                style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', color: '#dc2626', borderColor: '#fee2e2', background: '#fff' }}
+              >
+                Cancelar
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

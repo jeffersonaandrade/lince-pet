@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "skills": {
+    "clean-architecture": {
+      "source": "ciembor/agent-rules-books",
+      "sourceType": "github",
+      "skillPath": "clean-architecture/SKILL.md",
+      "computedHash": "d4c3414b656a48671999b1da466f28057e7530bdf787e964e61bd0d713d983cc"
+    },
+    "patterns-of-enterprise-application-architecture": {
+      "source": "ciembor/agent-rules-books",
+      "sourceType": "github",
+      "skillPath": "patterns-of-enterprise-application-architecture/SKILL.md",
+      "computedHash": "74d2c948c48088cc41db83d4d2c6e8b9e2b51b85026dae2f1d9e6e3115668c59"
+    },
+    "refactoring": {
+      "source": "ciembor/agent-rules-books",
+      "sourceType": "github",
+      "skillPath": "refactoring/SKILL.md",
+      "computedHash": "68c036dfae9d0bfc564bf4d76f4a92369148f0a4d6bbe566cf0180dc5aada549"
+    },
+    "release-it": {
+      "source": "ciembor/agent-rules-books",
+      "sourceType": "github",
+      "skillPath": "release-it/SKILL.md",
+      "computedHash": "1049f1e10e17ebf47305587de618bcf737221dd0acd4382843595fdce14ee185"
+    },
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/composition-patterns/SKILL.md",
+      "computedHash": "575757e3e25761c8c562d6e395d29f0b76c98b1273c0bd72d88e6ab1bc9c7d42"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "ca7b0c0c6e5f2750043f7f0cd72d16ac4e2abc48f9b5500d047a4b77a2506212"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
+    },
+    "working-effectively-with-legacy-code": {
+      "source": "ciembor/agent-rules-books",
+      "sourceType": "github",
+      "skillPath": "working-effectively-with-legacy-code/SKILL.md",
+      "computedHash": "3809c570b403c1a87b75561a1117c436d4c6045bb3e724a3caed7edaff403fbe"
+    }
+  }
+}

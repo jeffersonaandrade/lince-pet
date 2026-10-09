@@ -1,0 +1,1079 @@
+.container {
+  background-color: var(--background);
+  min-height: 100vh;
+}
+
+.coverWrapper {
+  width: 100%;
+  height: 250px;
+  background-color: #eee;
+  position: relative;
+}
+
+.coverFallback {
+  width: 100%;
+  height: 100%;
+  background-image: url('/BannerClinica.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.contentWrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+  position: relative;
+}
+
+.headerInfo {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: -60px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  display: flex;
+  gap: 2rem;
+  position: relative;
+  z-index: 10;
+  margin-bottom: 2rem;
+}
+
+.logoWrapper {
+  margin-top: -60px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid white;
+}
+
+.logoFallback {
+  width: 100%;
+  height: 100%;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+  border-radius: 8px;
+}
+
+.logoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.locationInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.titleSection {
+  flex: 1;
+  padding-top: 0.5rem;
+}
+
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.titleRow h1 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: orange;
+}
+
+.reviewCount {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: 0.9rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: var(--surface);
+  border-color: var(--text-secondary);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.linkBtn {
+  background: none;
+  border: none;
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+/* Maps Button */
+.mapsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #ffffff;
+  color: #1a73e8;
+  border: 1px solid #d0e0fa;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  margin-top: 6px;
+  text-decoration: none;
+}
+
+.mapsBtn:hover {
+  background: #ddeaff;
+  border-color: #a8c4f5;
+}
+
+/* WhatsApp Button */
+.whatsappBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: #ffffff;
+  color: #1a8a4a;
+  border: 1px solid #c0e8cc;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  margin-top: 6px;
+  text-decoration: none;
+}
+
+.whatsappBtn:hover {
+  background: #d6f5e3;
+  border-color: #8ed4a8;
+}
+
+.openNow {
+  color: #059669;
+  font-weight: 600;
+  font-size: 0.8rem;
+  background: #ecfdf5;
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid #a7f3d0;
+}
+
+.closedNow {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 0.8rem;
+  background: #fef2f2;
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid #fecaca;
+}
+
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sidebar {
+  position: relative;
+}
+
+.stickyCard {
+  position: sticky;
+  top: 100px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+}
+
+.stickyCard h3 {
+  margin-bottom: 1rem;
+}
+
+.stickyCard p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.primaryBtn {
+  width: 100%;
+  padding: 0.8rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  margin-bottom: 0.8rem;
+  transition: background 0.2s;
+}
+
+.primaryBtn:hover {
+  background: var(--primary-dark);
+}
+
+.outlineBtn {
+  width: 100%;
+  padding: 0.8rem;
+  background: white;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.section h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.section p {
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background: var(--surface);
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.amenitiesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.amenityItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+}
+
+/* Enhanced Specialties Section - Matching Veterinarian Profile */
+.specialtiesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.specialtyCard {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text-color);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.specialtyCard:hover {
+  background-color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transform: translateY(-2px);
+}
+
+.specialtyIcon {
+  color: var(--primary);
+  background-color: rgba(230, 126, 34, 0.1);
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* New Sections for Reorganization */
+.contactSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.contactCard {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8edf2;
+  transition: border-color 0.2s;
+}
+
+
+
+.contactIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  background: rgba(230, 126, 34, 0.08);
+  flex-shrink: 0;
+}
+
+.contactInfo h3 {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+}
+
+.contactInfo p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+/* Hours Section: Clean List Layout */
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+}
+
+.scheduleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.95rem;
+}
+
+.scheduleRow:last-child {
+  border-bottom: none;
+}
+
+.todayRow {
+  font-weight: 600;
+  color: var(--primary);
+  /* Optional: highlight background for today */
+  /* background-color: var(--surface); 
+     margin: 0 -1rem; 
+     padding: 0.8rem 1rem; 
+     border-radius: 8px; */
+}
+
+.dayLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+}
+
+/* Inherit color if parent is todayRow */
+.todayRow .dayLabel {
+  color: var(--primary);
+}
+
+.todayTag {
+  font-size: 0.7rem;
+  background: var(--primary);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.slotsColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  text-align: right;
+}
+
+.slotText {
+  color: var(--text-secondary);
+  font-family: inherit;
+}
+
+.todayRow .slotText {
+  color: var(--primary);
+}
+
+.closedText {
+  color: #ef4444;
+  /* Red for closed */
+  font-weight: 500;
+}
+
+.noHours {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Reviews Section */
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding-bottom: 10px;
+}
+
+.reviewCard {
+  padding: 15px;
+  border: var(--border-color) 1px solid;
+  border-radius: 10px;
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.reviewStars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #fab005;
+}
+
+.reviewDate {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.reviewerName {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  margin-right: 0.35rem;
+}
+
+.reviewText {
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
+}
+
+.profList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: box-shadow 0.2s;
+
+}
+
+
+
+.profAvatar {
+  width: 50px;
+  height: 50px;
+  background: #ddd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #666;
+}
+
+.profInfo {
+  flex: 1;
+}
+
+.profInfo h3 {
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.profInfo span {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.profInfo small {
+  color: #999;
+}
+
+.profRating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff9db;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  color: #fab005;
+  font-size: 0.9rem;
+}
+
+.bookBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.bookBtn:hover {
+  background: var(--primary-light);
+}
+
+@media (max-width: 768px) {
+  .headerInfo {
+    flex-direction: column;
+    margin-top: -30px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .logoWrapper {
+    margin-top: -60px;
+  }
+
+  .titleRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .infoGrid {
+    text-align: left;
+    /* Keep details aligned left readable */
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Heart Button Animation Styles */
+.heartWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.baseHeart {
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: #94a3b8;
+  /* Default gray */
+}
+
+.heartActive {
+  fill: #ef4444;
+  /* Red fill */
+  color: #ef4444;
+  /* Red stroke */
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 4px rgba(239, 68, 68, 0.2));
+}
+
+.actionBtn:hover .baseHeart {
+  transform: scale(1.1);
+}
+
+.actionBtn:active .baseHeart {
+  transform: scale(0.95);
+}
+
+/* Availability and Scheduling Styles - REPLICATED FROM VETERINARIO */
+.availabilitySection {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  position: relative;
+}
+
+.availabilitySection h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.addDateBtn {
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: white;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.addDateBtn:hover {
+  background: #f1f5f9;
+  border-color: var(--primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.datePickerPopover {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dateSelection {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.dateSelection::-webkit-scrollbar {
+  height: 4px;
+}
+
+.dateSelection::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+.dateOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 65px;
+  transition: all 0.2s;
+  background: white;
+  flex-shrink: 0;
+}
+
+.dateOption:hover {
+  border-color: var(--primary);
+}
+
+.dateOption.selected {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.dateOption.unavailable {
+  background-color: #f5f5f5;
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.dayName {
+  font-size: 12px;
+  margin-bottom: 4px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.dayNumber {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.timeSlots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.timeSlot {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: var(--border-radius);
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.timeSlot:hover:not(:disabled) {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.timeSlot.active {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.timeSlot:disabled {
+  background-color: #f5f5f5;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+}
+
+.moreTimesBtn {
+  grid-column: span 2;
+  padding: 10px;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  background: white;
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.moreTimesBtn:hover {
+  background-color: var(--primary-light);
+}
+
+.noAvailability {
+  grid-column: span 2;
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-style: italic;
+  background: #f8fafc;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.pricingInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  margin-bottom: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.pricing {
+  display: flex;
+  flex-direction: column;
+}
+
+.discountPrice {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.promoText {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+
+
+.bookButton {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bookButton:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.bookButton:disabled {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .timeSlots {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Modal and Appointment Summary Styles (Replicated) */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.agendamento {
+  background-color: #ffff;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 10px;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.summarySection {
+  background: #f8fafc;
+  border: 1px solid #eaebec;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.summaryHeader {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+}
+
+.providerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid #eaebec;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12px;
+  color: #374151;
+  line-height: 1;
+}
+
+.priceBlock {
+  text-align: right;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.scrollableContent {
+  overflow-y: auto;
+  flex: 1;
+  padding-right: 8px;
+  margin-bottom: 20px;
+}
+
+.scrollableContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollableContent::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 20px;
+}
+
+.tabsContainer {
+  display: flex;
+  gap: 2rem;
+  border-bottom: 2px solid #f1f5f9;
+  margin: 1.5rem 0 2rem 0;
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabsContainer::-webkit-scrollbar {
+  display: none;
+}
+
+.tabItem {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.5rem 0.25rem;
+  position: relative;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tabItem:hover {
+  color: var(--primary);
+}
+
+.tabActive {
+  color: var(--primary);
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: -0.6rem;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: var(--primary);
+  border-radius: 2px;
+}

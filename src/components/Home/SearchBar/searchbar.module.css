@@ -1,0 +1,265 @@
+.searchContainer {
+  margin-top: 1rem;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.catDecoration {
+  position: absolute;
+  right: -60px;
+  bottom: 20%;
+  height: 400px;
+  z-index: 0;
+}
+
+.searchBar {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.multiSectionContainer {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid rgba(0, 0, 0, 0.12);
+  border-radius: var(--border-radius);
+  transition: all 0.3s ease;
+  overflow: visible;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.multiSectionContainer:focus-within {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.multiSectionContainer.searchDropdownOpen {
+  border-bottom-left-radius: 0;
+}
+
+.multiSectionContainer.plansDropdownOpen {
+  border-bottom-right-radius: 0;
+}
+
+.searchSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: visible;
+  padding: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.searchSection:hover {
+  background: #f8f9fa;
+}
+
+.sectionIcon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(51, 51, 51, 0.75);
+  margin-bottom: 0.25rem;
+}
+
+.sectionInputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.searchSection:first-child {
+  flex: 2;
+}
+
+.sectionInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--foreground);
+  background: transparent;
+  padding: 0.5rem;
+}
+
+.sectionInput::placeholder {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.divider {
+  color: var(--border-color);
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin: 0 1rem;
+  user-select: none;
+}
+
+.lastSection {
+  flex: 1.5;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.searchButton {
+  background: var(--primary);
+  border: none;
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px var(--shadow-light);
+  margin-left: 1rem;
+  margin-right: 1rem;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.searchButton:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 6px 20px var(--shadow-medium);
+}
+
+.searchButton svg {
+  color: white;
+}
+
+.searchDropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 99999;
+  box-shadow: 0 8px 30px var(--shadow-medium);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.searchDropdownPortal {
+  background: white;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 8px 30px var(--shadow-medium);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.searchOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color 0.2s ease;
+}
+
+.searchOption:last-child {
+  border-bottom: none;
+}
+
+.searchOption:hover,
+.searchOptionSelected {
+  background-color: var(--background-light);
+}
+
+.searchOptionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--border-radius);
+  background-color: var(--background-light);
+}
+
+.searchOptionIcon svg {
+  color: var(--primary);
+}
+
+.searchOptionText {
+  flex: 1;
+}
+
+.searchOptionName {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.searchOptionType {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.125rem;
+}
+
+@media (max-width: 1090px) {
+  .catDecoration {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .multiSectionContainer {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .searchSection {
+    width: 100%;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .searchSection:last-of-type {
+    border-bottom: none;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .lastSection {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .searchButton {
+    width: 30%;
+    margin-left: 0;
+    margin-right: 0;
+    height: 52px;
+    margin: 1rem;
+  }
+
+  .sectionInput {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+  }
+
+  .catDecoration {
+    display: none;
+  }
+}

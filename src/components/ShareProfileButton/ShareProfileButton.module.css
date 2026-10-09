@@ -1,0 +1,98 @@
+.shareButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: transparent;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.shareButton:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+
+.shareButton:active:not(.copied) {
+  transform: translateY(0);
+}
+
+.shareButton.copied {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  animation: pulseSuccess 0.3s ease;
+}
+
+.shareButton svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1024px) {
+  .shareButton {
+    min-width: 180px;
+    padding: 9px 14px;
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .shareButton svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .shareButton {
+    min-width: 160px;
+    padding: 8px 12px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .shareButton svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .shareButton {
+    min-width: 100%;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .shareButton span {
+    display: none;
+  }
+
+  .shareButton svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@keyframes pulseSuccess {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

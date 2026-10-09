@@ -1,0 +1,999 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafb;
+}
+
+.sidebar {
+  width: 320px;
+  background-color: white;
+  border-right: 1px solid #e5e7eb;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.sidebarImageContainer {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.heroImage {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.title {
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 24px;
+  line-height: 1.3;
+  font-family: var(--font-heading);
+}
+
+.description {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.stepsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stepItem {
+  display: flex;
+  gap: 1rem;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+}
+
+.stepItem.activeStep {
+  opacity: 1;
+}
+
+.stepItem.completedStep {
+  opacity: 0.8;
+}
+
+.stepIndicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.activeStep .stepIndicator {
+  background-color: var(--primary);
+  color: white;
+}
+
+.completedStep .stepIndicator {
+  background-color: #10b981;
+  color: white;
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.stepTitle {
+  font-weight: 600;
+  color: #111827;
+  font-size: 0.95rem;
+}
+
+.stepDescription {
+  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 3rem;
+  overflow-y: auto;
+}
+
+.formWrapper {
+  max-width: 700px;
+  margin: 0 auto;
+  background: white;
+  padding: 32px;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.progressContainer {
+  margin-bottom: 32px;
+}
+
+.progressBar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.progressStep {
+  flex: 1;
+  height: 4px;
+  background-color: #e5e7eb;
+  border-radius: 2px;
+  transition: background-color 0.3s ease;
+  max-width: calc(100% / 5);
+  /* Ensure 5 steps fit properly */
+}
+
+.progressStep.active {
+  background-color: var(--primary);
+}
+
+.progressText {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.formTitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 8px;
+  text-align: center;
+  font-family: var(--font-heading);
+}
+
+.formSubtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 10px 0px 10px 0px;
+
+}
+
+.label {
+  font-weight: 400;
+  color: var(--text-color);
+  font-size: 16px;
+}
+
+.input {
+  padding: 16px;
+  width: 100%;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  transition: border-color 0.2s;
+  font-family: var(--font-family);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.textarea {
+  padding: 14px 16px;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  transition: border-color 0.2s;
+  font-family: var(--font-family);
+  min-height: 120px;
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.photoUpload {
+  display: block;
+  width: 100%;
+}
+
+.avatarPreview {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  background-color: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.uploadActions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.uploadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background-color: #f8f9fa;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.uploadButton:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.removePhotoButton {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  text-align: left;
+}
+
+.uploadHint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.especialidadesContainer {
+  max-height: 280px;
+  overflow-y: auto;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background: #fafafa;
+  padding: 16px;
+}
+
+.especialidadesList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.visitTypesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.visitTypeOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: var(--border);
+  border-radius: var(--border-radius);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.visitTypeOption:hover {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.visitTypeOption.selected {
+  border-color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.visitTypeInfo {
+  flex: 1;
+}
+
+.visitTypeTitle {
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.visitTypeDescription {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 2rem;
+}
+
+.backButton {
+  padding: 16px 32px;
+  background-color: transparent;
+  color: var(--text-color);
+  border: var(--border);
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.backButton:hover:not(:disabled) {
+  background-color: var(--secondary);
+  border-color: var(--primary);
+}
+
+.backButton:disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.continueButton {
+  padding: 16px 40px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 160px;
+}
+
+.continueButton:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+}
+
+.continueButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.loadingText {
+  color: var(--primary);
+  font-size: 14px;
+  text-align: center;
+  margin-top: 16px;
+  font-style: italic;
+}
+
+.characterCount {
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Welcome screen specific styles */
+.welcomeScreen {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.welcomeIcon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcomeTitle {
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 16px;
+  font-family: var(--font-heading);
+}
+
+.welcomeDescription {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.requirementsList {
+  text-align: left;
+  background: var(--secondary);
+  padding: 24px;
+  border-radius: var(--border-radius);
+}
+
+.requirementsTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.requirementItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.requirementItem:last-child {
+  margin-bottom: 0;
+}
+
+.checkIcon {
+  color: #263647;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+/* Loading screen styles */
+.loadingScreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--primary-light);
+  border-top: 3px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loadingText {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Location management styles */
+.locationsSection {
+  margin-top: 24px;
+}
+
+.locationsSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.locationsTitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.addLocationButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background-color: #f8f9fa;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addLocationButton:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.noLocationsMessage {
+  text-align: center;
+  padding: 48px 24px;
+  background-color: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  color: var(--text-muted);
+}
+
+.noLocationsIcon {
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.noLocationsMessage p {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.noLocationsSubtext {
+  font-size: 14px !important;
+  color: #6b7280 !important;
+}
+
+.locationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.locationCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.locationCard:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.locationInfo {
+  flex: 1;
+  min-width: 0;
+  padding-right: 12px;
+}
+
+.locationAddress {
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: start;
+  gap: 8px;
+}
+
+.locationDetails {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  line-height: 1.4;
+}
+
+.experienceDescription {
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+}
+
+.locationCep {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.noAvailabilityWarning {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.noAvailabilityWarning svg {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.removeLocationButton {
+  padding: 6px;
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.removeLocationButton:hover {
+  background-color: #fee2e2;
+}
+
+/* Modal styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 24px;
+}
+
+.modalHeader h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.modalCloseButton {
+  padding: 8px;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.modalCloseButton:hover {
+  background-color: #f3f4f6;
+  color: var(--text-color);
+}
+
+.modalContent {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 0 24px 24px;
+}
+
+.errorContainer {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+}
+
+.errorMessage {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inputRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.cepLoading {
+  font-size: 12px;
+  color: var(--primary);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.horariosSection {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.horariosTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.horariosSubtext {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.daySchedule {
+  margin-bottom: 12px;
+}
+
+.dayLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: 8px;
+}
+
+.timeSlots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.timeSlot {
+  padding: 6px 12px;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.timeSlot:hover {
+  border-color: #d1d5db;
+  background-color: #f3f4f6;
+}
+
+.timeSlot.selected {
+  background-color: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-dark);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.modalCancelButton {
+  padding: 12px 24px;
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modalCancelButton:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.modalSaveButton {
+  padding: 12px 24px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modalSaveButton:hover {
+  background-color: var(--primary-dark);
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1.5rem;
+  }
+
+  .sidebarImageContainer {
+    height: 120px;
+    margin-bottom: 1rem;
+  }
+
+  .heroImage {
+    width: 150px;
+  }
+
+  .imageContainer {
+    width: 200px;
+    height: 160px;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+
+  .formWrapper {
+    width: 100%;
+    padding: 24px;
+  }
+
+  .especialidadesList {
+    grid-template-columns: 1fr;
+  }
+
+  .visitTypesContainer {
+    gap: 8px;
+  }
+
+  .visitTypeOption {
+    padding: 12px;
+  }
+
+  .steps {
+    gap: 12px;
+  }
+
+  .buttonContainer {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .backButton,
+  .continueButton {
+    width: 100%;
+    min-width: auto;
+  }
+
+  /* Mobile modal styles */
+  .modalOverlay {
+    padding: 10px;
+  }
+
+  .modal {
+    max-height: 95vh;
+  }
+
+  .modalHeader {
+    padding: 20px 20px 0 20px;
+  }
+
+  .modalContent {
+    padding: 0 20px 20px;
+  }
+
+  .inputRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .timeSlots {
+    gap: 4px;
+  }
+
+  .timeSlot {
+    padding: 8px 10px;
+    font-size: 11px;
+    min-width: 50px;
+  }
+
+  .locationCard {
+    padding: 12px;
+  }
+
+  .addLocationButton {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .locationsTitle {
+    font-size: 16px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modalCancelButton,
+  .modalSaveButton {
+    width: 100%;
+    padding: 14px 24px;
+  }
+}

@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.container:hover .checkmark {
+  border-color: var(--primary);
+}
+
+.input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  background-color: white;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.checkmark.checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkmark.disabled {
+  background-color: #f5f5f5;
+  border-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.checkIcon {
+  width: 12px;
+  height: 12px;
+  color: white;
+}
+
+.label {
+  color: var(--text-color);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.label.disabled {
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+.container:hover:not(.disabled) .label {
+  color: var(--primary);
+}

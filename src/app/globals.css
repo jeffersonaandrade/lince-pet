@@ -1,0 +1,68 @@
+:root {
+  --primary: #e67e22;
+  --primary-rgb: 230, 126, 34;
+  --primary-dark: #d35400;
+  --primary-light: #fef3e9;
+  --text-color: #333;
+  --text-muted: #6b7280;
+  --secondary: #f1f5f9;
+  --secondary-rgb: 241, 245, 249;
+  --border: 1px solid #e5e7eb;
+  --border-color: #e5e7eb;
+  /* Define local vars that use the Next.js injected vars */
+  --font-family: var(--font-inter), sans-serif;
+  --font-heading: var(--font-fredoka), cursive;
+  --max-width: 1160px;
+  --border-radius: 12px;
+  --background: #fbfbfb;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+
+}
+
+body {
+  color: var(--text-color);
+  background: var(--background);
+  /* fallback */
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--text-color);
+}
+
+input,
+button,
+select {
+  font-family: var(--font-family);
+  border: none;
+  outline: none;
+}
+
+.main-content {
+  margin-top: 70px;
+}

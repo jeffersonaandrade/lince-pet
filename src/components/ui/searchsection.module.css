@@ -1,0 +1,121 @@
+.searchSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: visible;
+  padding: 1rem;
+}
+.searchSection:hover {
+  background: #f5f5f58f;
+}
+
+.searchSection:first-child,
+.searchSection:nth-child(2) {
+  flex: 1.5;
+}
+
+.searchSection.withRightBorder {
+  border-right: 1px solid var(--border-color);
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(51, 51, 51, 0.6);
+  margin-bottom: 0.25rem;
+}
+
+.sectionInputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.sectionIcon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #333;
+  padding-right: 24px;
+}
+
+.input::placeholder {
+  color: #999;
+}
+
+.chevron {
+  position: absolute;
+  right: 8px;
+  color: #666;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.optionsListPortal {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.option {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.option:hover {
+  background-color: #f8f9fa;
+}
+
+.option:last-child {
+  border-bottom: none;
+}
+
+.noOptions {
+  padding: 12px 16px;
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .searchSection {
+    width: 100%;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .searchSection:last-of-type {
+    border-bottom: none;
+  }
+
+  .searchSection.withRightBorder {
+    border-right: none;
+  }
+}
