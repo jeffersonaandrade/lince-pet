@@ -9,6 +9,7 @@ import {
   chaveDoBucket,
   confirmarUpload,
   deleteObject,
+  fotoDoCliente,
   processarImagem,
   toStorageFile,
   uploadClinicaPhoto,
@@ -215,6 +216,40 @@ describe('chaveDoBucket', () => {
   it('sem SUPABASE_URL não reconhece nada', () => {
     vi.stubEnv('SUPABASE_URL', '')
     expect(chaveDoBucket(`${PUBLICO}/pets/${DONO}/a.webp`)).toBeNull()
+  })
+})
+
+describe('fotoDoCliente', () => {
+  const recusa = (valor: unknown) => {
+    try {
+      fotoDoCliente(valor)
+    } catch (e) {
+      return e
+    }
+    throw new Error(`aceitou ${JSON.stringify(valor)}`)
+  }
+
+  it.each([undefined, null, ''])('%j significa sem foto', (valor) => {
+    expect(fotoDoCliente(valor)).toBeNull()
+  })
+
+  it('devolve a URL do nosso bucket sem espaços nas pontas', () => {
+    const url = `${PUBLICO}/pets/${DONO}/a.webp`
+    expect(fotoDoCliente(`  ${url}\n`)).toBe(url)
+  })
+
+  it.each([
+    ['externa', 'https://exemplo.com/a.png'],
+    ['da AWS', 'https://d261ftrvo5a2p7.cloudfront.net/pets/a.jpeg'],
+    ['só espaços', '   '],
+    ['número', 123],
+    ['objeto', { url: `${PUBLICO}/pets/${DONO}/a.webp` }],
+    ['array', [`${PUBLICO}/pets/${DONO}/a.webp`]],
+  ])('URL %s responde 400 com a mensagem para o usuário', (_, valor) => {
+    const erro = recusa(valor)
+    expect(erro).toBeInstanceOf(HttpError)
+    expect((erro as HttpError).status).toBe(400)
+    expect((erro as HttpError).body).toEqual({ message: 'A foto precisa ser enviada pelo upload da Lince Pet' })
   })
 })
 
