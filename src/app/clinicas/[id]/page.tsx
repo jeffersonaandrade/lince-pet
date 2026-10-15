@@ -9,24 +9,27 @@ import { FavoritesService } from "@/services/favorites/favorites";
 import { getClinicaById } from "@/services/clinicas/clinicas";
 import { AgendamentosService } from "@/services/agendamentos/agendamentos";
 import { AvaliacoesService } from "@/services/avaliacoes/avaliacoes";
-import { formatPhone, abbreviateAddress } from "@/utils/formatters";
+import {
+  formatarPrecoConsulta,
+  perfilDaClinica,
+  type AvaliacaoDaClinicaApi,
+  type PerfilClinica,
+  type ProfissionalDaClinica,
+} from "@/lib/clinica-perfil";
+import { mensagemDeErro } from "@/lib/erros";
 
 import {
   MapPin,
   Phone,
-  Clock,
   CheckCircle,
   Star,
   Share2,
   Heart,
   Calendar,
-  ExternalLink,
-  MessageCircle,
   BadgeCheck,
   Stethoscope,
   ChevronDown,
   ChevronUp,
-  Plus,
   AlarmClock,
   User,
   PawPrint
@@ -42,30 +45,12 @@ import { FaixaEncaminhamento, useEncaminhamentoDaUrl } from "@/components/Encami
 
 
 
-const COMODIDADES_LIST = [
-  { key: "estacionamento", label: "Estacionamento Próprio" },
-  { key: "acessibilidade", label: "Acessibilidade (Rampa/Elevador)" },
-  { key: "arcondicionado", label: "Ar Condicionado" },
-  { key: "wifi", label: "Wi-Fi Gratuito" },
-  { key: "salaespera", label: "Sala de Espera Confortável" },
-  { key: "banheiro", label: "Banheiro para Clientes" },
-  { key: "atendimento24h", label: "Atendimento 24h" },
-  { key: "farmacia", label: "Farmácia Veterinária" },
-  { key: "internacao", label: "Internação" },
-  { key: "raiox", label: "Raio-X / Ultrassom" },
-];
-
-const getComodidadeLabel = (key: string): string => {
-  const comodidade = COMODIDADES_LIST.find(c => c.key === key);
-  return comodidade ? comodidade.label : key;
-};
-
 export default function ClinicProfilePage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
   const params = use(paramsPromise);
   const id = params.id;
 
   const router = useRouter();
-  const [clinic, setClinic] = useState<any>(null);
+  const [clinic, setClinic] = useState<PerfilClinica | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
@@ -77,12 +62,11 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
   // States for scheduling (REPLICATED FROM VETERINARIO)
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
-  const [selectedProfessional, setSelectedProfessional] = useState<any>(null);
+  const [selectedProfessional, setSelectedProfessional] = useState<ProfissionalDaClinica | null>(null);
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [diaBloqueado, setDiaBloqueado] = useState(false);
   const [carregandoDisponibilidade, setCarregandoDisponibilidade] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [customDate, setCustomDate] = useState<string | null>(null);
   const [showAllSlots, setShowAllSlots] = useState(false);
 
   // Modal State
@@ -135,19 +119,11 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
     if (diffDays < 0) return;
     setSelectedDay(diffDays);
     setSelectedTimeSlot(null);
-    setCustomDate(isoDate);
   };
 
   const getDayName = (date: Date) => {
     const dayNames = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
     return dayNames[date.getDay()];
-  };
-
-  const formatPrice = (price: number) => {
-    const rounded = Math.round(price * 100) / 100;
-    return rounded % 1 === 0
-      ? rounded.toFixed(0)
-      : rounded.toFixed(2).replace(".", ",");
   };
 
   const generateTimeSlots = () => {
@@ -180,7 +156,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
     }
   }, [clinic?.horarios]);
 
-  const handleProfessionalSelect = (prof: any) => {
+  const handleProfessionalSelect = (prof: ProfissionalDaClinica) => {
     setSelectedProfessional(prof);
     // Scroll to sidebar on mobile if needed
     if (window.innerWidth < 768) {
@@ -193,83 +169,15 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
   useEffect(() => {
     async function loadClinic() {
       try {
-        const data = await getClinicaById(id);
-        const normalizeKeys = (obj: any) => {
-          if (!obj) return {};
-          let target = obj;
-          if (typeof obj === 'string') {
-            try { target = JSON.parse(obj); } catch (e) { return {}; }
-          }
-          const newObj: any = {};
-          Object.keys(target).forEach(key => {
-            const normalizedKey = key.toLowerCase()
-              .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
-              .replace("-feira", ""); // remove suffix if exists
-            newObj[normalizedKey] = target[key];
-          });
-          return newObj;
-        };
-
-        const normalizedHorarios = normalizeKeys(data.horariosFuncionamento);
-
-        let reviewsData = { media: 0, total: 0, avaliacoes: [] as any[] };
-        try {
-          reviewsData = await AvaliacoesService.listarPorClinica(id);
-        } catch (e) {
-          console.error("Erro ao puxar avaliações da clínica", e);
-        }
-
-        // Mapeamento dos dados do banco para o layout
-        const formattedData = {
-          ...data,
-          name: data.nomeClinica,
-          logo: data.fotoPerfil,
-          cover: data.fotoCapa || "/img/cover-placeholder.jpg",
-          rating: reviewsData.media || 0.0,
-          reviewCount: reviewsData.total || 0,
-          address: `${abbreviateAddress(data.endereco)}, ${data.cidade} - ${data.estado}`,
-          phone: data.telefone ? formatPhone(data.telefone) : "(00) 00000-0000",
-          description: data.descricao || "Referência em medicina veterinária na região, cuidando do seu melhor amigo com carinho e excelência.",
-          // Formata as especialidades que vêm do preload
-          specialties: data.especialidades?.map((e: any) => e.nome) || [],
-          // Planos
-          planos: data.planos?.map((p: any) => p.name) || [],
-          // Diferenciais / Amenities
-          amenities: data.comodidades ? (
-            typeof data.comodidades === 'string'
-              ? Object.keys(JSON.parse(data.comodidades))
-                .filter(k => JSON.parse(data.comodidades)[k])
-                .map(k => getComodidadeLabel(k))
-              : Object.keys(data.comodidades)
-                .filter(k => (data.comodidades as any)[k])
-                .map(k => getComodidadeLabel(k))
-          ) : [
-            "Estacionamento",
-            "Acessibilidade",
-            "Wi-Fi"
-          ],
-          // Horários (resumo para exibição simples)
-          hoursSummary: data.horarioHoje || "Horários não informados",
-          horarios: normalizedHorarios,
-          professionals: data.veterinarios?.map((v: any) => ({
-            id: v.id,
-            name: v.user?.nome ? `${v.user.nome} ${v.user.sobrenome || ''}` : 'Veterinário',
-            specialty: v.especialidades?.[0]?.nome || "Médico Veterinário",
-            crmv: v.crmv || "N/A",
-            fotoUrl: v.fotoUrl,
-            rating: v.rating || 0.0,
-            specificSchedule: v.enderecos?.[0]?.horariosDisponibilidade || null,
-            specificPrice: v.enderecos?.[0]?.precoConsulta || null
-          })) || [],
-          reviews: reviewsData.avaliacoes.map((a: any) => ({
-            rating: a.estrelasClinica,
-            date: a.data || new Date().toLocaleDateString("pt-BR"),
-            userName: a.tutor?.nome ? `${a.tutor.nome} ${a.tutor.sobrenome || ''}`.trim() : "Tutor anônimo",
-            comment: a.comentarioClinica,
-          })) || []
-        };
-
-        setClinic(formattedData);
+        const semAvaliacoes = { media: 0, total: 0, avaliacoes: [] as AvaliacaoDaClinicaApi[] };
+        const [data, reviewsData] = await Promise.all([
+          getClinicaById(id),
+          AvaliacoesService.listarPorClinica(id).catch((e) => {
+            console.error("Erro ao puxar avaliações da clínica", e);
+            return semAvaliacoes;
+          }),
+        ]);
+        setClinic(perfilDaClinica(data, reviewsData));
       } catch (err) {
         console.error("Erro ao carregar clínica:", err);
         setError("Não foi possível carregar os dados da clínica.");
@@ -369,8 +277,8 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
 
       setShowAgendamentoModal(false);
       setShowSuccessModal(true);
-    } catch (err: any) {
-      setErroAgendamento(err.response?.data?.error || "Erro ao realizar agendamento.");
+    } catch (err) {
+      setErroAgendamento(mensagemDeErro(err, "Erro ao realizar agendamento."));
     } finally {
       setSalvando(false);
     }
@@ -380,13 +288,22 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
   useEffect(() => {
     if (user?.userType === 'tutor' && clinic?.id) {
       FavoritesService.check(undefined, clinic.id)
-        .then((res: any) => {
+        .then((res) => {
           setIsFavorited(res.isFavorited);
           if (res.favoriteId) setFavoriteId(res.favoriteId);
         })
         .catch(console.error);
     }
-  }, [user, clinic?.id]);
+  }, [user?.userType, clinic?.id]);
+
+  const copiarLinkDaClinica = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/clinicas/${id}`);
+      alert("Link copiado para a área de transferência!");
+    } catch {
+      alert("Não foi possível copiar o link.");
+    }
+  };
 
   const handleToggleFavorite = async () => {
     if (!user || user.userType !== 'tutor') {
@@ -435,31 +352,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
     );
   }
 
-  const fullSchedule = (() => {
-    if (!clinic?.horarios) return [];
-
-    const daysOrder = ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"];
-    const dayLabels: Record<string, string> = {
-      segunda: "Segunda-feira", terca: "Terça-feira", quarta: "Quarta-feira", quinta: "Quinta-feira",
-      sexta: "Sexta-feira", sabado: "Sábado", domingo: "Domingo"
-    };
-
-    const weekMap: Record<number, string> = {
-      1: "segunda", 2: "terca", 3: "quarta", 4: "quinta", 5: "sexta", 6: "sabado", 0: "domingo"
-    };
-    const todayKey = weekMap[new Date().getDay()];
-
-    return daysOrder.map((day) => {
-      const slots = clinic.horarios[day] || [];
-      return {
-        dayKey: day,
-        label: dayLabels[day],
-        slots: slots,
-        isToday: day === todayKey,
-        isClosed: slots.length === 0
-      };
-    });
-  })();
+  const precoConsulta = formatarPrecoConsulta(selectedProfessional?.price ?? null);
 
   return (
     <>
@@ -467,7 +360,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
       <main className={styles.container}>
         {/* Cover Section */}
         <div className={styles.coverWrapper}>
-          {clinic.cover && clinic.cover !== "/img/cover-placeholder.jpg" ? (
+          {clinic.cover ? (
             <Image src={clinic.cover} alt="Capa" fill className={styles.coverImage} style={{ objectFit: 'cover' }} />
           ) : (
             <div className={styles.coverFallback}></div>
@@ -497,7 +390,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                   </div>
                 </div>
                 <div className={styles.actions}>
-                  <button className={styles.actionBtn}><Share2 size={20} /> Compartilhar</button>
+                  <button className={styles.actionBtn} onClick={copiarLinkDaClinica}><Share2 size={20} /> Compartilhar</button>
                   <button
                     className={styles.actionBtn}
                     onClick={handleToggleFavorite}
@@ -564,7 +457,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                 <h2>Corpo Clínico</h2>
                 <div className={styles.profList}>
                   {clinic.professionals && clinic.professionals.length > 0 ? (
-                    clinic.professionals.map((prof: any, idx: number) => (
+                    clinic.professionals.map((prof, idx) => (
                       <div key={idx} className={styles.profCard}>
                         {prof.fotoUrl ? (
                           <div className={styles.profAvatar} style={{ overflow: 'hidden' }}>
@@ -613,12 +506,14 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                     </div>
                     <div className={styles.contactInfo}>
                       <h3>Telefone</h3>
-                      <p>{clinic.phone}</p>
+                      <p>{clinic.phone ?? "Não informado"}</p>
                       <div style={{ display: 'flex', gap: '10px' }}>
-                        <button className={styles.whatsappBtn} onClick={() => window.open(`https://wa.me/${clinic.phone.replace(/\D/g, '')}`, "_blank")}>
+                        {clinic.whatsappLink ? (
+                        <a className={styles.whatsappBtn} href={clinic.whatsappLink} target="_blank" rel="noopener noreferrer">
                           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
                           WhatsApp
-                        </button>
+                        </a>
+                        ) : null}
                       </div>
                     </div>
                   </div>
@@ -658,7 +553,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
 
                 <div className={styles.reviewsList}>
                   {clinic.reviews && clinic.reviews.length > 0 ? (
-                    clinic.reviews.map((rev: any, i: number) => (
+                    clinic.reviews.map((rev, i) => (
                       <div key={i} className={styles.reviewCard}>
                         <div className={styles.reviewHeader}>
                           <div className={styles.reviewStars}>
@@ -716,13 +611,13 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                         }}
                         onChange={(e) => {
                           const profId = e.target.value;
-                          const prof = clinic.professionals.find((p: any) => p.id === profId);
+                          const prof = clinic.professionals.find((p) => p.id === profId);
                           if (prof) handleProfessionalSelect(prof);
                         }}
                         defaultValue=""
                       >
                         <option value="" disabled>Selecione...</option>
-                        {clinic.professionals.map((prof: any) => (
+                        {clinic.professionals.map((prof) => (
                           <option key={prof.id} value={prof.id}>
                             {prof.name} - {prof.specialty}
                           </option>
@@ -857,7 +752,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
 
                     <div className={styles.pricingInfo}>
                       <div className={styles.pricing}>
-                        <span className={styles.discountPrice}>R${formatPrice(selectedProfessional?.specificPrice || clinic?.preco || 150)}</span>
+                        <span className={styles.discountPrice}>{precoConsulta}</span>
                         <span className={styles.promoText}>Valor da consulta</span>
                       </div>
                     </div>
@@ -900,7 +795,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                         </div>
                       </div>
                       <div className={styles.priceBlock}>
-                        <div className={styles.price}>R$ {formatPrice(selectedProfessional?.specificPrice || clinic?.preco || 150)}</div>
+                        <div className={styles.price}>{precoConsulta}</div>
                       </div>
                     </div>
                   </div>

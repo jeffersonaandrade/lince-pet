@@ -219,9 +219,7 @@ export default function OnboardingPage() {
       setIsCepLoading(true);
       setError(null);
       try {
-        console.log("Buscando CEP:", unformattedCep);
         const cepData = await fetchCep(unformattedCep);
-        console.log("CEP encontrado:", cepData);
         setLocationModalData((prev) => ({
           ...prev,
           rua: cepData.rua || "",
@@ -229,7 +227,7 @@ export default function OnboardingPage() {
           cidade: cepData.cidade || "",
           estado: cepData.estado || "",
         }));
-      } catch (err: any) {
+      } catch (err) {
         console.error("Erro ao buscar CEP:", err);
         const errorState = handleApiError(err, {
           404: "O CEP informado é inválido.",
@@ -661,7 +659,7 @@ export default function OnboardingPage() {
             precoConsultaOnline: veterinarioData.precoConsultaOnline ? String(veterinarioData.precoConsultaOnline) : prevData.precoConsultaOnline,
             about: veterinarioData.bio || prevData.about,
             experiencias: veterinarioData.experiencias || [],
-            planos: veterinarioData.planos?.map((p: any) => p.id) || [],
+            planos: veterinarioData.planos?.map((p: { id: string }) => p.id) || [],
           }));
 
           // Se já existir foto no perfil, usar como preview inicial
@@ -825,44 +823,9 @@ export default function OnboardingPage() {
 
   // Handlers de foto
   const handlePhotoUpdate = async (file: File) => {
+    if (photoPreview?.startsWith("blob:")) URL.revokeObjectURL(photoPreview);
     setSelectedPhoto(file);
     setPhotoPreview(URL.createObjectURL(file));
-  };
-
-  const onSelectPhoto = (file?: File | null) => {
-    if (!file) return;
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-    if (!allowedTypes.includes(file.type)) {
-      setError({ message: "Formato inválido. Use JPG, PNG, WEBP ou GIF." });
-      return;
-    }
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      setError({ message: "Arquivo muito grande. Máximo de 5MB." });
-      return;
-    }
-
-    setError(null);
-    setSelectedPhoto(file);
-
-    const url = URL.createObjectURL(file);
-    // Liberar URL antiga para evitar leaks
-    if (photoPreview && photoPreview.startsWith("blob:")) {
-      URL.revokeObjectURL(photoPreview);
-    }
-    setPhotoPreview(url);
-  };
-
-  const clearSelectedPhoto = () => {
-    if (photoPreview && photoPreview.startsWith("blob:")) {
-      URL.revokeObjectURL(photoPreview);
-    }
-    setSelectedPhoto(null);
-    // Mantém preview existente se for URL remota (já salva). Caso seja blob, limpa.
-    if (photoPreview?.startsWith("blob:")) {
-      setPhotoPreview(null);
-    }
   };
 
   const handleBack = async () => {

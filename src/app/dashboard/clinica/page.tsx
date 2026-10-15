@@ -25,6 +25,7 @@ import EncaminharModal from "@/components/Encaminhamento/EncaminharModal";
 import PainelRecebidos from "@/components/Encaminhamento/PainelRecebidos";
 import Image from "next/image";
 import { formatDateToISO } from "@/utils/formatters";
+import { mensagemDaApi } from "@/lib/erros";
 
 // Configurar moment para português
 moment.locale("pt-br");
@@ -37,15 +38,9 @@ import {
   Maximize2,
   Tag,
   User as UserIcon,
-  Video,
-  MapPin,
   CreditCard,
   MessageCircle,
   Star,
-  Camera,
-  Info,
-  ChevronLeft,
-  ChevronRight,
   TrendingUp,
   Stethoscope,
   Mail,
@@ -83,6 +78,10 @@ interface CalendarEvent {
   };
 }
 
+type AvaliacaoRecenteClinica = Awaited<
+  ReturnType<typeof AvaliacoesService.listarMinhasRecentesClinica>
+>["avaliacoes"][number];
+
 interface DashboardData {
   agendamentosHoje: number;
   agendamentosSemana: number;
@@ -101,13 +100,12 @@ export default function ClinicaDashboard() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [encaminhando, setEncaminhando] = useState<{ id: string | number; pet?: string | null } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [clinicaId, setClinicaId] = useState<string | null>(null);
 
   // Clinic specific states
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
   const [bloqueioVetId, setBloqueioVetId] = useState<string | null>(null);
-  const [recentComments, setRecentComments] = useState<any[]>([]); // Assuming same structure for now, probably need specific clinic comments service later
+  const [recentComments, setRecentComments] = useState<AvaliacaoRecenteClinica[]>([]);
 
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [dashboardData, setDashboardData] = useState<DashboardData>({
@@ -220,14 +218,6 @@ export default function ClinicaDashboard() {
     }
   };
 
-  useEffect(() => {
-    const check = () =>
-      setIsMobile(typeof window !== "undefined" && window.innerWidth <= 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
-
   // Helpers para status: cores e ícones (Same as Vet)
   const consultationStats = useMemo(() => {
     if (!events) return { total: 0, completed: 0, cancelled: 0 };
@@ -248,26 +238,7 @@ export default function ClinicaDashboard() {
       return s === 'cancelado';
     }).length;
 
-    // Advanced Stats Calculation
-    // 1. Average per day
-    // We need to know how many days are effectively in the view.
-    // Since 'events' might cover a month, let's look at the range of current view.
-    // A simple approximation is taking the distinct days in 'events' if we want "active days",
-    // or just dividing total by 30 (month) or 7 (week).
-    // Let's use the actual days that have at least one event to be more "meaningful" for small clinics,
-    // OR better: use the number of days in the current month/week view.
-
-    let daysCount = 1;
-    if (view === 'month') {
-      daysCount = moment(currentDate).daysInMonth();
-    } else if (view === 'week') {
-      daysCount = 7;
-    } else {
-      daysCount = 1;
-    }
-
-    // However, if we blindly divide events.length by daysCount (e.g. 30), it might be too low.
-    // Let's count unique days with appointments to give "Average on working days".
+    // Média por dia com atendimento (dividir pelos dias do mês subestima clínicas pequenas).
     const uniqueDays = new Set(events.map(e => moment(e.start).format('YYYY-MM-DD'))).size;
     const averagePerDay = uniqueDays > 0 ? Math.round(total / uniqueDays).toString() : "0";
 
@@ -312,7 +283,7 @@ export default function ClinicaDashboard() {
     }
 
     return { total, completed, cancelled, averagePerDay, busiestDay, peakHour };
-  }, [events, view, currentDate]);
+  }, [events]);
 
   const normalizeStatus = (raw?: string | null) =>
     (raw || "")
@@ -489,19 +460,8 @@ export default function ClinicaDashboard() {
       setSearchTerm("");
       setSearchResults([]);
       alert("Veterinário vinculado com sucesso!");
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Erro ao vincular veterinário.");
-    }
-  };
-
-  const handleRemoveVet = async (vetId: string) => {
-    if (!confirm("Tem certeza que deseja remover este profissional da clínica?")) return;
-    try {
-      await ClinicaDashboardService.desvincularProfissional(vetId);
-      await carregarProfissionais();
-      alert("Veterinário removido com sucesso!");
     } catch (error) {
-      alert("Erro ao remover veterinário.");
+      alert(mensagemDaApi(error) || "Erro ao vincular veterinário.");
     }
   };
 
@@ -568,25 +528,23 @@ export default function ClinicaDashboard() {
     }
   };
 
+  const usuarioId = user?.id;
+  const tipoUsuario = user?.userType;
   useEffect(() => {
     if (loading) return;
-    if (!user) {
+    if (!usuarioId) {
       router.push("/login");
       return;
     }
-    if (user.userType !== "clinica") {
+    if (tipoUsuario !== "clinica") {
       router.push("/");
       return;
     }
 
     carregarDadosIniciais();
-  }, [user, loading, router]);
-
-  useEffect(() => {
-    if (!isLoadingData) {
-      carregarEventosCalendario(currentDate);
-    }
-  }, [currentDate]);
+    // Carga inicial: só repete quando muda o usuário logado (as datas mudam pelos handlers do calendário).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usuarioId, tipoUsuario, loading, router]);
 
   if (loading || isLoadingData) {
     return (
@@ -650,12 +608,12 @@ export default function ClinicaDashboard() {
                   <div className={styles.metricLabel}>Plano atual</div>
                   <div className={styles.metricValue} style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: '8px' }}>
                     {planIconPath(clinicaPlanoAtual) && (
-                      <img
+                      <Image
                         src={planIconPath(clinicaPlanoAtual)!}
                         alt="Ícone do plano"
                         width={42}
                         height={42}
-                        style={{ borderRadius: '6px', objectFit: 'contain', flexShrink: 0 }}
+                        className="shrink-0 rounded-md object-contain"
                       />
                     )}
                     <span className={styles.namePlan}> {friendlyPlanName(clinicaPlanoAtual)} </span>
@@ -690,11 +648,14 @@ export default function ClinicaDashboard() {
                 <CustomCalendar
                   events={events}
                   date={currentDate}
-                  onNavigate={(date) => setCurrentDate(date)}
+                  onNavigate={(date) => {
+                    setCurrentDate(date);
+                    carregarEventosCalendario(date);
+                  }}
                   view={view}
                   onViewChange={(newView) => setView(newView)}
                   onSelectEvent={(event) => {
-                    setSelectedEvent(event as any);
+                    setSelectedEvent(event);
                     setIsModalOpen(true);
                   }}
                   onSelectSlot={(slotInfo) => {
@@ -810,7 +771,7 @@ export default function ClinicaDashboard() {
                     <div key={vet.id} className={styles.professionalItem}>
                       <div className={styles.professionalAvatar}>
                         {vet.fotoUrl ? (
-                          <img src={vet.fotoUrl} alt={vet.nome} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                          <Image src={vet.fotoUrl} alt={vet.nome} width={80} height={80} className="h-full w-full rounded-full object-cover" />
                         ) : (
                           <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
                             {vet.nome.charAt(0)}
@@ -1096,7 +1057,7 @@ export default function ClinicaDashboard() {
                       </div>
 
                       {vet.photoUrl ? (
-                        <img src={vet.photoUrl} alt={vet.name} className={styles.rankingAvatar} />
+                        <Image src={vet.photoUrl} alt={vet.name} width={40} height={40} className={styles.rankingAvatar} />
                       ) : (
                         <div className={styles.rankingAvatarPlaceholder}>
                           {vet.name.charAt(0)}
@@ -1136,7 +1097,7 @@ export default function ClinicaDashboard() {
                 </div>
               ) : (
                 <div className={styles.appointmentsList}>
-                  {recentComments.slice(0, 5).map((rev: any) => (
+                  {recentComments.slice(0, 5).map((rev) => (
                     <div key={rev.id} className={styles.reviewItem}>
                       <div className={styles.reviewHeader}>
                         <strong className={styles.reviewTutorName}>
@@ -1386,7 +1347,7 @@ export default function ClinicaDashboard() {
                     <div key={vet.id} className={styles.professionalItem} style={{ border: '1px solid #f1f5f9', padding: '0.75rem', borderRadius: '12px' }}>
                       <div className={styles.professionalAvatar}>
                         {vet.fotoUrl ? (
-                          <img src={vet.fotoUrl} alt={vet.nome} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                          <Image src={vet.fotoUrl} alt={vet.nome} width={80} height={80} className="h-full w-full rounded-full object-cover" />
                         ) : (
                           <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: '#cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 'bold' }}>
                             {vet.nome.charAt(0)}

@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { CustomCheckbox } from "@/components/ui/CustomCheckbox/CustomCheckbox";
-import { Check, Clock, Upload } from "lucide-react";
+import { Check } from "lucide-react";
 import {
   getClinicaOnboardingProgress,
   submitClinicaOnboardingStep1,
@@ -16,7 +15,8 @@ import {
   completeClinicaOnboarding,
 } from "@/services/clinicas/clinicas";
 import { getEspecialidades, getPlanos } from "@/services/veterinarios/veterinarios";
-import { handleApiError, type ErrorState } from "@/utils/errorHandler";
+import { type ErrorState } from "@/utils/errorHandler";
+import { mensagemDeErro } from "@/lib/erros";
 import styles from "./clinica-onboarding.module.css";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
 
@@ -170,7 +170,7 @@ export default function ClinicaOnboardingPage() {
         const clinica = progress.clinica;
         if (clinica) {
           if (clinica.especialidades) {
-            setSelectedEspecialidades(clinica.especialidades.map((e: any) => e.id));
+            setSelectedEspecialidades(clinica.especialidades.map((e: { id: string }) => e.id));
           }
           if (clinica.comodidades) {
             // Handle if it comes as string or object
@@ -183,7 +183,7 @@ export default function ClinicaOnboardingPage() {
           }
           if (clinica.descricao || clinica.sobre) setDescricao(clinica.descricao || clinica.sobre || "");
           if (clinica.fotoPerfil) setPhotoPreview(clinica.fotoPerfil);
-          if (clinica.planos) setSelectedPlans(clinica.planos.map((p: any) => p.id));
+          if (clinica.planos) setSelectedPlans(clinica.planos.map((p: { id: string }) => p.id));
         }
 
         setIsLoadingInitial(false);
@@ -237,8 +237,8 @@ export default function ClinicaOnboardingPage() {
       }
 
       setCurrentStep(prev => prev + 1);
-    } catch (err: any) {
-      setError({ message: err.message || "Erro ao salvar etapa." });
+    } catch (err) {
+      setError({ message: mensagemDeErro(err, "Erro ao salvar etapa.") });
     } finally {
       setIsLoading(false);
     }

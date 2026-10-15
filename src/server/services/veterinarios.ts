@@ -439,7 +439,6 @@ function formatVeterinarioData(vet: VeterinarioLoaded) {
   return {
     id: vet.id,
     nome: `${vet.user?.nome || 'Nome'} ${vet.user?.sobrenome || 'Sobrenome'}`,
-    email: vet.user?.email || 'email@exemplo.com',
     fotoUrl: vet.fotoUrl || null,
     cidade: enderecoPrincipal?.cidade || 'Cidade não informada',
     estado: enderecoPrincipal?.estado || 'UF',

@@ -11,7 +11,7 @@ export interface NotificationItem {
     title: string;
     message: string;
     is_read: boolean;
-    action_data: Record<string, any> | null;
+    action_data: { isRequest?: boolean; clinicaId?: string; clinicaNome?: string; [campo: string]: unknown } | null;
     created_at: string;
 }
 

@@ -21,11 +21,10 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
   cropShape = 'circle',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imageRef = useRef<HTMLImageElement>(null);
   const imageDataRef = useRef<HTMLImageElement | null>(null);
 
   const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
+  const [rotation] = useState(0);
   const [offsetX, setOffsetX] = useState(0);
   const [offsetY, setOffsetY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -144,7 +143,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
     ctx.stroke();
     ctx.restore();
 
-  }, [zoom, rotation, offsetX, offsetY, aspectRatio]);
+  }, [zoom, rotation, offsetX, offsetY, aspectRatio, cropShape]);
 
   // Carrega a imagem
   useEffect(() => {
@@ -296,19 +295,6 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({
          // Mas como o modal fecha, talvez não precise.
       }
     }
-  };
-
-  const resetEditor = () => {
-    if (imageDataRef.current) {
-        const img = imageDataRef.current;
-        const scale = Math.max(400 / img.width, (400 / aspectRatio) / img.height);
-        setZoom(scale);
-    } else {
-        setZoom(1);
-    }
-    setRotation(0);
-    setOffsetX(0);
-    setOffsetY(0);
   };
 
   return (

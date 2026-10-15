@@ -14,7 +14,6 @@ interface SearchSectionProps {
   searchable?: boolean;
   showRightBorder?: boolean;
   onDropdownStateChange?: (isOpen: boolean) => void;
-  showCategoryFilters?: boolean;
   parentRef?: React.RefObject<HTMLDivElement | null>;
   isPlainInput?: boolean;
 }
@@ -28,7 +27,6 @@ export default function SearchSection({
   searchable = true,
   showRightBorder = false,
   onDropdownStateChange,
-  showCategoryFilters = false,
   parentRef: externalParentRef,
   isPlainInput = false,
 }: SearchSectionProps) {

@@ -221,7 +221,44 @@ export const searchVeterinarios = async (filters: SearchVeterinarios) => {
   return response.data;
 };
 
+/** Perfil público de `GET /veterinarios/:id` (grades chegam como objeto, com chaves ainda não normalizadas). */
+export interface VeterinarioPublicoApi {
+  id: string;
+  nome: string;
+  fotoUrl: string | null;
+  cidade: string;
+  estado: string;
+  endereco: string;
+  especialidades: string[];
+  crmv: string;
+  bio: string;
+  preco: number;
+  rating: number;
+  totalReviews: number;
+  availability: unknown;
+  clinica: string | null;
+  locations: {
+    id: string;
+    cidade: string;
+    estado: string;
+    endereco: string;
+    fullAddress: string;
+    preco: number;
+    availability: unknown;
+    isPrimary: boolean;
+    nomeClinica?: string | null;
+    clinicaId?: string | null;
+    fotoUrl?: string | null;
+  }[];
+  atendeOnline: boolean;
+  precoConsultaOnline: number;
+  horariosOnline: unknown;
+  experiencias: { cargo: string; local: string; dataInicio: string; dataFim?: string | null; descricao?: string | null }[];
+  planos: { id: string; name: string }[];
+  limitReached?: boolean;
+}
+
 export const getVeterinarioById = async (id: string) => {
-  const response = await api.get(`/veterinarios/${id}`);
+  const response = await api.get<{ veterinario: VeterinarioPublicoApi }>(`/veterinarios/${id}`);
   return response.data;
 };

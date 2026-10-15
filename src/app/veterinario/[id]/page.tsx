@@ -7,28 +7,22 @@ import {
   Star,
   ExternalLink,
   ShieldCheck,
-  ArrowLeft,
   ChevronDown,
   ChevronUp,
   Calendar,
   AlarmClock,
   User,
   Stethoscope,
-  Plus,
   MapPin,
-  Phone,
-  Clock,
   CheckCircle,
   Share2,
   Heart,
   PawPrint,
   Briefcase,
-  BadgeCheck
 } from "lucide-react";
 
 import Header from "@/components/Header/Header";
 
-import UserImage from "../../../components/ui/UserImage/UserImage";
 import OnboardingRedirect from "../../../components/RouteProtection/OnboardingRedirect";
 import { getVeterinarioById } from "../../../services/veterinarios/veterinarios";
 import { AgendamentosService } from "@/services/agendamentos/agendamentos";
@@ -45,6 +39,8 @@ import { PetsService, type PetRecord } from "@/services/pets/pets";
 import { FavoritesService } from "@/services/favorites/favorites";
 import MiniCalendar from "@/components/MiniCalendar/MiniCalendar";
 import { abbreviateAddress } from "@/utils/formatters";
+import { normalizarGrade } from "@/lib/horarios";
+import { mensagemDeErro } from "@/lib/erros";
 
 // Types
 interface Location {
@@ -65,7 +61,6 @@ interface Location {
 interface Veterinario {
   id: string;
   nome: string;
-  email: string;
   cidade: string;
   estado: string;
   endereco: string;
@@ -76,7 +71,6 @@ interface Veterinario {
   totalReviews: number;
   image?: string;
   preco: number;
-  experiencia: number;
   clinica?: string;
   availability: {
     [key: string]: string[];
@@ -89,12 +83,6 @@ interface Veterinario {
     comment: string;
     date: string;
     verified: boolean;
-  }>;
-  highlights: string[];
-  insurances: string[];
-  faqs: Array<{
-    question: string;
-    answer: string;
   }>;
   atendeOnline?: boolean;
   precoConsultaOnline?: number;
@@ -127,7 +115,6 @@ export default function VeterinarioProfile() {
   const [selectedDay, setSelectedDay] = useState(0);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [customDate, setCustomDate] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const { encaminhamentoId, petId: petEncaminhadoId, encaminhamento } = useEncaminhamentoDaUrl();
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
@@ -146,7 +133,7 @@ export default function VeterinarioProfile() {
   const [pets, setPets] = useState<PetRecord[]>([]);
   const [loadingPets, setLoadingPets] = useState(false);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
-  const [selectedLocationId, setSelectedLocationId] = useState<string | number | null>(null);
+  const [selectedLocationId, setSelectedLocationId] = useState<string | -1 | null>(null);
 
   const locationOptions = useMemo(() => {
     if (!veterinario) return [];
@@ -188,25 +175,9 @@ export default function VeterinarioProfile() {
         const response = await getVeterinarioById(veterinarioId);
         const vetData = response.veterinario;
 
-        const normalizeKeys = (obj: any) => {
-          if (!obj) return {};
-          const newObj: any = {};
-          Object.keys(obj).forEach(key => {
-            const normalizedKey = key.toLowerCase()
-              .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
-              .replace("-feira", ""); // remove suffix if exists
-            newObj[normalizedKey] = obj[key];
-          });
-          return newObj;
-        };
-
-        const rawHorariosOnline = vetData.horariosOnline || (vetData as any).horarios_online || {};
-        const horariosOnlineNormalized = normalizeKeys(rawHorariosOnline);
-
         const transformedData: Veterinario = {
           id: vetData.id,
           nome: vetData.nome,
-          email: vetData.email,
           cidade: vetData.cidade,
           estado: vetData.estado,
           endereco: vetData.endereco,
@@ -215,25 +186,29 @@ export default function VeterinarioProfile() {
           bio: vetData.bio,
           rating: vetData.rating,
           totalReviews: vetData.totalReviews,
-          image: vetData.fotoUrl,
+          image: vetData.fotoUrl ?? undefined,
           preco: vetData.preco,
-          experiencia: vetData.experiencia,
-          clinica: vetData.clinica,
+          clinica: vetData.clinica ?? undefined,
           atendeOnline: vetData.atendeOnline,
           precoConsultaOnline: Number(vetData.precoConsultaOnline || 0),
-          horariosOnline: horariosOnlineNormalized,
-          availability: vetData.availability || {},
-          locations: vetData.locations || [],
+          // Grades salvas como "Segunda-feira" precisam bater com as chaves usadas no calendário ("segunda").
+          horariosOnline: normalizarGrade(vetData.horariosOnline),
+          availability: normalizarGrade(vetData.availability),
+          locations: (vetData.locations || []).map((loc) => ({
+            ...loc,
+            nomeClinica: loc.nomeClinica ?? undefined,
+            fotoUrl: loc.fotoUrl ?? undefined,
+            availability: normalizarGrade(loc.availability),
+          })),
           reviews: [],
-          highlights: vetData.highlights || [],
-          insurances: vetData.insurances || ["Unimed", "PlanVet"],
-          faqs: vetData.faqs || [],
-          experiencias: vetData.experiencias || [],
+          experiencias: (vetData.experiencias || []).map((exp) => ({
+            ...exp,
+            dataFim: exp.dataFim ?? undefined,
+            descricao: exp.descricao ?? undefined,
+          })),
           planos: vetData.planos || [],
           limitReached: vetData.limitReached || false
         };
-
-        // Selection removed to require user choice
 
         try {
           const aval = await AvaliacoesService.listarPorVeterinario(veterinarioId);
@@ -251,7 +226,7 @@ export default function VeterinarioProfile() {
             rating: aval.media,
             totalReviews: aval.total,
           });
-        } catch (e) {
+        } catch {
           setVeterinario(transformedData);
         }
       } catch (error) {
@@ -384,18 +359,6 @@ export default function VeterinarioProfile() {
     return `${y}-${m}-${d}`;
   };
 
-  const formatDateRange = () => {
-    const dates = getNextWeek();
-    const firstDate = dates[0];
-    const lastDate = dates[dates.length - 1];
-    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-    if (firstDate.getMonth() === lastDate.getMonth()) {
-      return `${months[firstDate.getMonth()]} ${firstDate.getDate()} - ${lastDate.getDate()}`;
-    } else {
-      return `${months[firstDate.getMonth()]} ${firstDate.getDate()} - ${months[lastDate.getMonth()]} ${lastDate.getDate()}`;
-    }
-  };
-
   const formatDate = (date: Date) => {
     const weekdays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
     const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
@@ -411,7 +374,6 @@ export default function VeterinarioProfile() {
     if (diffDays < 0) return;
     setSelectedDay(diffDays);
     setSelectedTimeSlot(null);
-    setCustomDate(isoDate);
   };
 
   const getDayName = (date: Date) => {
@@ -429,19 +391,20 @@ export default function VeterinarioProfile() {
   };
 
   // Availability Check
+  const vetId = veterinario?.id;
   useEffect(() => {
     const fetchDisponibilidade = async () => {
-      if (!veterinario) return;
+      if (!vetId) return;
       const today = new Date();
       const selectedDate = new Date(today);
       selectedDate.setDate(today.getDate() + selectedDay);
       const data = formatLocalISODate(selectedDate);
       try {
         setCarregandoDisponibilidade(true);
-        const resp = await AgendamentosService.verificarDisponibilidade(veterinario.id, data);
+        const resp = await AgendamentosService.verificarDisponibilidade(vetId, data);
         setHorariosOcupados(resp.horarios_ocupados || []);
         setDiaBloqueado(Boolean(resp.dia_bloqueado));
-      } catch (e) {
+      } catch {
         setHorariosOcupados([]);
         setDiaBloqueado(false);
       } finally {
@@ -450,12 +413,10 @@ export default function VeterinarioProfile() {
     };
     fetchDisponibilidade();
     setShowAllSlots(false); // Reset expansion when day changes
-  }, [veterinario?.id, selectedDay]);
+  }, [vetId, selectedDay]);
 
   useEffect(() => {
-    if (selectedTimeSlot && (diaBloqueado || horariosOcupados.includes(selectedTimeSlot))) {
-      setSelectedTimeSlot(null);
-    }
+    setSelectedTimeSlot((atual) => atual && (diaBloqueado || horariosOcupados.includes(atual)) ? null : atual);
   }, [horariosOcupados, diaBloqueado]);
 
   // Actions
@@ -497,13 +458,12 @@ export default function VeterinarioProfile() {
     })();
   };
 
-  useEffect(() => {
-    if (selectedLocationId === -1) setTipoConsulta("teleconsulta");
-    else setTipoConsulta("clinica");
-  }, [selectedLocationId]);
-
   const confirmarAgendamento = async () => {
     if (!veterinario || !selectedTimeSlot) return;
+    if (!selectedPetId) {
+      setErroAgendamento("Selecione o pet da consulta.");
+      return;
+    }
     const today = new Date();
     const selectedDate = new Date(today);
     selectedDate.setDate(today.getDate() + selectedDay);
@@ -524,11 +484,11 @@ export default function VeterinarioProfile() {
         tipo_consulta: tipoConsultaMap[tipoConsulta],
         especialidade: especialidadeSelecionada,
         observacoes: observacoes || undefined,
-        pet_id: selectedPetId as string,
+        pet_id: selectedPetId,
         endereco_id: selectedLocationId === -1 ? undefined : (selectedLocationId || undefined),
         encaminhamento_id: encaminhamentoId || undefined,
       };
-      await AgendamentosService.criarAgendamento(dadosAgendamento as any);
+      await AgendamentosService.criarAgendamento(dadosAgendamento);
 
       setShowAgendamentoModal(false);
       setShowSuccessModal(true);
@@ -538,11 +498,8 @@ export default function VeterinarioProfile() {
       setSelectedPetId(null);
       setHorariosOcupados((prev) => selectedTimeSlot ? Array.from(new Set([...prev, selectedTimeSlot])) : prev);
       setSelectedTimeSlot(null);
-    } catch (error: any) {
-      let mensagemErro = "Erro ao criar agendamento. Tente novamente.";
-      if (error.response?.data?.message) mensagemErro = error.response.data.message;
-      else if (error.message) mensagemErro = error.message;
-      setErroAgendamento(mensagemErro);
+    } catch (error) {
+      setErroAgendamento(mensagemDeErro(error, "Erro ao criar agendamento. Tente novamente."));
     } finally {
       setSalvando(false);
     }
@@ -560,8 +517,9 @@ export default function VeterinarioProfile() {
   }, []);
 
   useEffect(() => {
-    if (showAgendamentoModal || showSuccessModal) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "auto";
+    if (!showAgendamentoModal && !showSuccessModal) return;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
   }, [showAgendamentoModal, showSuccessModal]);
 
   if (loading) return (
@@ -569,7 +527,7 @@ export default function VeterinarioProfile() {
       <LottieLoading />
     </div>
   );
-  if (!veterinario) return <div className={styles.container}><div className={styles.notFound}>Veterinário não encontrado</div></div>;
+  if (!veterinario) return <div className={styles.container}><div className={styles.notFound}>{error || "Veterinário não encontrado"}</div></div>;
 
   return (
     <OnboardingRedirect>
@@ -586,7 +544,7 @@ export default function VeterinarioProfile() {
             <div className={styles.logoWrapper}>
               <div className={styles.logoFallback}>
                 {veterinario.image ? (
-                  <img src={veterinario.image} alt={veterinario.nome} className={styles.profileImage} style={{ width: '100%', height: '100%', borderRadius: '8px', objectFit: 'cover' }} />
+                  <Image src={veterinario.image} alt={veterinario.nome} width={160} height={160} className={`${styles.profileImage} h-full w-full rounded-lg object-cover`} />
                 ) : (
                   veterinario.nome.charAt(0)
                 )}
@@ -830,6 +788,7 @@ export default function VeterinarioProfile() {
                       value={selectedLocationId ? String(selectedLocationId) : null}
                       onChange={(val) => {
                         setSelectedLocationId(val === "-1" ? -1 : val);
+                        setTipoConsulta(val === "-1" ? "teleconsulta" : "clinica");
                       }}
                       placeholder="Escolha um local"
                     />

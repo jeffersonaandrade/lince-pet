@@ -5,7 +5,7 @@ import {
   mediaAvaliacoes,
   serializeClinica,
   serializeEndereco,
-  serializeRelatedUser,
+  usuarioPublico,
 } from '@/server/services/clinicas'
 
 export const GET = route<{ id: string }>(async (_req, { id }) => {
@@ -40,7 +40,7 @@ export const GET = route<{ id: string }>(async (_req, { id }) => {
 
     const veterinarios = vets.map(({ user: vetUser, avaliacoes: vetAvaliacoes, enderecos, ...vet }) => ({
       ...vet,
-      user: serializeRelatedUser(vetUser),
+      user: usuarioPublico(vetUser),
       especialidades: especialidadesVets.get(vet.id) ?? [],
       avaliacoes: vetAvaliacoes,
       enderecos: enderecos.map(serializeEndereco),
@@ -51,7 +51,7 @@ export const GET = route<{ id: string }>(async (_req, { id }) => {
 
     return ok({
       ...serializeClinica(attrs),
-      user: serializeRelatedUser(user),
+      user: usuarioPublico(user),
       especialidades: especialidadesClinica.get(clinica.id) ?? [],
       planos: clinicaPlanos.map((cp) => cp.plano),
       avaliacoes,

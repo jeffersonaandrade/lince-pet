@@ -30,6 +30,24 @@ export interface VeterinarioProfileUpdate {
   planos?: string[];
 }
 
+/** Local de atendimento do veterinário (`/veterinarios/locations`). */
+export interface LocalAtendimento {
+  id?: number;
+  nomeClinica?: string;
+  rua: string;
+  numero: string;
+  bairro: string;
+  complemento?: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  precoConsulta?: number;
+  aceitaEmergencia?: boolean;
+  observacoes?: string;
+  horariosDisponibilidade?: Record<string, string[]>;
+  fotoUrl?: string;
+}
+
 export interface VeterinarioHorario {
   id?: number;
   diaSemana: number; // 0-6 (0=Domingo, 6=Sábado)
@@ -68,7 +86,7 @@ export const VeterinarioProfileService = {
   /**
    * Update specific location
    */
-  async updateLocation(id: number, data: any): Promise<{ message: string; endereco: any }> {
+  async updateLocation(id: number, data: LocalAtendimento): Promise<{ message: string; endereco: LocalAtendimento }> {
     const response = await api.put(`/veterinarios/locations/${id}`, data);
     return response.data;
   },
@@ -76,7 +94,7 @@ export const VeterinarioProfileService = {
   /**
    * Add new location
    */
-  async addLocation(data: any): Promise<{ message: string; endereco: any }> {
+  async addLocation(data: Partial<LocalAtendimento>): Promise<{ message: string; endereco: LocalAtendimento }> {
     const response = await api.post('/veterinarios/locations', data);
     return response.data;
   },

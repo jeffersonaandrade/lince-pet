@@ -10,6 +10,7 @@ import {
   ArrowRight,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
 import styles from "./PlatformFeatures.module.css";
 
 export default function PlatformFeatures() {
@@ -104,9 +105,11 @@ export default function PlatformFeatures() {
               </p>
             </div>
             <div className={styles.headerImage}>
-              <img
+              <Image
                 src="/img/dog banner.jpg"
                 alt="Cachorro sendo cuidado por veterinário"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className={styles.dogImage}
               />
               <div className={styles.imageMask}></div>

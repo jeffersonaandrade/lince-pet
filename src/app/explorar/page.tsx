@@ -2,13 +2,13 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Star, ExternalLink, ShieldCheck, Check, BadgeCheck, Clock } from "lucide-react";
+import { Star, ExternalLink, BadgeCheck, Clock } from "lucide-react";
 import SearchBar from "../../components/Home/SearchBar/SearchBar";
 import UserImage from "../../components/ui/UserImage/UserImage";
 import OnboardingRedirect from "../../components/RouteProtection/OnboardingRedirect";
 import { searchVeterinarios } from "../../services/veterinarios/veterinarios";
 import styles from "./explorar.module.css";
-import { searchClinicas } from "../../services/clinicas/clinicas";
+import { searchClinicas, type FiltrosBusca } from "../../services/clinicas/clinicas";
 import Skeleton from "../../components/ui/Skeleton/Skeleton";
 import ListaProfissionais from "../../components/Prestador/ListaProfissionais";
 import OrdenacaoLista from "../../components/Home/SearchBar/OrdenacaoLista";
@@ -19,7 +19,6 @@ type Aba = "veterinarios" | "clinicas" | "profissionais";
 interface Veterinario {
   id: string;
   nome: string;
-  email: string;
   cidade: string;
   estado: string;
   endereco: string;
@@ -48,7 +47,7 @@ interface Clinica {
   estado: string;
   fotoPerfil?: string | null;
   isVerified: boolean;
-  horariosFuncionamento: any;
+  horariosFuncionamento: unknown;
   rating: number;
   totalReviews: number;
   especialidades?: { nome: string }[];
@@ -89,7 +88,7 @@ function ExplorarContent() {
       const location = searchParams.get("location");
       const plans = searchParams.get("plans");
 
-      const filters: any = {};
+      const filters: FiltrosBusca = {};
       if (search) filters.search = search;
       if (specialty) filters.especialidade = specialty;
       if (location) {
@@ -116,7 +115,7 @@ function ExplorarContent() {
       setVeterinarios(loadedVets);
 
       // Adicionar ratings e reviews se não vierem do backend
-      const mappedClinicas = loadedClinicas.map((c: any) => ({
+      const mappedClinicas = loadedClinicas.map((c: Clinica) => ({
         ...c,
         rating: c.rating || 0.0,
         totalReviews: c.totalReviews || 0,
@@ -132,16 +131,15 @@ function ExplorarContent() {
     }
   };
 
+  // Ordenação (ordem/direcao) é local e não deve buscar de novo: só os filtros disparam a busca.
+  const buscaParam = searchParams.get("search");
+  const especialidadeParam = searchParams.get("specialty");
+  const localParam = searchParams.get("location");
+  const planosParam = searchParams.get("plans");
   useEffect(() => {
     loadData();
-    // Ordenação (ordem/direcao) é local e não deve buscar de novo.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    searchParams.get("search"),
-    searchParams.get("specialty"),
-    searchParams.get("location"),
-    searchParams.get("plans"),
-  ]);
+  }, [buscaParam, especialidadeParam, localParam, planosParam]);
 
   useEffect(() => {
     setSearchTerm(searchParams.get("search") || "");
@@ -214,111 +212,7 @@ function ExplorarContent() {
     router.push(`/clinicas/${id}`);
   }
 
-  const getDayAvailability = (
-    date: Date,
-    availability: { [key: string]: string[] }
-  ) => {
-    const dayNames = [
-      "domingo",
-      "segunda",
-      "terca",
-      "quarta",
-      "quinta",
-      "sexta",
-      "sabado",
-    ];
-    const dayName = dayNames[date.getDay()];
-    return availability[dayName] || [];
-  };
-
-  const AppointmentBooking = ({
-    availability,
-    vetId,
-    preco,
-  }: {
-    availability: { [key: string]: string[] };
-    vetId: string;
-    preco: number;
-  }) => {
-    const today = new Date();
-    const todayAvailability = getDayAvailability(today, availability);
-    // Neste componente de listagem não permitimos agendamento.
-    // Apenas exibimos os horários disponíveis e redirecionamos para o perfil
-    // do veterinário quando o usuário clica em um horário.
-
-    const formatDate = (date: Date) => {
-      const months = [
-        "Jan",
-        "Fev",
-        "Mar",
-        "Abr",
-        "Mai",
-        "Jun",
-        "Jul",
-        "Ago",
-        "Set",
-        "Out",
-        "Nov",
-        "Dez",
-      ];
-      const weekdays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-      return `${weekdays[date.getDay()]}, ${months[date.getMonth()]
-        } ${date.getDate()}`;
-    };
-
-    // Pegar os primeiros 6 horários disponíveis ou array vazio se não houver
-    const availableSlots =
-      todayAvailability.length > 0 ? todayAvailability.slice(0, 6) : [];
-
-    // return (
-    //   <div className={styles.appointmentBooking}>
-    //     <div className={styles.pricingHeader}>
-    //       <span className={styles.price}>R${preco}</span>
-    //     </div>
-
-    //     <div className={styles.bookingSection}>
-    //       <div className={styles.dateHeader}>
-    //         <span className={styles.dateText}>{formatDate(today)}</span>
-    //       </div>
-
-    //       <div className={styles.bookingBody}>
-    //         <div className={styles.slotsContainer}>
-    //           {availableSlots.length > 0 ? (
-    //             <>
-    //               {availableSlots.map((slot, index) => (
-    //                 <button
-    //                   key={index}
-    //                   className={styles.appointmentSlot}
-    //                   onClick={() => redirectToVetProfile(vetId, slot)}
-    //                 >
-    //                   {slot}
-    //                 </button>
-    //               ))}
-    //             </>
-    //           ) : (
-    //             <div className={styles.noSlotsAvailable}>
-    //               Sem horários disponíveis
-    //             </div>
-    //           )}
-    //         </div>
-
-    //         {availableSlots.length > 0 &&
-    //           availableSlots.length % 2 === 0 &&
-    //           todayAvailability.length > 6 && (
-    //             <button
-    //               className={styles.moreTimesButtonBelow}
-    //               onClick={() => redirectToVetProfile(vetId)}
-    //             >
-    //               Mais horários
-    //             </button>
-    //           )}
-    //       </div>
-    //     </div>
-    //   </div>
-    // );
-  };
-
-  const getClinicStatus = (horarios: any) => {
+  const getClinicStatus = (horarios: unknown) => {
     if (!horarios) return { status: 'Indisponível', color: 'gray' };
 
     const diasDaSemana = [
@@ -329,9 +223,9 @@ function ExplorarContent() {
     const diaAtualIndex = agora.getDay(); // 0 a 6
     const chaveDia = diasDaSemana[diaAtualIndex];
 
-    let horariosObj;
+    let horariosObj: Record<string, unknown> | null;
     try {
-      horariosObj = typeof horarios === 'string' ? JSON.parse(horarios) : horarios;
+      horariosObj = typeof horarios === 'string' ? JSON.parse(horarios) : (horarios as Record<string, unknown>);
     } catch (e) {
       console.error("Erro ao processar horários:", e);
       return { status: 'Dados Inválidos', color: 'gray' };
@@ -678,7 +572,6 @@ function ExplorarContent() {
                         {(() => {
                           const statusInfo = getClinicStatus(clinic.horariosFuncionamento);
                           const isAberto = statusInfo.color === 'green';
-                          const isIndisponivel = statusInfo.color === 'gray';
                           return (
                             <div
                               className={styles.clinicStatusBadge}

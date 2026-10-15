@@ -121,8 +121,8 @@ export default function UserImage({
             className={`${styles.userImage} ${
               isLoading ? styles.imageLoading : ""
             }`}
-            onLoadingComplete={handleImageLoad}
-            onError={handleImageError as any}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
             priority={false}
           />
         </>

@@ -1,4 +1,5 @@
 import { api } from "@/hook/api";
+import { mensagemDaApi } from "@/lib/erros";
 
 // Create a function to get API instance
 
@@ -11,6 +12,9 @@ export interface AgendamentoData {
   pet_id: string; // novo: pet que irá à consulta
   observacoes?: string;
   clinica_id?: string;
+  /** Endereço de atendimento do veterinário (presencial); define local e preço. */
+  endereco_id?: string;
+  especialidade?: string;
   encaminhamento_id?: string;
 }
 
@@ -108,17 +112,7 @@ export class AgendamentosService {
     dadosAgendamento: AgendamentoData
   ): Promise<AgendamentoResponse> {
     try {
-      console.log(
-        "[AgendamentosService] Criando agendamento:",
-        dadosAgendamento
-      );
-
       const response = await api.post("/agendamentos", dadosAgendamento);
-
-      console.log(
-        "[AgendamentosService] Agendamento criado com sucesso:",
-        response.data
-      );
 
       // A API retorna { message: string, agendamento: AgendamentoResponse }
       return response.data.agendamento;
@@ -144,7 +138,7 @@ export class AgendamentosService {
         );
       }
 
-      throw new Error("Erro interno. Tente novamente em alguns instantes.");
+      throw new Error(mensagemDaApi(error) || "Erro interno. Tente novamente em alguns instantes.");
     }
   }
 

@@ -471,7 +471,6 @@ describe('searchVeterinarios', () => {
     expect(card).toEqual({
       id: 'v1',
       nome: 'Nome Sobrenome',
-      email: 'email@exemplo.com',
       fotoUrl: null,
       cidade: 'Cidade não informada',
       estado: 'UF',
@@ -558,7 +557,6 @@ describe('getVeterinarioById', () => {
     expect(assinatura.canCreateAppointment).toHaveBeenCalledWith(expect.objectContaining({ id: 'vet-1' }))
     expect(vet).toMatchObject({
       nome: 'Ana Vet',
-      email: 'ana@x.com',
       cidade: 'Olinda',
       endereco: 'Rua A, 10, Olinda',
       especialidades: ['Cardio'],
@@ -577,6 +575,8 @@ describe('getVeterinarioById', () => {
       planos: [{ id: 'p1', name: 'Pet Love' }],
       limitReached: true,
     })
+    // Perfil público: o e-mail do veterinário não vai para quem não está logado.
+    expect(vet).not.toHaveProperty('email')
     expect(vet.experiencias[0].dataInicio!.toISODate()).toBe('2020-01-02')
     expect(vet.locations).toEqual([
       expect.objectContaining({ id: 'e1', clinicaId: undefined, preco: 0, availability: {}, isPrimary: false }),

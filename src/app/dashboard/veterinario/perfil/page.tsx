@@ -3,12 +3,11 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { VeterinarioProfileService } from "@/services/veterinarios/profile";
+import { VeterinarioProfileService, type LocalAtendimento } from "@/services/veterinarios/profile";
 import { getOnboardingProgress, getEspecialidades, getPlanos, type Experience } from "@/services/veterinarios/veterinarios";
-import { Clock, ChevronDown, ChevronUp, Plus, X, Trash2, Crown } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, X, Trash2, Crown } from "lucide-react";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
 import { PreferenciasNotificacao, ConexaoGoogleAgenda } from "@/components/PreferenciasNotificacao/PreferenciasNotificacao";
-import { AssinaturasService } from "@/services/assinaturas/assinaturas";
 import styles from "./perfil.module.css";
 import { useFeatureGate } from "@/hook/useFeatureGate";
 import PremiumGateModal from "@/components/PremiumGateModal/PremiumGateModal";
@@ -18,24 +17,30 @@ interface Especialidade {
   nome: string;
 }
 
-interface Endereco {
+type Endereco = LocalAtendimento;
+
+type EnderecoApi = Partial<
+  Record<"nomeClinica" | "rua" | "numero" | "bairro" | "complemento" | "cidade" | "estado" | "cep" | "observacoes" | "fotoUrl", string | null>
+> & {
   id?: number;
-  nomeClinica?: string;
-  rua: string;
-  numero: string;
-  bairro: string;
-  complemento?: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-  precoConsulta?: number;
+  precoConsulta?: number | string | null;
   aceitaEmergencia?: boolean;
-  observacoes?: string;
-  horariosDisponibilidade?: {
-    [key: string]: string[];
-  };
-  fotoUrl?: string;
-}
+  horariosDisponibilidade?: Record<string, string[]> | null;
+};
+
+/** Dados do veterinário em `GET /onboarding/progress` usados nesta tela. */
+type VeterinarioProgresso = {
+  bio?: string | null;
+  especialidades?: { id?: string | number }[];
+  experiencias?: Experience[];
+  planos?: { id: string }[];
+  atendeOnline?: boolean | number;
+  precoConsultaOnline?: number | string | null;
+  horariosOnline?: Record<string, string[]> | string | null;
+  enderecos?: EnderecoApi[];
+};
+
+type ProgressoOnboarding = { data?: { veterinario?: VeterinarioProgresso }; veterinario?: VeterinarioProgresso };
 
 const DIAS_SEMANA_MAP: { [key: string]: string } = {
   segunda: "Segunda-feira",
@@ -65,37 +70,13 @@ function Toast({
 export default function PerfilVeterinario() {
   const { user, loading, checkAuth } = useAuth();
   const router = useRouter();
-  const assinaturas = AssinaturasService();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [vetPlanoAtual, setVetPlanoAtual] = useState<string | null>(null);
-  
+
   const { hasFeature } = useFeatureGate();
   const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [premiumModalFeature, setPremiumModalFeature] = useState("");
   const [premiumModalPlan, setPremiumModalPlan] = useState<"Pro" | "Pro+">("Pro");
-
-  const resolveCurrentPlan = useCallback((vet?: any): string | null => {
-    if (!vet || !Array.isArray(vet.planos) || vet.planos.length === 0)
-      return null;
-    const arr = vet.planos;
-    const isActive = (p?: string) => {
-      const v = (p || "").toLowerCase();
-      return v === "active" || v === "ativo" || v === "ativa";
-    };
-    const active = arr.find((p: any) => p.isActive || isActive(p.status));
-    if (active) return active.code || active.name || null;
-    const sorted = [...arr].sort((a, b) => {
-      const ad = a.createdAt ? Date.parse(a.createdAt) : 0;
-      const bd = b.createdAt ? Date.parse(b.createdAt) : 0;
-      if (ad !== bd) return bd - ad;
-      const ai = typeof a.id === "number" ? a.id : -1;
-      const bi = typeof b.id === "number" ? b.id : -1;
-      return bi - ai;
-    });
-    const first = sorted[0];
-    return (first && (first.code || first.name)) || null;
-  }, []);
 
   // Profile data
   const [nome, setNome] = useState("");
@@ -170,18 +151,8 @@ export default function PerfilVeterinario() {
     }
   });
 
-  useEffect(() => {
-    if (loading) return;
-
-    if (!user || user.userType !== "veterinario") {
-      router.push("/login");
-      return;
-    }
-
-    loadProfileData();
-  }, [user, loading, router]);
-
-  const loadProfileData = async () => {
+  const nomeDoUsuario = user?.nome;
+  const loadProfileData = useCallback(async () => {
     try {
       setIsLoading(true);
 
@@ -199,31 +170,16 @@ export default function PerfilVeterinario() {
       }
 
       // Load profile data from onboarding progress
-      const progress: any = await getOnboardingProgress();
-      const progressData = progress.data || progress;
-      const vet = progressData.veterinario;
+      const progress: ProgressoOnboarding = await getOnboardingProgress();
+      const vet = (progress.data ?? progress).veterinario;
 
       if (vet) {
-        if (user?.nome) setNome(user.nome);
+        if (nomeDoUsuario) setNome(nomeDoUsuario);
         setBio(vet.bio || "");
-
-        const resolved = resolveCurrentPlan(vet);
-        let actualPlan = resolved;
-
-        try {
-          const statusData = await assinaturas.obterStatus();
-          if (statusData?.plan?.code) {
-            actualPlan = statusData.plan.code;
-          }
-        } catch (e) {
-          console.warn("Failed to load subscription status for profile", e);
-        }
-
-        setVetPlanoAtual(actualPlan);
 
         // Load specialties
         if (Array.isArray(vet.especialidades)) {
-          const ids = vet.especialidades.map((e: any) => e.id).filter(Boolean);
+          const ids = vet.especialidades.flatMap((e) => (e.id ? [e.id] : []));
           setEspecialidadesSelecionadas(ids);
         }
 
@@ -232,21 +188,22 @@ export default function PerfilVeterinario() {
 
         // Load Plans
         if (vet.planos && Array.isArray(vet.planos)) {
-          setPlanos(vet.planos.map((p: any) => p.id));
+          setPlanos(vet.planos.map((p) => p.id));
         }
 
         // Load Teleconsulta Data
         setAtendeOnline(!!vet.atendeOnline);
         setPrecoConsultaOnline(Number(vet.precoConsultaOnline || 0));
         if (vet.horariosOnline) {
-          let onlineHours = vet.horariosOnline;
-          if (typeof onlineHours === 'string') {
+          let onlineHours: Record<string, string[]> = {};
+          if (typeof vet.horariosOnline === 'string') {
             try {
-              onlineHours = JSON.parse(onlineHours);
+              onlineHours = JSON.parse(vet.horariosOnline);
             } catch (e) {
               console.error("Error parsing horariosOnline", e);
-              onlineHours = {};
             }
+          } else {
+            onlineHours = vet.horariosOnline;
           }
 
           // Ensure it has all keys
@@ -259,7 +216,7 @@ export default function PerfilVeterinario() {
 
         // Load addresses
         if (Array.isArray(vet.enderecos)) {
-          const processedEnderecos = vet.enderecos.map((end: any) => ({
+          const processedEnderecos = vet.enderecos.map((end): Endereco => ({
             id: end.id,
             nomeClinica: end.nomeClinica || "",
             rua: end.rua || "",
@@ -286,7 +243,18 @@ export default function PerfilVeterinario() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [nomeDoUsuario]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    if (!user || user.userType !== "veterinario") {
+      router.push("/login");
+      return;
+    }
+
+    loadProfileData();
+  }, [user, loading, router, loadProfileData]);
 
   const handleSaveAll = async () => {
     try {
@@ -361,16 +329,8 @@ export default function PerfilVeterinario() {
     setExpandedLocationIndex(expandedLocationIndex === index ? null : index);
   };
 
-  // Format currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    }).format(value);
-  };
-
   // Update a specific location field in the state (local edit)
-  const updateLocalLocation = (index: number, field: keyof Endereco, value: any) => {
+  const updateLocalLocation = <K extends keyof Endereco>(index: number, field: K, value: Endereco[K]) => {
     const updatedEnderecos = [...enderecos];
     updatedEnderecos[index] = { ...updatedEnderecos[index], [field]: value };
     setEnderecos(updatedEnderecos);
@@ -396,25 +356,6 @@ export default function PerfilVeterinario() {
     };
     setEnderecos(updatedEnderecos);
     setHasUnsavedChanges(true);
-  };
-
-  // Save functionality for a single location
-  const handleSaveLocation = async (index: number) => {
-    const location = enderecos[index];
-    if (!location.id) return;
-
-    try {
-      setIsSaving(true);
-      // Call backend update
-      await VeterinarioProfileService.updateLocation(location.id, location);
-      showToast("Localização atualizada com sucesso!");
-    } catch (error) {
-      console.error("Erro ao salvar localização:", error);
-      showToast("Erro ao salvar localização.", "error");
-    } finally {
-
-      setIsSaving(false);
-    }
   };
 
   const handleLocationPhotoUpload = async (index: number, file: File) => {
@@ -452,7 +393,7 @@ export default function PerfilVeterinario() {
       }
 
       setIsSaving(true);
-      const added = await VeterinarioProfileService.addLocation(newLocation);
+      await VeterinarioProfileService.addLocation(newLocation);
 
       // Refresh list
       await loadProfileData();

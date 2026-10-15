@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { handleApiError, type ErrorState } from "@/utils/errorHandler";
@@ -136,7 +137,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
                     {isCurrent && <span className={styles.currentPlanBadge}>Plano Atual</span>}
 
                     <div className={styles.iconContainer}>
-                      <img src={plan.iconPath} alt={plan.name} className={styles.planIcon} />
+                      <Image src={plan.iconPath} alt={plan.name} width={85} height={85} className={styles.planIcon} />
                     </div>
 
                     <div className={styles.containerFirst}>

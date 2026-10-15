@@ -17,12 +17,35 @@ import {
     submitClinicaOnboardingStep5,
 } from "@/services/clinicas/clinicas";
 import { getEspecialidades, getPlanos } from "@/services/veterinarios/veterinarios";
-import { Search, X, UserPlus, Trash2, CheckCircle } from "lucide-react";
+import { Search, UserPlus, Trash2, CheckCircle } from "lucide-react";
+import { mensagemDaApi } from "@/lib/erros";
 import styles from "./perfil.module.css";
 
 interface Especialidade {
     id: string | number;
     nome: string;
+}
+
+/** Dados da clínica em `GET /clinicas/onboarding/progress` usados nesta tela. */
+type ClinicaProgresso = {
+    descricao?: string | null;
+    telefone?: string | null;
+    especialidades?: { id?: string | number }[];
+    comodidades?: Record<string, boolean> | string | null;
+    horariosFuncionamento?: Record<string, string[]> | string | null;
+    planos?: { id: string }[];
+};
+
+type ProgressoClinica = (ClinicaProgresso & { clinica?: ClinicaProgresso; data?: { clinica?: ClinicaProgresso } }) | null;
+
+/** Colunas JSON antigas podem vir como texto; texto inválido vira objeto vazio. */
+function jsonOuObjeto<T extends Record<string, unknown>>(valor: T | string): T {
+    if (typeof valor !== "string") return valor;
+    try {
+        return JSON.parse(valor);
+    } catch {
+        return {} as T;
+    }
 }
 
 // Map of amenity keys to display labels
@@ -127,20 +150,7 @@ export default function PerfilClinica() {
     const [isRemovingVet, setIsRemovingVet] = useState<string | null>(null);
 
     // ── Load Data ──────────────────────────────────────────────────────────────
-    useEffect(() => {
-        if (loading) return;
-        if (!user || user.userType !== "clinica") {
-            router.push("/login");
-            return;
-        }
-        if (user) {
-            if (user.nome) setNome(user.nome);
-        }
-
-        loadData();
-    }, [user, loading]);
-
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
             setIsLoading(true);
 
@@ -157,8 +167,8 @@ export default function PerfilClinica() {
             }
 
             // Load clinic onboarding/profile data
-            const progress = await getClinicaOnboardingProgress();
-            const clinica = progress?.clinica || progress?.data?.clinica || progress;
+            const progress: ProgressoClinica = await getClinicaOnboardingProgress();
+            const clinica: ClinicaProgresso | null | undefined = progress?.clinica || progress?.data?.clinica || progress;
 
             if (clinica) {
                 setDescricao(clinica.descricao || "");
@@ -167,29 +177,19 @@ export default function PerfilClinica() {
                 // Especialidades
                 if (Array.isArray(clinica.especialidades)) {
                     setEspecialidadesSelecionadas(
-                        clinica.especialidades.map((e: any) => e.id).filter(Boolean)
+                        clinica.especialidades.flatMap((e) => (e.id ? [e.id] : []))
                     );
                 }
 
                 // Comodidades
                 if (clinica.comodidades) {
-                    let rawComod: Record<string, boolean> = clinica.comodidades;
-                    if (typeof rawComod === "string") {
-                        try {
-                            rawComod = JSON.parse(rawComod);
-                        } catch { }
-                    }
+                    const rawComod = jsonOuObjeto<Record<string, boolean>>(clinica.comodidades);
                     setComodidades((prev) => ({ ...prev, ...rawComod }));
                 }
 
                 // Horários
                 if (clinica.horariosFuncionamento) {
-                    let rawHorarios = clinica.horariosFuncionamento;
-                    if (typeof rawHorarios === "string") {
-                        try {
-                            rawHorarios = JSON.parse(rawHorarios);
-                        } catch { }
-                    }
+                    const rawHorarios = jsonOuObjeto<Record<string, string[]>>(clinica.horariosFuncionamento);
                     // Normalize keys (remove accents & "-feira" suffix)
                     const normalizeKey = (k: string) =>
                         k
@@ -198,15 +198,15 @@ export default function PerfilClinica() {
                             .replace(/[\u0300-\u036f]/g, "")
                             .replace("-feira", "");
                     const normalized: Record<string, string[]> = {};
-                    Object.keys(rawHorarios).forEach((k) => {
-                        normalized[normalizeKey(k)] = rawHorarios[k];
+                    Object.entries(rawHorarios).forEach(([k, slots]) => {
+                        if (slots) normalized[normalizeKey(k)] = slots;
                     });
                     setHorarios((prev) => ({ ...prev, ...normalized }));
                 }
 
                 // Planos
                 if (Array.isArray(clinica.planos)) {
-                    setPlanosSelecionados(clinica.planos.map((p: any) => p.id));
+                    setPlanosSelecionados(clinica.planos.map((p) => p.id));
                 }
             }
 
@@ -219,7 +219,20 @@ export default function PerfilClinica() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [showToast]);
+
+    const nomeDoUsuario = user?.nome;
+    const tipoUsuario = user?.userType;
+    useEffect(() => {
+        if (loading) return;
+        if (tipoUsuario !== "clinica") {
+            router.push("/login");
+            return;
+        }
+        if (nomeDoUsuario) setNome(nomeDoUsuario);
+
+        loadData();
+    }, [tipoUsuario, nomeDoUsuario, loading, router, loadData]);
 
     // ── Generate Time Slots ────────────────────────────────────────────────────
     const generateTimeSlots = () => {
@@ -308,11 +321,8 @@ export default function PerfilClinica() {
             setSearchResults((prev) => prev.filter((v) => v.id !== vet.id));
             setHasUnsavedChanges(true);
             showToast(`${vet.nome} ${vet.sobrenome} vinculado com sucesso!`);
-        } catch (error: any) {
-            showToast(
-                error?.response?.data?.message || "Erro ao vincular veterinário.",
-                "error"
-            );
+        } catch (error) {
+            showToast(mensagemDaApi(error) || "Erro ao vincular veterinário.", "error");
         } finally {
             setIsAddingVet(null);
         }
@@ -326,7 +336,7 @@ export default function PerfilClinica() {
             setProfissionais((prev) => prev.filter((v) => v.id !== vetId));
             setHasUnsavedChanges(true);
             showToast("Profissional removido com sucesso!");
-        } catch (error) {
+        } catch {
             showToast("Erro ao remover profissional.", "error");
         } finally {
             setIsRemovingVet(null);
@@ -603,7 +613,7 @@ export default function PerfilClinica() {
                                 borderRadius: "8px",
                             }}
                         >
-                            Nenhum veterinário encontrado para "{searchTerm}". Verifique o
+                            Nenhum veterinário encontrado para &quot;{searchTerm}&quot;. Verifique o
                             nome ou CRMV.
                         </p>
                     )}

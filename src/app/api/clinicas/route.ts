@@ -5,7 +5,7 @@ import {
   especialidadesPorEntidade,
   mediaAvaliacoes,
   serializeClinica,
-  serializeRelatedUser,
+  usuarioPublico,
 } from '@/server/services/clinicas'
 
 export const GET = route(async (req) => {
@@ -37,7 +37,7 @@ export const GET = route(async (req) => {
       const { rating, totalReviews } = mediaAvaliacoes(avaliacoes.map((a) => a.estrelasClinica))
       return {
         ...serializeClinica(clinica),
-        user: serializeRelatedUser(user),
+        user: usuarioPublico(user),
         especialidades: especialidades.get(clinica.id) ?? [],
         planos: clinicaPlanos.map((cp) => cp.plano),
         avaliacoes,

@@ -1,4 +1,6 @@
+import { isAxiosError } from "axios";
 import { api } from "@/hook/api";
+import { mensagemDaApi } from "@/lib/erros";
 import { formatEventTitle, formatDateToISO } from "@/utils/formatters";
 
 
@@ -46,8 +48,45 @@ export interface EventoCalendario {
     pet: string;
     tipo: string;
     status: string;
+    localNome?: string;
+    localEndereco?: string;
+    petFotoUrl?: string;
+    clienteSobrenome?: string;
+    petRaca?: string;
+    petPorte?: string;
+    petEspecie?: string;
+    observacoes?: string;
+    valor?: number;
+    horario?: string;
   };
 }
+
+/** Item de `GET /veterinarios/agendamentos` (`data_consulta` em dd/MM/yyyy). */
+interface AgendamentoVeterinarioApi {
+  id: number;
+  data_consulta: string;
+  horario_consulta: string;
+  tipo_consulta: string;
+  status: string;
+  tutor_nome: string;
+  tutor_sobrenome?: string;
+  tutor_telefone?: string | null;
+  tutor_email?: string | null;
+  pet_id?: string | null;
+  pet_nome?: string;
+  pet_especie?: string;
+  pet_raca?: string;
+  pet_porte?: string;
+  pet_foto_url?: string;
+  observacoes?: string;
+  local_nome?: string;
+  local_endereco?: string;
+  preco_consulta?: number | string | null;
+}
+
+type ListaAgendamentosApi = { agendamentos?: AgendamentoVeterinarioApi[] };
+
+const respostaDoErro = (error: unknown) => (isAxiosError(error) ? error.response?.data : undefined);
 
 /**
  * Service para gerenciar o dashboard do veterinário
@@ -65,12 +104,12 @@ export class VeterinarioDashboardService {
         response.data
       );
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       console.error(
         "❌ [Dashboard Service] Erro ao buscar estatísticas:",
         error
       );
-      console.error("❌ [Dashboard Service] Response:", error.response?.data);
+      console.error("❌ [Dashboard Service] Response:", respostaDoErro(error));
 
       // Retorna valores padrão em caso de erro
       return {
@@ -102,7 +141,7 @@ export class VeterinarioDashboardService {
         dataFim
       );
 
-      const response = await api.get("/veterinarios/agendamentos", {
+      const response = await api.get<ListaAgendamentosApi>("/veterinarios/agendamentos", {
         params: {
           data_inicio: dataInicio,
           data_fim: dataFim,
@@ -126,7 +165,7 @@ export class VeterinarioDashboardService {
       }
 
       // Converte os agendamentos para o formato do calendário
-      return response.data.agendamentos.map((agendamento: any) => {
+      return response.data.agendamentos.map((agendamento) => {
         const [dia, mes, ano] = agendamento.data_consulta.split("/");
         const [hora, minuto] = agendamento.horario_consulta.split(":");
 
@@ -171,12 +210,12 @@ export class VeterinarioDashboardService {
           },
         };
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error(
         "❌ [Dashboard Service] Erro ao buscar agendamentos do calendário:",
         error
       );
-      console.error("❌ [Dashboard Service] Response:", error.response?.data);
+      console.error("❌ [Dashboard Service] Response:", respostaDoErro(error));
       return [];
     }
   }
@@ -201,7 +240,7 @@ export class VeterinarioDashboardService {
         dataAlvoISO = formatDateToISO(hoje);
       }
 
-      const response = await api.get("/veterinarios/agendamentos", {
+      const response = await api.get<ListaAgendamentosApi>("/veterinarios/agendamentos", {
         params: {
           data_inicio: dataAlvoISO,
           data_fim: dataAlvoISO,
@@ -222,7 +261,7 @@ export class VeterinarioDashboardService {
         return [];
       }
 
-      return response.data.agendamentos.map((agendamento: any) => ({
+      return response.data.agendamentos.map((agendamento) => ({
         id: agendamento.id,
         cliente: agendamento.tutor_nome,
         clienteSobrenome: agendamento.tutor_sobrenome,
@@ -245,12 +284,12 @@ export class VeterinarioDashboardService {
         petFotoUrl: agendamento.pet_foto_url,
       }));
 
-    } catch (error: any) {
+    } catch (error) {
       console.error(
         "❌ [Dashboard Service] Erro ao buscar próximas consultas:",
         error
       );
-      console.error("❌ [Dashboard Service] Response:", error.response?.data);
+      console.error("❌ [Dashboard Service] Response:", respostaDoErro(error));
       return [];
     }
   }
@@ -266,12 +305,12 @@ export class VeterinarioDashboardService {
       );
       await api.patch(`/veterinarios/agendamentos/${agendamentoId}/concluir`);
       return true;
-    } catch (error: any) {
+    } catch (error) {
       console.error(
         "❌ [Dashboard Service] Erro ao concluir agendamento:",
         error
       );
-      console.error("❌ [Dashboard Service] Response:", error.response?.data);
+      console.error("❌ [Dashboard Service] Response:", respostaDoErro(error));
       return false;
     }
   }
@@ -288,8 +327,8 @@ export class VeterinarioDashboardService {
         code,
       });
       return { ok: true };
-    } catch (error: any) {
-      const msg = error?.response?.data?.message || "Falha ao iniciar consulta";
+    } catch (error) {
+      const msg = mensagemDaApi(error) || "Falha ao iniciar consulta";
       console.error("❌ [Dashboard Service] Erro ao iniciar agendamento:", msg);
       return { ok: false, error: msg };
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { isAxiosError } from "axios";
 import { Trash2 } from "lucide-react";
 import { PrestadoresService, type Bloqueio, type Pedido } from "@/services/prestadores/prestadores";
 import { handleApiError } from "@/utils/errorHandler";
@@ -48,9 +49,9 @@ export function PainelBloqueios({
       setFim("");
       setHorarios("");
       setMotivo("");
-    } catch (e: any) {
+    } catch (e) {
       setErro(handleApiError(e).message);
-      setConflitos(e?.response?.data?.conflitos || []);
+      setConflitos(isAxiosError<{ conflitos?: Pedido[] }>(e) ? e.response?.data?.conflitos || [] : []);
     } finally {
       setSalvando(false);
     }
