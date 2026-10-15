@@ -33,6 +33,9 @@ export function updating<T extends object>(data: T) {
   return { ...data, updatedAt: now() }
 }
 
+/** Colunas `serializeAs: null` do model User no Lucid: nunca saem numa resposta, mesmo com `include: { user: true }`. */
+const CAMPOS_SECRETOS = new Set(['password', 'googleAccessToken', 'googleRefreshToken', 'googleTokenExpiresAt'])
+
 /** Serializa como o Lucid: DateTime -> ISO do Luxon (fuso do servidor), DECIMAL -> string com 2 casas. */
 export function serialize(value: unknown): unknown {
   if (value === null || value === undefined) return value
@@ -45,7 +48,7 @@ export function serialize(value: unknown): unknown {
   if (typeof value === 'object') {
     const out: Record<string, unknown> = {}
     for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
-      if (v !== undefined) out[k] = serialize(v)
+      if (v !== undefined && !CAMPOS_SECRETOS.has(k)) out[k] = serialize(v)
     }
     return out
   }

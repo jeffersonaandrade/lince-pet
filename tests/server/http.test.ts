@@ -1,7 +1,26 @@
 import { describe, it, expect } from 'vitest'
 import { NextRequest } from 'next/server'
 import vine from '@vinejs/vine'
-import { ApiRequest, HttpError, handleError } from '@/server/http'
+import { ApiRequest, HttpError, handleError, ok } from '@/server/http'
+
+describe('json (corpo das respostas)', () => {
+  it('nunca envia senha nem tokens do Google, mesmo em relações aninhadas', async () => {
+    const usuario = {
+      id: 'u1',
+      nome: 'Ana',
+      password: '$hash',
+      googleAccessToken: 'tok',
+      googleRefreshToken: 'ref',
+      googleTokenExpiresAt: new Date('2026-01-01T00:00:00Z'),
+      googleCalendarAuthorized: 1,
+    }
+    const res = ok([{ id: 'f1', veterinario: { id: 'v1', user: usuario }, clinica: { user: usuario } }])
+    const corpo = await res.json()
+
+    expect(corpo[0].veterinario.user).toEqual({ id: 'u1', nome: 'Ana', googleCalendarAuthorized: 1 })
+    expect(corpo[0].clinica.user).toEqual({ id: 'u1', nome: 'Ana', googleCalendarAuthorized: 1 })
+  })
+})
 
 describe('ApiRequest (equivalente ao bodyparser do Adonis)', () => {
   it('mescla query string e JSON e converte string vazia em null', async () => {

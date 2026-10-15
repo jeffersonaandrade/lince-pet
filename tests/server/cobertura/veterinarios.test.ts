@@ -537,7 +537,7 @@ describe('getVeterinarioById', () => {
         horariosOnline: '{"ter":["10:00"]}',
         enderecos: [
           endereco({ id: 'e1', precoConsulta: 0, horariosDisponibilidade: 'inválido' }),
-          endereco({ id: 'e2', isPrimary: 1, cidade: 'Olinda', precoConsulta: 120, horariosDisponibilidade: 42 }),
+          endereco({ id: 'e2', clinicaId: 'cli-9', isPrimary: 1, cidade: 'Olinda', precoConsulta: 120, horariosDisponibilidade: 42 }),
         ],
         avaliacoes: [{ estrelas: 5 }, { estrelas: 4 }, { estrelas: 4 }],
         experiencias: [{ cargo: 'Vet', local: 'Hosp', dataInicio: new Date(Date.UTC(2020, 0, 2)), dataFim: null, descricao: 'd' }],
@@ -567,7 +567,8 @@ describe('getVeterinarioById', () => {
       preco: 120,
       rating: 4.3,
       totalReviews: 3,
-      availability: 42,
+      // Grade inválida no banco não chega crua ao frontend.
+      availability: {},
       clinica: 'Clínica',
       creditos: 7,
       atendeOnline: true,
@@ -578,9 +579,10 @@ describe('getVeterinarioById', () => {
     })
     expect(vet.experiencias[0].dataInicio!.toISODate()).toBe('2020-01-02')
     expect(vet.locations).toEqual([
-      expect.objectContaining({ id: 'e1', preco: 0, availability: {}, isPrimary: false }),
+      expect.objectContaining({ id: 'e1', clinicaId: undefined, preco: 0, availability: {}, isPrimary: false }),
       expect.objectContaining({
         id: 'e2',
+        clinicaId: 'cli-9',
         fullAddress: 'Rua A, 10, Centro, Olinda - PE',
         endereco: 'Rua A, 10, Centro',
         preco: 120,

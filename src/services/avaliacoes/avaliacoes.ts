@@ -1,4 +1,5 @@
 import { api } from "@/hook/api";
+import { mensagemDaApi, statusDoErro } from "@/lib/erros";
 
 
 
@@ -20,9 +21,9 @@ export class AvaliacoesService {
         payload
       );
       return res.data.avaliacao;
-    } catch (error: any) {
-      const status = error?.response?.status;
-      const message = error?.response?.data?.message;
+    } catch (error) {
+      const status = statusDoErro(error);
+      const message = mensagemDaApi(error);
       if (status === 400)
         throw new Error(message || "Não foi possível registrar a avaliação.");
       if (status === 401)

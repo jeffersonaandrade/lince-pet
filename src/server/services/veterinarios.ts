@@ -432,6 +432,7 @@ function formatVeterinarioData(vet: VeterinarioLoaded) {
       availability: parseJsonSafe(end.horariosDisponibilidade),
       isPrimary: !!end.isPrimary,
       nomeClinica: end.nomeClinica,
+      clinicaId: end.clinicaId,
       fotoUrl: end.fotoUrl,
     })) || []
 
@@ -459,7 +460,7 @@ function formatVeterinarioData(vet: VeterinarioLoaded) {
       })) || [],
     rating: rating,
     totalReviews: totalReviews,
-    availability: enderecoPrincipal?.horariosDisponibilidade || {},
+    availability: parseJsonSafe(enderecoPrincipal?.horariosDisponibilidade),
     clinica: enderecoPrincipal?.nomeClinica || null,
     creditos: vet.creditos || 0,
     locations: locations,
