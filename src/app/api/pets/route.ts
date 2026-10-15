@@ -3,6 +3,7 @@ import { ApiRequest, created, ok, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { creating } from '@/server/lucid'
 import { requireTutorOf } from '@/server/services/pets'
+import { fotoDoCliente } from '@/server/services/storage'
 import { createPetValidator } from '@/server/validators/pet'
 
 export const GET = route(async (req) => {
@@ -26,7 +27,7 @@ export const POST = route(async (req) => {
       raca: payload.raca ?? null,
       idade: payload.idade ?? null,
       porte: payload.porte ?? null,
-      fotoUrl: payload.foto_url ?? null,
+      fotoUrl: fotoDoCliente(payload.foto_url),
     }),
   })
   return created({ message: 'Pet criado com sucesso', pet })

@@ -281,7 +281,6 @@ export type VeterinarioRegistrationData = {
   sobrenome: string
   celular: string
   cpf?: string
-  profilePicUrl?: string
 }
 
 export async function registerVeterinario(data: VeterinarioRegistrationData) {
@@ -310,7 +309,6 @@ export async function registerVeterinario(data: VeterinarioRegistrationData) {
           atendePresencial: 0,
           atendeOnline: 0,
           atendeDomicilio: 0,
-          fotoUrl: data.profilePicUrl || null,
           subscriptionPlanCode: PLANO_PADRAO.veterinario,
         }),
       })

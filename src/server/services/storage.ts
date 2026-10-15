@@ -117,6 +117,18 @@ export function chaveDoBucket(url: string | null | undefined): string | null {
   return CHAVE_NOSSA.test(key) && !key.includes('..') ? key : null
 }
 
+/**
+ * URL de foto enviada pelo cliente no corpo da requisição: só vale se for do nosso bucket.
+ * Vazio/null significa "sem foto". Qualquer outra URL vira 400 (evita hotlink externo e rastreio).
+ */
+export function fotoDoCliente(valor: unknown): string | null {
+  if (valor === undefined || valor === null || valor === '') return null
+  if (typeof valor !== 'string' || !chaveDoBucket(valor.trim())) {
+    throw new HttpError(400, { message: 'A foto precisa ser enviada pelo upload da Lince Pet' })
+  }
+  return valor.trim()
+}
+
 export async function deleteObject(key: string) {
   if (!CHAVE_NOSSA.test(key) || key.includes('..')) throw new Error('Chave de storage inválida')
   const { base, chave, bucket } = config()

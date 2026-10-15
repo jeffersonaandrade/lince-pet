@@ -352,7 +352,7 @@ describe('registerVeterinario', () => {
   it('cria usuário e veterinário sem plano (PLANO_PADRAO.veterinario = none)', async () => {
     prismaMock.tx.user.create.mockResolvedValueOnce({ id: 'u-1' })
     prismaMock.tx.veterinario.create.mockResolvedValueOnce({ id: 'v-1' })
-    expect(await registerVeterinario({ ...dados, cpf: '12345678900', profilePicUrl: 'https://cdn/a.jpg' })).toBe('v-1')
+    expect(await registerVeterinario({ ...dados, cpf: '12345678900' })).toBe('v-1')
 
     expect(senha.hashPassword).toHaveBeenCalledWith('senha123')
     expect(prismaMock.tx.user.create.mock.calls[0][0].data).toMatchObject({
@@ -376,16 +376,17 @@ describe('registerVeterinario', () => {
       atendePresencial: 0,
       atendeOnline: 0,
       atendeDomicilio: 0,
-      fotoUrl: 'https://cdn/a.jpg',
       subscriptionPlanCode: 'none',
     })
+    // A foto do cadastro só entra pelo upload (rota), nunca por URL no corpo.
+    expect(vet).not.toHaveProperty('fotoUrl')
   })
 
-  it('cpf e foto vazios viram null', async () => {
+  it('cpf vazio vira null', async () => {
     prismaMock.tx.user.create.mockResolvedValueOnce({ id: 'u-1' })
     prismaMock.tx.veterinario.create.mockResolvedValueOnce({ id: 'v-1' })
-    await registerVeterinario({ ...dados, cpf: '', profilePicUrl: '' })
-    expect(prismaMock.tx.veterinario.create.mock.calls[0][0].data).toMatchObject({ cpf: null, fotoUrl: null })
+    await registerVeterinario({ ...dados, cpf: '' })
+    expect(prismaMock.tx.veterinario.create.mock.calls[0][0].data).toMatchObject({ cpf: null })
   })
 
   const p2002 = (target: unknown, message = 'Unique constraint failed') =>

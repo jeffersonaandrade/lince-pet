@@ -437,6 +437,8 @@ assinatura_nodes = [
          "asaas-access-token deve bater com ASAAS_WEBHOOK_TOKEN, obrigatorio com ASAAS_ENV=production; eventos repetidos ignorados por webhook_events.event_id."),
     rule("rule_busca_sem_filtro_creditos", "Busca de veterinarios sem filtro de creditos",
          "Removido v.creditos > 0 da busca; ordenacao por plano: vet_pro antes de vet_starter."),
+    rule("rule_assinatura_cortesia_legado", "Assinatura: contas anteriores ao Asaas mantem o plano como cortesia",
+         "Contas com plano pago antes do Asaas e sem assinatura (15/10/2026: 1 vet pro, 1 clinica clinic) mantem o plano; nao sao rebaixadas por script; perdem a cortesia so ao assinar/trocar pelo fluxo normal. Contas novas comecam em none."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in assinatura_nodes if n["id"] not in nodes_ids]
@@ -470,8 +472,7 @@ assinatura_impl = {
     "src_server_services_clinica_equipe": ["rule_assinatura_limite_vets_clinica"],
     "src_server_services_vinculos": ["rule_assinatura_limite_vets_clinica"],
     "src_app_api_clinicas_professionals_route": ["rule_assinatura_limite_vets_clinica"],
-    "src_server_services_veterinarios": ["rule_busca_sem_filtro_creditos", "rule_assinatura_catalogo"],
-    "src_server_services_clinicas": ["rule_assinatura_catalogo"],
+    "src_server_services_veterinarios": ["rule_busca_sem_filtro_creditos", "rule_assinatura_catalogo", "rule_perfil_publico_sem_pii"],    "src_server_services_clinicas": ["rule_assinatura_catalogo"],
     "src_components_assinatura_alterarplano": ["rule_assinatura_fatura_asaas", "rule_assinatura_trial_unico"],
     "src_components_assinatura_statusassinaturaaviso": ["rule_assinatura_status", "rule_assinatura_inadimplencia"],
     "tests_server_assinaturas_test": ["rule_assinatura_plano_so_apos_pagamento", "rule_assinatura_trial_unico", "rule_assinatura_cancelamento"],
@@ -493,6 +494,10 @@ storage_nodes = [
          "confirmarUpload: falha ao gravar no banco apaga o objeto novo; sucesso apaga a foto anterior so se for do bucket, fora de legado/ e sem uso em outra coluna. Nunca apaga AWS/externa."),
     rule("rule_storage_migracao_aws", "Storage: migracao das fotos antigas da AWS",
          "Idempotente, copia para legado/ com hash conferido; UPDATE com guarda (id + URL antiga) so com confirmacao; nada apagado da AWS; sem migration Prisma para troca de URL."),
+    rule("rule_storage_url_do_cliente", "Storage: URL de foto vinda do cliente so do nosso bucket",
+         "foto_url do pet e fotoUrl do passo 4 da clinica passam por fotoDoCliente (chaveDoBucket): externa, outro projeto, AWS ou '..' = 400 sem gravar; vazio = sem foto. Foto nova so pelo upload."),
+    rule("rule_perfil_publico_sem_pii", "Perfis publicos sem dado pessoal nem dado inventado",
+         "Rotas publicas de clinica/vet nao devolvem e-mail, celular ou endereco do usuario (usuarioPublico: id, nome, sobrenome, profilePic). Busca de profissionais so para clinica (403 demais), com e-mail, sem celular. Campo vazio = Nao informado/Valor a combinar; preco na clinica = endereco do vet, senao precoConsulta."),
     rule("rule_db_rls_public", "Banco: tabelas de public com RLS e sem acesso anon",
          "API REST do Supabase fechada (RLS sem policies + REVOKE anon/authenticated + default privileges). Dados so pelo backend (Prisma como postgres). get_advisors apos DDL. Operacoes no Supabase via MCP conforme .cursor/rules/supabase-mcp.mdc."),
 ]
@@ -513,6 +518,15 @@ storage_impl = {
     "tests_server_cobertura_storage_test": storage_rules[:4],
     "tests_server_upload_rotas_test": ["rule_storage_caminho_por_dono", "rule_storage_consistencia"],
     "src_server_db": ["rule_db_rls_public"],
+    "src_app_api_pets_route": ["rule_storage_url_do_cliente"],
+    "src_app_api_pets_id_route": ["rule_storage_url_do_cliente"],
+    "src_app_api_clinicas_route": ["rule_perfil_publico_sem_pii"],
+    "src_app_api_clinicas_id_route": ["rule_perfil_publico_sem_pii"],
+    "src_app_api_clinicas_professionals_search_route": ["rule_perfil_publico_sem_pii"],
+    "src_lib_clinica_perfil": ["rule_perfil_publico_sem_pii"],
+    "src_app_clinicas_id_page": ["rule_perfil_publico_sem_pii"],
+    "tests_server_clinicas_dados_publicos_test": ["rule_perfil_publico_sem_pii"],
+    "tests_lib_clinica_perfil_test": ["rule_perfil_publico_sem_pii"],
     **{r: ["rule_storage_caminho_por_dono", "rule_storage_consistencia"] for r in upload_rotas},
 }
 for code_id, rs in storage_impl.items():

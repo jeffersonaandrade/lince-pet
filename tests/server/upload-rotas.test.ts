@@ -9,7 +9,7 @@ const prismaMock = vi.hoisted(() => {
     user: { findUnique: vi.fn(), update: vi.fn() },
     clinica: { update: vi.fn() },
     tutor: { findFirst: vi.fn() },
-    pet: { findFirst: vi.fn(), update: vi.fn() },
+    pet: { findFirst: vi.fn(), update: vi.fn(), create: vi.fn() },
     prestador: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   }
@@ -50,6 +50,8 @@ import { POST as step4 } from '@/app/api/clinicas/onboarding/step4/route'
 import { POST as fotoPet } from '@/app/api/pets/[id]/photo/route'
 import { POST as fotoTutor } from '@/app/api/tutor/profile/photo/route'
 import { POST as passo3 } from '@/app/api/prestadores/onboarding/passo3/route'
+import { POST as criarPet } from '@/app/api/pets/route'
+import { PATCH as editarPet } from '@/app/api/pets/[id]/route'
 
 const BASE = 'https://ref.supabase.co'
 const PUBLICO = `${BASE}/storage/v1/object/public/lincepet-media`
@@ -232,11 +234,27 @@ describe('upload, persistência e contrato', () => {
     expect(prismaMock.user.update.mock.calls[0][0].data).toMatchObject({ profilePic: body.fotoUrl, nome: 'Nova' })
   })
 
-  it('step4 sem arquivo mantém o fluxo por fotoUrl e não chama o storage', async () => {
+  it('step4 sem arquivo aceita fotoUrl do nosso bucket e não chama o storage', async () => {
+    const nossa = `${PUBLICO}/clinicas/${CLI_ID}/perfil/a.webp`
     sessao.user = { id: U_ID, userType: 'clinica', profilePic: null, clinica: { id: CLI_ID, fotoPerfil: null } }
-    const res = await step4(multipart({ fotoUrl: 'https://exemplo.com/a.png' }), ctx({}))
-    expect((await res.json()).fotoUrl).toBe('https://exemplo.com/a.png')
+    const res = await step4(multipart({ fotoUrl: nossa }), ctx({}))
+    expect((await res.json()).fotoUrl).toBe(nossa)
+    expect(prismaMock.user.update.mock.calls[0][0].data.profilePic).toBe(nossa)
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['site externo', 'https://exemplo.com/a.png'],
+    ['bucket de outro projeto', 'https://outro.supabase.co/storage/v1/object/public/lincepet-media/clinicas/x/a.webp'],
+    ['legado da AWS', LEGADA],
+    ['travessia de pasta', `${PUBLICO}/clinicas/../segredo.webp`],
+  ])('step4 recusa fotoUrl de %s com 400 sem gravar', async (_, url) => {
+    sessao.user = { id: U_ID, userType: 'clinica', profilePic: null, clinica: { id: CLI_ID, fotoPerfil: null } }
+    const res = await step4(multipart({ fotoUrl: url, nome: 'Nova' }), ctx({}))
+    expect(res.status).toBe(400)
+    expect(await res.json()).toEqual({ message: 'A foto precisa ser enviada pelo upload da Lince Pet' })
+    expect(prismaMock.clinica.update).not.toHaveBeenCalled()
+    expect(prismaMock.user.update).not.toHaveBeenCalled()
   })
 
   it('pet grava fotoUrl e apaga a foto anterior do nosso bucket', async () => {
@@ -300,6 +318,54 @@ describe('upload, persistência e contrato', () => {
     )
     expect(res.status).toBe(201)
     expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
+  })
+})
+
+describe('foto_url enviada no JSON do pet', () => {
+  const corpo = (dados: Record<string, unknown>, method = 'POST') =>
+    new NextRequest('http://localhost/api/pets', {
+      method,
+      body: JSON.stringify(dados),
+      headers: { 'content-type': 'application/json' },
+    })
+  const NOSSA = `${PUBLICO}/pets/${PET_ID}/nova.webp`
+
+  beforeEach(() => {
+    sessao.user = { id: U_ID, userType: 'tutor' }
+    prismaMock.pet.create.mockImplementation(async ({ data }) => ({ id: PET_ID, ...data }))
+    prismaMock.pet.update.mockImplementation(async ({ data }) => ({ id: PET_ID, ...data }))
+  })
+
+  it('criar aceita URL do nosso bucket', async () => {
+    const res = await criarPet(corpo({ nome: 'Rex', especie: 'cachorro', foto_url: NOSSA }), ctx({}))
+    expect(res.status).toBe(201)
+    expect(prismaMock.pet.create.mock.calls[0][0].data.fotoUrl).toBe(NOSSA)
+  })
+
+  it('criar sem foto grava null', async () => {
+    await criarPet(corpo({ nome: 'Rex', especie: 'cachorro' }), ctx({}))
+    expect(prismaMock.pet.create.mock.calls[0][0].data.fotoUrl).toBeNull()
+  })
+
+  it.each([
+    ['site externo', 'https://rastreador.exemplo.com/pixel.png'],
+    ['legado da AWS', LEGADA],
+  ])('criar recusa URL de %s com 400 sem gravar', async (_, url) => {
+    const res = await criarPet(corpo({ nome: 'Rex', especie: 'cachorro', foto_url: url }), ctx({}))
+    expect(res.status).toBe(400)
+    expect(prismaMock.pet.create).not.toHaveBeenCalled()
+  })
+
+  it('editar recusa URL externa com 400 e mantém a foto atual', async () => {
+    const res = await editarPet(corpo({ foto_url: 'https://exemplo.com/a.png' }, 'PATCH'), ctx({ id: PET_ID }))
+    expect(res.status).toBe(400)
+    expect(prismaMock.pet.update).not.toHaveBeenCalled()
+  })
+
+  it('editar troca para outra foto do nosso bucket', async () => {
+    const res = await editarPet(corpo({ foto_url: NOSSA }, 'PATCH'), ctx({ id: PET_ID }))
+    expect(res.status).toBe(200)
+    expect(prismaMock.pet.update.mock.calls[0][0]).toMatchObject({ where: { id: PET_ID }, data: { fotoUrl: NOSSA } })
   })
 })
 

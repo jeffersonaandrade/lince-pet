@@ -1,6 +1,6 @@
 import { ApiRequest, badRequest, ok, route, unauthorized } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
-import { confirmarUpload, uploadClinicaPhoto, type UploadResult } from '@/server/services/storage'
+import { confirmarUpload, fotoDoCliente, uploadClinicaPhoto, type UploadResult } from '@/server/services/storage'
 import { saveClinica, saveUser, str } from '@/server/services/clinicas'
 
 export const POST = route(async (req) => {
@@ -37,7 +37,7 @@ export const POST = route(async (req) => {
     clinicaChanges.fotoPerfil = upload.url
     userChanges.profilePic = upload.url
   } else {
-    const fotoUrl = str(request.only(['fotoUrl']).fotoUrl)
+    const fotoUrl = fotoDoCliente(str(request.only(['fotoUrl']).fotoUrl))
     if (fotoUrl) {
       clinicaChanges.fotoPerfil = fotoUrl
       userChanges.profilePic = fotoUrl

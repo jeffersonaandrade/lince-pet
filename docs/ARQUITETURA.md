@@ -85,6 +85,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Provedor único:** Asaas (conta existente). Documentação consultada pelo MCP do Asaas (`.cursor/mcp.json`, `https://docs.asaas.com/mcp`). Regras puras em `src/server/services/assinatura-regras.ts`, fluxo em `src/server/services/assinaturas.ts`, eventos em `src/server/services/asaas-webhook.ts`.
 - **Catálogo:** veterinário `vet_starter` (R$ 39,90) e `vet_pro` (R$ 59,90, módulo financeiro); clínica `starter` Pequena (R$ 99,90, até 5 vets), `clinic` Média (R$ 149,90, até 15 vets), `clinic_pro` Grande (R$ 219,90, ilimitado); prestador `free`/`pro`. Cada tipo só contrata os planos dele. Assinaturas já existentes no Asaas mantêm o valor antigo.
 - **Sem plano:** veterinário e clínica começam em `none` e não têm os recursos pagos até assinar. Prestador começa em `free`.
+- **Cortesia (contas anteriores ao Asaas):** contas que já tinham plano pago antes da cobrança pelo Asaas, sem nenhuma assinatura (em 15/10/2026: 1 veterinário `pro` e 1 clínica `clinic`), mantêm o plano como cortesia. Não são rebaixadas por script; perdem a cortesia só se assinarem/trocarem pelo fluxo normal. Contas novas seguem "Sem plano".
 - **Cobrança:** fatura do Asaas com `billingType UNDEFINED` (o usuário escolhe Pix, boleto ou cartão na fatura), sempre mensal. A plataforma não coleta cartão.
 - **Teste grátis:** 14 dias, sem cartão, só na primeira assinatura paga (dono sem nenhuma assinatura com `asaasSubscriptionId`). O plano ativa na hora e a primeira fatura vence no 14º dia. Sem pagamento, vira inadimplente e perde o plano.
 - **Plano só muda após pagamento:** fora do teste, contratar ou trocar cria a assinatura `pending` e devolve o link da fatura; o plano só é aplicado em `PAYMENT_CONFIRMED`/`PAYMENT_RECEIVED`. Ao ativar, as outras assinaturas do mesmo dono são canceladas (Asaas e local). Assinatura cancelada/expirada ignora pagamento atrasado.
@@ -94,6 +95,12 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Limite de vets da clínica:** convite (`POST /api/clinicas/professionals`) e aceite de vínculo contam vínculos `aceito` + `pendente`; acima de `maxVeterinarios` ou sem plano pago: 403. Vínculos já existentes não são desfeitos.
 - **Webhook:** `asaas-access-token` precisa bater com `ASAAS_WEBHOOK_TOKEN`; em `ASAAS_ENV=production` o token é obrigatório. Eventos repetidos são ignorados por `webhook_events.event_id`.
 - **Busca de veterinários:** não filtra mais por créditos; `vet_pro` aparece antes de `vet_starter`.
+
+### Perfis públicos (clínica e veterinário)
+
+- **Sem dado pessoal:** `GET /api/clinicas`, `GET /api/clinicas/:id` e `GET /api/veterinarios/:id` (e a busca) não devolvem e-mail, celular nem endereço do usuário; o usuário vinculado sai só como `id`, `nome`, `sobrenome`, `profilePic` (`usuarioPublico`). O telefone exibido é o da clínica, cadastrado por ela.
+- **Busca de profissionais para vincular** (`GET /api/clinicas/professionals/search`): só clínica (outros perfis: 403). Mostra e-mail para a clínica conferir quem está convidando; nunca celular ou endereço.
+- **Sem dado inventado:** campo vazio aparece vazio ou como "Não informado"/"Valor a combinar" (nunca preço, comodidade, convênio ou telefone fictício). Preço da consulta na clínica: o do endereço do vet naquela clínica; sem endereço, o `precoConsulta` do vet (`src/lib/clinica-perfil.ts`).
 
 ### Site institucional e links
 
@@ -176,6 +183,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Validação:** as rotas checam tamanho (5 MB) e extensão; o `sharp` decodifica o conteúdo de verdade (jpeg, png, webp ou gif; ignora o MIME do navegador), corrige a rotação, limita a 1600px e grava WebP q82 sem metadados (EXIF/GPS). Vazio, corrompido, SVG ou não-imagem: 400 "Arquivo de imagem inválido". Upload com `x-upsert: false` (nunca sobrescreve).
 - **Consistência:** `confirmarUpload` grava a URL no banco; se a gravação falhar, apaga o objeto recém-enviado. Se der certo, apaga a foto anterior **só** se for do nosso bucket, fora de `legado/` e não referenciada em outra coluna (ex.: `users.profile_pic`). URLs da AWS/CloudFront e externas nunca são apagadas.
 - **Cadastro de veterinário:** cria o usuário primeiro e depois envia a foto para a pasta do novo veterinário; falha na foto não impede o cadastro.
+- **URL de foto vinda do cliente:** campos JSON/form que recebem URL (`foto_url` do pet, `fotoUrl` do passo 4 da clínica) só aceitam URL do nosso bucket (`fotoDoCliente` -> `chaveDoBucket`) ou vazio; qualquer outra (site externo, outro projeto, AWS, `..`) responde 400 sem gravar. A foto nova entra sempre pelo upload.
 - **Erros:** log com status, chave e `sb-request-id`; nunca headers ou chave.
 - **Fotos antigas (AWS):** inventário via MCP em 15/10/2026: só `pets.foto_url` tinha URL antiga (1 registro, CloudFront). Migração manual: baixar, validar, converter para WebP, subir em `legado/` com `x-upsert: false`, conferir sha256 do WebP pela URL pública e só então `UPDATE pets SET foto_url = '<nova>' WHERE id = '<id>' AND foto_url = '<antiga>'` com confirmação. Nada é apagado da AWS. Inventário para repetir:
 
