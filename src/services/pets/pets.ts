@@ -1,6 +1,5 @@
 import { api } from "@/hook/api";
-
-
+import { petDaApi } from "@/lib/pets";
 
 export interface PetRecord {
   id: string;
@@ -14,43 +13,27 @@ export interface PetRecord {
   created_at?: string;
 }
 
+export type PortePet = NonNullable<PetRecord["porte"]>;
+
+type DadosPet = {
+  nome: string;
+  especie: string;
+  raca?: string;
+  idade?: number;
+  porte?: PortePet;
+  foto_url?: string;
+};
+
 export class PetsService {
   static async listarPets(): Promise<PetRecord[]> {
     const res = await api.get("/pets");
-    return res.data.pets?.map((p: any) => ({
-      id: p.id,
-      tutor_id: p.tutor_id,
-      nome: p.nome,
-      especie: p.especie,
-      raca: p.raca ?? null,
-      idade: p.idade ?? null,
-      porte: p.porte ?? null,
-      foto_url: p.foto_url ?? p.fotoUrl ?? null,
-      created_at: p.created_at,
-    })) as PetRecord[];
+    const pets: unknown = res.data.pets;
+    return Array.isArray(pets) ? pets.map(petDaApi) : [];
   }
 
-  static async criarPet(data: {
-    nome: string;
-    especie: string;
-    raca?: string;
-    idade?: number;
-    porte?: 'pequeno' | 'medio' | 'grande';
-    foto_url?: string;
-  }): Promise<PetRecord> {
+  static async criarPet(data: DadosPet): Promise<PetRecord> {
     const res = await api.post("/pets", data);
-    const p = res.data.pet;
-    return {
-      id: p.id,
-      tutor_id: p.tutor_id,
-      nome: p.nome,
-      especie: p.especie,
-      raca: p.raca ?? null,
-      idade: p.idade ?? null,
-      porte: p.porte ?? null,
-      foto_url: p.foto_url ?? p.fotoUrl ?? null,
-      created_at: p.created_at,
-    } as PetRecord;
+    return petDaApi(res.data.pet);
   }
 
   static async uploadFoto(petId: string, file: File): Promise<string> {
@@ -88,30 +71,10 @@ export class PetsService {
       );
     });
   }
-  static async editarPet(
-    id: string,
-    data: Partial<{
-      nome: string;
-      especie: string;
-      raca?: string;
-      idade?: number;
-      porte?: 'pequeno' | 'medio' | 'grande';
-      foto_url?: string;
-    }>
-  ): Promise<PetRecord> {
+
+  static async editarPet(id: string, data: Partial<DadosPet>): Promise<PetRecord> {
     const res = await api.patch(`/pets/${id}`, data);
-    const p = res.data.pet;
-    return {
-      id: p.id,
-      tutor_id: p.tutor_id,
-      nome: p.nome,
-      especie: p.especie,
-      raca: p.raca ?? null,
-      idade: p.idade ?? null,
-      porte: p.porte ?? null,
-      foto_url: p.foto_url ?? p.fotoUrl ?? null,
-      created_at: p.created_at,
-    } as PetRecord;
+    return petDaApi(res.data.pet);
   }
 
   static async excluirPet(id: string): Promise<void> {

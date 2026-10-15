@@ -52,9 +52,9 @@ export function shape(value: unknown): unknown {
   if (Array.isArray(value)) return value.length ? [shape(value[0])] : []
   if (typeof value === 'object') {
     return Object.fromEntries(
-      Object.keys(value as object)
-        .sort()
-        .map((k) => [k, shape((value as any)[k])])
+      Object.entries(value)
+        .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+        .map(([k, v]) => [k, shape(v)])
     )
   }
   return typeof value

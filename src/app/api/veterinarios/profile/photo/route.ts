@@ -1,8 +1,8 @@
 import { prisma } from '@/server/db'
-import { ApiRequest, badRequest, notFound, ok, route, serverError } from '@/server/http'
+import { ApiRequest, HttpError, badRequest, notFound, ok, route, serverError } from '@/server/http'
 import { updating } from '@/server/lucid'
 import { requireUser } from '@/server/auth/session'
-import { uploadVeterinarioPhoto } from '@/server/services/storage'
+import { confirmarUpload, uploadVeterinarioPhoto } from '@/server/services/storage'
 import {
   PHOTO_OPTIONS,
   findVeterinarioByUser,
@@ -31,19 +31,21 @@ export const POST = route(async (req) => {
     const veterinario = await findVeterinarioByUser(user.id)
     if (!veterinario) return notFound({ message: 'Veterinário não encontrado' })
 
-    const result = await uploadVeterinarioPhoto({
+    const result = await uploadVeterinarioPhoto(veterinario.id, {
       buffer: await uploadedFile.buffer(),
       originalname: uploadedFile.clientName || 'photo.jpg',
       mimetype: uploadedFile.type || 'image/jpeg',
     })
 
-    await prisma.veterinario.update({
-      where: { id: veterinario.id },
-      data: updating({ fotoUrl: result.url }),
-    })
+    await confirmarUpload(
+      result,
+      () => prisma.veterinario.update({ where: { id: veterinario.id }, data: updating({ fotoUrl: result.url }) }),
+      { anteriores: [veterinario.fotoUrl], emUso: [user.profilePic] }
+    )
 
     return ok({ message: 'Foto de perfil atualizada com sucesso', url: result.url })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error('❌ [Upload Foto] Erro ao enviar foto de perfil:', error)
     return serverError({ message: 'Erro ao enviar foto de perfil' })
   }

@@ -189,11 +189,9 @@ export default function NotificationBell({
             } else if (notif.type === 'AVALIACAO_RECEBIDA') {
                 router.push(dashboardDoTipo(user?.userType));
             } else if (notif.type === 'VINCULO_CLINICA_SOLICITADO') {
-                if (notif.action_data?.isRequest) {
-                    setRequestData({
-                        id: notif.action_data.clinicaId,
-                        nome: notif.action_data.clinicaNome
-                    });
+                const { isRequest, clinicaId, clinicaNome } = notif.action_data ?? {};
+                if (isRequest && clinicaId) {
+                    setRequestData({ id: clinicaId, nome: clinicaNome ?? "" });
                 } else {
                     router.push('/dashboard/veterinario');
                 }

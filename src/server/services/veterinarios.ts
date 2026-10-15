@@ -281,13 +281,12 @@ export type VeterinarioRegistrationData = {
   sobrenome: string
   celular: string
   cpf?: string
-  profilePicUrl?: string
 }
 
 export async function registerVeterinario(data: VeterinarioRegistrationData) {
   try {
     const password = await hashPassword(data.password)
-    await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: creating({
           email: data.email.trim().toLowerCase(),
@@ -299,7 +298,7 @@ export async function registerVeterinario(data: VeterinarioRegistrationData) {
           ativo: 1,
         }),
       })
-      await tx.veterinario.create({
+      const veterinario = await tx.veterinario.create({
         data: creating({
           userId: user.id,
           cpf: data.cpf || null,
@@ -310,10 +309,10 @@ export async function registerVeterinario(data: VeterinarioRegistrationData) {
           atendePresencial: 0,
           atendeOnline: 0,
           atendeDomicilio: 0,
-          fotoUrl: data.profilePicUrl || null,
           subscriptionPlanCode: PLANO_PADRAO.veterinario,
         }),
       })
+      return veterinario.id
     })
   } catch (error) {
     console.log(error)
@@ -431,13 +430,13 @@ function formatVeterinarioData(vet: VeterinarioLoaded) {
       availability: parseJsonSafe(end.horariosDisponibilidade),
       isPrimary: !!end.isPrimary,
       nomeClinica: end.nomeClinica,
+      clinicaId: end.clinicaId,
       fotoUrl: end.fotoUrl,
     })) || []
 
   return {
     id: vet.id,
     nome: `${vet.user?.nome || 'Nome'} ${vet.user?.sobrenome || 'Sobrenome'}`,
-    email: vet.user?.email || 'email@exemplo.com',
     fotoUrl: vet.fotoUrl || null,
     cidade: enderecoPrincipal?.cidade || 'Cidade não informada',
     estado: enderecoPrincipal?.estado || 'UF',
@@ -458,7 +457,7 @@ function formatVeterinarioData(vet: VeterinarioLoaded) {
       })) || [],
     rating: rating,
     totalReviews: totalReviews,
-    availability: enderecoPrincipal?.horariosDisponibilidade || {},
+    availability: parseJsonSafe(enderecoPrincipal?.horariosDisponibilidade),
     clinica: enderecoPrincipal?.nomeClinica || null,
     creditos: vet.creditos || 0,
     locations: locations,

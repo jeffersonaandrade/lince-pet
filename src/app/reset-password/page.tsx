@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import styles from "./reset.module.css";
 import { resetPassword } from "@/services/auth/auth";
+import { mensagemDaApi } from "@/lib/erros";
 
 function ResetPasswordForm() {
   const [password, setPassword] = useState("");
@@ -45,8 +46,8 @@ function ResetPasswordForm() {
       setTimeout(() => {
         router.push("/login");
       }, 3000);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Ocorreu um erro ao redefinir a senha.");
+    } catch (err) {
+      setError(mensagemDaApi(err) || "Ocorreu um erro ao redefinir a senha.");
     } finally {
       setLoading(false);
     }

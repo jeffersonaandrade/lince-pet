@@ -2,6 +2,7 @@
 import { Search, Stethoscope, MapPin, Shield } from "lucide-react";
 import { useState, useEffect, useRef, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import styles from "./searchbar.module.css";
 import SearchSection from "../../ui/SearchSection";
 import CitySearchSection from "../../ui/CitySearchSection";
@@ -46,9 +47,9 @@ export default function SearchBar({ showCatImage = false, extra = null }: Search
               `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=pt`
             );
             const data = await response.json();
-            console.log("location data:", data);
             if (data.city && data.principalSubdivision) {
-              setLocationValue(`${data.city}, ${data.principalSubdivisionCode.split('-')[1] || data.principalSubdivisionCode}`);
+              const uf = data.principalSubdivisionCode?.split("-")[1] || data.principalSubdivisionCode || data.principalSubdivision;
+              setLocationValue(`${data.city}, ${uf}`);
               setUserLocation({
                 city: data.city,
                 state:
@@ -79,12 +80,12 @@ export default function SearchBar({ showCatImage = false, extra = null }: Search
     setPlansValue(searchParams.get("plans") || "");
   }, [searchParams]);
 
-  // Only get user location on initial mount if no location is in URL
+  // Só no mount: a localização do GPS não deve sobrescrever a que o usuário escolher depois.
   useEffect(() => {
-    if (!searchParams.get("location")) {
+    if (!new URLSearchParams(window.location.search).get("location")) {
       getUserLocation();
     }
-  }, []); // Run only once on mount
+  }, []);
 
   useEffect(() => {
     let ativo = true;
@@ -129,7 +130,7 @@ export default function SearchBar({ showCatImage = false, extra = null }: Search
   return (
     <div className={styles.searchContainer}>
       {showCatImage && (
-        <img src="/img/cat.svg" alt="" className={styles.catDecoration} />
+        <Image src="/img/cat.svg" alt="" width={400} height={400} className={`w-auto ${styles.catDecoration}`} />
       )}
       <form onSubmit={handleSearch} className={styles.searchBar}>
         <div
@@ -159,7 +160,6 @@ export default function SearchBar({ showCatImage = false, extra = null }: Search
             searchable={true}
             showRightBorder={true}
             onDropdownStateChange={setSearchDropdownOpen}
-            showCategoryFilters={true}
           />
 
           <CitySearchSection

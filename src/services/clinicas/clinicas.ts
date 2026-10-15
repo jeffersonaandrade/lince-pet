@@ -1,4 +1,5 @@
 import { api } from "@/hook/api";
+import type { ClinicaDetalheApi } from "@/lib/clinica-perfil";
 
 
 
@@ -23,8 +24,6 @@ export const submitClinicaOnboardingStep3 = async (data: { horariosFuncionamento
 };
 
 export const submitClinicaOnboardingStep4 = async (data: { nome?: string; descricao?: string; fotoUrl?: string; telefone?: string }, photoFile?: File) => {
-  const finalData: any = { ...data };
-
   // If photo is provided, upload it or send as multipart
   if (photoFile) {
     const formData = new FormData();
@@ -40,7 +39,7 @@ export const submitClinicaOnboardingStep4 = async (data: { nome?: string; descri
     });
     return response.data;
   } else {
-    const response = await api.post("/clinicas/onboarding/step4", finalData);
+    const response = await api.post("/clinicas/onboarding/step4", data);
     return response.data;
   }
 };
@@ -55,12 +54,15 @@ export const completeClinicaOnboarding = async () => {
   return response.data;
 };
 
-export const searchClinicas = async (filters: any = {}) => {
+/** Filtros da busca pública (`GET /clinicas`). */
+export type FiltrosBusca = Partial<Record<"search" | "especialidade" | "cidade" | "estado" | "plano", string>>;
+
+export const searchClinicas = async (filters: FiltrosBusca = {}) => {
   const response = await api.get("/clinicas", { params: filters });
   return response.data;
 };
 
 export const getClinicaById = async (id: string) => {
-  const response = await api.get(`/clinicas/${id}`);
+  const response = await api.get<ClinicaDetalheApi>(`/clinicas/${id}`);
   return response.data;
 };

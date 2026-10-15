@@ -2,14 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { Prisma } from '@prisma/client'
 
 const prismaMock = vi.hoisted(() => {
-  const m: Record<string, any> = {
+  const m = {
     tipoServico: { findMany: vi.fn(), findFirst: vi.fn() },
     user: { findFirst: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
     prestador: { findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn() },
     servicoOferecido: { updateMany: vi.fn(), createMany: vi.fn(), count: vi.fn(), findMany: vi.fn() },
   }
-  m.$transaction = vi.fn()
-  return m
+  return Object.assign(m, { $transaction: vi.fn() })
 })
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 

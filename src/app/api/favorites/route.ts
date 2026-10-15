@@ -26,7 +26,8 @@ export const POST = route(async (req) => {
   const tutor = await prisma.tutor.findFirst({ where: { userId: user.id } })
   if (!tutor) return notFound({ message: 'Tutor profile not found' })
 
-  const { veterinarioId, clinicaId } = request.only(['veterinarioId', 'clinicaId'])
+  const veterinarioId = request.text('veterinarioId')
+  const clinicaId = request.text('clinicaId')
   if (!veterinarioId && !clinicaId) {
     return badRequest({ message: 'You must provide either veterinarioId or clinicaId' })
   }

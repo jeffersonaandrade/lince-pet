@@ -1,7 +1,26 @@
 import { describe, it, expect } from 'vitest'
 import { NextRequest } from 'next/server'
 import vine from '@vinejs/vine'
-import { ApiRequest, HttpError, handleError } from '@/server/http'
+import { ApiRequest, HttpError, handleError, ok, texto } from '@/server/http'
+
+describe('json (corpo das respostas)', () => {
+  it('nunca envia senha nem tokens do Google, mesmo em relações aninhadas', async () => {
+    const usuario = {
+      id: 'u1',
+      nome: 'Ana',
+      password: '$hash',
+      googleAccessToken: 'tok',
+      googleRefreshToken: 'ref',
+      googleTokenExpiresAt: new Date('2026-01-01T00:00:00Z'),
+      googleCalendarAuthorized: 1,
+    }
+    const res = ok([{ id: 'f1', veterinario: { id: 'v1', user: usuario }, clinica: { user: usuario } }])
+    const corpo = await res.json()
+
+    expect(corpo[0].veterinario.user).toEqual({ id: 'u1', nome: 'Ana', googleCalendarAuthorized: 1 })
+    expect(corpo[0].clinica.user).toEqual({ id: 'u1', nome: 'Ana', googleCalendarAuthorized: 1 })
+  })
+})
 
 describe('ApiRequest (equivalente ao bodyparser do Adonis)', () => {
   it('mescla query string e JSON e converte string vazia em null', async () => {
@@ -29,6 +48,35 @@ describe('ApiRequest (equivalente ao bodyparser do Adonis)', () => {
     expect(file.isValid).toBe(true)
     expect(file.extname).toBe('png')
     expect(r.file('foto', { extnames: ['jpg'] })!.isValid).toBe(false)
+  })
+
+  it('text() só devolve texto: objetos da query/JSON não viram filtro do Prisma', async () => {
+    const req = new NextRequest('http://x/api/busca?nome[not]=x&cidade=Recife&page=2', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ motivo: { contains: 'a' }, idade: 3, lista: ['a'], vazio: '', nan: null }),
+    })
+    const r = await ApiRequest.from(req)
+    expect(r.text('nome')).toBeUndefined()
+    expect(r.text('motivo')).toBeUndefined()
+    expect(r.text('lista')).toBeUndefined()
+    expect(r.text('vazio')).toBeUndefined()
+    expect(r.text('ausente')).toBeUndefined()
+    expect(r.text('cidade')).toBe('Recife')
+    expect(r.text('idade')).toBe('3')
+  })
+})
+
+describe('texto', () => {
+  it('aceita string (inclusive vazia) e número finito', () => {
+    expect(texto('abc')).toBe('abc')
+    expect(texto('')).toBe('')
+    expect(texto(0)).toBe('0')
+    expect(texto(1.5)).toBe('1.5')
+  })
+
+  it('recusa o resto', () => {
+    for (const v of [NaN, Infinity, null, undefined, true, {}, ['a'], () => 'a']) expect(texto(v)).toBeUndefined()
   })
 })
 

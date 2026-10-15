@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const prismaMock = vi.hoisted(() => ({
-  subscriptionPlan: { findUnique: vi.fn() },
+  subscriptionPlan: { findUnique: vi.fn(), findMany: vi.fn() },
   veterinario: { update: vi.fn() },
   prestador: { update: vi.fn() },
 }))
@@ -12,6 +12,7 @@ import {
   decrementUsage,
   hasFeature,
   incrementUsage,
+  listarPlanosAtivos,
   resetMonthlyCounterIfNeeded,
 } from '@/server/services/subscription'
 
@@ -35,6 +36,25 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.useRealTimers()
+})
+
+describe('listarPlanosAtivos', () => {
+  const ordem = [{ searchPriority: 'asc' }, { priceCents: 'asc' }]
+
+  it('sem tipo, lista todos os ativos', async () => {
+    prismaMock.subscriptionPlan.findMany.mockResolvedValue([{ code: 'free' }])
+    await expect(listarPlanosAtivos()).resolves.toEqual([{ code: 'free' }])
+    expect(prismaMock.subscriptionPlan.findMany).toHaveBeenCalledWith({ where: { active: 1 }, orderBy: ordem })
+  })
+
+  it('com tipo, filtra pelos planos que o tipo pode contratar', async () => {
+    prismaMock.subscriptionPlan.findMany.mockResolvedValue([])
+    await listarPlanosAtivos('clinica')
+    expect(prismaMock.subscriptionPlan.findMany).toHaveBeenCalledWith({
+      where: { active: 1, code: { in: ['starter', 'clinic', 'clinic_pro'] } },
+      orderBy: ordem,
+    })
+  })
 })
 
 describe('resetMonthlyCounterIfNeeded', () => {

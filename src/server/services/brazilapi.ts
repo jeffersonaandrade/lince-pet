@@ -19,5 +19,7 @@ export async function fetchCnpj(cnpj: string) {
   return data
 }
 
-export const isNotFoundOrTimeout = (error: any) =>
-  error?.response?.status == 404 || error?.code == 'ECONNABORTED'
+export const isNotFoundOrTimeout = (error: unknown) => {
+  const e = (error ?? {}) as { response?: { status?: unknown }; code?: unknown }
+  return e.response?.status === 404 || e.code === 'ECONNABORTED'
+}

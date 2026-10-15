@@ -22,8 +22,6 @@ import {
   prepareDataConsulta,
 } from '@/server/services/agendamentos'
 
-const str = (value: unknown) => (value === null || value === undefined ? value : String(value)) as string
-
 /** POST /agendamentos */
 export const POST = route(async (req) => {
   const apiReq = await ApiRequest.from(req)
@@ -43,7 +41,7 @@ export const POST = route(async (req) => {
       return badRequest({ message: 'Apenas Tutores podem agendar consultas' })
     }
 
-    const {
+    const [
       veterinario_id,
       data_consulta,
       horario_consulta,
@@ -53,7 +51,17 @@ export const POST = route(async (req) => {
       endereco_id,
       clinica_id,
       encaminhamento_id,
-    } = apiReq.body
+    ] = [
+      'veterinario_id',
+      'data_consulta',
+      'horario_consulta',
+      'tipo_consulta',
+      'observacoes',
+      'pet_id',
+      'endereco_id',
+      'clinica_id',
+      'encaminhamento_id',
+    ].map((campo) => apiReq.text(campo))
 
     if (!veterinario_id || !data_consulta || !horario_consulta || !tipo_consulta) {
       return badRequest({
@@ -65,13 +73,13 @@ export const POST = route(async (req) => {
       return badRequest({ message: 'Selecione um pet para a consulta' })
     }
 
-    const pet = await prisma.pet.findFirst({ where: { id: str(pet_id), tutorId: tutor.id } })
+    const pet = await prisma.pet.findFirst({ where: { id: pet_id, tutorId: tutor.id } })
     if (!pet) {
       return badRequest({ message: 'Pet inválido para este tutor' })
     }
 
     const veterinario = await prisma.veterinario.findFirst({
-      where: { id: str(veterinario_id) },
+      where: { id: veterinario_id },
       include: { user: true, enderecos: true },
     })
 
@@ -99,7 +107,7 @@ export const POST = route(async (req) => {
     let finalClinicaId: string | null = clinica_id || null
 
     if (clinica_id) {
-      const clinica = await prisma.clinica.findUnique({ where: { id: str(clinica_id) } })
+      const clinica = await prisma.clinica.findUnique({ where: { id: clinica_id } })
       if (clinica) {
         localNome = clinica.nomeClinica
         localEndereco = clinica.endereco
@@ -120,15 +128,18 @@ export const POST = route(async (req) => {
     const dataConsulta = DateTime.fromISO(data_consulta)
     const hoje = DateTime.now().startOf('day')
 
+    if (!dataConsulta.isValid) {
+      return badRequest({ message: 'Data inválida (formato: YYYY-MM-DD)' })
+    }
     if (dataConsulta < hoje) {
       return badRequest({ message: 'Não é possível agendar consultas em datas passadas' })
     }
 
     const agendamentoExistente = await prisma.agendamento.findFirst({
       where: {
-        veterinarioId: str(veterinario_id),
+        veterinarioId: veterinario_id,
         dataConsulta: dataConsulta.toSQLDate(),
-        horarioConsulta: str(horario_consulta),
+        horarioConsulta: horario_consulta,
         status: { in: ['pendente', 'confirmado'] },
       },
     })
@@ -137,7 +148,7 @@ export const POST = route(async (req) => {
       return badRequest({ message: 'Horário já ocupado. Escolha outro horário.' })
     }
 
-    if (await horarioEstaBloqueado(str(veterinario_id), dataConsulta.toSQLDate()!, str(horario_consulta))) {
+    if (await horarioEstaBloqueado(veterinario_id, dataConsulta.toSQLDate()!, horario_consulta)) {
       return badRequest({ message: MENSAGEM_HORARIO_BLOQUEADO })
     }
 
@@ -148,10 +159,10 @@ export const POST = route(async (req) => {
 
     if (encaminhamento_id) {
       try {
-        await conferirEncaminhamento(str(encaminhamento_id), {
+        await conferirEncaminhamento(encaminhamento_id, {
           tutorId: tutor.id,
           petId: pet.id,
-          veterinarioId: str(veterinario_id),
+          veterinarioId: veterinario_id,
           clinicaId: finalClinicaId,
         })
       } catch (e) {
@@ -164,11 +175,11 @@ export const POST = route(async (req) => {
       const novo = await tx.agendamento.create({
         data: creating({
           tutorId: tutor.id,
-          veterinarioId: str(veterinario_id),
+          veterinarioId: veterinario_id,
           petId: pet.id,
           dataConsulta: prepareDataConsulta(dataConsulta),
-          horarioConsulta: str(horario_consulta),
-          tipoConsulta: str(tipo_consulta),
+          horarioConsulta: horario_consulta,
+          tipoConsulta: tipo_consulta,
           precoConsulta: finalPrice,
           observacoes: observacoes || null,
           localNome,
@@ -178,7 +189,7 @@ export const POST = route(async (req) => {
         }),
       })
 
-      const vetForUpdate = await tx.veterinario.findFirst({ where: { id: str(veterinario_id) } })
+      const vetForUpdate = await tx.veterinario.findFirst({ where: { id: veterinario_id } })
       if (vetForUpdate) {
         await tx.veterinario.update({
           where: { id: vetForUpdate.id },
@@ -188,7 +199,7 @@ export const POST = route(async (req) => {
       return novo
     })
 
-    if (encaminhamento_id) await vincularAgendamento(str(encaminhamento_id), agendamento.id)
+    if (encaminhamento_id) await vincularAgendamento(encaminhamento_id, agendamento.id)
 
     try {
       const startCode = randomInt(100000, 999999).toString()
@@ -296,14 +307,14 @@ export const POST = route(async (req) => {
         pet: pet ? { nome: pet.nome } : null,
       },
     })
-  } catch (error: any) {
+  } catch (error) {
     console.error('❌ [Agendamento] Erro ao criar agendamento:', error)
-    console.error('❌ [Agendamento] Stack:', error.stack)
+    console.error('❌ [Agendamento] Stack:', (error as Error).stack)
     console.error('❌ [Agendamento] Detalhes:', JSON.stringify(error, null, 2))
 
     return serverError({
       message: 'Erro interno do servidor ao criar agendamento',
-      error: error.message,
+      error: (error as Error).message,
       details: process.env.NODE_ENV === 'development' ? error : undefined,
     })
   }

@@ -1,8 +1,8 @@
 import { prisma } from '@/server/db'
-import { ApiRequest, badRequest, notFound, ok, route, serverError } from '@/server/http'
+import { ApiRequest, HttpError, badRequest, notFound, ok, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { updating } from '@/server/lucid'
-import { uploadTutorPhoto } from '@/server/services/storage'
+import { confirmarUpload, uploadTutorPhoto } from '@/server/services/storage'
 import { firstFile, isMultipart, toPhotoUpload } from '@/server/services/pets'
 
 export const POST = route(async (req) => {
@@ -24,14 +24,19 @@ export const POST = route(async (req) => {
       return badRequest({ message: 'Arquivo inválido', errors: uploadedFile.errors })
     }
 
-    const result = await uploadTutorPhoto(await toPhotoUpload(uploadedFile))
-
     const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
     if (!dbUser) return notFound({ message: 'Usuário não encontrado' })
-    await prisma.user.update({ where: { id: dbUser.id }, data: updating({ profilePic: result.url }) })
+
+    const result = await uploadTutorPhoto(dbUser.id, await toPhotoUpload(uploadedFile))
+    await confirmarUpload(
+      result,
+      () => prisma.user.update({ where: { id: dbUser.id }, data: updating({ profilePic: result.url }) }),
+      { anteriores: [dbUser.profilePic] }
+    )
 
     return ok({ message: 'Foto de perfil atualizada com sucesso', url: result.url })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error('❌ [Tutor] Erro ao enviar foto de perfil:', error)
     return serverError({ message: 'Erro ao enviar foto de perfil' })
   }

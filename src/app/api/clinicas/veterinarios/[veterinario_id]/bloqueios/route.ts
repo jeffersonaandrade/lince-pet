@@ -9,8 +9,7 @@ export const GET = route<{ veterinario_id: string }>(async (req, { veterinario_i
   if (!user.clinica) return unauthorized({ message: 'Usuário não autenticado ou não é clínica' })
   await assertVinculoAceito(user.clinica.id, veterinario_id)
 
-  const { de, ate } = apiReq.qs()
-  const bloqueios = await listarBloqueios(veterinario_id, de, ate)
+  const bloqueios = await listarBloqueios(veterinario_id, apiReq.text('de'), apiReq.text('ate'))
   return ok({ data: bloqueios.map(serializeBloqueio) })
 })
 

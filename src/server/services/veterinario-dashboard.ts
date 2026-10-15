@@ -57,18 +57,22 @@ export async function estatisticas(veterinarioId: string) {
   return { agendamentosHoje, agendamentosSemana, agendamentosMes, totalClientes: clientes.length }
 }
 
-export function estatisticasError(error: any) {
+const detalhesDoErro = (error: unknown) =>
+  (error && typeof error === 'object' ? error : {}) as { message?: unknown; stack?: unknown }
+
+export function estatisticasError(error: unknown) {
+  const e = detalhesDoErro(error)
   return {
     message: 'Erro interno ao buscar estatísticas',
-    error: error?.message,
-    stack: isDev() ? error?.stack : undefined,
+    error: e.message,
+    stack: isDev() ? e.stack : undefined,
   }
 }
 
-export function agendamentosError(error: any) {
+export function agendamentosError(error: unknown) {
   return {
     message: 'Erro interno ao listar agendamentos',
-    error: isDev() ? error?.message : undefined,
+    error: isDev() ? detalhesDoErro(error).message : undefined,
   }
 }
 
@@ -102,7 +106,7 @@ function formatDataConsulta(value: string | null) {
 
 type Veterinario = NonNullable<Awaited<ReturnType<typeof findVeterinarioByUser>>>
 
-export async function listAgendamentos(veterinario: Veterinario, qs: Record<string, any>) {
+export async function listAgendamentos(veterinario: Veterinario, qs: Record<string, unknown>) {
   const { status, data_inicio, data_fim } = qs
   const where: Prisma.AgendamentoWhereInput = { veterinarioId: veterinario.id }
   const dataFilters: Prisma.AgendamentoWhereInput[] = []

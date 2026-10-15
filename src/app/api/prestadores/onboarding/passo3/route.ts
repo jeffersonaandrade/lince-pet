@@ -2,7 +2,7 @@ import { ApiRequest, badRequest, ok, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { prisma } from '@/server/db'
 import { updating } from '@/server/lucid'
-import { uploadPrestadorPhoto } from '@/server/services/storage'
+import { confirmarUpload, uploadPrestadorPhoto } from '@/server/services/storage'
 import { prestadorDoUsuario, salvarPasso3 } from '@/server/services/prestadores'
 
 const OPTIONS = { size: '5mb', extnames: ['jpg', 'jpeg', 'png', 'webp'] }
@@ -25,19 +25,26 @@ export const POST = route(async (req) => {
     }
   }
 
-  let fotoUrl: string | null = null
   const foto = apiReq.file('foto', OPTIONS)
-  if (foto) {
-    if (!foto.isValid) return badRequest({ message: 'Foto inválida', errors: foto.errors })
-    const result = await uploadPrestadorPhoto({
-      buffer: await foto.buffer(),
-      originalname: foto.clientName || 'foto.jpg',
-      mimetype: foto.type || 'image/jpeg',
-    })
-    fotoUrl = result.url
-    await prisma.user.update({ where: { id: user.id }, data: updating({ profilePic: result.url }) })
+  if (!foto) {
+    await salvarPasso3(prestador, body, null)
+    return ok({ message: 'Perfil concluído', foto_url: null })
   }
+  if (!foto.isValid) return badRequest({ message: 'Foto inválida', errors: foto.errors })
 
-  await salvarPasso3(prestador, body, fotoUrl)
-  return ok({ message: 'Perfil concluído', foto_url: fotoUrl })
+  const anteriores = [prestador.fotoUrl, user.profilePic]
+  const result = await uploadPrestadorPhoto(prestador.id, {
+    buffer: await foto.buffer(),
+    originalname: foto.clientName || 'foto.jpg',
+    mimetype: foto.type || 'image/jpeg',
+  })
+  await confirmarUpload(
+    result,
+    async () => {
+      await salvarPasso3(prestador, body, result.url)
+      await prisma.user.update({ where: { id: user.id }, data: updating({ profilePic: result.url }) })
+    },
+    { anteriores }
+  )
+  return ok({ message: 'Perfil concluído', foto_url: result.url })
 })

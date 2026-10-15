@@ -8,5 +8,5 @@ export const GET = route(async (req) => {
   const apiReq = await ApiRequest.from(req)
   const user = await requireUser(apiReq, ['prestador'])
   const prestador = await prestadorDoUsuario(user.id)
-  return ok({ data: await listarPedidosDoPrestador(prestador.id, apiReq.qs().status || undefined) })
+  return ok({ data: await listarPedidosDoPrestador(prestador.id, apiReq.text('status') || undefined) })
 })

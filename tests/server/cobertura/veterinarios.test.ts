@@ -351,7 +351,8 @@ describe('registerVeterinario', () => {
 
   it('cria usuário e veterinário sem plano (PLANO_PADRAO.veterinario = none)', async () => {
     prismaMock.tx.user.create.mockResolvedValueOnce({ id: 'u-1' })
-    await registerVeterinario({ ...dados, cpf: '12345678900', profilePicUrl: 'https://cdn/a.jpg' })
+    prismaMock.tx.veterinario.create.mockResolvedValueOnce({ id: 'v-1' })
+    expect(await registerVeterinario({ ...dados, cpf: '12345678900' })).toBe('v-1')
 
     expect(senha.hashPassword).toHaveBeenCalledWith('senha123')
     expect(prismaMock.tx.user.create.mock.calls[0][0].data).toMatchObject({
@@ -375,15 +376,17 @@ describe('registerVeterinario', () => {
       atendePresencial: 0,
       atendeOnline: 0,
       atendeDomicilio: 0,
-      fotoUrl: 'https://cdn/a.jpg',
       subscriptionPlanCode: 'none',
     })
+    // A foto do cadastro só entra pelo upload (rota), nunca por URL no corpo.
+    expect(vet).not.toHaveProperty('fotoUrl')
   })
 
-  it('cpf e foto vazios viram null', async () => {
+  it('cpf vazio vira null', async () => {
     prismaMock.tx.user.create.mockResolvedValueOnce({ id: 'u-1' })
-    await registerVeterinario({ ...dados, cpf: '', profilePicUrl: '' })
-    expect(prismaMock.tx.veterinario.create.mock.calls[0][0].data).toMatchObject({ cpf: null, fotoUrl: null })
+    prismaMock.tx.veterinario.create.mockResolvedValueOnce({ id: 'v-1' })
+    await registerVeterinario({ ...dados, cpf: '' })
+    expect(prismaMock.tx.veterinario.create.mock.calls[0][0].data).toMatchObject({ cpf: null })
   })
 
   const p2002 = (target: unknown, message = 'Unique constraint failed') =>
@@ -469,7 +472,6 @@ describe('searchVeterinarios', () => {
     expect(card).toEqual({
       id: 'v1',
       nome: 'Nome Sobrenome',
-      email: 'email@exemplo.com',
       fotoUrl: null,
       cidade: 'Cidade não informada',
       estado: 'UF',
@@ -535,7 +537,7 @@ describe('getVeterinarioById', () => {
         horariosOnline: '{"ter":["10:00"]}',
         enderecos: [
           endereco({ id: 'e1', precoConsulta: 0, horariosDisponibilidade: 'inválido' }),
-          endereco({ id: 'e2', isPrimary: 1, cidade: 'Olinda', precoConsulta: 120, horariosDisponibilidade: 42 }),
+          endereco({ id: 'e2', clinicaId: 'cli-9', isPrimary: 1, cidade: 'Olinda', precoConsulta: 120, horariosDisponibilidade: 42 }),
         ],
         avaliacoes: [{ estrelas: 5 }, { estrelas: 4 }, { estrelas: 4 }],
         experiencias: [{ cargo: 'Vet', local: 'Hosp', dataInicio: new Date(Date.UTC(2020, 0, 2)), dataFim: null, descricao: 'd' }],
@@ -556,7 +558,6 @@ describe('getVeterinarioById', () => {
     expect(assinatura.canCreateAppointment).toHaveBeenCalledWith(expect.objectContaining({ id: 'vet-1' }))
     expect(vet).toMatchObject({
       nome: 'Ana Vet',
-      email: 'ana@x.com',
       cidade: 'Olinda',
       endereco: 'Rua A, 10, Olinda',
       especialidades: ['Cardio'],
@@ -565,7 +566,8 @@ describe('getVeterinarioById', () => {
       preco: 120,
       rating: 4.3,
       totalReviews: 3,
-      availability: 42,
+      // Grade inválida no banco não chega crua ao frontend.
+      availability: {},
       clinica: 'Clínica',
       creditos: 7,
       atendeOnline: true,
@@ -574,11 +576,14 @@ describe('getVeterinarioById', () => {
       planos: [{ id: 'p1', name: 'Pet Love' }],
       limitReached: true,
     })
+    // Perfil público: o e-mail do veterinário não vai para quem não está logado.
+    expect(vet).not.toHaveProperty('email')
     expect(vet.experiencias[0].dataInicio!.toISODate()).toBe('2020-01-02')
     expect(vet.locations).toEqual([
-      expect.objectContaining({ id: 'e1', preco: 0, availability: {}, isPrimary: false }),
+      expect.objectContaining({ id: 'e1', clinicaId: undefined, preco: 0, availability: {}, isPrimary: false }),
       expect.objectContaining({
         id: 'e2',
+        clinicaId: 'cli-9',
         fullAddress: 'Rua A, 10, Centro, Olinda - PE',
         endereco: 'Rua A, 10, Centro',
         preco: 120,

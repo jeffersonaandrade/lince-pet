@@ -4,6 +4,7 @@ import { ApiRequest, ok, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { updating } from '@/server/lucid'
 import { requireTutorOf, requireTutorPet } from '@/server/services/pets'
+import { fotoDoCliente } from '@/server/services/storage'
 import { updatePetValidator } from '@/server/validators/pet'
 
 export const PATCH = route<{ id: string }>(async (req, { id }) => {
@@ -19,7 +20,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
   if (payload.raca !== undefined) next.raca = payload.raca ?? null
   if (payload.idade !== undefined) next.idade = payload.idade ?? null
   if (payload.porte !== undefined) next.porte = payload.porte ?? null
-  if (payload.foto_url !== undefined) next.fotoUrl = payload.foto_url ?? null
+  if (payload.foto_url !== undefined) next.fotoUrl = fotoDoCliente(payload.foto_url)
 
   // Lucid só executa UPDATE (e toca updatedAt) quando há campos alterados.
   const dirty = Object.fromEntries(

@@ -8,7 +8,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   ChevronsUpDown,
   User,
-  Settings,
   Clock,
   LogOut,
   Menu,
@@ -16,8 +15,6 @@ import {
   Compass,
   LogIn,
   UserPlus,
-  Stethoscope,
-  Building2,
   Info,
   Phone,
 } from "lucide-react";
@@ -27,11 +24,6 @@ import NotificationBell from "../NotificationBell/NotificationBell";
 import { NotificationsService } from "@/services/notifications/notifications";
 import { dashboardDoTipo, rotuloDoTipo } from "@/utils/tipoConta";
 import IconSilver from "../../../public/img/IconSilver.png";
-import NameIconHeader from "../../../public/img/NameIconHeader.png";
-import IconDoctor from "../../../public/doctor.svg";
-import IconExplore from "../../../public/explore.svg";
-import IconHospital from "../../../public/hospital.svg";
-import Frame43 from "../../../public/Frame 43.png";
 import LincePet from "../../../public/LincePet.png";
 
 export default function Header() {
@@ -47,18 +39,6 @@ export default function Header() {
   const [globalUnreadCount, setGlobalUnreadCount] = useState(0);
 
   const isHomePage = pathname === "/";
-  const getUserInitials = (nome: string) => {
-    if (!nome || typeof nome !== "string") {
-      return "US";
-    }
-    return nome
-      .split(" ")
-      .map((name) => name.charAt(0))
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   const handleLogout = async () => {
     await logout();
     setIsDropdownOpen(false);
@@ -97,7 +77,7 @@ export default function Header() {
       };
 
       handleScroll();
-      window.addEventListener("scroll", handleScroll);
+      window.addEventListener("scroll", handleScroll, { passive: true });
       return () => window.removeEventListener("scroll", handleScroll);
     }
   }, [isHomePage]);
@@ -108,14 +88,15 @@ export default function Header() {
   }, [pathname]);
 
   // Polling de notificações não lidas
+  const usuarioId = user?.id;
   useEffect(() => {
-    if (!user) return;
+    if (!usuarioId) return;
     let mounted = true;
     const fetchUnread = async () => {
       try {
         const count = await NotificationsService.getUnreadCount();
         if (mounted) setGlobalUnreadCount(count);
-      } catch (err) { }
+      } catch {}
     };
     fetchUnread();
     const interval = setInterval(fetchUnread, 30000);
@@ -123,7 +104,7 @@ export default function Header() {
       mounted = false;
       clearInterval(interval);
     };
-  }, [user]);
+  }, [usuarioId]);
 
   // Fecha o menu móvel ao clicar fora
   useEffect(() => {

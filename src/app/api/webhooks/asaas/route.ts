@@ -1,5 +1,5 @@
 import { ApiRequest, ok, route, serverError, unauthorized } from '@/server/http'
-import { handleAsaasEvent } from '@/server/services/asaas-webhook'
+import { handleAsaasEvent, lerEventoAsaas } from '@/server/services/asaas-webhook'
 import { webhookAutorizado } from '@/server/services/assinatura-regras'
 
 export const POST = route(async (req) => {
@@ -15,10 +15,10 @@ export const POST = route(async (req) => {
       return unauthorized({ message: 'Token inválido' })
     }
 
-    const payload = request.body
-    console.log(`[Webhook Asaas] Recebido evento: ${payload?.event || ''}`, payload?.payment?.id || payload?.subscription?.id)
+    const evento = lerEventoAsaas(request.body)
+    console.log(`[Webhook Asaas] Recebido evento: ${evento.event || ''}`, evento.payment?.id || evento.subscription?.id)
 
-    await handleAsaasEvent(payload)
+    await handleAsaasEvent(request.body)
     return ok({ received: true })
   } catch (error) {
     console.error('[Webhook Asaas] Erro no processamento:', error)

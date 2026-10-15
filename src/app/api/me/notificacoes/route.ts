@@ -4,7 +4,7 @@ import { canaisDe, salvarCanais, serializeCanais } from '@/server/services/canai
 
 const paraBool = (v: unknown) => (v === undefined || v === null ? undefined : v === true || v === 1 || v === '1' || v === 'true')
 
-/** GET /me/notificacoes: canais de aviso do usuÃ¡rio (google_agenda = conta conectada, sÃ³ leitura). */
+/** GET /me/notificacoes: canais de aviso do usuário (google_agenda = conta conectada, só leitura). */
 export const GET = route(async (req) => {
   const user = await requireUser(await ApiRequest.from(req), ['tutor', 'veterinario', 'prestador'])
   return ok(serializeCanais(canaisDe(user)))

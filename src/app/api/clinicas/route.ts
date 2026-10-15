@@ -5,11 +5,12 @@ import {
   especialidadesPorEntidade,
   mediaAvaliacoes,
   serializeClinica,
-  serializeRelatedUser,
+  usuarioPublico,
 } from '@/server/services/clinicas'
 
 export const GET = route(async (req) => {
-  const { search, cidade, estado, plano } = (await ApiRequest.from(req)).qs()
+  const request = await ApiRequest.from(req)
+  const [search, cidade, estado, plano] = ['search', 'cidade', 'estado', 'plano'].map((campo) => request.text(campo))
   const AND: Prisma.ClinicaWhereInput[] = []
 
   const like = (valor: string) => ({ contains: valor, mode: 'insensitive' as const })
@@ -36,7 +37,7 @@ export const GET = route(async (req) => {
       const { rating, totalReviews } = mediaAvaliacoes(avaliacoes.map((a) => a.estrelasClinica))
       return {
         ...serializeClinica(clinica),
-        user: serializeRelatedUser(user),
+        user: usuarioPublico(user),
         especialidades: especialidades.get(clinica.id) ?? [],
         planos: clinicaPlanos.map((cp) => cp.plano),
         avaliacoes,

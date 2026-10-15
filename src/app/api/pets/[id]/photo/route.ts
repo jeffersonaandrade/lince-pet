@@ -2,7 +2,7 @@ import { prisma } from '@/server/db'
 import { ApiRequest, badRequest, ok, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { updating } from '@/server/lucid'
-import { uploadPetPhoto } from '@/server/services/storage'
+import { confirmarUpload, uploadPetPhoto } from '@/server/services/storage'
 import { firstFile, isMultipart, requireTutorOf, requireTutorPet, toPhotoUpload } from '@/server/services/pets'
 
 export const POST = route<{ id: string }>(async (req, { id }) => {
@@ -25,8 +25,12 @@ export const POST = route<{ id: string }>(async (req, { id }) => {
     return badRequest({ message: 'Arquivo inválido', errors: uploadedFile.errors })
   }
 
-  const result = await uploadPetPhoto(await toPhotoUpload(uploadedFile))
-  await prisma.pet.update({ where: { id: pet.id }, data: updating({ fotoUrl: result.url }) })
+  const result = await uploadPetPhoto(pet.id, await toPhotoUpload(uploadedFile))
+  await confirmarUpload(
+    result,
+    () => prisma.pet.update({ where: { id: pet.id }, data: updating({ fotoUrl: result.url }) }),
+    { anteriores: [pet.fotoUrl] }
+  )
 
   return ok({ message: 'Foto do pet atualizada com sucesso', url: result.url })
 })

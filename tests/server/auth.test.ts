@@ -22,7 +22,7 @@ describe('JWT compatível com o Adonis (jsonwebtoken HS256 + APP_KEY)', () => {
 
   it('emite token que o Adonis aceita', async () => {
     const token = await generateToken({ id: 'uuid-2', nome: 'Bia', sobrenome: null, userType: 'veterinario', entityId: 3 })
-    const decoded = jsonwebtoken.verify(token, APP_KEY) as any
+    const decoded = jsonwebtoken.verify(token, APP_KEY)
     expect(decoded).toMatchObject({ userId: 'uuid-2', entityId: 3, userType: 'veterinario' })
   })
 

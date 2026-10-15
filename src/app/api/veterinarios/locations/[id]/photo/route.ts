@@ -1,8 +1,8 @@
-import { ApiRequest, badRequest, notFound, ok, route, serverError } from '@/server/http'
+import { ApiRequest, HttpError, badRequest, notFound, ok, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { prisma } from '@/server/db'
 import { updating } from '@/server/lucid'
-import { uploadVeterinarioPhoto } from '@/server/services/storage'
+import { confirmarUpload, uploadVeterinarioPhoto } from '@/server/services/storage'
 import { findVeterinarioByUser } from '@/server/services/veterinarios'
 
 export const POST = route<{ id: string }>(async (req, { id }) => {
@@ -34,18 +34,25 @@ export const POST = route<{ id: string }>(async (req, { id }) => {
       return badRequest({ message: 'Arquivo inválido', errors: uploadedFile.errors })
     }
 
-    const result = await uploadVeterinarioPhoto({
-      buffer: await uploadedFile.buffer(),
-      originalname: uploadedFile.clientName || 'location.jpg',
-      mimetype: uploadedFile.type || 'image/jpeg',
-    })
+    const result = await uploadVeterinarioPhoto(
+      veterinario.id,
+      {
+        buffer: await uploadedFile.buffer(),
+        originalname: uploadedFile.clientName || 'location.jpg',
+        mimetype: uploadedFile.type || 'image/jpeg',
+      },
+      ['locais', endereco.id]
+    )
 
-    if (endereco.fotoUrl !== result.url) {
-      await prisma.veterinarioEndereco.update({ where: { id: endereco.id }, data: updating({ fotoUrl: result.url }) })
-    }
+    await confirmarUpload(
+      result,
+      () => prisma.veterinarioEndereco.update({ where: { id: endereco.id }, data: updating({ fotoUrl: result.url }) }),
+      { anteriores: [endereco.fotoUrl] }
+    )
 
     return ok({ url: result.url, message: 'Foto do local enviada com sucesso' })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error('❌ [Upload Location Photo] Erro:', error)
     return serverError({ message: 'Erro ao enviar foto' })
   }

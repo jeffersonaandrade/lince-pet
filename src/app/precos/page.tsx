@@ -4,6 +4,9 @@ import { BotaoCta, PaginaInstitucional, Paragrafo, Secao } from "@/components/In
 import { cartaoDePlano, type PlanoMetadata } from "@/config/planos";
 import { listarPlanosAtivos } from "@/server/services/subscription";
 
+// Preços vêm do banco: renderizar na requisição evita consultar o banco durante o `next build`.
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Preços | Lince Pet",
   description: "Planos da Lince Pet para veterinários e clínicas.",

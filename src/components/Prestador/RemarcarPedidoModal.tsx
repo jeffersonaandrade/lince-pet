@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { PrestadoresService } from "@/services/prestadores/prestadores";
+import { mensagemDeErro } from "@/lib/erros";
 import { Alerta, Campo, Entrada, botaoPrimario, botaoSecundario } from "./ui";
 
 type Props = {
@@ -53,8 +54,8 @@ export function RemarcarPedidoModal({ pedidoId, prestadorId, servicoId, modalida
         horario_fim: periodo ? horarioFim : null,
       });
       onRemarcado();
-    } catch (e: any) {
-      setErro(e?.response?.data?.message || e?.message || "Não foi possível remarcar");
+    } catch (e) {
+      setErro(mensagemDeErro(e, "Não foi possível remarcar"));
     } finally {
       setSalvando(false);
     }

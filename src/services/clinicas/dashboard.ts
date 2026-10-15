@@ -1,3 +1,4 @@
+import { isAxiosError } from "axios";
 import { api } from "@/hook/api";
 import { formatEventTitle, formatDateToISO } from "@/utils/formatters";
 
@@ -68,6 +69,46 @@ export interface EventoCalendario {
   };
 }
 
+/** Item de `GET /clinicas/agendamentos`. */
+interface AgendamentoClinicaApi {
+  id: string;
+  tutor_nome: string;
+  tutor_sobrenome?: string;
+  tutor_telefone?: string | null;
+  tutor_email?: string | null;
+  pet_id?: string | null;
+  pet_nome?: string;
+  pet_raca?: string;
+  pet_porte?: string;
+  pet_especie?: string;
+  pet_foto_url?: string | null;
+  veterinario_nome?: string;
+  veterinario_sobrenome?: string;
+  data_consulta: string;
+  horario_consulta: string;
+  tipo_consulta: string;
+  status: string;
+  observacoes?: string;
+  valor_total?: number;
+}
+
+/** Veterinário como vem de `/clinicas/professionals` (lista e busca). */
+interface ProfissionalApi {
+  id: string;
+  fotoUrl: string | null;
+  crmv?: string;
+  user?: { nome?: string; sobrenome?: string; email?: string } | null;
+}
+
+const profissionalDaApi = (v: ProfissionalApi): Profissional => ({
+  id: v.id,
+  nome: v.user?.nome || "V",
+  sobrenome: v.user?.sobrenome || "",
+  email: v.user?.email || "",
+  fotoUrl: v.fotoUrl,
+  crmv: v.crmv,
+});
+
 /**
  * Service para gerenciar o dashboard da clínica
  */
@@ -84,12 +125,12 @@ export class ClinicaDashboardService {
         response.data
       );
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       console.error(
         "❌ [Dashboard Service] Erro ao buscar estatísticas:",
         error
       );
-      console.error("❌ [Dashboard Service] Response:", error.response?.data);
+      if (isAxiosError(error)) console.error("❌ [Dashboard Service] Response:", error.response?.data);
 
       return {
         agendamentosHoje: 0,
@@ -103,17 +144,9 @@ export class ClinicaDashboardService {
   static async buscarProfissionais(): Promise<Profissional[]> {
     try {
       console.log("👨‍⚕️ [Dashboard Service] Buscando profissionais...");
-      const response = await api.get("/clinicas/professionals");
-      const rawPros = response.data.profissionais || [];
-      return rawPros.map((v: any) => ({
-        id: v.id,
-        nome: v.user?.nome || "V",
-        sobrenome: v.user?.sobrenome || "",
-        email: v.user?.email || "",
-        fotoUrl: v.fotoUrl,
-        crmv: v.crmv
-      }));
-    } catch (error: any) {
+      const response = await api.get<{ profissionais?: ProfissionalApi[] }>("/clinicas/professionals");
+      return (response.data.profissionais || []).map(profissionalDaApi);
+    } catch (error) {
       console.error("❌ [Dashboard Service] Erro ao buscar profissionais:", error);
       return [];
     }
@@ -131,7 +164,7 @@ export class ClinicaDashboardService {
         "📅 [Dashboard Service] Buscando agendamentos do calendário..."
       );
 
-      const response = await api.get("/clinicas/agendamentos", {
+      const response = await api.get<{ agendamentos?: AgendamentoClinicaApi[] }>("/clinicas/agendamentos", {
         params: {
           data_inicio: dataInicio,
           data_fim: dataFim,
@@ -145,19 +178,7 @@ export class ClinicaDashboardService {
         return [];
       }
 
-      return response.data.agendamentos.map((agendamento: any) => {
-        const [dia, mes, ano] = agendamento.data_consulta.includes('T')
-          ? agendamento.data_consulta.split('T')[0].split('-').reverse() // Handle yyyy-mm-dd or similar if needed. Backend sends yyyy-mm-dd mostly.
-          // Actually backend code I wrote sends .split('T')[0] from ISO string which is YYYY-MM-DD.
-          // So split('-') gives [YYYY, MM, DD].
-          : agendamento.data_consulta.split("-").reverse(); // If backend sends YYYY-MM-DD
-
-        // Wait, Agendamento.ts in backend:
-        // data_consulta: a.dataConsulta instanceof Date ? ... : ...
-        // It returns ISO YYYY-MM-DD.
-        // So split('-') results in ['YYYY', 'MM', 'DD'].
-        // Let's parse correctly.
-
+      return response.data.agendamentos.map((agendamento) => {
         const dateParts = agendamento.data_consulta.split('-');
         const year = parseInt(dateParts[0]);
         const month = parseInt(dateParts[1]);
@@ -197,7 +218,7 @@ export class ClinicaDashboardService {
           },
         };
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("❌ [Dashboard Service] Erro ao buscar agendamentos:", error);
       return [];
     }
@@ -220,7 +241,7 @@ export class ClinicaDashboardService {
         dataAlvoISO = formatDateToISO(hoje);
       }
 
-      const response = await api.get("/clinicas/agendamentos", {
+      const response = await api.get<{ agendamentos?: AgendamentoClinicaApi[] }>("/clinicas/agendamentos", {
         params: {
           data_inicio: dataAlvoISO,
           data_fim: dataAlvoISO,
@@ -232,7 +253,7 @@ export class ClinicaDashboardService {
         return [];
       }
 
-      return response.data.agendamentos.map((agendamento: any) => ({
+      return response.data.agendamentos.map((agendamento) => ({
         id: agendamento.id,
         cliente: agendamento.tutor_nome,
         clienteSobrenome: agendamento.tutor_sobrenome,
@@ -253,7 +274,7 @@ export class ClinicaDashboardService {
         observacoes: agendamento.observacoes,
         valor: agendamento.valor_total,
       }));
-    } catch (error: any) {
+    } catch (error) {
       console.error("❌ [Dashboard Service] Erro ao buscar próximas consultas:", error);
       return [];
     }
@@ -278,17 +299,9 @@ export class ClinicaDashboardService {
   }
 
   static async pesquisarProfissionais(search: string): Promise<Profissional[]> {
-    const response = await api.get("/clinicas/professionals/search", {
+    const response = await api.get<{ profissionais?: ProfissionalApi[] }>("/clinicas/professionals/search", {
       params: { search },
     });
-    const rawVets = response.data.profissionais || [];
-    return rawVets.map((v: any) => ({
-      id: v.id,
-      nome: v.user?.nome || "V",
-      sobrenome: v.user?.sobrenome || "",
-      email: v.user?.email || "",
-      fotoUrl: v.fotoUrl,
-      crmv: v.crmv
-    }));
+    return (response.data.profissionais || []).map(profissionalDaApi);
   }
 }

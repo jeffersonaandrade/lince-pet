@@ -11,8 +11,12 @@ export const formatPhone = (value: string): string => {
   if (numbers.length <= 2) {
     return numbers;
   }
-  if (numbers.length <= 7) {
+  if (numbers.length <= 6) {
     return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+  }
+  // Fixo (10 dígitos): (11) 3333-4444; celular (11): (11) 98888-7777.
+  if (numbers.length <= 10) {
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
   }
   if (numbers.length <= 11) {
     return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(

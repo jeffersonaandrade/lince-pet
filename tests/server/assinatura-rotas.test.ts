@@ -20,7 +20,10 @@ vi.mock('@/server/services/asaas', async (importOriginal) => ({
 }))
 
 const webhook = vi.hoisted(() => ({ handleAsaasEvent: vi.fn() }))
-vi.mock('@/server/services/asaas-webhook', () => webhook)
+vi.mock('@/server/services/asaas-webhook', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/server/services/asaas-webhook')>()),
+  ...webhook,
+}))
 
 import { GET as statusRoute } from '@/app/api/assinaturas/status/route'
 import { POST as webhookRoute } from '@/app/api/webhooks/asaas/route'

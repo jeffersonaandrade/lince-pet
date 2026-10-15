@@ -8,21 +8,50 @@ import { fimDoPeriodo } from './assinatura-regras'
 
 type Tx = Prisma.TransactionClient
 
+/** Campos do evento do Asaas que o sistema usa; o corpo inteiro fica só no log (`webhook_events.payload`). */
+export type AsaasEvento = {
+  id?: string
+  event?: string
+  payment?: { id?: string; subscription?: string; dueDate?: string }
+  subscription?: { id?: string }
+}
+
+const textoNaoVazio = (v: unknown) => (typeof v === 'string' && v ? v : undefined)
+const objeto = (v: unknown) => (v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : undefined)
+
+export function lerEventoAsaas(payload: unknown): AsaasEvento {
+  const corpo = objeto(payload) ?? {}
+  const payment = objeto(corpo.payment)
+  const subscription = objeto(corpo.subscription)
+  return {
+    id: textoNaoVazio(corpo.id),
+    event: textoNaoVazio(corpo.event),
+    payment: payment && {
+      id: textoNaoVazio(payment.id),
+      subscription: textoNaoVazio(payment.subscription),
+      dueDate: textoNaoVazio(payment.dueDate),
+    },
+    subscription: subscription && { id: textoNaoVazio(subscription.id) },
+  }
+}
+
 /**
  * Chave de idempotência (coluna única webhook_events.event_id): o `id` do evento enviado pelo Asaas;
  * sem ele, `asaas:<event>:<payment.id|subscription.id>`. Sem nenhum dos dois, não há deduplicação.
  */
-export function asaasEventKey(payload: any): string | null {
-  if (typeof payload?.id === 'string' && payload.id) return payload.id
-  const ref = payload?.payment?.id || payload?.subscription?.id
-  return payload?.event && ref ? `asaas:${payload.event}:${ref}` : null
+export function asaasEventKey(payload: unknown): string | null {
+  const evento = lerEventoAsaas(payload)
+  if (evento.id) return evento.id
+  const ref = evento.payment?.id || evento.subscription?.id
+  return evento.event && ref ? `asaas:${evento.event}:${ref}` : null
 }
 
 const isUniqueViolation = (e: unknown) => e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002'
 
 /** Retorna false se o evento já tinha sido processado. */
-export async function handleAsaasEvent(payload: any): Promise<boolean> {
-  const eventType: string = payload?.event || ''
+export async function handleAsaasEvent(payload: unknown): Promise<boolean> {
+  const evento = lerEventoAsaas(payload)
+  const eventType = evento.event || ''
   const eventKey = asaasEventKey(payload)
 
   if (eventKey && (await prisma.webhookEvent.findUnique({ where: { eventId: eventKey } }))) {
@@ -39,7 +68,7 @@ export async function handleAsaasEvent(payload: any): Promise<boolean> {
             data: { provider: 'asaas', eventId: eventKey, type: eventType || 'unknown', payload: JSON.stringify(payload ?? {}), processedAt: now, createdAt: now },
           })
         }
-        await processEvent(tx, payload, eventType)
+        await processEvent(tx, evento, eventType)
       },
       { maxWait: 10_000, timeout: 60_000 }
     )
@@ -83,12 +112,12 @@ async function rebaixar(tx: Tx, sub: SubLocal, motivo: string) {
   }
 }
 
-async function ativarPorPagamento(tx: Tx, sub: SubLocal, payment: any) {
+async function ativarPorPagamento(tx: Tx, sub: SubLocal, payment: NonNullable<AsaasEvento['payment']>) {
   if (sub.status === 'canceled' || sub.status === 'expired') {
-    console.warn(`[Webhook Asaas] Pagamento ${payment?.id} de assinatura encerrada ${sub.id}; nada a ativar.`)
+    console.warn(`[Webhook Asaas] Pagamento ${payment.id} de assinatura encerrada ${sub.id}; nada a ativar.`)
     return
   }
-  const periodo = payment?.dueDate
+  const periodo = payment.dueDate
     ? { currentPeriodStart: new Date(`${payment.dueDate}T00:00:00Z`), currentPeriodEnd: fimDoPeriodo(payment.dueDate) }
     : {}
   await tx.subscription.update({ where: { id: sub.id }, data: updating({ status: 'active', ...periodo }) })
@@ -125,18 +154,18 @@ async function ativarPorPagamento(tx: Tx, sub: SubLocal, payment: any) {
   }
 }
 
-async function processEvent(tx: Tx, payload: any, eventType: string) {
-  const asaasSubId: string | undefined = payload?.payment?.subscription || payload?.subscription?.id
+async function processEvent(tx: Tx, evento: AsaasEvento, eventType: string) {
+  const asaasSubId = evento.payment?.subscription || evento.subscription?.id
   if (!asaasSubId) return
   const sub = await tx.subscription.findFirst({ where: { asaasSubscriptionId: asaasSubId } })
   if (!sub) return
 
-  if (payload?.payment && EVENTOS_PAGO.includes(eventType)) {
-    await ativarPorPagamento(tx, sub, payload.payment)
+  if (evento.payment && EVENTOS_PAGO.includes(eventType)) {
+    await ativarPorPagamento(tx, sub, evento.payment)
     return
   }
 
-  if (payload?.payment && EVENTOS_INADIMPLENTE.includes(eventType)) {
+  if (evento.payment && EVENTOS_INADIMPLENTE.includes(eventType)) {
     if (sub.status === 'canceled' || sub.status === 'expired') return
     await tx.subscription.update({ where: { id: sub.id }, data: updating({ status: 'past_due' }) })
     await rebaixar(tx, sub, eventType)

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Building2, MapPin, Phone } from "lucide-react";
+import { Check, X, Building2 } from "lucide-react";
 import { NotificationsService } from "@/services/notifications/notifications";
 import styles from "./clinicRequestModal.module.css";
 

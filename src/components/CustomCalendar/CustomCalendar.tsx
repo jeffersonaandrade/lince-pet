@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import styles from './CustomCalendar.module.css';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 moment.locale('pt-br');
 
@@ -11,23 +11,23 @@ export interface CalendarEvent {
   title: string;
   start: Date;
   end: Date;
-  resource?: any;
+  resource?: { status?: string; tipo?: string };
 }
 
-interface CustomCalendarProps {
-  events: CalendarEvent[];
-  onSelectEvent?: (event: CalendarEvent) => void;
+interface CustomCalendarProps<E extends CalendarEvent> {
+  events: E[];
+  onSelectEvent?: (event: E) => void;
   onSelectSlot?: (slotInfo: { start: Date; end: Date }) => void;
   onNavigate?: (date: Date) => void;
   date?: Date;
   view?: 'month' | 'week' | 'day';
   onViewChange?: (view: 'month' | 'week' | 'day') => void;
-  statusMeta?: (status?: string) => { color: string; label: string; icon: any };
+  statusMeta?: (status?: string) => { color: string; label: string };
   /** Datas (YYYY-MM-DD) com bloqueio de agenda: dia inteiro ou só alguns horários. */
   blockedDays?: Record<string, 'dia' | 'parcial'>;
 }
 
-const CustomCalendar: React.FC<CustomCalendarProps> = ({
+function CustomCalendar<E extends CalendarEvent>({
   events,
   onSelectEvent,
   onSelectSlot,
@@ -37,7 +37,7 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   onViewChange,
   statusMeta,
   blockedDays,
-}) => {
+}: CustomCalendarProps<E>) {
   const blockedLabel = (day: Date) => {
     const kind = blockedDays?.[moment(day).format('YYYY-MM-DD')];
     if (!kind) return null;
@@ -109,13 +109,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
   }, [currentDate]);
 
   const weekDaysShort = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-  const getEventsInRange = (start: Date, end: Date) => {
-    return events.filter((event) => {
-      const s = moment(event.start);
-      return s.isSameOrAfter(moment(start).startOf('day')) && s.isSameOrBefore(moment(end).endOf('day'));
-    });
-  };
 
   const getEventsForDay = (day: Date) => {
     return events.filter((event) =>
@@ -277,6 +270,6 @@ const CustomCalendar: React.FC<CustomCalendarProps> = ({
       )}
     </div>
   );
-};
+}
 
 export default CustomCalendar;

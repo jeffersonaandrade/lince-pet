@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import styles from "./forgot.module.css";
 import { forgotPassword } from "@/services/auth/auth";
+import { mensagemDaApi } from "@/lib/erros";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -20,8 +21,8 @@ export default function ForgotPasswordPage() {
     try {
       const result = await forgotPassword(email);
       setSuccess(result.message || "um link de recuperação foi enviado para sua caixa de Email.");
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Ocorreu um erro. Tente novamente mais tarde.");
+    } catch (err) {
+      setError(mensagemDaApi(err) || "Ocorreu um erro. Tente novamente mais tarde.");
     } finally {
       setLoading(false);
     }

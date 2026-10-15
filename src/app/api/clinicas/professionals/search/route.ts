@@ -1,12 +1,12 @@
 import { prisma } from '@/server/db'
 import { ApiRequest, ok, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
-import { serializeRelatedUser } from '@/server/services/clinicas'
+import { usuarioPublico } from '@/server/services/clinicas'
 
 export const GET = route(async (req) => {
   const request = await ApiRequest.from(req)
-  await requireUser(request)
-  const { search } = request.qs()
+  await requireUser(request, ['clinica'])
+  const search = request.text('search')
 
   try {
     let vets
@@ -31,9 +31,13 @@ export const GET = route(async (req) => {
       vets = await prisma.veterinario.findMany({ take: 40, include: { user: true } })
     }
 
-    console.log(`[SEARCH DEBUG] Termo: "${search}" | Encontrados: ${vets.length}`)
-
-    return ok({ profissionais: vets.map(({ user, ...vet }) => ({ ...vet, user: serializeRelatedUser(user) })) })
+    // A clínica vê o e-mail para identificar o profissional antes de convidar; celular e endereço ficam de fora.
+    return ok({
+      profissionais: vets.map(({ user, ...vet }) => ({
+        ...vet,
+        user: user ? { ...usuarioPublico(user), email: user.email } : null,
+      })),
+    })
   } catch (error) {
     console.error(error)
     return serverError({ message: 'Erro ao pesquisar veterinários' })

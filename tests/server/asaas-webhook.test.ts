@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const prismaMock = vi.hoisted(() => {
-  const m: any = {
+  const m = {
     webhookEvent: { findUnique: vi.fn(), create: vi.fn() },
     subscription: { findFirst: vi.fn(), findMany: vi.fn(), update: vi.fn(), count: vi.fn() },
     subscriptionPlan: { findUnique: vi.fn() },
@@ -9,15 +9,54 @@ const prismaMock = vi.hoisted(() => {
     clinica: { findUnique: vi.fn(), update: vi.fn() },
     prestador: { findUnique: vi.fn(), update: vi.fn() },
   }
-  m.$transaction = vi.fn(async (fn: (tx: unknown) => unknown) => fn(m))
-  return m
+  return Object.assign(m, { $transaction: vi.fn(async (fn: (tx: unknown) => unknown) => fn(m)) })
 })
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 
 const asaasFake = vi.hoisted(() => ({ cancelSubscription: vi.fn() }))
 vi.mock('@/server/services/asaas', () => ({ AsaasService: vi.fn(() => asaasFake) }))
 
-import { asaasEventKey, handleAsaasEvent } from '@/server/services/asaas-webhook'
+import { asaasEventKey, handleAsaasEvent, lerEventoAsaas } from '@/server/services/asaas-webhook'
+
+describe('lerEventoAsaas (só campos de texto do corpo do webhook)', () => {
+  it('lê id, evento, pagamento e assinatura', () => {
+    expect(
+      lerEventoAsaas({
+        id: 'evt_1',
+        event: 'PAYMENT_CONFIRMED',
+        payment: { id: 'pay_1', subscription: 'sub_1', dueDate: '2026-10-20', value: 59 },
+        subscription: { id: 'sub_1' },
+      })
+    ).toEqual({
+      id: 'evt_1',
+      event: 'PAYMENT_CONFIRMED',
+      payment: { id: 'pay_1', subscription: 'sub_1', dueDate: '2026-10-20' },
+      subscription: { id: 'sub_1' },
+    })
+  })
+
+  it('descarta objetos, números e textos vazios no lugar de texto', () => {
+    expect(
+      lerEventoAsaas({ id: { not: null }, event: 7, payment: { id: '', subscription: ['sub_1'], dueDate: {} }, subscription: { id: 1 } })
+    ).toEqual({
+      id: undefined,
+      event: undefined,
+      payment: { id: undefined, subscription: undefined, dueDate: undefined },
+      subscription: { id: undefined },
+    })
+  })
+
+  it('corpo que não é objeto vira evento vazio; payment/subscription em array são ignorados', () => {
+    for (const corpo of [null, 'texto', 42, ['evt']]) {
+      expect(lerEventoAsaas(corpo)).toEqual({ id: undefined, event: undefined, payment: undefined, subscription: undefined })
+    }
+    for (const [payment, subscription] of [[[{ id: 'p' }], []], ['pay_1', 'sub_1'], [null, null]]) {
+      const evento = lerEventoAsaas({ event: 'X', payment, subscription })
+      expect(evento.payment).toBeUndefined()
+      expect(evento.subscription).toBeUndefined()
+    }
+  })
+})
 
 describe('asaasEventKey (idempotência do webhook Asaas)', () => {
   it('usa o id do evento enviado pelo Asaas', () => {
@@ -52,7 +91,7 @@ const subVet = (over: Record<string, unknown> = {}) => ({
 
 const evento = (event: string, extra: Record<string, unknown>) => ({ id: `evt_${event}`, event, ...extra })
 const pagamento = (event: string) => evento(event, { payment: { id: 'pay_1', subscription: 'sub_asaas_1', dueDate: '2026-10-09' } })
-const statusGravado = () => prismaMock.subscription.update.mock.calls.map((c: any[]) => c[0].data.status)
+const statusGravado = () => prismaMock.subscription.update.mock.calls.map((c) => c[0].data.status)
 
 beforeEach(() => {
   vi.clearAllMocks()

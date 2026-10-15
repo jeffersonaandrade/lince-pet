@@ -1,4 +1,5 @@
 import { api } from "@/hook/api";
+import { mensagemDaApi } from "@/lib/erros";
 
 // Create a function to get API instance
 
@@ -11,6 +12,9 @@ export interface AgendamentoData {
   pet_id: string; // novo: pet que irá à consulta
   observacoes?: string;
   clinica_id?: string;
+  /** Endereço de atendimento do veterinário (presencial); define local e preço. */
+  endereco_id?: string;
+  especialidade?: string;
   encaminhamento_id?: string;
 }
 
@@ -33,33 +37,57 @@ export interface AgendamentoResponse {
   };
 }
 
-export interface ListaAgendamentosResponse {
-  agendamentos: {
+/** Agendamento como `GET /agendamentos` devolve ao tutor (consulta com vet ou pedido de prestador). */
+export interface AgendamentoTutor {
+  id: string;
+  /** `DD/MM/YYYY`. */
+  data_consulta: string;
+  horario_consulta: string;
+  tipo_consulta: string;
+  status: string;
+  preco_consulta: number | string | null;
+  observacoes?: string | null;
+  local_nome?: string | null;
+  local_endereco?: string | null;
+  pode_cancelar: boolean;
+  ja_passou: boolean;
+  avaliado?: boolean;
+  /** Código que o tutor informa ao vet para iniciar a consulta (só em consultas futuras não iniciadas). */
+  codigo_inicio?: string | null;
+  clinica_id?: string | null;
+  clinica_foto?: string | null;
+  veterinario: {
     id: string;
-    data_consulta: string;
-    horario_consulta: string;
-    tipo_consulta: string;
-    status: string;
-    preco_consulta: number;
-    observacoes?: string;
-    pode_cancelar: boolean;
-    ja_passou: boolean;
-    avaliado?: boolean;
-    /** Código que o tutor informa ao vet para iniciar a consulta (só em consultas futuras não iniciadas). */
-    codigo_inicio?: string | null;
-    veterinario: {
-      id: string;
-      nome: string;
-      crmv: string;
-      bio?: string;
-      foto_url?: string;
-    };
+    nome: string;
+    sobrenome?: string | null;
+    crmv: string;
+    bio?: string | null;
+    fotoUrl?: string | null;
+  } | null;
+  prestador?: {
+    id: string;
+    nome: string;
+    sobrenome?: string | null;
+    fotoUrl?: string | null;
+    tipo_servico: string;
+    modalidade: "duracao" | "periodo";
+    servico_id?: string | null;
+    servico?: string | null;
+    periodo?: string | null;
+  } | null;
+  pet?: {
+    id?: string;
+    nome: string;
+    especie?: string | null;
+    raca?: string | null;
+    porte?: string | null;
+    foto_url?: string | null;
+  } | null;
+  created_at: string;
+}
 
-    pet?: {
-      nome: string;
-    };
-    created_at: string;
-  }[];
+export interface ListaAgendamentosResponse {
+  agendamentos: AgendamentoTutor[];
 }
 
 export interface DisponibilidadeResponse {
@@ -84,17 +112,7 @@ export class AgendamentosService {
     dadosAgendamento: AgendamentoData
   ): Promise<AgendamentoResponse> {
     try {
-      console.log(
-        "[AgendamentosService] Criando agendamento:",
-        dadosAgendamento
-      );
-
       const response = await api.post("/agendamentos", dadosAgendamento);
-
-      console.log(
-        "[AgendamentosService] Agendamento criado com sucesso:",
-        response.data
-      );
 
       // A API retorna { message: string, agendamento: AgendamentoResponse }
       return response.data.agendamento;
@@ -120,7 +138,7 @@ export class AgendamentosService {
         );
       }
 
-      throw new Error("Erro interno. Tente novamente em alguns instantes.");
+      throw new Error(mensagemDaApi(error) || "Erro interno. Tente novamente em alguns instantes.");
     }
   }
 
@@ -229,7 +247,10 @@ export class AgendamentosService {
     agendamentoId: string,
     novaData: string,
     novoHorario: string
-  ): Promise<any> {
+  ): Promise<{
+    message: string;
+    agendamento: { id: string; data_consulta: string; horario_consulta: string; status: string };
+  }> {
     try {
       console.log(
         "[AgendamentosService] Reagendando agendamento:",

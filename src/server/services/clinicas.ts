@@ -22,6 +22,10 @@ export function serializeEndereco<T extends Partial<VeterinarioEndereco>>(endere
 
 export const serializeRelatedUser = (user: Partial<User> | null | undefined) => (user ? serializeUser(user) : null)
 
+/** Usuário exibido em página pública: só nome e foto (sem e-mail, celular ou endereço). */
+export const usuarioPublico = (user: Partial<User> | null | undefined) =>
+  user ? { id: user.id, nome: user.nome, sobrenome: user.sobrenome, profilePic: user.profilePic } : null
+
 /** Preload de `especialidades` (pivot polimórfica especialidade_relacionamentos). */
 export async function especialidadesPorEntidade(ids: string[], tipo: 'clinica' | 'veterinario') {
   const map = new Map<string, Especialidade[]>()

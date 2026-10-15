@@ -6,14 +6,20 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Evita que erros de ESLint bloqueiem o build de produção
-  // (útil enquanto existem regras como no-explicit-any pendentes em arquivos não relacionados)
+  // ESLint também bloqueia o build: o repositório está sem erros de lint.
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   images: {
     unoptimized: true,
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        port: "",
+        pathname: "/storage/v1/object/public/**",
+      },
+      // Fotos antigas (AWS/CloudFront): remover quando o inventário não tiver mais URLs da AWS.
       {
         protocol: "https",
         hostname: "**.amazonaws.com",

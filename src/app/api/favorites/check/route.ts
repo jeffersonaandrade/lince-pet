@@ -8,7 +8,8 @@ export const GET = route(async (req) => {
   const tutor = await prisma.tutor.findFirst({ where: { userId: user.id } })
   if (!tutor) return notFound({ message: 'Tutor not found' })
 
-  const { veterinarioId, clinicaId } = request.qs()
+  const veterinarioId = request.text('veterinarioId')
+  const clinicaId = request.text('clinicaId')
   if (!veterinarioId && !clinicaId) {
     return badRequest({ message: 'Provide veterinarioId or clinicaId' })
   }

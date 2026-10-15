@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { api, API_BASE_URL } from "@/hook/api";
+import { mensagemDaApi } from "@/lib/erros";
 import styles from "./social.module.css";
 
 function SocialSignupContent() {
@@ -45,12 +46,9 @@ function SocialSignupContent() {
       // Redirect to Google Auth to login automatically with the new account
       window.location.href = `${API_BASE_URL}/auth/google/redirect`;
 
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
-      setError(
-        err.response?.data?.message || 
-        (err.response?.data?.errors ? JSON.stringify(err.response?.data?.errors) : "Erro ao criar conta.")
-      );
+      setError(mensagemDaApi(err) || "Erro ao criar conta.");
       setLoading(false);
     }
   };

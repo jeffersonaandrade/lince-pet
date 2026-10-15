@@ -70,13 +70,13 @@ export const PUT = route(async (req) => {
       await syncEspecialidadesVeterinario(veterinario.id, especialidades)
     }
 
-    if (endereco && typeof endereco === 'object') {
+    if (endereco && typeof endereco === 'object' && !Array.isArray(endereco)) {
       const primaryAddress = await prisma.veterinarioEndereco.findFirst({
         where: { veterinarioId: veterinario.id, isPrimary: 1 },
       })
 
       if (primaryAddress) {
-        const dirty = dirtyFields(primaryAddress, mergeEndereco(endereco))
+        const dirty = dirtyFields(primaryAddress, mergeEndereco(endereco as Record<string, unknown>))
         if (Object.keys(dirty).length) {
           await prisma.veterinarioEndereco.update({
             where: { id: primaryAddress.id },
