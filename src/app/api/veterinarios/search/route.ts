@@ -3,7 +3,10 @@ import { searchVeterinarios } from '@/server/services/veterinarios'
 
 export const GET = route(async (req) => {
   try {
-    const { search, cidade, estado, especialidade, plano } = (await ApiRequest.from(req)).qs()
+    const request = await ApiRequest.from(req)
+    const [search, cidade, estado, especialidade, plano] = ['search', 'cidade', 'estado', 'especialidade', 'plano'].map(
+      (campo) => request.text(campo)
+    )
     const veterinarios = await searchVeterinarios({ search, cidade, estado, especialidade, plano })
     return json({ veterinarios })
   } catch (error) {

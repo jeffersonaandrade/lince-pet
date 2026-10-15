@@ -8,8 +8,7 @@ export const GET = route(async (req) => {
   const user = await requireUser(apiReq, ['veterinario'])
   if (!user.veterinario) return notFound({ message: 'Veterinário não encontrado' })
 
-  const { de, ate } = apiReq.qs()
-  const bloqueios = await listarBloqueios(user.veterinario.id, de, ate)
+  const bloqueios = await listarBloqueios(user.veterinario.id, apiReq.text('de'), apiReq.text('ate'))
   return ok({ data: bloqueios.map(serializeBloqueio) })
 })
 

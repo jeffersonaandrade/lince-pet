@@ -48,7 +48,7 @@ describe('onboarding passo 4: foto do local', () => {
   })
 
   it('local sem foto continua null', async () => {
-    const { fotoUrl: _, ...semFoto } = local
+    const semFoto = { ...local, fotoUrl: undefined }
     const payload = await step4Validator.validate({ visitTypes: { presencial: true, online: false }, locations: [semFoto] })
     const user = { veterinario: { id: 'vet-1', crmv: '123', genero: 'feminino', onboardingStep: 4 } }
     await processStep4(user as never, payload)

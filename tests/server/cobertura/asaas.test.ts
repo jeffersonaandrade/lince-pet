@@ -4,7 +4,7 @@ const http = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn(), put: vi.fn(), dele
 const createMock = vi.hoisted(() => vi.fn(() => http))
 vi.mock('axios', () => ({ default: { create: createMock } }))
 
-import { AsaasService, getCheckoutUrl, getPendingInvoiceUrl } from '@/server/services/asaas'
+import { AsaasService, getCheckoutUrl, getPendingInvoiceUrl, respostaDoAsaas } from '@/server/services/asaas'
 import AsaasDefault from '@/server/services/asaas'
 import { dataLocal } from '@/server/services/assinatura-regras'
 
@@ -35,7 +35,22 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-const configDoCreate = () => (createMock.mock.calls.at(-1) as unknown as [any])[0]
+const configDoCreate = () => (createMock.mock.calls.at(-1) as unknown as [{ baseURL: string; headers: Record<string, string> }])[0]
+
+describe('respostaDoAsaas (o que vai para o log)', () => {
+  it('erro HTTP com corpo: devolve o corpo', () => {
+    expect(respostaDoAsaas({ response: { status: 400, data: { errors: ['cpf'] } } })).toEqual({ errors: ['cpf'] })
+  })
+
+  it('sem corpo ou sem resposta: devolve o próprio erro', () => {
+    const semCorpo = { response: { status: 500, data: '' } }
+    const rede = new Error('ECONNRESET')
+    expect(respostaDoAsaas(semCorpo)).toBe(semCorpo)
+    expect(respostaDoAsaas(rede)).toBe(rede)
+    expect(respostaDoAsaas('falhou')).toBe('falhou')
+    expect(respostaDoAsaas(null)).toBeNull()
+  })
+})
 
 describe('AsaasService: configuração', () => {
   it('padrão sandbox com a chave de sandbox e timeout de 15s', () => {
@@ -252,14 +267,11 @@ describe('AsaasService: clientes', () => {
     expect(bodies[3]).toMatchObject({ name: 'Clínica Sem Nome', mobilePhone: '81900000000' })
   })
 
-  it('clínica: erro HTTP ao criar é logado em JSON e propagado', async () => {
+  it('clínica: erro HTTP ao criar é logado com status e corpo e propagado', async () => {
     http.get.mockResolvedValueOnce(lista()).mockResolvedValueOnce(lista())
     http.post.mockRejectedValueOnce(Object.assign(new Error('400'), { response: { status: 400, data: 'cnpj' } }))
     await expect(new AsaasService().ensureCustomerForClinica(USER, CLINICA)).rejects.toThrow('400')
-    expect(console.error).toHaveBeenCalledWith(
-      '[AsaasService.ensureCustomerForClinica] Error:',
-      JSON.stringify({ status: 400, data: 'cnpj' }, null, 2)
-    )
+    expect(console.error).toHaveBeenCalledWith('[AsaasService.ensureCustomerForClinica] Error:', { status: 400, data: 'cnpj' })
   })
 
   it('clínica: erro com cliente existente não loga', async () => {

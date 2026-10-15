@@ -2,15 +2,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { DateTime } from 'luxon'
 
 const prismaMock = vi.hoisted(() => {
-  const m: Record<string, any> = {
+  const m = {
     prestador: { findFirst: vi.fn() },
     pet: { findFirst: vi.fn() },
     servicoOferecido: { findFirst: vi.fn() },
     bloqueioAgenda: { findMany: vi.fn() },
     agendamento: { findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
   }
-  m.$transaction = vi.fn()
-  return m
+  return Object.assign(m, { $transaction: vi.fn() })
 })
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 

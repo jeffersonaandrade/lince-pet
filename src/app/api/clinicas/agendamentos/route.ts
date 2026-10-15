@@ -12,7 +12,9 @@ export const GET = route(async (req) => {
   }
 
   try {
-    const { data_inicio, data_fim, status } = request.qs()
+    const data_inicio = request.text('data_inicio')
+    const data_fim = request.text('data_fim')
+    const { status } = request.qs()
     const where: Prisma.AgendamentoWhereInput = { clinicaId: currentUser.clinica.id }
     const dataConsulta: Prisma.StringNullableFilter = {}
 
@@ -20,11 +22,8 @@ export const GET = route(async (req) => {
     if (data_fim) dataConsulta.lte = data_fim
     if (data_inicio || data_fim) where.dataConsulta = dataConsulta
 
-    if (status) {
-      const statuses: string[] =
-        typeof status === 'string' ? status.split(',') : Array.isArray(status) ? status : [status]
-      where.status = { in: statuses }
-    }
+    const statuses = (Array.isArray(status) ? status : [status]).flatMap((s) => (typeof s === 'string' && s ? s.split(',') : []))
+    if (statuses.length) where.status = { in: statuses }
 
     const agendamentos = await prisma.agendamento.findMany({
       where,

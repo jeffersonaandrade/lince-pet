@@ -1,8 +1,9 @@
 import 'server-only'
+import type { Prisma } from '@prisma/client'
 import { prisma } from '../db'
 import { creating } from '../lucid'
 
-async function create(userId: string, type: string, title: string, message: string, actionData: Record<string, any> | null) {
+async function create(userId: string, type: string, title: string, message: string, actionData: Prisma.InputJsonObject | null) {
   await prisma.notification.create({
     data: creating({ userId, type, title, message, isRead: 0, actionData: actionData ?? undefined }),
   })
@@ -86,6 +87,6 @@ export const inAppNotifications = {
     type: string
     title: string
     message: string
-    actionData?: Record<string, any> | null
+    actionData?: Prisma.InputJsonObject | null
   }) => create(p.userId, p.type, p.title, p.message, p.actionData || null),
 }

@@ -120,9 +120,7 @@ const includePedido = {
   servicoOferecido: true,
 } satisfies Prisma.AgendamentoInclude
 
-const buscarPedido = (id: string) => prisma.agendamento.findUnique({ where: { id }, include: includePedido })
-
-export type Pedido = NonNullable<Awaited<ReturnType<typeof buscarPedido>>>
+export type Pedido = Awaited<ReturnType<typeof prisma.agendamento.update<{ where: { id: string }; data: object; include: typeof includePedido }>>>
 /** User como sai do client global (sem senha nem tokens do Google). */
 type Usuario = Omit<User, 'password' | 'googleAccessToken' | 'googleRefreshToken' | 'googleTokenExpiresAt'>
 

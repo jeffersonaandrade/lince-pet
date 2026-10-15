@@ -9,13 +9,13 @@ export const GET = route<{ veterinario_id: string }>(async (req, { veterinario_i
   const apiReq = await ApiRequest.from(req)
   await requireUser(apiReq)
   try {
-    const { data } = apiReq.qs()
+    const data = apiReq.text('data')
+    const dataSql = data ? DateTime.fromISO(data).toSQLDate() : null
 
-    if (!data) {
+    if (!data || !dataSql) {
       return badRequest({ message: 'Parâmetro data é obrigatório (formato: YYYY-MM-DD)' })
     }
 
-    const dataSql = DateTime.fromISO(data).toSQLDate()
     const [agendamentosExistentes, bloqueios] = await Promise.all([
       prisma.agendamento.findMany({
         where: {
@@ -25,10 +25,10 @@ export const GET = route<{ veterinario_id: string }>(async (req, { veterinario_i
         },
         select: { horarioConsulta: true },
       }),
-      dataSql ? bloqueiosDoPeriodo(veterinario_id, dataSql) : [],
+      bloqueiosDoPeriodo(veterinario_id, dataSql),
     ])
 
-    const horariosBloqueados = dataSql ? horariosBloqueadosNaData(bloqueios, dataSql) : []
+    const horariosBloqueados = horariosBloqueadosNaData(bloqueios, dataSql)
     const horariosOcupados = [
       ...new Set([...agendamentosExistentes.map((a) => a.horarioConsulta), ...horariosBloqueados]),
     ]
@@ -37,7 +37,7 @@ export const GET = route<{ veterinario_id: string }>(async (req, { veterinario_i
       data,
       horarios_ocupados: horariosOcupados,
       horarios_bloqueados: horariosBloqueados,
-      dia_bloqueado: dataSql ? diaInteiroBloqueado(bloqueios, dataSql) : false,
+      dia_bloqueado: diaInteiroBloqueado(bloqueios, dataSql),
     })
   } catch (error) {
     console.error('Erro ao verificar disponibilidade:', error)

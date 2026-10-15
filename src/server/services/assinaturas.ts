@@ -3,7 +3,7 @@ import { prisma } from '../db'
 import { HttpError } from '../http'
 import { creating, updating } from '../lucid'
 import type { CurrentUser } from '../auth/session'
-import { getPendingInvoiceUrl, type AsaasService } from './asaas'
+import { getPendingInvoiceUrl, respostaDoAsaas, type AsaasService, type AsaasSubscription } from './asaas'
 import {
   type Assinante,
   assinanteDe,
@@ -60,14 +60,14 @@ async function assinarNoAsaas(user: CurrentUser, a: Assinante, plan: Plano, asaa
   let customer = customerId
   if (!customer) {
     try {
-      customer = (await garantirClienteAsaas(service, user, a)).id as string
-    } catch (e: any) {
-      console.error('[Assinaturas] Asaas recusou o cliente:', e?.response?.data || e)
+      customer = (await garantirClienteAsaas(service, user, a)).id
+    } catch (e) {
+      console.error('[Assinaturas] Asaas recusou o cliente:', respostaDoAsaas(e))
       throw erro(400, 'Não foi possível cadastrar seus dados no Asaas. Confira CPF/CNPJ, e-mail e celular do perfil.')
     }
   }
 
-  let asaasSub: any
+  let asaasSub: AsaasSubscription
   try {
     asaasSub = await service.createSubscription({
       customerId: customer!,
@@ -78,15 +78,15 @@ async function assinarNoAsaas(user: CurrentUser, a: Assinante, plan: Plano, asaa
       description: `Assinatura Lince Pet ${plan.name}`,
       externalReference: referenciaExterna(a),
     })
-  } catch (e: any) {
-    console.error('[Assinaturas] Asaas recusou a assinatura:', e?.response?.data || e)
+  } catch (e) {
+    console.error('[Assinaturas] Asaas recusou a assinatura:', respostaDoAsaas(e))
     throw erro(400, 'O Asaas recusou a criação da assinatura. Tente novamente em instantes.')
   }
 
   const sub = creating({
     ...donoDaAssinatura(a),
     planId: plan.id,
-    asaasSubscriptionId: asaasSub.id as string,
+    asaasSubscriptionId: asaasSub.id,
     asaasCustomerId: customer!,
     status: teste ? 'active' : 'pending',
     billingType: 'UNDEFINED',

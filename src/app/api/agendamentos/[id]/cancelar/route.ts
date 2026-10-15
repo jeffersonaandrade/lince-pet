@@ -30,8 +30,10 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
     return badRequest({ message: 'Usuário não é um tutor válido' })
   }
 
+  const motivoInformado = apiReq.text('motivo')?.trim() || null
+
   if (await ehPedidoDePrestador(id, tutor.id)) {
-    await cancelarPedidoPeloTutor(tutor.id, id, apiReq.body?.motivo ? String(apiReq.body.motivo) : null)
+    await cancelarPedidoPeloTutor(tutor.id, id, motivoInformado)
     return ok({ message: 'Pedido cancelado com sucesso' })
   }
 
@@ -47,13 +49,13 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         return badRequest({ message: 'Este agendamento não pode ser cancelado' })
       }
 
-      const { motivo } = apiReq.body
+      const motivo = motivoInformado
 
       const atualizado = await tx.agendamento.update({
         where: { id: agendamento.id },
         data: updating({
           status: 'cancelado',
-          motivoCancelamento: String(motivo || 'Cancelado pelo tutor'),
+          motivoCancelamento: motivo || 'Cancelado pelo tutor',
           canceladoEm: prepareDateTimeString(DateTime.now()),
         }),
       })

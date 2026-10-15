@@ -23,6 +23,9 @@ const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const GOOGLE_REVOKE_URL = 'https://oauth2.googleapis.com/revoke'
 const GOOGLE_CALENDAR_API_URL = 'https://www.googleapis.com/calendar/v3/calendars/primary/events'
 
+type ErroGoogle = { message?: string; response?: { status?: number; data?: { error?: unknown } } }
+const erroGoogle = (error: unknown): ErroGoogle => (error && typeof error === 'object' ? error : {}) as ErroGoogle
+
 /** O client global omite os tokens do Google; aqui eles são necessários. */
 const WITH_TOKENS = { googleAccessToken: false, googleRefreshToken: false, googleTokenExpiresAt: false } as const
 
@@ -105,11 +108,9 @@ async function exchangeCodeForTokens(code: string, userId: string): Promise<Cale
 
     console.log(`[Google Calendar] Autorização do usuário ${userId} salva com sucesso.`)
     return user
-  } catch (error: any) {
-    console.error(
-      '[Google Calendar] Erro ao trocar código de autorização pelos tokens:',
-      error.response?.data || error.message
-    )
+  } catch (error) {
+    const e = erroGoogle(error)
+    console.error('[Google Calendar] Erro ao trocar código de autorização pelos tokens:', e.response?.data || e.message)
     throw new Error('Falha na autenticação com o Google Calendar.')
   }
 }
@@ -146,14 +147,12 @@ async function refreshAccessToken(user: CalendarUser): Promise<string> {
 
     console.log(`[Google Calendar] Token do usuário ${user.id} renovado com sucesso.`)
     return access_token
-  } catch (error: any) {
-    console.error(
-      `[Google Calendar] Erro ao renovar token para o usuário ${user.id}:`,
-      error.response?.data || error.message
-    )
+  } catch (error) {
+    const e = erroGoogle(error)
+    console.error(`[Google Calendar] Erro ao renovar token para o usuário ${user.id}:`, e.response?.data || e.message)
 
-    const errResponse = error.response?.data?.error || ''
-    if (errResponse === 'invalid_grant' || error.response?.status === 400 || error.response?.status === 401) {
+    const status = e.response?.status
+    if (e.response?.data?.error === 'invalid_grant' || status === 400 || status === 401) {
       console.warn(`[Google Calendar] Acesso revogado pelo usuário ${user.id}. Desativando integração...`)
       await saveUser(user, TOKENS_LIMPOS)
     }

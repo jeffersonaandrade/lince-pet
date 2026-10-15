@@ -20,6 +20,9 @@ const fromAddress = () => `Lince Pet <${env('EMAIL_FROM') || 'noreply@lincepet.c
 
 const generateCode = () => randomInt(100000, 999999).toString()
 
+const respostaDoProvedor = (error: unknown) =>
+  error && typeof error === 'object' ? (error as { response?: unknown }).response : undefined
+
 function getLogoPath() {
   const envPath = process.env.EMAIL_LOGO_PATH
   if (envPath && fs.existsSync(envPath)) return envPath
@@ -108,12 +111,13 @@ async function sendAppointmentConfirmation(
     console.log(`✅ [NotificationService] Email de confirmação enviado para ${email}`)
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error) {
     console.error('❌ [NotificationService] Erro crítico ao enviar email de confirmação:', error)
-    if (error.response) {
+    const response = respostaDoProvedor(error)
+    if (response) {
       console.error(
         '❌ [NotificationService] Detalhes da resposta do provedor:',
-        JSON.stringify(error.response, null, 2)
+        JSON.stringify(response, null, 2)
       )
     }
     return { success: false, error }
@@ -142,10 +146,11 @@ async function sendAppointmentCancellation(
     })
     console.log(`✅ [NotificationService] mail.send concluído para ${email}`)
     return { success: true }
-  } catch (error: any) {
+  } catch (error) {
     console.error('❌ [NotificationService] Erro ao enviar email de cancelamento:', error)
-    if (error.response) {
-      console.error('❌ [Resend/SMTP Response]:', error.response)
+    const response = respostaDoProvedor(error)
+    if (response) {
+      console.error('❌ [Resend/SMTP Response]:', response)
     }
     return { success: false, error }
   }

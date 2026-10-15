@@ -31,7 +31,8 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
     return ok({ message: 'Pedido remarcado. Aguarde o profissional aceitar novamente.', agendamento: pedido })
   }
 
-  const { data_consulta, horario_consulta } = apiReq.body
+  const data_consulta = apiReq.text('data_consulta')
+  const horario_consulta = apiReq.text('horario_consulta')
 
   if (!data_consulta || !horario_consulta) {
     return badRequest({ message: 'Campos obrigatórios: data_consulta e horario_consulta' })
@@ -40,11 +41,14 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
   const dataConsultaObj = DateTime.fromISO(data_consulta)
   const hoje = DateTime.now().startOf('day')
 
+  if (!dataConsultaObj.isValid) {
+    return badRequest({ message: 'Data inválida (formato: YYYY-MM-DD)' })
+  }
   if (dataConsultaObj < hoje) {
     return badRequest({ message: 'Não é possível reagendar consultas para datas passadas' })
   }
 
-  const horario = String(horario_consulta)
+  const horario = horario_consulta
 
   try {
     const result = await prisma.$transaction(async (tx) => {

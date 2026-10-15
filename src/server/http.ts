@@ -15,7 +15,7 @@ export class HttpError extends Error {
     public body: unknown,
     public options: { clearAuthCookie?: boolean } = {}
   ) {
-    super(typeof body === 'object' && body && 'message' in body ? String((body as any).message) : `HTTP ${status}`)
+    super(typeof body === 'object' && body && 'message' in body ? String(body.message) : `HTTP ${status}`)
   }
 }
 
@@ -47,13 +47,13 @@ export function handleError(error: unknown) {
   }
 
   if (error instanceof vineErrors.E_VALIDATION_ERROR) {
-    const messages = (error as any).messages as Array<{ message: string }>
+    const messages = error.messages as Array<{ message: string }> | undefined
     if (messages?.length) return json({ status: 422, message: messages[0].message }, 422)
   }
 
   if (error && typeof error === 'object') {
-    const err = error as any
-    if (err.code === 'E_VALIDATION_ERROR' && err.messages?.length > 0) {
+    const err = error as { code?: unknown; messages?: Array<{ message: string }>; status?: unknown; message?: unknown }
+    if (err.code === 'E_VALIDATION_ERROR' && err.messages?.length) {
       return json({ status: 422, message: err.messages[0].message }, 422)
     }
     if (typeof err.status === 'number' && 'message' in err) {
@@ -163,32 +163,42 @@ function convertEmptyStrings(value: unknown): unknown {
 }
 
 /** Monta objeto a partir de chaves estilo `campo[0][sub]` (como o bodyparser do Adonis). */
-function setDeep(target: Record<string, any>, key: string, value: unknown) {
+type Campos = Record<string, unknown>
+
+function setDeep(target: Campos, key: string, value: unknown) {
   const path = key.replace(/\]/g, '').split('[').filter((p) => p !== '')
-  let node: any = target
+  let node = target
   path.forEach((part, i) => {
-    const last = i === path.length - 1
-    if (last) {
-      if (node[part] === undefined) node[part] = value
-      else if (Array.isArray(node[part])) node[part].push(value)
-      else node[part] = [node[part], value]
+    const atual = node[part]
+    if (i === path.length - 1) {
+      if (atual === undefined) node[part] = value
+      else if (Array.isArray(atual)) atual.push(value)
+      else node[part] = [atual, value]
       return
     }
-    if (node[part] === undefined) node[part] = /^\d+$/.test(path[i + 1]) ? [] : {}
-    node = node[part]
+    if (atual === undefined) node[part] = /^\d+$/.test(path[i + 1]) ? [] : {}
+    // Listas também são indexadas por chave numérica em texto.
+    node = node[part] as Campos
   })
+}
+
+/** Texto vindo do cliente: número vira texto; objeto, lista, booleano e nulo viram `undefined`. */
+export function texto(value: unknown): string | undefined {
+  if (typeof value === 'string') return value
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  return undefined
 }
 
 export class ApiRequest {
   private constructor(
     public raw: NextRequest,
-    public body: Record<string, any>,
+    public body: Campos,
     private files: Map<string, File>
   ) {}
 
   static async from(req: NextRequest) {
     const method = req.method.toUpperCase()
-    let body: Record<string, any> = {}
+    let body: Campos = {}
     const files = new Map<string, File>()
 
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
@@ -204,30 +214,35 @@ export class ApiRequest {
         }
       } else if (type.includes('json')) {
         const text = await req.text()
-        body = text ? (convertEmptyStrings(JSON.parse(text)) as Record<string, any>) : {}
+        body = text ? (convertEmptyStrings(JSON.parse(text)) as Campos) : {}
       }
     }
     return new ApiRequest(req, body ?? {}, files)
   }
 
-  qs(): Record<string, any> {
-    const out: Record<string, any> = {}
+  qs(): Campos {
+    const out: Campos = {}
     for (const [key, value] of this.raw.nextUrl.searchParams.entries()) setDeep(out, key, value)
     return out
   }
 
-  all(): Record<string, any> {
+  all(): Campos {
     return { ...this.qs(), ...this.body }
   }
 
-  input<T = any>(key: string, defaultValue?: T): T {
+  input<T = unknown>(key: string, defaultValue?: T): T {
     const value = this.all()[key]
     return (value === undefined ? defaultValue : value) as T
   }
 
-  only<K extends string>(keys: K[]): Record<K, any> {
+  /** Campo de texto (query ou corpo); qualquer outro tipo vira `undefined`. */
+  text(key: string): string | undefined {
+    return texto(this.all()[key])
+  }
+
+  only<K extends string>(keys: K[]): Record<K, unknown> {
     const all = this.all()
-    return Object.fromEntries(keys.filter((k) => k in all).map((k) => [k, all[k]])) as Record<K, any>
+    return Object.fromEntries(keys.filter((k) => k in all).map((k) => [k, all[k]])) as Record<K, unknown>
   }
 
   file(name: string, options?: FileOptions): UploadedFile | null {

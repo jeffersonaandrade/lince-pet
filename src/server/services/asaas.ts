@@ -22,6 +22,35 @@ export type CreateSubscriptionInput = {
 
 type CustomerUser = Pick<User, 'nome' | 'sobrenome' | 'email' | 'celular'>
 
+/** Campos do cliente do Asaas usados aqui (`GET/POST /customers`). */
+export type AsaasCustomer = {
+  id: string
+  name?: string | null
+  email?: string | null
+  mobilePhone?: string | null
+  cpfCnpj?: string | null
+}
+
+/** Campos da cobrança do Asaas usados aqui (`GET /payments`). */
+export type AsaasPayment = { id: string; status: string; dueDate: string; invoiceUrl?: string | null }
+
+/** Campos da assinatura do Asaas usados aqui (`POST /subscriptions`). */
+export type AsaasSubscription = { id: string; status?: string }
+
+type Lista<T> = { data?: T[] }
+
+type ErroHttp = { response?: { status?: number; data?: unknown } }
+
+const respostaDoErro = (error: unknown) => (error as ErroHttp | null | undefined)?.response
+
+/** Corpo da resposta de erro do Asaas, para log; sem resposta HTTP, o próprio erro. */
+export const respostaDoAsaas = (error: unknown) => respostaDoErro(error)?.data || error
+
+function logarErroDoAsaas(contexto: string, error: unknown) {
+  const response = respostaDoErro(error)
+  if (response) console.error(`[AsaasService.${contexto}] Error:`, { status: response.status, data: response.data })
+}
+
 const normalize = (v?: string) => {
   if (!v) return undefined
   let s = v.trim().replace(/^['"]|['"]$/g, '')
@@ -59,10 +88,10 @@ export class AsaasService {
   }
 
   private async upsertCustomer(
-    existing: any,
+    existing: AsaasCustomer | undefined,
     desired: { name: string; email?: string | null; mobilePhone?: string; cpfCnpj?: string },
     externalReference: string
-  ) {
+  ): Promise<AsaasCustomer> {
     if (existing) {
       const needsUpdate =
         (!existing.cpfCnpj && !!desired.cpfCnpj) ||
@@ -77,18 +106,18 @@ export class AsaasService {
           mobilePhone: desired.mobilePhone || existing.mobilePhone,
           cpfCnpj: desired.cpfCnpj || existing.cpfCnpj,
         })
-        const refreshed = await this.http.get(`/customers/${existing.id}`)
+        const refreshed = await this.http.get<AsaasCustomer>(`/customers/${existing.id}`)
         return refreshed.data
       }
       return existing
     }
 
-    const res = await this.http.post('/customers', { ...desired, externalReference })
+    const res = await this.http.post<AsaasCustomer>('/customers', { ...desired, externalReference })
     return res.data
   }
 
   private async findCustomer(externalReference: string, email?: string | null) {
-    let found = await this.http.get('/customers', { params: { externalReference } })
+    let found = await this.http.get<Lista<AsaasCustomer>>('/customers', { params: { externalReference } })
     let existing = found.data?.data?.[0]
     if (!existing && email) {
       found = await this.http.get('/customers', { params: { email } })
@@ -111,13 +140,8 @@ export class AsaasService {
         },
         externalReference
       )
-    } catch (error: any) {
-      if (!existing && error.response) {
-        console.error('[AsaasService.ensureCustomerForVeterinario] Error:', {
-          status: error.response.status,
-          data: error.response.data,
-        })
-      }
+    } catch (error) {
+      if (!existing) logarErroDoAsaas('ensureCustomerForVeterinario', error)
       throw error
     }
   }
@@ -141,13 +165,8 @@ export class AsaasService {
         },
         externalReference
       )
-    } catch (error: any) {
-      if (!existing && error.response) {
-        console.error(
-          '[AsaasService.ensureCustomerForClinica] Error:',
-          JSON.stringify({ status: error.response.status, data: error.response.data }, null, 2)
-        )
-      }
+    } catch (error) {
+      if (!existing) logarErroDoAsaas('ensureCustomerForClinica', error)
       throw error
     }
   }
@@ -169,7 +188,7 @@ export class AsaasService {
 
   async ensureCustomerForTutor(user: CustomerUser, tutor: Pick<Tutor, 'id' | 'cpf'>) {
     const externalReference = `tutor:${tutor.id}`
-    const found = await this.http.get('/customers', { params: { externalReference } })
+    const found = await this.http.get<Lista<AsaasCustomer>>('/customers', { params: { externalReference } })
     return this.upsertCustomer(
       found.data?.data?.[0],
       {
@@ -184,7 +203,7 @@ export class AsaasService {
 
   /** `nextDueDate` é o vencimento da 1a fatura: fim do teste ou hoje (padrão). */
   async createSubscription(input: CreateSubscriptionInput) {
-    const payload: any = {
+    const payload = {
       customer: input.customerId,
       value: input.value,
       cycle: input.cycle || 'MONTHLY',
@@ -195,7 +214,7 @@ export class AsaasService {
       externalReference: input.externalReference || undefined,
     }
 
-    const res = await this.http.post('/subscriptions', payload)
+    const res = await this.http.post<AsaasSubscription>('/subscriptions', payload)
     return res.data
   }
 
@@ -205,7 +224,7 @@ export class AsaasService {
   }
 
   async getSubscriptionPayments(subscriptionId: string) {
-    const res = await this.http.get('/payments', { params: { subscription: subscriptionId } })
+    const res = await this.http.get<Lista<AsaasPayment>>('/payments', { params: { subscription: subscriptionId } })
     return res.data
   }
 
@@ -215,7 +234,7 @@ export class AsaasService {
   }
 
   async updateSubscription(subscriptionId: string, input: Partial<CreateSubscriptionInput>) {
-    const payload: any = {
+    const payload = {
       value: input.value,
       cycle: input.cycle,
       description: input.description,
@@ -233,7 +252,7 @@ export class AsaasService {
     externalReference?: string
     dueDate?: string // yyyy-mm-dd
   }) {
-    const payload: any = {
+    const payload = {
       customer: input.customerId,
       billingType: 'PIX',
       value: input.value,
@@ -255,8 +274,9 @@ export class AsaasService {
 /** URL da fatura mais recente pendente/vencida (ou a mais recente) da assinatura. */
 export async function getCheckoutUrl(service: AsaasService, asaasSubscriptionId: string): Promise<string | null> {
   const paymentsData = await service.getSubscriptionPayments(asaasSubscriptionId)
-  const payments: any[] = paymentsData?.data || []
-  payments.sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime())
+  const payments = (paymentsData?.data || []).toSorted(
+    (a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime()
+  )
   const target = payments.find((p) => p.status === 'PENDING' || p.status === 'OVERDUE') || payments[0]
   return target?.invoiceUrl || null
 }
@@ -264,7 +284,7 @@ export async function getCheckoutUrl(service: AsaasService, asaasSubscriptionId:
 /** URL da fatura em aberto (pendente ou vencida); null se não houver nada a pagar. */
 export async function getPendingInvoiceUrl(service: AsaasService, asaasSubscriptionId: string): Promise<string | null> {
   const paymentsData = await service.getSubscriptionPayments(asaasSubscriptionId)
-  const payments: any[] = paymentsData?.data || []
+  const payments = paymentsData?.data || []
   const abertas = payments
     .filter((p) => p.status === 'PENDING' || p.status === 'OVERDUE')
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())

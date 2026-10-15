@@ -9,7 +9,8 @@ import {
 } from '@/server/services/clinicas'
 
 export const GET = route(async (req) => {
-  const { search, cidade, estado, plano } = (await ApiRequest.from(req)).qs()
+  const request = await ApiRequest.from(req)
+  const [search, cidade, estado, plano] = ['search', 'cidade', 'estado', 'plano'].map((campo) => request.text(campo))
   const AND: Prisma.ClinicaWhereInput[] = []
 
   const like = (valor: string) => ({ contains: valor, mode: 'insensitive' as const })

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const prismaMock = vi.hoisted(() => {
-  const m: any = {
+  const m = {
     subscriptionPlan: { findUnique: vi.fn() },
     subscription: {
       findFirst: vi.fn(),
@@ -15,8 +15,7 @@ const prismaMock = vi.hoisted(() => {
     clinica: { update: vi.fn() },
     prestador: { update: vi.fn() },
   }
-  m.$transaction = vi.fn(async (fn: (tx: unknown) => unknown) => fn(m))
-  return m
+  return Object.assign(m, { $transaction: vi.fn(async (fn: (tx: unknown) => unknown) => fn(m)) })
 })
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 
