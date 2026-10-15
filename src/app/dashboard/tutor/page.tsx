@@ -648,37 +648,19 @@ export default function TutorDashboard() {
                 )}
                 {pets.map((p) => (
                   <div key={p.id} className={styles.petItem}>
-                    {(() => {
-                      const toCdnUrl = (url?: string | null) => {
-                        if (!url) return null;
-                        const cdn = process.env.NEXT_PUBLIC_CDN_BASE_URL;
-                        try {
-                          if (cdn && url.includes(".s3.")) {
-                            const u = new URL(url);
-                            const base = cdn.startsWith("http")
-                              ? cdn
-                              : `https://${cdn}`;
-                            return `${base.replace(/\/+$/, "")}${u.pathname}`;
-                          }
-                        } catch { }
-                        return url;
-                      };
-                      const finalUrl = toCdnUrl(p.foto_url);
-                      return finalUrl ? (
-                         
-                        <Image
-                          src={finalUrl}
-                          alt={p.nome}
-                          className={styles.uploaderPreview}
-                          width={100}
-                          height={100}
-                        />
-                      ) : (
-                        <div className={styles.petAvatar}>
-                          {p.nome?.charAt(0)?.toUpperCase()}
-                        </div>
-                      );
-                    })()}
+                    {p.foto_url ? (
+                      <Image
+                        src={p.foto_url}
+                        alt={p.nome}
+                        className={styles.uploaderPreview}
+                        width={100}
+                        height={100}
+                      />
+                    ) : (
+                      <div className={styles.petAvatar}>
+                        {p.nome?.charAt(0)?.toUpperCase()}
+                      </div>
+                    )}
                     <div className={styles.petInfo}>
                       <div className={styles.petName}>{p.nome}</div>
                       <div className={styles.petMeta}>

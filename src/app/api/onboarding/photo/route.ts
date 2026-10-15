@@ -1,8 +1,8 @@
-import { ApiRequest, badRequest, notFound, ok, route, serverError } from '@/server/http'
+import { ApiRequest, HttpError, badRequest, notFound, ok, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { prisma } from '@/server/db'
 import { updating } from '@/server/lucid'
-import { uploadVeterinarioPhoto } from '@/server/services/storage'
+import { confirmarUpload, uploadVeterinarioPhoto } from '@/server/services/storage'
 import { findVeterinarioByUser } from '@/server/services/veterinarios'
 
 const OPTIONS = { size: '5mb', extnames: ['jpg', 'jpeg', 'png', 'webp', 'gif'] }
@@ -38,24 +38,28 @@ export const POST = route(async (req) => {
       return notFound({ message: 'Veterinário não encontrado' })
     }
 
-    const result = await uploadVeterinarioPhoto({
+    const result = await uploadVeterinarioPhoto(veterinario.id, {
       buffer: await uploadedFile.buffer(),
       originalname: uploadedFile.clientName || 'photo.jpg',
       mimetype: uploadedFile.type || 'image/jpeg',
     })
 
-    if (veterinario.fotoUrl !== result.url) {
-      await prisma.veterinario.update({ where: { id: veterinario.id }, data: updating({ fotoUrl: result.url }) })
-    }
-    if (currentUser.profilePic !== result.url) {
-      await prisma.user.update({ where: { id: currentUser.id }, data: updating({ profilePic: result.url }) })
-    }
+    await confirmarUpload(
+      result,
+      () =>
+        prisma.$transaction([
+          prisma.veterinario.update({ where: { id: veterinario.id }, data: updating({ fotoUrl: result.url }) }),
+          prisma.user.update({ where: { id: currentUser.id }, data: updating({ profilePic: result.url }) }),
+        ]),
+      { anteriores: [veterinario.fotoUrl, currentUser.profilePic] }
+    )
 
     return ok({
       message: 'Foto adicionada ao perfil com sucesso',
       url: result.url,
     })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error('❌ [Onboarding Foto] Erro ao enviar foto:', error)
     return serverError({ message: 'Erro ao enviar foto' })
   }

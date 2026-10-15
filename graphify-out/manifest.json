@@ -6,20 +6,20 @@
     "semantic_hash": "3ac1de52e54ecc0795d6e55be484a11b"
   },
   "next.config.ts": {
-    "mtime": 1791508848.9505968,
-    "seen": 1791508919.5780375,
-    "ast_hash": "364e838bc832792bf6cb0e5aa1cade22",
+    "mtime": 1792096165.7796686,
+    "seen": 1792096542.8313205,
+    "ast_hash": "85e536caf70faec1ae20768b1fed8575",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1791567849.273091,
-    "seen": 1791569253.3096948,
-    "ast_hash": "ce5ad9e0e5ec704697fab6bf78d61e0e",
+    "mtime": 1792096165.780669,
+    "seen": 1792096542.8313265,
+    "ast_hash": "655df9bfa9c09ed5092406dadbfbf788",
     "semantic_hash": ""
   },
   "src/app/clinicas/[id]/page.tsx": {
-    "mtime": 1791561481.29786,
-    "seen": 1791561615.1739583,
+    "mtime": 1792094467.5369582,
+    "seen": 1792096542.9093297,
     "ast_hash": "a19f53b12c2bc4d1b0d0961df132f6f2",
     "semantic_hash": ""
   },
@@ -30,14 +30,14 @@
     "semantic_hash": "a1f0d5c9ca5d94c23fe309d3ce5e52f7"
   },
   "src/app/dashboard/clinica/alterar-plano/page.tsx": {
-    "mtime": 1791566336.4517539,
-    "seen": 1791566381.3943474,
-    "ast_hash": "86339f5461f10357d42aa7fa6d4a4dfb",
+    "mtime": 1792096165.244036,
+    "seen": 1792096542.9112592,
+    "ast_hash": "908d773d0690e9238ed790624c90e4dc",
     "semantic_hash": ""
   },
   "src/app/dashboard/clinica/page.tsx": {
-    "mtime": 1791566336.4624543,
-    "seen": 1791566381.3943498,
+    "mtime": 1792094467.5379581,
+    "seen": 1792096542.9112651,
     "ast_hash": "bf2138c0d027e70d81eb714724c78621",
     "semantic_hash": ""
   },
@@ -60,9 +60,9 @@
     "semantic_hash": "2bab31af2f5887a4cfec00b814c444e8"
   },
   "src/app/dashboard/tutor/page.tsx": {
-    "mtime": 1791561481.302364,
-    "seen": 1791561615.1761894,
-    "ast_hash": "cc4b42de2219de4d14e391074d825ca5",
+    "mtime": 1792096165.798669,
+    "seen": 1792096542.9132667,
+    "ast_hash": "25ccb11da3818b41944ebc441d1de21c",
     "semantic_hash": ""
   },
   "src/app/dashboard/tutor/perfil/page.tsx": {
@@ -72,14 +72,14 @@
     "semantic_hash": ""
   },
   "src/app/dashboard/veterinario/alterar-plano/page.tsx": {
-    "mtime": 1791566336.4648962,
-    "seen": 1791566381.395891,
-    "ast_hash": "17ceb55afb2213e1f640ea704bd1dcc6",
+    "mtime": 1792096165.2460344,
+    "seen": 1792096542.9137788,
+    "ast_hash": "433a147757f78575d6307bcba71e5580",
     "semantic_hash": ""
   },
   "src/app/dashboard/veterinario/page.tsx": {
-    "mtime": 1791566336.4678886,
-    "seen": 1791566381.3958933,
+    "mtime": 1792094467.5279615,
+    "seen": 1792096542.9137843,
     "ast_hash": "8f875ee3936873d83755411c5e60df87",
     "semantic_hash": ""
   },
@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "src/app/signup/veterinario/page.tsx": {
-    "mtime": 1791566336.471221,
-    "seen": 1791566381.400801,
-    "ast_hash": "4f0586d07cb8ddc84a6c036a1ce25678",
+    "mtime": 1792096165.2510357,
+    "seen": 1792096542.9270651,
+    "ast_hash": "698ea4297b9f00f375e0e8962445f045",
     "semantic_hash": ""
   },
   "src/app/termos-de-uso/page.tsx": {
@@ -186,8 +186,8 @@
     "semantic_hash": ""
   },
   "src/app/veterinario/[id]/page.tsx": {
-    "mtime": 1791561481.3073733,
-    "seen": 1791561615.1823163,
+    "mtime": 1792094467.5339568,
+    "seen": 1792096542.9281971,
     "ast_hash": "d1fb15fb2da8932c0f38c03694d41edb",
     "semantic_hash": ""
   },
@@ -258,8 +258,8 @@
     "semantic_hash": "c907d2ec64b6b84340d9d72dd0611d75"
   },
   "src/components/NotificationBell/NotificationBell.tsx": {
-    "mtime": 1791561481.3083746,
-    "seen": 1791561615.1863995,
+    "mtime": 1792094467.5609558,
+    "seen": 1792096542.943835,
     "ast_hash": "7fd0359b4b0231729f860ddc803c6705",
     "semantic_hash": ""
   },
@@ -408,15 +408,15 @@
     "semantic_hash": "2ed04245766cda31f1967e8605859bca"
   },
   "src/services/agendamentos/agendamentos.ts": {
-    "mtime": 1791561481.3168864,
-    "seen": 1791561615.2095208,
+    "mtime": 1792094467.5299563,
+    "seen": 1792096543.0005617,
     "ast_hash": "6e47a681445737d3110222f25831195a",
     "semantic_hash": ""
   },
   "src/services/assinaturas/assinaturas.ts": {
-    "mtime": 1791566336.516222,
-    "seen": 1791566381.4255533,
-    "ast_hash": "60be3c9d798c1edb17cbe44ac59ab295",
+    "mtime": 1792096165.2600348,
+    "seen": 1792096543.0005674,
+    "ast_hash": "c8d8afd2d418cfbbcc22be91347f93a7",
     "semantic_hash": ""
   },
   "src/services/auth/auth.ts": {
@@ -618,9 +618,9 @@
     "semantic_hash": ""
   },
   "src/app/api/pets/[id]/photo/route.ts": {
-    "mtime": 1791508382.048349,
-    "seen": 1791508445.1074104,
-    "ast_hash": "7ea2975bb32c848b58aea883c9a46875",
+    "mtime": 1792096165.788672,
+    "seen": 1792096542.8796957,
+    "ast_hash": "61c2881466a0ccccb90299b5097f6b53",
     "semantic_hash": ""
   },
   "src/app/api/pets/[id]/route.ts": {
@@ -642,9 +642,9 @@
     "semantic_hash": ""
   },
   "src/app/api/tutor/profile/photo/route.ts": {
-    "mtime": 1791508388.4097211,
-    "seen": 1791508445.1074224,
-    "ast_hash": "d106ab594daf53cf034218ac2be928c1",
+    "mtime": 1792096165.791669,
+    "seen": 1792096542.8966866,
+    "ast_hash": "5467dcfcf81bf6f51436a3ed883c9fa4",
     "semantic_hash": ""
   },
   "src/app/api/tutor/profile/route.ts": {
@@ -702,9 +702,9 @@
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/profile/photo/route.ts": {
-    "mtime": 1791508485.8327644,
-    "seen": 1791508516.0179887,
-    "ast_hash": "e040cebc5c8a927f5c235d809383c3a5",
+    "mtime": 1792096165.7956698,
+    "seen": 1792096542.9066813,
+    "ast_hash": "e67c6f58faceafb7310fd3438fb2ad3e",
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/vinculos/[clinicaId]/aceitar/route.ts": {
@@ -792,15 +792,15 @@
     "semantic_hash": ""
   },
   "src/server/services/storage.ts": {
-    "mtime": 1791557687.9663513,
-    "seen": 1791558885.2314153,
-    "ast_hash": "bc9ac5cd665ad8cc9160c7db1706c3f3",
+    "mtime": 1792096165.7996686,
+    "seen": 1792096542.9918902,
+    "ast_hash": "60c40ab84bb7f6b62c5993668aed3b90",
     "semantic_hash": ""
   },
   "src/server/services/subscription.ts": {
-    "mtime": 1791557681.021788,
-    "seen": 1791558885.2314177,
-    "ast_hash": "408d18ecb9e0df20e3e347bb8ba3b7de",
+    "mtime": 1792096165.2570345,
+    "seen": 1792096542.991896,
+    "ast_hash": "0be077a126574cbf70175da2efc38e93",
     "semantic_hash": ""
   },
   "src/server/services/tutor.ts": {
@@ -1530,9 +1530,9 @@
     "semantic_hash": ""
   },
   "src/app/api/assinaturas/planos/route.ts": {
-    "mtime": 1791508494.2106442,
-    "seen": 1791508516.0177586,
-    "ast_hash": "24a6eed2c08619a0c00f82da484d3be8",
+    "mtime": 1792096165.2430322,
+    "seen": 1792096542.8385992,
+    "ast_hash": "5bc26ebf12c13adc6ab179f956ab9cdb",
     "semantic_hash": ""
   },
   "src/app/api/assinaturas/status/route.ts": {
@@ -1590,9 +1590,9 @@
     "semantic_hash": ""
   },
   "src/app/api/clinicas/onboarding/step4/route.ts": {
-    "mtime": 1791508491.7036102,
-    "seen": 1791508516.0178084,
-    "ast_hash": "494a19e6b5eeb00d35aaf9cf5d399425",
+    "mtime": 1792096165.7826705,
+    "seen": 1792096542.8532543,
+    "ast_hash": "7196c968c1d1f5b0337ad507f377edb8",
     "semantic_hash": ""
   },
   "src/app/api/clinicas/onboarding/step5/route.ts": {
@@ -1632,9 +1632,9 @@
     "semantic_hash": ""
   },
   "src/app/api/clinicas/upload-photo/route.ts": {
-    "mtime": 1791508480.3727741,
-    "seen": 1791508516.01788,
-    "ast_hash": "082735897309fe896d0b4f42c9663b80",
+    "mtime": 1792096165.7836795,
+    "seen": 1792096542.8593435,
+    "ast_hash": "71b03beffcbac0308c41333e14596c6a",
     "semantic_hash": ""
   },
   "src/server/services/asaas.ts": {
@@ -1788,8 +1788,8 @@
     "semantic_hash": ""
   },
   "tests/server/asaas-webhook.test.ts": {
-    "mtime": 1791568782.822174,
-    "seen": 1791569253.4180722,
+    "mtime": 1792096165.2640352,
+    "seen": 1792096543.0188005,
     "ast_hash": "5f14832679d56346becf188877458371",
     "semantic_hash": ""
   },
@@ -1830,9 +1830,9 @@
     "semantic_hash": ""
   },
   "src/server/services/veterinarios.ts": {
-    "mtime": 1791566336.5116975,
-    "seen": 1791566381.4226959,
-    "ast_hash": "f3427131710c9f16e0a19a755b791975",
+    "mtime": 1792096165.8016696,
+    "seen": 1792096542.9929535,
+    "ast_hash": "ebb798ad0d02ddb9fb97851af8f9a860",
     "semantic_hash": ""
   },
   "tests/server/auth-flow.test.ts": {
@@ -1860,8 +1860,8 @@
     "semantic_hash": ""
   },
   "src/app/api/agendamentos/route.ts": {
-    "mtime": 1791561481.293862,
-    "seen": 1791561615.147275,
+    "mtime": 1792094467.5489564,
+    "seen": 1792096542.8368096,
     "ast_hash": "39cde0f2ded236285da7f03923406668",
     "semantic_hash": ""
   },
@@ -1872,9 +1872,9 @@
     "semantic_hash": ""
   },
   "src/app/api/onboarding/photo/route.ts": {
-    "mtime": 1791508612.4382415,
-    "seen": 1791508712.6243112,
-    "ast_hash": "531151e7bcca07737f7ae01b67e4fbd9",
+    "mtime": 1792096165.7856703,
+    "seen": 1792096542.8731854,
+    "ast_hash": "97dfb9382ddb558619eee0bd6633111c",
     "semantic_hash": ""
   },
   "src/app/api/onboarding/progress/route.ts": {
@@ -1926,9 +1926,9 @@
     "semantic_hash": ""
   },
   "src/app/api/onboarding/upload-generic/route.ts": {
-    "mtime": 1791508608.8623745,
-    "seen": 1791508712.6243274,
-    "ast_hash": "86418f367fbe823b11b29c08f3d853bf",
+    "mtime": 1792096165.78667,
+    "seen": 1792096542.8796904,
+    "ast_hash": "52cb8cf5af8b325af313d2fe87f217b9",
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/[id]/route.ts": {
@@ -1938,9 +1938,9 @@
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/locations/[id]/photo/route.ts": {
-    "mtime": 1791508634.3735192,
-    "seen": 1791508712.6243646,
-    "ast_hash": "a424e686ef37fa672ab8a282630ce59c",
+    "mtime": 1792096165.7936738,
+    "seen": 1792096542.9056418,
+    "ast_hash": "55c8b036606257a13b799eae638735e1",
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/locations/[id]/route.ts": {
@@ -1962,9 +1962,9 @@
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/route.ts": {
-    "mtime": 1791515986.736801,
-    "seen": 1791516177.5449293,
-    "ast_hash": "b61978702ad42c3e4680aadc307b7791",
+    "mtime": 1792096165.7966688,
+    "seen": 1792096542.907053,
+    "ast_hash": "89be04a68b1920321fb5f6c777de2a2d",
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/schedule/route.ts": {
@@ -1998,9 +1998,9 @@
     "semantic_hash": ""
   },
   "src/server/services/whatsapp.ts": {
-    "mtime": 1791514879.4784753,
-    "seen": 1791515176.5542154,
-    "ast_hash": "b4103773f54b8d66de4ebd08a4740c87",
+    "mtime": 1792096165.2590332,
+    "seen": 1792096542.9956155,
+    "ast_hash": "1292e433fdf50ed87e66f44bf1ef4add",
     "semantic_hash": ""
   },
   "src/app/api/google/calendar/auth/route.ts": {
@@ -2022,9 +2022,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1791567960.0700772,
-    "seen": 1791569253.4695544,
-    "ast_hash": "23a91cb9fa10d7cb28479b42dadd4661",
+    "mtime": 1792096175.4248135,
+    "seen": 1792096543.1157277,
+    "ast_hash": "3256d4b907357c287b7f9c0c785f5cb4",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2142,8 +2142,8 @@
     "semantic_hash": ""
   },
   "src/app/api/pets/[id]/prontuario/route.ts": {
-    "mtime": 1791561481.2958636,
-    "seen": 1791561615.162082,
+    "mtime": 1792094467.5249586,
+    "seen": 1792096542.8796995,
     "ast_hash": "7ad4673a9b0253c71d78c612b134af5a",
     "semantic_hash": ""
   },
@@ -2154,8 +2154,8 @@
     "semantic_hash": ""
   },
   "src/components/Prontuario/ProntuarioPet.tsx": {
-    "mtime": 1791561481.3122017,
-    "seen": 1791561615.1887782,
+    "mtime": 1792094467.5319545,
+    "seen": 1792096542.9498837,
     "ast_hash": "8de239bc5eae6abc3fdea5c8758634fa",
     "semantic_hash": ""
   },
@@ -2166,20 +2166,20 @@
     "semantic_hash": ""
   },
   "src/server/services/prontuario.ts": {
-    "mtime": 1791561481.314888,
-    "seen": 1791561615.2049248,
+    "mtime": 1792094467.5379581,
+    "seen": 1792096542.9918756,
     "ast_hash": "ee90acf0937eafd2c5aecaa23dc69113",
     "semantic_hash": ""
   },
   "src/services/pets/prontuario.ts": {
-    "mtime": 1791561481.3178878,
-    "seen": 1791561615.2121572,
+    "mtime": 1792094467.5489564,
+    "seen": 1792096543.00744,
     "ast_hash": "0e64c19295607a20738e21e06c8fe114",
     "semantic_hash": ""
   },
   "tests/server/prontuario.test.ts": {
-    "mtime": 1791561481.3198879,
-    "seen": 1791561615.2180433,
+    "mtime": 1792094467.5609558,
+    "seen": 1792096543.0435154,
     "ast_hash": "b859385793ce4599c3fbe1d0e3f9ecbb",
     "semantic_hash": ""
   },
@@ -2208,8 +2208,8 @@
     "semantic_hash": ""
   },
   "src/server/services/whatsapp-notificacoes.ts": {
-    "mtime": 1791561481.3158886,
-    "seen": 1791561615.2069771,
+    "mtime": 1792094467.5219562,
+    "seen": 1792096542.9956095,
     "ast_hash": "eab8293d44dfc8ced0a45e7cc6248aee",
     "semantic_hash": ""
   },
@@ -2232,8 +2232,8 @@
     "semantic_hash": ""
   },
   "tests/server/clinica-equipe.test.ts": {
-    "mtime": 1791568789.4205196,
-    "seen": 1791569253.4199164,
+    "mtime": 1792096165.2670336,
+    "seen": 1792096543.0224943,
     "ast_hash": "95842da5e5095677080194e3a796253a",
     "semantic_hash": ""
   },
@@ -2274,9 +2274,9 @@
     "semantic_hash": ""
   },
   "src/app/precos/page.tsx": {
-    "mtime": 1791516629.4579117,
-    "seen": 1791516850.8222792,
-    "ast_hash": "6d5d709209e5479dbf245f7802ab9c39",
+    "mtime": 1792096165.248032,
+    "seen": 1792096542.9209497,
+    "ast_hash": "6ee5380e7814cd60ae8201a8d646dfcf",
     "semantic_hash": ""
   },
   "src/app/seguranca/page.tsx": {
@@ -2304,9 +2304,9 @@
     "semantic_hash": ""
   },
   "src/config/planos.ts": {
-    "mtime": 1791566336.480679,
-    "seen": 1791566381.412482,
-    "ast_hash": "f6e73b80894ec70c8883e54e7c269f4c",
+    "mtime": 1792096165.2550335,
+    "seen": 1792096542.9603672,
+    "ast_hash": "ca25dbd0e7e258af2fb9e2ba0ad86faf",
     "semantic_hash": ""
   },
   "src/config/site.ts": {
@@ -2364,14 +2364,14 @@
     "semantic_hash": ""
   },
   "prisma/catalogo.ts": {
-    "mtime": 1791566336.421863,
-    "seen": 1791566381.3624222,
-    "ast_hash": "8040fe28e89036fa7734fe8d75f685b2",
+    "mtime": 1792096165.2410333,
+    "seen": 1792096542.8318172,
+    "ast_hash": "f2f3661a5d3fc485a74c34788bbe943b",
     "semantic_hash": ""
   },
   "prisma/demo.ts": {
-    "mtime": 1791561481.2903428,
-    "seen": 1791561615.1455038,
+    "mtime": 1792094467.5319545,
+    "seen": 1792096542.831823,
     "ast_hash": "1b27c939b2f638dbf43f6f4d46f7b659",
     "semantic_hash": ""
   },
@@ -2430,9 +2430,9 @@
     "semantic_hash": ""
   },
   "src/app/api/prestadores/onboarding/passo3/route.ts": {
-    "mtime": 1791558032.4389951,
-    "seen": 1791558885.1975775,
-    "ast_hash": "705c684baa30545870764121ae46798c",
+    "mtime": 1792096165.7906692,
+    "seen": 1792096542.8895392,
+    "ast_hash": "11592675fb04d0da939790ad8c4d53c1",
     "semantic_hash": ""
   },
   "src/app/api/prestadores/onboarding/servicos/route.ts": {
@@ -2502,8 +2502,8 @@
     "semantic_hash": ""
   },
   "src/app/dashboard/prestador/page.tsx": {
-    "mtime": 1791561481.3008592,
-    "seen": 1791561615.1754613,
+    "mtime": 1792094467.5219562,
+    "seen": 1792096542.9118764,
     "ast_hash": "1b5e7f467bfe195bf883fbc9877ef964",
     "semantic_hash": ""
   },
@@ -2520,8 +2520,8 @@
     "semantic_hash": ""
   },
   "src/app/profissionais/[id]/page.tsx": {
-    "mtime": 1791561481.305373,
-    "seen": 1791561615.1797082,
+    "mtime": 1792094467.5609558,
+    "seen": 1792096542.9209566,
     "ast_hash": "337d3845bafc716012c662b9a3655c2d",
     "semantic_hash": ""
   },
@@ -2562,8 +2562,8 @@
     "semantic_hash": ""
   },
   "src/components/Prestador/PedidoServicoForm.tsx": {
-    "mtime": 1791561481.3103724,
-    "seen": 1791561615.188055,
+    "mtime": 1792094467.5609558,
+    "seen": 1792096542.9482942,
     "ast_hash": "345ebf0587ac1e5956f4d8ceedd50360",
     "semantic_hash": ""
   },
@@ -2592,8 +2592,8 @@
     "semantic_hash": ""
   },
   "src/server/services/pedidos-prestador.ts": {
-    "mtime": 1791568091.4615855,
-    "seen": 1791569253.4028525,
+    "mtime": 1792094467.5229566,
+    "seen": 1792096542.9905367,
     "ast_hash": "7f5b01190b70549df97d95971b134775",
     "semantic_hash": ""
   },
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "src/services/prestadores/prestadores.ts": {
-    "mtime": 1791561481.3188875,
-    "seen": 1791561615.2121603,
+    "mtime": 1792094467.5609558,
+    "seen": 1792096543.0074477,
     "ast_hash": "2100222db4a8b6b90d6ac0568b3f69f6",
     "semantic_hash": ""
   },
@@ -2754,9 +2754,9 @@
     "semantic_hash": ""
   },
   "src/components/Assinatura/AlterarPlano.tsx": {
-    "mtime": 1791566336.4735787,
-    "seen": 1791566381.4019265,
-    "ast_hash": "05124ab2644a0e46df74ac5d86348056",
+    "mtime": 1792096165.2530358,
+    "seen": 1792096542.929273,
+    "ast_hash": "382f29929e9d763cd6a24975a442713e",
     "semantic_hash": ""
   },
   "src/components/Assinatura/StatusAssinaturaAviso.tsx": {
@@ -2784,8 +2784,8 @@
     "semantic_hash": ""
   },
   "tests/server/assinaturas.test.ts": {
-    "mtime": 1791568848.6609328,
-    "seen": 1791569253.4186265,
+    "mtime": 1792096165.2660327,
+    "seen": 1792096543.0198233,
     "ast_hash": "35affc154f4bfad00bcc40e59aa481a3",
     "semantic_hash": ""
   },
@@ -2952,15 +2952,15 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/storage.test.ts": {
-    "mtime": 1791567069.1777143,
-    "seen": 1791567604.9370806,
-    "ast_hash": "00f560128dd67175582c7a446edf0cb4",
+    "mtime": 1792096165.80367,
+    "seen": 1792096543.0366266,
+    "ast_hash": "956751dcba680310f0fcdb76399183d5",
     "semantic_hash": ""
   },
   "tests/server/cobertura/subscription.test.ts": {
-    "mtime": 1791567170.3394992,
-    "seen": 1791567604.937082,
-    "ast_hash": "5db4f61b20bd18ca77e70d9fa631ff19",
+    "mtime": 1792096266.7822382,
+    "seen": 1792096543.0366318,
+    "ast_hash": "33269eda6095ad79ab4936d5d8d1944b",
     "semantic_hash": ""
   },
   "tests/server/cobertura/tutor.test.ts": {
@@ -2976,9 +2976,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/veterinarios.test.ts": {
-    "mtime": 1791567243.6099393,
-    "seen": 1791567604.9370859,
-    "ast_hash": "83c74805dc479bcd8de7aa5de91d1623",
+    "mtime": 1792096165.8056717,
+    "seen": 1792096543.0375726,
+    "ast_hash": "eb37ff11a6fd043e3ac09372cc435a55",
     "semantic_hash": ""
   },
   "tests/server/cobertura/vinculos.test.ts": {
@@ -3000,15 +3000,33 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/whatsapp.test.ts": {
-    "mtime": 1791567084.163549,
-    "seen": 1791567604.9370918,
+    "mtime": 1792096165.2690344,
+    "seen": 1792096543.0396261,
     "ast_hash": "ea2d4ed4365c9592417a249818465737",
     "semantic_hash": ""
   },
   "stryker.config.json": {
-    "mtime": 1791568861.3434224,
-    "seen": 1791569253.4172444,
-    "ast_hash": "bf180ede9a0f97b314adb12f9bd3c705",
+    "mtime": 1792096179.0311387,
+    "seen": 1792096543.0160036,
+    "ast_hash": "eae055e37768c01553b56e88965cbd04",
+    "semantic_hash": ""
+  },
+  "src/app/signup/veterinario/components/VeterinarioSignup.tsx": {
+    "mtime": 1792096165.249035,
+    "seen": 1792096542.9270563,
+    "ast_hash": "7b3d91d552a71d0ea164ab0f7d141b63",
+    "semantic_hash": ""
+  },
+  "tests/server/upload-rotas.test.ts": {
+    "mtime": 1792096165.9783955,
+    "seen": 1792096543.0440845,
+    "ast_hash": "58d7df24985cefe3dd8d0b429d81f0ab",
+    "semantic_hash": ""
+  },
+  "services/whatsapp-gateway/evolution-qr.png": {
+    "mtime": 1791570528.1780272,
+    "seen": 1792096543.1163948,
+    "ast_hash": "b749ae0c0d536b8cc72cdd37313b5201",
     "semantic_hash": ""
   }
 }

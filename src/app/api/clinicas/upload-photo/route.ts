@@ -1,7 +1,7 @@
 import { prisma } from '@/server/db'
-import { ApiRequest, badRequest, ok, route, serverError, unauthorized } from '@/server/http'
+import { ApiRequest, HttpError, badRequest, ok, route, serverError, unauthorized } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
-import { uploadClinicaPhoto } from '@/server/services/storage'
+import { confirmarUpload, uploadClinicaPhoto } from '@/server/services/storage'
 import { updating } from '@/server/lucid'
 
 export const POST = route(async (req) => {
@@ -9,7 +9,8 @@ export const POST = route(async (req) => {
   const currentUser = await requireUser(request)
 
   try {
-    if (!currentUser.clinica) {
+    const clinica = currentUser.clinica
+    if (!clinica) {
       return unauthorized({ message: 'Usuário não autenticado ou não é clínica' })
     }
 
@@ -26,20 +27,25 @@ export const POST = route(async (req) => {
       return badRequest({ message: 'Arquivo inválido', errors: uploadedFile.errors })
     }
 
-    const result = await uploadClinicaPhoto({
+    const result = await uploadClinicaPhoto(clinica.id, {
       buffer: await uploadedFile.buffer(),
       originalname: uploadedFile.clientName || 'clinica.jpg',
       mimetype: uploadedFile.type || 'image/jpeg',
     })
 
-    await prisma.clinica.update({
-      where: { id: currentUser.clinica.id },
-      data: updating({ fotoPerfil: result.url }),
-    })
-    await prisma.user.update({ where: { id: currentUser.id }, data: updating({ profilePic: result.url }) })
+    await confirmarUpload(
+      result,
+      () =>
+        prisma.$transaction([
+          prisma.clinica.update({ where: { id: clinica.id }, data: updating({ fotoPerfil: result.url }) }),
+          prisma.user.update({ where: { id: currentUser.id }, data: updating({ profilePic: result.url }) }),
+        ]),
+      { anteriores: [clinica.fotoPerfil, currentUser.profilePic], emUso: [clinica.fotoCapa] }
+    )
 
     return ok({ url: result.url, message: 'Foto de perfil atualizada com sucesso' })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error('❌ [Clinica Upload] Erro:', error)
     return serverError({ message: 'Erro ao enviar foto' })
   }

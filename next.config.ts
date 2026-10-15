@@ -16,6 +16,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "*.supabase.co",
+        port: "",
+        pathname: "/storage/v1/object/public/**",
+      },
+      // Fotos antigas (AWS/CloudFront): remover quando o inventário não tiver mais URLs da AWS.
+      {
+        protocol: "https",
         hostname: "**.amazonaws.com",
         port: "",
         pathname: "/**",

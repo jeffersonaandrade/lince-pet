@@ -1,6 +1,6 @@
 import { ApiRequest, badRequest, ok, route, unauthorized } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
-import { uploadClinicaPhoto } from '@/server/services/storage'
+import { confirmarUpload, uploadClinicaPhoto, type UploadResult } from '@/server/services/storage'
 import { saveClinica, saveUser, str } from '@/server/services/clinicas'
 
 export const POST = route(async (req) => {
@@ -17,26 +17,30 @@ export const POST = route(async (req) => {
   ) as Record<keyof typeof fields, string | null | undefined>
 
   const clinicaChanges: Record<string, string> = {}
+  const userChanges: Record<string, string> = {}
+  const fotoAnterior = clinica.fotoPerfil
+  const profilePicAnterior = currentUser.profilePic
 
   const uploadedFile = request.file('fotoPerfil', {
     size: '5mb',
     extnames: ['jpg', 'jpeg', 'png', 'webp'],
   })
 
+  let upload: UploadResult | null = null
   if (uploadedFile) {
     if (!uploadedFile.isValid) return badRequest({ message: 'Arquivo inválido', errors: uploadedFile.errors })
-    const result = await uploadClinicaPhoto({
+    upload = await uploadClinicaPhoto(clinica.id, {
       buffer: await uploadedFile.buffer(),
       originalname: uploadedFile.clientName || 'clinica.jpg',
       mimetype: uploadedFile.type || 'image/jpeg',
     })
-    clinicaChanges.fotoPerfil = result.url
-    await saveUser(currentUser, { profilePic: result.url })
+    clinicaChanges.fotoPerfil = upload.url
+    userChanges.profilePic = upload.url
   } else {
     const fotoUrl = str(request.only(['fotoUrl']).fotoUrl)
     if (fotoUrl) {
       clinicaChanges.fotoPerfil = fotoUrl
-      await saveUser(currentUser, { profilePic: fotoUrl })
+      userChanges.profilePic = fotoUrl
     }
   }
 
@@ -48,9 +52,6 @@ export const POST = route(async (req) => {
   if (rua && numero && bairro) clinicaChanges.endereco = `${rua}, ${numero} - ${bairro}`
   if (telefone) clinicaChanges.telefone = telefone
 
-  await saveClinica(clinica, clinicaChanges)
-
-  const userChanges: Record<string, string> = {}
   if (nome) userChanges.nome = nome
   if (cep) userChanges.cep = cep
   if (rua) userChanges.rua = rua
@@ -60,7 +61,18 @@ export const POST = route(async (req) => {
   if (estado) userChanges.estado = estado
   if (telefone) userChanges.celular = telefone
 
-  await saveUser(currentUser, userChanges)
+  const gravar = async () => {
+    await saveClinica(clinica, clinicaChanges)
+    await saveUser(currentUser, userChanges)
+  }
+  if (upload) {
+    await confirmarUpload(upload, gravar, {
+      anteriores: [fotoAnterior, profilePicAnterior],
+      emUso: [clinica.fotoCapa],
+    })
+  } else {
+    await gravar()
+  }
 
   return ok({
     message: 'Perfil salvo com sucesso',

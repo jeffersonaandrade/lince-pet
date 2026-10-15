@@ -10,7 +10,7 @@ O backend AdonisJS (`Lince-Pet-Backend-main`) foi migrado para Route Handlers do
 | Infra HTTP | `src/server/http.ts` | `handleError` reproduz o exception handler do Adonis (422 VineJS, `HttpError`, 500 genérico); `json()` serializa como o Lucid |
 | Compatibilidade Lucid | `src/server/lucid.ts` | `creating()`/`updating()` (UUID e timestamps não têm default no schema), `paginate()`, `serialize()` |
 | Auth | `src/server/auth/*` | JWT HS256 com `APP_KEY` (30 dias) no cookie httpOnly `auth_token`; senha scrypt no formato PHC do Adonis; `requireUser(req, [tipos])` = middlewares jwtAuth + userType |
-| Domínio | `src/server/services/*` | Asaas, storage S3, e-mail (Resend), WhatsApp, Google Calendar, notificações in-app, limites de plano, onboarding |
+| Domínio | `src/server/services/*` | Asaas, storage de imagens (Supabase Storage), e-mail (Resend), WhatsApp, Google Calendar, notificações in-app, limites de plano, onboarding |
 | Validação | `src/server/validators/*` | VineJS v3 (mesmas mensagens do backend antigo) |
 | E-mails | `src/server/emails/*` | Templates Edge convertidos em funções TS que retornam HTML |
 | Banco | `prisma/schema.prisma` + `src/server/db.ts` | PostgreSQL (local via Docker ou Supabase); Prisma singleton com `omit` global de senha e tokens Google |
@@ -22,6 +22,8 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 - Booleanos são `Int` (0/1): o frontend compara com `0`/`1` (ex.: `onboardingComplete === 0`).
 - ENUMs do Postgres (`user_type`, `genero`, `tipo_clinica`, `porte`, `payments.type`) são enums do Prisma. Como `String`, a leitura no banco real falha com P2032.
 - Conexão: `DATABASE_URL` e `DIRECT_URL` são iguais. No `.env` (dev e Prisma local) apontam para `127.0.0.1:5433`. No `.env.production` (`next build` / `next start`) apontam para o pooler do Supabase em modo sessão, porta 5432 do host `aws-0-us-east-2.pooler.supabase.com`. A conexão direta `db.<ref>.supabase.co` é só IPv6. A app autentica com o próprio JWT; usa o usuário `postgres` do banco, não a chave anon.
+- **API REST do Supabase fechada:** a migration `20261015200000_enable_rls_public_tables` ativa RLS (sem policies) em todas as tabelas de `public` e revoga `anon`/`authenticated` (inclusive para tabelas futuras, via `ALTER DEFAULT PRIVILEGES`). Aplicada em produção via MCP em 15/10/2026 (36/36 tabelas); o próximo `migrate deploy` reexecuta (idempotente) e só registra em `_prisma_migrations`. O Prisma conecta como `postgres` (dono das tabelas, `bypassrls`) e não é afetado. Rollback: no mesmo laço, `ALTER TABLE ... DISABLE ROW LEVEL SECURITY` e `GRANT ALL ... TO anon, authenticated`. Conferência: `get_advisors` (security) sem `rls_disabled_in_public` e `begin; set local role anon; select count(*) from public.users; rollback;` precisa dar "permission denied".
+- **Supabase via MCP:** operações no projeto Supabase seguem `.cursor/rules/supabase-mcp.mdc` (leitura livre; DDL com plano aprovado; DML/destrutivo em produção só com confirmação explícita).
 - Busca textual em SQL cru usa `ILIKE` (o Postgres diferencia maiúsculas); no Prisma, `contains` sempre com `mode: 'insensitive'`. Login e “esqueci a senha” também comparam e-mail sem diferenciar maiúsculas. O índice único de `users.email` diferencia: o cadastro grava o e-mail em minúsculas.
 - `User -> tutor/veterinario/clinica/prestador` são listas no Prisma (`user_id` sem UNIQUE): usar `findFirst({ where: { userId } })`.
 - DECIMAL sai como string com 2 casas; datas saem em ISO (servidor em `TZ=UTC`).
@@ -35,7 +37,7 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 - **Google:** login social em `/api/auth/google/*` (state em cookie) e Calendar em `/api/google/calendar/*` (state JWT).
 - **Agendamento:** `POST /api/agendamentos` checa limite do plano, grava, notifica (in-app; e-mail e WhatsApp conforme "Canais de aviso e Google Agenda") e cria evento no Google Agenda via `after()`.
 - **Assinaturas:** `/api/assinaturas/*` são wrappers finos de `src/server/services/assinaturas.ts` (contratar, trocar, cancelar), que cria/cancela no Asaas; `POST /api/webhooks/asaas` é idempotente via `webhook_events.event_id` e é quem aplica plano/status (ver "Assinatura").
-- **Uploads:** multipart -> `UploadedFile` -> S3 (`src/server/services/storage.ts`).
+- **Uploads:** multipart -> `UploadedFile` (tamanho/extensão) -> `src/server/services/storage.ts` (sharp + Supabase Storage) -> URL pública gravada no banco. Detalhes em "Storage de imagens".
 - **Agenda:** a grade semanal fica em `veterinario_enderecos.horarios_funcionamento` (presencial) e `veterinarios.horarios_online`, editada no Perfil. Bloqueios pontuais ficam em `bloqueios_agenda` (`src/server/services/bloqueios.ts`). `GET /api/agendamentos/disponibilidade/:vet` devolve `horarios_ocupados` (consultas + bloqueios), `horarios_bloqueados` e `dia_bloqueado`.
 
 ## Regras de negócio
@@ -167,9 +169,41 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Vínculo:** `encaminhamento_id` em `POST /api/agendamentos` e no pedido de prestador. Só vale para encaminhamento `aceito` do próprio tutor, para o mesmo pet e o mesmo destino, e sem outra marcação ativa (409). A consulta criada fica em `agendamento_destino_id`.
 - **Avisos:** novo encaminhamento avisa destino e tutor (sino e e-mail); aceite e recusa avisam tutor e origem (sino e e-mail) e o tutor por WhatsApp (plano da consulta de origem, mesmas regras de opt-out). Falha de aviso nunca bloqueia o fluxo.
 
+### Storage de imagens
+
+- **Onde:** Supabase Storage, bucket público `lincepet-media` (criado via MCP, migração `storage_bucket_lincepet_media`): `file_size_limit` 5 MB, `allowed_mime_types = {image/webp}`, nenhuma policy em `storage.objects`. Leitura é pública; só o backend escreve, com `SUPABASE_SERVICE_ROLE_KEY` (nunca `NEXT_PUBLIC_*`). Só fotos de exibição pública (perfil, capa, local, pet); documento privado não vai para este bucket.
+- **Caminhos por dono** (id do banco/sessão, validado como UUID; nada do cliente entra no caminho): `veterinarios/{vetId}/perfil|uploads/`, `veterinarios/{vetId}/locais/{enderecoId}/`, `clinicas/{clinicaId}/perfil|capa/`, `pets/{petId}/`, `tutores/{userId}/`, `prestadores/{prestadorId}/`, sempre `{uuid}.webp`. Fotos antigas migradas ficam em `legado/{caminho-original}.webp` (o bucket só aceita WebP, então passam pelo mesmo `sharp`).
+- **Validação:** as rotas checam tamanho (5 MB) e extensão; o `sharp` decodifica o conteúdo de verdade (jpeg, png, webp ou gif; ignora o MIME do navegador), corrige a rotação, limita a 1600px e grava WebP q82 sem metadados (EXIF/GPS). Vazio, corrompido, SVG ou não-imagem: 400 "Arquivo de imagem inválido". Upload com `x-upsert: false` (nunca sobrescreve).
+- **Consistência:** `confirmarUpload` grava a URL no banco; se a gravação falhar, apaga o objeto recém-enviado. Se der certo, apaga a foto anterior **só** se for do nosso bucket, fora de `legado/` e não referenciada em outra coluna (ex.: `users.profile_pic`). URLs da AWS/CloudFront e externas nunca são apagadas.
+- **Cadastro de veterinário:** cria o usuário primeiro e depois envia a foto para a pasta do novo veterinário; falha na foto não impede o cadastro.
+- **Erros:** log com status, chave e `sb-request-id`; nunca headers ou chave.
+- **Fotos antigas (AWS):** inventário via MCP em 15/10/2026: só `pets.foto_url` tinha URL antiga (1 registro, CloudFront). Migração manual: baixar, validar, converter para WebP, subir em `legado/` com `x-upsert: false`, conferir sha256 do WebP pela URL pública e só então `UPDATE pets SET foto_url = '<nova>' WHERE id = '<id>' AND foto_url = '<antiga>'` com confirmação. Nada é apagado da AWS. Inventário para repetir:
+
+```sql
+SELECT tabela, coluna, classe, count(*) FROM (
+  SELECT 'users' tabela, 'profile_pic' coluna, profile_pic url FROM users
+  UNION ALL SELECT 'veterinarios', 'foto_url', foto_url FROM veterinarios
+  UNION ALL SELECT 'clinicas', 'foto_perfil', foto_perfil FROM clinicas
+  UNION ALL SELECT 'clinicas', 'foto_capa', foto_capa FROM clinicas
+  UNION ALL SELECT 'prestadores', 'foto_url', foto_url FROM prestadores
+  UNION ALL SELECT 'veterinario_enderecos', 'foto_url', foto_url FROM veterinario_enderecos
+  UNION ALL SELECT 'pets', 'foto_url', foto_url FROM pets
+  UNION ALL SELECT 'planos', 'image', image FROM planos
+) t CROSS JOIN LATERAL (SELECT CASE
+  WHEN url IS NULL OR url = '' THEN 'vazio'
+  WHEN url ILIKE '%amazonaws.com%' THEN 's3'
+  WHEN url ILIKE '%cloudfront.net%' THEN 'cloudfront'
+  WHEN url ILIKE '%supabase.co/storage/%' THEN 'supabase'
+  ELSE 'externa' END classe) c
+GROUP BY 1, 2, 3 ORDER BY 1, 2, 3;
+```
+
+- **Pendência conhecida:** algumas rotas ainda aceitam URL de foto vinda do cliente (`foto_url` de pet, `fotoUrl` de endereço e do step4 da clínica, usada pelo fluxo de `upload-generic`). Não abre escrita no bucket, mas permite gravar URL externa.
+- **Variáveis:** `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (service_role legada ou `sb_secret_...`), `SUPABASE_STORAGE_BUCKET=lincepet-media`. As antigas `AWS_*`, `S3_*` e `NEXT_PUBLIC_CDN_BASE_URL` não são mais usadas. Os `remotePatterns` da AWS/CloudFront em `next.config.ts` saem quando o inventário não tiver mais URL da AWS.
+
 ## Testes
 
 - `npm test`: unitários (`tests/server`).
-- `npm run test:coverage`: unitários com cobertura de `src/server/services`. Falha se algum serviço ficar abaixo de 95% de linhas, statements ou funções (por arquivo). Os testes de cobertura por serviço ficam em `tests/server/cobertura/`; Prisma e integrações externas (Asaas, S3, Resend, WhatsApp, Google) sempre mockados.
-- `npm run test:mutation`: testes de mutação (StrykerJS + vitest-runner, config em `stryker.config.json`) nos serviços críticos — assinatura/Asaas, limite de equipe/vínculos, bloqueios, pedidos de prestador e encaminhamentos. Mede se os testes falham quando o código é alterado (cobertura só mede execução). Incremental (`reports/stryker-incremental.json`), relatório em `reports/mutation/index.html`. Meta: mutation score ≥ 80% por arquivo. Lento (dezenas de minutos na primeira execução): rodar sob demanda ou no CI noturno, não a cada commit.
+- `npm run test:coverage`: unitários com cobertura de `src/server/services`. Falha se algum serviço ficar abaixo de 95% de linhas, statements ou funções (por arquivo). Os testes de cobertura por serviço ficam em `tests/server/cobertura/`; Prisma e integrações externas (Asaas, Supabase Storage via `fetch`, Resend, WhatsApp, Google) sempre mockados. O storage usa o `sharp` real sobre imagens geradas no teste; as rotas de upload são cobertas em `tests/server/upload-rotas.test.ts`.
+- `npm run test:mutation`: testes de mutação (StrykerJS + vitest-runner, config em `stryker.config.json`) nos serviços críticos — assinatura/Asaas, limite de equipe/vínculos, bloqueios, pedidos de prestador, encaminhamentos e storage de imagens. Mede se os testes falham quando o código é alterado (cobertura só mede execução). Incremental (`reports/stryker-incremental.json`), relatório em `reports/mutation/index.html`. Meta: mutation score ≥ 80% por arquivo. Lento (dezenas de minutos na primeira execução): rodar sob demanda ou no CI noturno, não a cada commit.
 - `npm run test:contract`: compara Adonis x Next quando `CONTRACT_ADONIS_URL` e `CONTRACT_NEXT_URL` estão definidos.

@@ -287,7 +287,7 @@ export type VeterinarioRegistrationData = {
 export async function registerVeterinario(data: VeterinarioRegistrationData) {
   try {
     const password = await hashPassword(data.password)
-    await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: creating({
           email: data.email.trim().toLowerCase(),
@@ -299,7 +299,7 @@ export async function registerVeterinario(data: VeterinarioRegistrationData) {
           ativo: 1,
         }),
       })
-      await tx.veterinario.create({
+      const veterinario = await tx.veterinario.create({
         data: creating({
           userId: user.id,
           cpf: data.cpf || null,
@@ -314,6 +314,7 @@ export async function registerVeterinario(data: VeterinarioRegistrationData) {
           subscriptionPlanCode: PLANO_PADRAO.veterinario,
         }),
       })
+      return veterinario.id
     })
   } catch (error) {
     console.log(error)

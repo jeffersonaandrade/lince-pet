@@ -12,7 +12,8 @@
     "src/server/services/vinculos.ts",
     "src/server/services/bloqueios.ts",
     "src/server/services/pedidos-prestador.ts",
-    "src/server/services/encaminhamentos.ts"
+    "src/server/services/encaminhamentos.ts",
+    "src/server/services/storage.ts"
   ],
   "ignoreStatic": true,
   "incremental": true,

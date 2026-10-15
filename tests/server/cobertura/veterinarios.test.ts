@@ -351,7 +351,8 @@ describe('registerVeterinario', () => {
 
   it('cria usuário e veterinário sem plano (PLANO_PADRAO.veterinario = none)', async () => {
     prismaMock.tx.user.create.mockResolvedValueOnce({ id: 'u-1' })
-    await registerVeterinario({ ...dados, cpf: '12345678900', profilePicUrl: 'https://cdn/a.jpg' })
+    prismaMock.tx.veterinario.create.mockResolvedValueOnce({ id: 'v-1' })
+    expect(await registerVeterinario({ ...dados, cpf: '12345678900', profilePicUrl: 'https://cdn/a.jpg' })).toBe('v-1')
 
     expect(senha.hashPassword).toHaveBeenCalledWith('senha123')
     expect(prismaMock.tx.user.create.mock.calls[0][0].data).toMatchObject({
@@ -382,6 +383,7 @@ describe('registerVeterinario', () => {
 
   it('cpf e foto vazios viram null', async () => {
     prismaMock.tx.user.create.mockResolvedValueOnce({ id: 'u-1' })
+    prismaMock.tx.veterinario.create.mockResolvedValueOnce({ id: 'v-1' })
     await registerVeterinario({ ...dados, cpf: '', profilePicUrl: '' })
     expect(prismaMock.tx.veterinario.create.mock.calls[0][0].data).toMatchObject({ cpf: null, fotoUrl: null })
   })
