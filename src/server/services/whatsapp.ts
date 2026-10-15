@@ -5,7 +5,7 @@ import { env } from '../env'
 /**
  * Envio de WhatsApp independente de provedor (número central da Lince Pet).
  * WHATSAPP_PROVIDER escolhe o driver; sem configuração usa `log`, que só registra.
- * Um provedor real (Z-API, UltraMsg, Evolution...) é um novo driver registrado em `DRIVERS`.
+ * Um provedor real (gateway, Z-API, UltraMsg...) é um novo driver registrado em `DRIVERS`.
  */
 export interface WhatsAppProvider {
   nome: string
@@ -30,8 +30,45 @@ const logProvider: WhatsAppProvider = {
   },
 }
 
+const gatewayProvider = (): WhatsAppProvider => ({
+  nome: 'gateway',
+  async enviar(to, texto) {
+    const baseUrl = env('WHATSAPP_GATEWAY_URL')?.replace(/\/+$/, '')
+    const token = env('WHATSAPP_GATEWAY_TOKEN')
+    if (!baseUrl || !token) throw new WhatsAppError('WHATSAPP_GATEWAY_URL e WHATSAPP_GATEWAY_TOKEN são obrigatórios', false)
+
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10_000)
+    try {
+      const response = await fetch(`${baseUrl}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Gateway-Token': token,
+        },
+        body: JSON.stringify({ to, text: texto }),
+        signal: controller.signal,
+      })
+      const body = await response.json().catch(() => null)
+      if (!response.ok) {
+        throw new WhatsAppError(
+          typeof body?.error === 'string' ? body.error : `Gateway retornou ${response.status}`,
+          response.status === 429 || response.status >= 500
+        )
+      }
+      return { id: typeof body?.id === 'string' ? body.id : undefined }
+    } catch (error) {
+      if ((error as { name?: string })?.name === 'AbortError') throw new WhatsAppError('Timeout ao chamar gateway', true)
+      throw error
+    } finally {
+      clearTimeout(timeout)
+    }
+  },
+})
+
 const DRIVERS: Record<string, () => WhatsAppProvider> = {
   log: () => logProvider,
+  gateway: gatewayProvider,
 }
 
 export function providerAtual(): WhatsAppProvider {
