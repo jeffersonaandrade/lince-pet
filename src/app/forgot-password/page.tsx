@@ -20,7 +20,10 @@ export default function ForgotPasswordPage() {
 
     try {
       const result = await forgotPassword(email);
-      setSuccess(result.message || "um link de recuperação foi enviado para sua caixa de Email.");
+      setSuccess(
+        result.message ||
+          "Se esse e-mail estiver cadastrado, enviamos um link para redefinir a senha. Confira a caixa de entrada e o spam.",
+      );
     } catch (err) {
       setError(mensagemDaApi(err) || "Ocorreu um erro. Tente novamente mais tarde.");
     } finally {

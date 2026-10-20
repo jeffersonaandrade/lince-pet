@@ -258,7 +258,7 @@ describe('forgotPassword', () => {
   it('e-mail desconhecido: mesma mensagem genérica, sem token nem e-mail', async () => {
     prisma.user.findFirst.mockResolvedValueOnce(null)
     const res = await forgotPassword('ninguem@x.com')
-    expect(res).toEqual({ message: 'um link de recuperação foi enviado para sua caixa de Email.' })
+    expect(res).toEqual({ message: 'Se esse e-mail estiver cadastrado, enviamos um link para redefinir a senha. Confira a caixa de entrada e o spam.' })
     expect(prisma.user.findFirst).toHaveBeenCalledWith({
       where: { email: { equals: 'ninguem@x.com', mode: 'insensitive' } },
     })
@@ -272,7 +272,7 @@ describe('forgotPassword', () => {
 
     const res = await forgotPassword('ANA@exemplo.com')
 
-    expect(res.message).toBe('um link de recuperação foi enviado para sua caixa de Email.')
+    expect(res.message).toBe('Se esse e-mail estiver cadastrado, enviamos um link para redefinir a senha. Confira a caixa de entrada e o spam.')
     expect(prisma.passwordResetToken.deleteMany).toHaveBeenCalledWith({ where: { userId: 'user-1' } })
     const data = prisma.passwordResetToken.create.mock.calls[0][0].data
     expect(data.token).toMatch(/^[0-9a-f]{64}$/)

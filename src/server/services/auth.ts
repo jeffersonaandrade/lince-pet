@@ -9,7 +9,8 @@ import type { CurrentUser } from '../auth/session'
 import { sendMail, defaultFrom } from './mail'
 import { forgotPasswordEmail } from '../emails/forgot_password'
 
-const FORGOT_PASSWORD_MESSAGE = 'um link de recuperação foi enviado para sua caixa de Email.'
+const FORGOT_PASSWORD_MESSAGE =
+  'Se esse e-mail estiver cadastrado, enviamos um link para redefinir a senha. Confira a caixa de entrada e o spam.'
 const INVALID_RESET_TOKEN = 'Token inválido ou expirado.'
 
 export async function findEntityId(userId: string, userType: string): Promise<string | undefined> {

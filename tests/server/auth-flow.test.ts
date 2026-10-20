@@ -69,7 +69,7 @@ describe('Cookie de autenticação', () => {
 describe('E-mail de recuperação de senha', () => {
   it('escapa as interpolações', () => {
     const html = forgotPasswordEmail({ url: 'http://x/reset-password?token=a&b', nome: '<b>Ana</b>' })
-    expect(html).toContain('Olá, &lt;b&gt;Ana&lt;/b&gt;')
+    expect(html).toContain('Olá, <strong>&lt;b&gt;Ana&lt;/b&gt;</strong>')
     expect(html).toContain('href="http://x/reset-password?token=a&amp;b"')
   })
 })
