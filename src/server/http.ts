@@ -152,14 +152,22 @@ function formatBytes(n: number) {
   return `${n}B`
 }
 
-const emptyToNull = (v: unknown) => (v === '' ? null : v)
+/** Senha é comparada byte a byte com o hash: espaço nas bordas faz parte dela. */
+const CAMPO_SENHA = /senha|password/i
 
-function convertEmptyStrings(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(convertEmptyStrings)
+/** Texto digitado sem espaços nas bordas e vazio como `null` (trimWhitespaces + convertEmptyStringsToNull do Adonis). */
+function limpar(chave: string, value: unknown): unknown {
+  if (typeof value !== 'string') return value
+  const limpo = CAMPO_SENHA.test(chave) ? value : value.trim()
+  return limpo === '' ? null : limpo
+}
+
+function convertEmptyStrings(value: unknown, chave = ''): unknown {
+  if (Array.isArray(value)) return value.map((v) => convertEmptyStrings(v, chave))
   if (value && typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, convertEmptyStrings(v)]))
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, convertEmptyStrings(v, k)]))
   }
-  return emptyToNull(value)
+  return limpar(chave, value)
 }
 
 /** Monta objeto a partir de chaves estilo `campo[0][sub]` (como o bodyparser do Adonis). */
@@ -245,7 +253,7 @@ export class ApiRequest {
           if (typeof value === 'object' && value !== null && 'arrayBuffer' in value) {
             files.set(key, value as File)
           } else {
-            setDeep(body, key, emptyToNull(value))
+            setDeep(body, key, limpar(key, value))
           }
         }
       } else if (type.includes('json')) {
@@ -258,7 +266,10 @@ export class ApiRequest {
 
   qs(): Campos {
     const out: Campos = {}
-    for (const [key, value] of this.raw.nextUrl.searchParams.entries()) setDeep(out, key, value)
+    // Query só perde as bordas: `?q=` continua '' (rotas usam o texto vazio como "sem filtro").
+    for (const [key, value] of this.raw.nextUrl.searchParams.entries()) {
+      setDeep(out, key, CAMPO_SENHA.test(key) ? value : value.trim())
+    }
     return out
   }
 

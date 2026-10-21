@@ -34,6 +34,41 @@ describe('ApiRequest (equivalente ao bodyparser do Adonis)', () => {
     expect(r.only(['nome', 'page'])).toEqual({ nome: 'Ana', page: '2' })
   })
 
+  it('remove espaços das bordas e trata texto só com espaços como null, sem mexer em senhas', async () => {
+    const req = new NextRequest('http://x/api/a?q=%20%20rex%20&vazio=', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        nome: '  Ana  ',
+        bio: '   ',
+        obs: ' linha 1\n\nlinha 2 ',
+        endereco: { rua: ' Rua A ' },
+        tags: [' a ', 'b '],
+        password: ' Senha 1 ',
+        senha: ' x ',
+      }),
+    })
+    const r = await ApiRequest.from(req)
+    expect(r.all()).toEqual({
+      q: 'rex',
+      vazio: '',
+      nome: 'Ana',
+      bio: null,
+      obs: 'linha 1\n\nlinha 2',
+      endereco: { rua: 'Rua A' },
+      tags: ['a', 'b'],
+      password: ' Senha 1 ',
+      senha: ' x ',
+    })
+
+    const form = new FormData()
+    form.append('nome', ' Rex ')
+    form.append('itens[0][nome]', '  ')
+    form.append('password_confirmation', ' Senha 1 ')
+    const multi = await ApiRequest.from(new NextRequest('http://x/api/a', { method: 'POST', body: form }))
+    expect(multi.all()).toEqual({ nome: 'Rex', itens: [{ nome: null }], password_confirmation: ' Senha 1 ' })
+  })
+
   it('recusa corpo acima do limite com 413, pelo content-length ou pelo tamanho lido', async () => {
     const declarado = new NextRequest('http://x/api/a', {
       method: 'POST',

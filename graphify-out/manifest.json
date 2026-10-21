@@ -738,9 +738,9 @@
     "semantic_hash": ""
   },
   "src/server/http.ts": {
-    "mtime": 1792545722.3772984,
-    "seen": 1792545819.3321576,
-    "ast_hash": "cba439b0d9db83bc991b192f9b3671ba",
+    "mtime": 1792546690.9613802,
+    "seen": 1792546741.7346613,
+    "ast_hash": "606e20f914cccf22f280cc1aac41b6d1",
     "semantic_hash": ""
   },
   "src/server/lucid.ts": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "tests/server/http.test.ts": {
-    "mtime": 1792545631.9882865,
-    "seen": 1792545819.3642232,
-    "ast_hash": "46c88a36afb0aed77467a755bb3952e2",
+    "mtime": 1792546695.1728573,
+    "seen": 1792546741.777066,
+    "ast_hash": "f73bc39a9dacabcb1a37161c0a49854f",
     "semantic_hash": ""
   },
   "tests/stubs/server-only.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792546283.8424785,
-    "seen": 1792546306.9722269,
-    "ast_hash": "6b75a9767bd146e2b3be97f0b2259169",
+    "mtime": 1792546709.7101066,
+    "seen": 1792546741.8179474,
+    "ast_hash": "1bfff42af7f55625420ad74c1af1a0c7",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {

@@ -567,6 +567,8 @@ seguranca_nodes = [
          "motivoDoTutor traduz o codigo; texto livre ou desconhecido vira 'Cancelado pelo tutor' (o motivo sai pelo WhatsApp oficial)."),
     rule("rule_seguranca_whatsapp_texto_seguro", "Mensagem de WhatsApp sem links digitados por usuarios",
          "textoSeguro remove links, quebras de linha e limita tamanho de nomes, pet, local, motivo e servico."),
+    rule("rule_seguranca_parser_trim", "Texto recebido sem espacos nas bordas; vazio vira null; senha intacta",
+         "ApiRequest.limpar: trim no corpo (JSON/form) com vazio -> null; query so trim; chaves com senha/password nao mudam."),
     rule("rule_seguranca_webhook_asaas_token", "Webhook Asaas exige token em producao, tempo constante",
          "webhookAutorizado: sem ASAAS_WEBHOOK_TOKEN so passa fora de producao; timingSafeEqual; 500 sem detalhes."),
 ]
@@ -621,8 +623,8 @@ seguranca_impl = {
 }
 seguranca_impl["src_server_auth_session"] = ["rule_seguranca_token_so_cookie_header", "rule_seguranca_sessao_revogavel"]
 seguranca_impl["src_server_services_auth"] = ["rule_seguranca_email_exato", "rule_seguranca_sessao_revogavel"]
-seguranca_impl["src_server_http"] = ["rule_seguranca_parser_sem_prototipo", "rule_seguranca_corpo_maximo"]
-seguranca_impl["tests_server_http_test"] = ["rule_seguranca_parser_sem_prototipo", "rule_seguranca_corpo_maximo"]
+seguranca_impl["src_server_http"] = ["rule_seguranca_parser_sem_prototipo", "rule_seguranca_corpo_maximo", "rule_seguranca_parser_trim"]
+seguranca_impl["tests_server_http_test"] = ["rule_seguranca_parser_sem_prototipo", "rule_seguranca_corpo_maximo", "rule_seguranca_parser_trim"]
 new_edges += [edge("rule_seguranca_motivo_padrao_tutor", "rule_seguranca_whatsapp_texto_seguro", "references")]
 for code_id, rs in seguranca_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
