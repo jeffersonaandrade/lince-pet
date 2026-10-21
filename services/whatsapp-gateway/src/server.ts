@@ -26,6 +26,8 @@ async function readJson(req: http.IncomingMessage) {
 }
 
 function authorized(req: http.IncomingMessage, url: URL) {
+  // Sem GATEWAY_TOKEN, `?token=` vazio passaria na comparação.
+  if (!config.gatewayToken) return false
   return req.headers['x-gateway-token'] === config.gatewayToken || url.searchParams.get('token') === config.gatewayToken
 }
 

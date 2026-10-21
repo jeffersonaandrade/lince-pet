@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/server/db'
 import { route } from '@/server/http'
 import { setAuthCookie } from '@/server/auth/session'
 import {
@@ -9,7 +8,7 @@ import {
   fetchGoogleUser,
   frontendBaseUrl,
 } from '@/server/auth/google'
-import { tokenFor } from '@/server/services/auth'
+import { findUserByEmail, tokenFor } from '@/server/services/auth'
 
 export const GET = route(async (req) => {
   const origin = req.nextUrl.origin
@@ -27,9 +26,7 @@ export const GET = route(async (req) => {
 
   try {
     const googleUser = await fetchGoogleUser(params.get('code')!, origin)
-    const user = await prisma.user.findFirst({
-      where: { email: { equals: googleUser.email, mode: 'insensitive' } },
-    })
+    const user = await findUserByEmail(googleUser.email)
 
     if (user) {
       const res = redirect(`${frontend}/dashboard`)

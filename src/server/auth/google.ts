@@ -88,6 +88,8 @@ export async function fetchGoogleUser(code: string, origin: string): Promise<Goo
     headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' },
   })
   if (!userRes.ok) throw new Error(`Google userinfo failed: ${userRes.status}`)
-  const body = (await userRes.json()) as { sub: string; name: string; email: string; picture?: string }
+  const body = (await userRes.json()) as { sub: string; name: string; email: string; email_verified?: boolean; picture?: string }
+  // O login casa a conta pelo e-mail; e-mail não verificado no Google permitiria entrar na conta de outra pessoa.
+  if (body.email_verified !== true) throw new Error('Google retornou e-mail não verificado')
   return { id: body.sub, name: body.name, email: body.email, avatarUrl: body.picture ?? null }
 }

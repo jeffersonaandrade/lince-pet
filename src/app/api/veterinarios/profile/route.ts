@@ -15,6 +15,12 @@ import {
   toJsonColumn,
 } from '@/server/services/veterinarios'
 
+/** Dono, vínculo com clínica e foto do endereço não mudam por aqui (foto tem rota de upload própria). */
+const CAMPOS_PROTEGIDOS_ENDERECO = new Set([
+  'id', 'veterinarioId', 'veterinario_id', 'clinicaId', 'clinica_id', 'fotoUrl', 'foto_url',
+  'createdAt', 'created_at', 'updatedAt', 'updated_at',
+])
+
 export const PUT = route(async (req) => {
   const apiReq = await ApiRequest.from(req)
   const currentUser = await requireUser(apiReq, ['veterinario'])
@@ -76,7 +82,10 @@ export const PUT = route(async (req) => {
       })
 
       if (primaryAddress) {
-        const dirty = dirtyFields(primaryAddress, mergeEndereco(endereco as Record<string, unknown>))
+        const editaveis = Object.fromEntries(
+          Object.entries(endereco as Record<string, unknown>).filter(([k]) => !CAMPOS_PROTEGIDOS_ENDERECO.has(k))
+        )
+        const dirty = dirtyFields(primaryAddress, mergeEndereco(editaveis))
         if (Object.keys(dirty).length) {
           await prisma.veterinarioEndereco.update({
             where: { id: primaryAddress.id },

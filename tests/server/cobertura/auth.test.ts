@@ -266,6 +266,17 @@ describe('forgotPassword', () => {
     expect(mocks.sendMail).not.toHaveBeenCalled()
   })
 
+  it('curingas do ILIKE (% e _) são escapados e não acham outro usuário', async () => {
+    prisma.user.findFirst.mockResolvedValueOnce({ ...usuarioBanco })
+    const res = await forgotPassword('%')
+    expect(prisma.user.findFirst).toHaveBeenCalledWith({
+      where: { email: { equals: '\\%', mode: 'insensitive' } },
+    })
+    expect(res.message).toMatch(/Se esse e-mail estiver cadastrado/)
+    expect(prisma.passwordResetToken.create).not.toHaveBeenCalled()
+    expect(mocks.sendMail).not.toHaveBeenCalled()
+  })
+
   it('apaga tokens antigos, cria token de 1h e envia o link pela URL do app', async () => {
     vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://app.teste')
     prisma.user.findFirst.mockResolvedValueOnce({ id: 'user-1', email: 'ana@exemplo.com', nome: 'Ana' })

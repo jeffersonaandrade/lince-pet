@@ -171,11 +171,13 @@ export async function confirmarUpload<T>(resultado: UploadResult, gravar: () => 
     throw error
   }
   const emUso = new Set([resultado.url, ...(opcoes.emUso ?? [])])
+  // A URL anterior pode ter vindo do cliente; só apaga o que está na pasta do mesmo dono (`pasta/donoId/`).
+  const pastaDoDono = resultado.key.split('/').slice(0, 2).join('/') + '/'
   const chaves = new Set(
     (opcoes.anteriores ?? [])
       .filter((url) => url && !emUso.has(url))
       .map((url) => chaveDoBucket(url))
-      .filter((key): key is string => !!key && !key.startsWith('legado/'))
+      .filter((key): key is string => !!key && key.startsWith(pastaDoDono))
   )
   for (const key of chaves) await removerSemFalhar(key)
   return retorno

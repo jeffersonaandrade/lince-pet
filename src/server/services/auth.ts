@@ -38,13 +38,28 @@ export async function tokenFor(user: { id: string; nome: string; sobrenome: stri
   })
 }
 
+/**
+ * `equals` + `mode: 'insensitive'` vira ILIKE no Postgres: `%` e `_` funcionam como curinga.
+ * Escapa os curingas e confere o e-mail exato, para `%` não achar um usuário qualquer.
+ */
+export const filtroEmail = (email: string) => ({
+  email: { equals: email.replace(/[\\%_]/g, (c) => `\\${c}`), mode: 'insensitive' as const },
+})
+
+export const mesmoEmail = <T extends { email: string }>(user: T | null, email: string) =>
+  user && user.email.toLowerCase() === email.toLowerCase() ? user : null
+
+export async function findUserByEmail(email: string) {
+  return mesmoEmail(await prisma.user.findFirst({ where: filtroEmail(email) }), email)
+}
+
 /** Equivalente ao User.verifyCredentials do withAuthFinder (E_INVALID_CREDENTIALS). */
 async function verifyCredentials(email: string, password: string) {
   const invalid = new HttpError(400, { status: 400, message: 'Invalid user credentials' })
-  const user = await prisma.user.findFirst({
-    where: { email: { equals: email, mode: 'insensitive' } },
-    omit: { password: false },
-  })
+  const user = mesmoEmail(
+    await prisma.user.findFirst({ where: filtroEmail(email), omit: { password: false } }),
+    email
+  )
   if (!user) {
     await hashPassword(password)
     throw invalid
@@ -142,9 +157,7 @@ export function getUserProfile(user: CurrentUser) {
 }
 
 export async function forgotPassword(email: string) {
-  const user = await prisma.user.findFirst({
-    where: { email: { equals: email, mode: 'insensitive' } },
-  })
+  const user = await findUserByEmail(email)
   if (!user) return { message: FORGOT_PASSWORD_MESSAGE }
 
   const token = randomBytes(32).toString('hex')

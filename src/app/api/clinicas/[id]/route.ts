@@ -6,6 +6,7 @@ import {
   serializeClinica,
   serializeEndereco,
   usuarioPublico,
+  veterinarioPublico,
 } from '@/server/services/clinicas'
 
 export const GET = route<{ id: string }>(async (_req, { id }) => {
@@ -39,7 +40,7 @@ export const GET = route<{ id: string }>(async (_req, { id }) => {
     ])
 
     const veterinarios = vets.map(({ user: vetUser, avaliacoes: vetAvaliacoes, enderecos, ...vet }) => ({
-      ...vet,
+      ...veterinarioPublico(vet),
       user: usuarioPublico(vetUser),
       especialidades: especialidadesVets.get(vet.id) ?? [],
       avaliacoes: vetAvaliacoes,

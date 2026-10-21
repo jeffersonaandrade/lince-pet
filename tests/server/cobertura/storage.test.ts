@@ -298,6 +298,14 @@ describe('confirmarUpload', () => {
     expect(deletes()).toEqual([`${BASE}/storage/v1/object/lincepet-media/pets/${DONO}/velha.webp`])
   })
 
+  it('não apaga foto de outro dono mesmo que a URL anterior aponte para ela', async () => {
+    const outroDono = '99999999-2222-4333-8444-555555555555'
+    await confirmarUpload(novo, async () => 'ok', {
+      anteriores: [`${PUBLICO}/pets/${outroDono}/da-vitima.webp`, `${PUBLICO}/clinicas/${DONO}/perfil/x.webp`],
+    })
+    expect(deletes()).toEqual([])
+  })
+
   it('sem opções só grava', async () => {
     await confirmarUpload(novo, async () => 1)
     expect(fetchMock).not.toHaveBeenCalled()

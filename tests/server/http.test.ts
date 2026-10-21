@@ -65,6 +65,25 @@ describe('ApiRequest (equivalente ao bodyparser do Adonis)', () => {
     expect(r.text('cidade')).toBe('Recife')
     expect(r.text('idade')).toBe('3')
   })
+
+  it('chaves __proto__/constructor/prototype não poluem Object.prototype', async () => {
+    const form = new FormData()
+    form.append('__proto__[viaForm]', 'x')
+    const req = new NextRequest(
+      'http://x/api/a?__proto__[token]=jwt&constructor[prototype][bcc]=a@x.com&a[__proto__][b]=1&ok=1',
+      { method: 'POST', body: form }
+    )
+    const r = await ApiRequest.from(req)
+    expect(r.all()).toEqual({ ok: '1' })
+    const vazio = {} as Record<string, unknown>
+    expect(vazio.token).toBeUndefined()
+    expect(vazio.bcc).toBeUndefined()
+    expect(vazio.viaForm).toBeUndefined()
+    expect(r.input('token')).toBeUndefined()
+    expect(r.input('toString')).toBeUndefined()
+    expect(r.text('hasOwnProperty')).toBeUndefined()
+    expect(r.only(['token', 'ok' as const])).toEqual({ ok: '1' })
+  })
 })
 
 describe('texto', () => {

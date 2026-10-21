@@ -36,8 +36,9 @@ export function extractToken(req: ApiRequest) {
   const fromCookie = tokenFromCookie(req.cookie(AUTH_COOKIE))
   if (fromCookie) return fromCookie
   const header = req.header('authorization')
-  if (header?.startsWith('Bearer ')) return header.slice(7)
-  return (req.input('token') as string | undefined) || null
+  if (header?.startsWith('Bearer ')) return header.slice(7) || null
+  // Token na URL ou no corpo vaza em logs e histórico; só cookie ou header.
+  return null
 }
 
 /** Carrega o usuário com o perfil do seu tipo (equivalente ao preload do Lucid). */

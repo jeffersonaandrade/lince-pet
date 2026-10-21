@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 import { env, requiredEnv } from '@/server/env'
 import { googleCalendar } from '@/server/services/google-calendar'
+import { ApiRequest } from '@/server/http'
+import { optionalUser } from '@/server/auth/session'
 
 type CalendarState = { userId?: string; redirectTo?: string }
 
@@ -12,6 +14,24 @@ async function decodeState(state: string) {
 }
 
 const withParam = (url: string, param: string) => `${url}${url.includes('?') ? '&' : '?'}${param}`
+
+/** Só aceita URL absoluta do próprio app; outra origem viraria redirecionamento aberto (phishing). */
+function origemPermitida(url: string) {
+  const permitidas = [env('FRONTEND_BASE_URL'), env('NEXT_PUBLIC_APP_URL'), 'http://localhost:3000']
+    .filter((u): u is string => !!u)
+    .map((u) => {
+      try {
+        return new URL(u).origin
+      } catch {
+        return null
+      }
+    })
+  try {
+    return permitidas.includes(new URL(url).origin)
+  } catch {
+    return false
+  }
+}
 
 export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams
@@ -28,11 +48,12 @@ export async function GET(req: NextRequest) {
       const decoded = await decodeState(state)
       if (decoded.redirectTo) {
         if (decoded.redirectTo.startsWith('http://') || decoded.redirectTo.startsWith('https://')) {
+          if (!origemPermitida(decoded.redirectTo)) throw new Error('redirectTo fora do app')
           isFullUrl = true
           redirectToPath = decoded.redirectTo
           frontendBaseUrl = new URL(decoded.redirectTo).origin
         } else {
-          redirectToPath = decoded.redirectTo.startsWith('/') ? decoded.redirectTo : `/${decoded.redirectTo}`
+          redirectToPath = `/${decoded.redirectTo.replace(/^[/\\]+/, '')}`
         }
       }
     } catch (err) {
@@ -58,6 +79,13 @@ export async function GET(req: NextRequest) {
   try {
     const { userId } = await decodeState(state)
     if (!userId) throw new Error('UserId ausente no state JWT.')
+
+    // O state é assinado mas não prova quem está no navegador: sem isto, a agenda de outra pessoa ficaria na conta do atacante.
+    const sessao = await optionalUser(await ApiRequest.from(req)).catch(() => null)
+    if (sessao?.id !== userId) {
+      console.warn('[Google Calendar] Sessão do navegador não corresponde ao state.')
+      return NextResponse.redirect(errorUrl('session_mismatch'))
+    }
 
     await googleCalendar.exchangeCodeForTokens(code, userId)
     return NextResponse.redirect(successUrl('google_calendar=success'))

@@ -165,11 +165,15 @@ function convertEmptyStrings(value: unknown): unknown {
 /** Monta objeto a partir de chaves estilo `campo[0][sub]` (como o bodyparser do Adonis). */
 type Campos = Record<string, unknown>
 
+const CHAVES_PROIBIDAS = new Set(['__proto__', 'constructor', 'prototype'])
+
 function setDeep(target: Campos, key: string, value: unknown) {
   const path = key.replace(/\]/g, '').split('[').filter((p) => p !== '')
+  // Sem isto, `?__proto__[x]=y` escreve em Object.prototype e afeta o processo inteiro.
+  if (path.some((p) => CHAVES_PROIBIDAS.has(p))) return
   let node = target
   path.forEach((part, i) => {
-    const atual = node[part]
+    const atual = Object.hasOwn(node, part) ? node[part] : undefined
     if (i === path.length - 1) {
       if (atual === undefined) node[part] = value
       else if (Array.isArray(atual)) atual.push(value)
@@ -231,18 +235,20 @@ export class ApiRequest {
   }
 
   input<T = unknown>(key: string, defaultValue?: T): T {
-    const value = this.all()[key]
+    const all = this.all()
+    const value = Object.hasOwn(all, key) ? all[key] : undefined
     return (value === undefined ? defaultValue : value) as T
   }
 
   /** Campo de texto (query ou corpo); qualquer outro tipo vira `undefined`. */
   text(key: string): string | undefined {
-    return texto(this.all()[key])
+    const all = this.all()
+    return Object.hasOwn(all, key) ? texto(all[key]) : undefined
   }
 
   only<K extends string>(keys: K[]): Record<K, unknown> {
     const all = this.all()
-    return Object.fromEntries(keys.filter((k) => k in all).map((k) => [k, all[k]])) as Record<K, unknown>
+    return Object.fromEntries(keys.filter((k) => Object.hasOwn(all, k)).map((k) => [k, all[k]])) as Record<K, unknown>
   }
 
   file(name: string, options?: FileOptions): UploadedFile | null {

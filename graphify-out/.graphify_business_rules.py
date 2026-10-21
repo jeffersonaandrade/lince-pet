@@ -532,6 +532,55 @@ storage_impl = {
 for code_id, rs in storage_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 
+seguranca_nodes = [
+    rule("rule_seguranca_parser_sem_prototipo", "Parser de requisicao ignora __proto__/constructor/prototype",
+         "ApiRequest (setDeep) descarta essas chaves na query e no formulario e so le campos proprios (Object.hasOwn); evita poluir Object.prototype do processo (auditoria 10/2026)."),
+    rule("rule_seguranca_token_so_cookie_header", "Token de sessao so por cookie ou Authorization Bearer",
+         "extractToken nao le token da query string nem do corpo (vazava em logs/historico e era gadget da poluicao de prototipo)."),
+    rule("rule_seguranca_email_exato", "E-mail comparado sem maiusculas mas exato (sem curinga ILIKE)",
+         "findUserByEmail/filtroEmail escapam % e _ e conferem o e-mail; login, esqueci a senha e login Google."),
+    rule("rule_seguranca_google_email_verificado", "Login Google so com email_verified",
+         "fetchGoogleUser recusa e-mail nao verificado: o login casa a conta pelo e-mail."),
+    rule("rule_seguranca_calendar_sessao", "Google Agenda: callback exige a mesma sessao do state e redirect so para o app",
+         "Usuario logado no navegador = userId do state, senao session_mismatch; redirect_to absoluto so com origem FRONTEND_BASE_URL/NEXT_PUBLIC_APP_URL."),
+    rule("rule_seguranca_agendamento_clinica_vinculo", "Agendamento so vincula clinica com vinculo aceito",
+         "POST /agendamentos: clinica_id sem veterinario_clinicas aceito = 400; endereco de clinica sem vinculo aceito nao da a consulta a clinica."),
+    rule("rule_seguranca_endereco_campos_protegidos", "Perfil do vet nao muda dono, clinica, id nem foto do endereco",
+         "PUT /veterinarios/profile ignora id, veterinario_id, clinica_id, foto_url e timestamps do endereco principal."),
+    rule("rule_seguranca_vet_documentos_privados", "CPF/CNPJ do vet nunca em rota de terceiros",
+         "veterinarioPublico remove cpf, cnpj, creditos e dados de plano em GET /clinicas/:id e na busca de profissionais."),
+    rule("rule_seguranca_storage_apaga_so_do_dono", "Storage: so apaga foto anterior da pasta do mesmo dono",
+         "confirmarUpload so remove chaves com prefixo pasta/donoId/ do upload novo; URL anterior vinda do cliente nao apaga foto alheia."),
+    rule("rule_seguranca_gateway_sem_token_fecha", "Gateway WhatsApp sem GATEWAY_TOKEN recusa tudo",
+         "authorized() retorna false quando o token nao esta configurado (antes ?token= vazio passava)."),
+]
+nodes_ids = {n["id"] for n in new_nodes}
+new_nodes += [n for n in seguranca_nodes if n["id"] not in nodes_ids]
+seguranca_rules = [n["id"] for n in seguranca_nodes]
+new_edges += [edge("concept_regras_de_negocio", r) for r in seguranca_rules]
+new_edges += [edge("rule_seguranca_storage_apaga_so_do_dono", "rule_storage_consistencia", "references")]
+new_edges += [edge("rule_seguranca_vet_documentos_privados", "rule_perfil_publico_sem_pii", "references")]
+seguranca_impl = {
+    "src_server_http": ["rule_seguranca_parser_sem_prototipo"],
+    "tests_server_http_test": ["rule_seguranca_parser_sem_prototipo"],
+    "src_server_auth_session": ["rule_seguranca_token_so_cookie_header"],
+    "src_server_services_auth": ["rule_seguranca_email_exato"],
+    "tests_server_cobertura_auth_test": ["rule_seguranca_email_exato"],
+    "src_app_api_auth_google_callback_route": ["rule_seguranca_email_exato", "rule_seguranca_google_email_verificado"],
+    "src_server_auth_google": ["rule_seguranca_google_email_verificado"],
+    "src_app_api_google_calendar_callback_route": ["rule_seguranca_calendar_sessao"],
+    "src_app_api_agendamentos_route": ["rule_seguranca_agendamento_clinica_vinculo"],
+    "src_app_api_veterinarios_profile_route": ["rule_seguranca_endereco_campos_protegidos"],
+    "src_server_services_clinicas": ["rule_seguranca_vet_documentos_privados"],
+    "src_app_api_clinicas_id_route": ["rule_seguranca_vet_documentos_privados"],
+    "src_app_api_clinicas_professionals_search_route": ["rule_seguranca_vet_documentos_privados"],
+    "src_server_services_storage": ["rule_seguranca_storage_apaga_so_do_dono"],
+    "tests_server_cobertura_storage_test": ["rule_seguranca_storage_apaga_so_do_dono"],
+    "services_whatsapp_gateway_src_server": ["rule_seguranca_gateway_sem_token_fecha"],
+}
+for code_id, rs in seguranca_impl.items():
+    impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

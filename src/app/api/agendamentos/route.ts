@@ -105,8 +105,16 @@ export const POST = route(async (req) => {
     }
 
     let finalClinicaId: string | null = clinica_id || null
+    const vinculoAceito = (clinicaId: string) =>
+      prisma.veterinarioClinica.findFirst({
+        where: { veterinarioId: veterinario.id, clinicaId, status: 'aceito' },
+        select: { clinicaId: true },
+      })
 
     if (clinica_id) {
+      if (!(await vinculoAceito(clinica_id))) {
+        return badRequest({ message: 'Este profissional não atende por esta clínica' })
+      }
       const clinica = await prisma.clinica.findUnique({ where: { id: clinica_id } })
       if (clinica) {
         localNome = clinica.nomeClinica
@@ -120,7 +128,8 @@ export const POST = route(async (req) => {
     } else if (tipo_consulta === 'presencial' && endereco_id) {
       const selectedAddress = veterinario.enderecos.find((e) => e.id === endereco_id)
       if (selectedAddress && selectedAddress.clinicaId) {
-        finalClinicaId = selectedAddress.clinicaId
+        // Endereço de clínica de um vínculo já desfeito não dá à clínica acesso ao agendamento (contato do tutor, prontuário).
+        if (await vinculoAceito(selectedAddress.clinicaId)) finalClinicaId = selectedAddress.clinicaId
         finalPrice = selectedAddress.precoConsulta || finalPrice
       }
     }

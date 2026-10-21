@@ -1,7 +1,7 @@
 import { prisma } from '@/server/db'
 import { ApiRequest, ok, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
-import { usuarioPublico } from '@/server/services/clinicas'
+import { usuarioPublico, veterinarioPublico } from '@/server/services/clinicas'
 
 export const GET = route(async (req) => {
   const request = await ApiRequest.from(req)
@@ -34,7 +34,7 @@ export const GET = route(async (req) => {
     // A clínica vê o e-mail para identificar o profissional antes de convidar; celular e endereço ficam de fora.
     return ok({
       profissionais: vets.map(({ user, ...vet }) => ({
-        ...vet,
+        ...veterinarioPublico(vet),
         user: user ? { ...usuarioPublico(user), email: user.email } : null,
       })),
     })

@@ -33,12 +33,13 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 
 ## Fluxos principais
 
-- **Login:** `POST /api/auth/login` grava o cookie `auth_token`; `GET /api/auth/me` devolve o usuário; o frontend não guarda token.
-- **Google:** login social em `/api/auth/google/*` (state em cookie) e Calendar em `/api/google/calendar/*` (state JWT).
-- **Agendamento:** `POST /api/agendamentos` checa limite do plano, grava, notifica (in-app; e-mail e WhatsApp conforme "Canais de aviso e Google Agenda") e cria evento no Google Agenda via `after()`.
+- **Login:** `POST /api/auth/login` grava o cookie `auth_token`; `GET /api/auth/me` devolve o usuário; o frontend não guarda token. O token só é lido do cookie ou do header `Authorization: Bearer`, nunca da query string ou do corpo. E-mail de login, recuperação de senha e Google é comparado sem maiúsculas, mas de forma exata (`findUserByEmail`: `%` e `_` não funcionam como curinga).
+- **Parser de requisição:** `ApiRequest` ignora chaves `__proto__`, `constructor` e `prototype` na query e em formulários (evita poluir `Object.prototype` do processo) e só lê campos próprios do objeto.
+- **Google:** login social em `/api/auth/google/*` (state em cookie; só aceita conta Google com `email_verified`) e Calendar em `/api/google/calendar/*` (state JWT + sessão do navegador).
+- **Agendamento:** `POST /api/agendamentos` só aceita `clinica_id` de clínica com vínculo `aceito` com o vet (senão 400); endereço do vet ligado a uma clínica sem vínculo aceito não dá à clínica a consulta. Checa limite do plano, grava, notifica (in-app; e-mail e WhatsApp conforme "Canais de aviso e Google Agenda") e cria evento no Google Agenda via `after()`.
 - **Assinaturas:** `/api/assinaturas/*` são wrappers finos de `src/server/services/assinaturas.ts` (contratar, trocar, cancelar), que cria/cancela no Asaas; `POST /api/webhooks/asaas` é idempotente via `webhook_events.event_id` e é quem aplica plano/status (ver "Assinatura").
 - **Uploads:** multipart -> `UploadedFile` (tamanho/extensão) -> `src/server/services/storage.ts` (sharp + Supabase Storage) -> URL pública gravada no banco. Detalhes em "Storage de imagens".
-- **Agenda:** a grade semanal fica em `veterinario_enderecos.horarios_funcionamento` (presencial) e `veterinarios.horarios_online`, editada no Perfil. Bloqueios pontuais ficam em `bloqueios_agenda` (`src/server/services/bloqueios.ts`). `GET /api/agendamentos/disponibilidade/:vet` devolve `horarios_ocupados` (consultas + bloqueios), `horarios_bloqueados` e `dia_bloqueado`.
+- **Agenda:** a grade semanal fica em `veterinario_enderecos.horarios_funcionamento` (presencial) e `veterinarios.horarios_online`, editada no Perfil. `PUT /api/veterinarios/profile` não altera dono (`veterinario_id`), clínica (`clinica_id`), id nem foto do endereço principal: esses campos são ignorados (foto tem upload próprio; clínica só por vínculo aceito). Bloqueios pontuais ficam em `bloqueios_agenda` (`src/server/services/bloqueios.ts`). `GET /api/agendamentos/disponibilidade/:vet` devolve `horarios_ocupados` (consultas + bloqueios), `horarios_bloqueados` e `dia_bloqueado`.
 
 ## Regras de negócio
 
@@ -100,6 +101,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 
 - **Sem dado pessoal:** `GET /api/clinicas`, `GET /api/clinicas/:id` e `GET /api/veterinarios/:id` (e a busca) não devolvem e-mail, celular nem endereço do usuário; o usuário vinculado sai só como `id`, `nome`, `sobrenome`, `profilePic` (`usuarioPublico`). O telefone exibido é o da clínica, cadastrado por ela.
 - **Busca de profissionais para vincular** (`GET /api/clinicas/professionals/search`): só clínica (outros perfis: 403). Mostra e-mail para a clínica conferir quem está convidando; nunca celular ou endereço.
+- **Documento do veterinário nunca é público:** CPF, CNPJ, créditos e dados do plano do vet saem de `GET /api/clinicas/:id` e da busca de profissionais (`veterinarioPublico`). Ficam só no próprio perfil (`/api/auth/me`).
 - **Sem dado inventado:** campo vazio aparece vazio ou como "Não informado"/"Valor a combinar" (nunca preço, comodidade, convênio ou telefone fictício). Preço da consulta na clínica: o do endereço do vet naquela clínica; sem endereço, o `precoConsulta` do vet (`src/lib/clinica-perfil.ts`).
 
 ### Site institucional e links
@@ -146,6 +148,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **E-mail desligável por completo:** como o código de início da consulta ia só por e-mail, ele aparece no painel do tutor (`codigo_inicio` em `GET /api/agendamentos`) nas consultas futuras não canceladas e não iniciadas.
 - **Google Agenda = conexão:** o canal fica ativo enquanto a conta Google estiver conectada; não há interruptor separado. Tutor e vet conectam a própria conta (`/api/google/calendar/auth`). Para o vet, conectar exige plano Pro (trava no front).
 - **Sincronização do evento:** criar consulta insere o evento na agenda de cada participante conectado; remarcar atualiza o evento (se sumiu no Google, cria outro); cancelar (pelo tutor ou por bloqueio de agenda) apaga o evento. O id fica em `agendamento_google_eventos` (consulta x usuário). Falha do Google nunca derruba o fluxo; 401/403 desliga a integração do usuário.
+- **Conexão presa à sessão:** o callback (`/api/google/calendar/callback`) só grava os tokens se o usuário logado no navegador for o mesmo do `state`; senão redireciona com `google_calendar_error=session_mismatch`. `redirect_to` absoluto só vale para a origem do app (`FRONTEND_BASE_URL`/`NEXT_PUBLIC_APP_URL`); outra origem é ignorada.
 - **Desconectar:** `POST /api/google/calendar/disconnect` revoga o token no Google (melhor esforço) e limpa as credenciais. Para de criar eventos novos; não apaga consultas da plataforma nem os eventos já criados no Google.
 
 ### Prestadores de serviço pet
@@ -181,7 +184,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Onde:** Supabase Storage, bucket público `lincepet-media` (criado via MCP, migração `storage_bucket_lincepet_media`): `file_size_limit` 5 MB, `allowed_mime_types = {image/webp}`, nenhuma policy em `storage.objects`. Leitura é pública; só o backend escreve, com `SUPABASE_SERVICE_ROLE_KEY` (nunca `NEXT_PUBLIC_*`). Só fotos de exibição pública (perfil, capa, local, pet); documento privado não vai para este bucket.
 - **Caminhos por dono** (id do banco/sessão, validado como UUID; nada do cliente entra no caminho): `veterinarios/{vetId}/perfil|uploads/`, `veterinarios/{vetId}/locais/{enderecoId}/`, `clinicas/{clinicaId}/perfil|capa/`, `pets/{petId}/`, `tutores/{userId}/`, `prestadores/{prestadorId}/`, sempre `{uuid}.webp`. Fotos antigas migradas ficam em `legado/{caminho-original}.webp` (o bucket só aceita WebP, então passam pelo mesmo `sharp`).
 - **Validação:** as rotas checam tamanho (5 MB) e extensão; o `sharp` decodifica o conteúdo de verdade (jpeg, png, webp ou gif; ignora o MIME do navegador), corrige a rotação, limita a 1600px e grava WebP q82 sem metadados (EXIF/GPS). Vazio, corrompido, SVG ou não-imagem: 400 "Arquivo de imagem inválido". Upload com `x-upsert: false` (nunca sobrescreve).
-- **Consistência:** `confirmarUpload` grava a URL no banco; se a gravação falhar, apaga o objeto recém-enviado. Se der certo, apaga a foto anterior **só** se for do nosso bucket, fora de `legado/` e não referenciada em outra coluna (ex.: `users.profile_pic`). URLs da AWS/CloudFront e externas nunca são apagadas.
+- **Consistência:** `confirmarUpload` grava a URL no banco; se a gravação falhar, apaga o objeto recém-enviado. Se der certo, apaga a foto anterior **só** se for do nosso bucket, estiver na pasta do mesmo dono do upload novo (`pasta/donoId/`, o que já exclui `legado/`) e não for referenciada em outra coluna (ex.: `users.profile_pic`). Como a URL anterior pode ter vindo do cliente, apontar a própria foto para a de outra pessoa não apaga a dela. URLs da AWS/CloudFront e externas nunca são apagadas.
 - **Cadastro de veterinário:** cria o usuário primeiro e depois envia a foto para a pasta do novo veterinário; falha na foto não impede o cadastro.
 - **URL de foto vinda do cliente:** campos JSON/form que recebem URL (`foto_url` do pet, `fotoUrl` do passo 4 da clínica) só aceitam URL do nosso bucket (`fotoDoCliente` -> `chaveDoBucket`) ou vazio; qualquer outra (site externo, outro projeto, AWS, `..`) responde 400 sem gravar. A foto nova entra sempre pelo upload.
 - **Erros:** log com status, chave e `sb-request-id`; nunca headers ou chave.

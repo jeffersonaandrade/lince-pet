@@ -26,6 +26,18 @@ export const serializeRelatedUser = (user: Partial<User> | null | undefined) => 
 export const usuarioPublico = (user: Partial<User> | null | undefined) =>
   user ? { id: user.id, nome: user.nome, sobrenome: user.sobrenome, profilePic: user.profilePic } : null
 
+/** Veterinário exibido a terceiros: sem documentos (CPF/CNPJ, LGPD) nem dados internos de plano e créditos. */
+const CAMPOS_PRIVADOS_VETERINARIO = new Set([
+  'cpf', 'cnpj', 'creditos', 'subscriptionPlanCode', 'monthlyAppointmentsUsed', 'monthlyAppointmentsResetAt',
+])
+
+export function veterinarioPublico<T extends Record<string, unknown>>(vet: T) {
+  return Object.fromEntries(Object.entries(vet).filter(([k]) => !CAMPOS_PRIVADOS_VETERINARIO.has(k))) as Omit<
+    T,
+    'cpf' | 'cnpj' | 'creditos' | 'subscriptionPlanCode' | 'monthlyAppointmentsUsed' | 'monthlyAppointmentsResetAt'
+  >
+}
+
 /** Preload de `especialidades` (pivot polimórfica especialidade_relacionamentos). */
 export async function especialidadesPorEntidade(ids: string[], tipo: 'clinica' | 'veterinario') {
   const map = new Map<string, Especialidade[]>()
