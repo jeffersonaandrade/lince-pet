@@ -332,7 +332,7 @@ describe('resetPassword', () => {
     await expect(resetPassword('tok', 'nova')).rejects.toThrow('Usuário não encontrado.')
   })
 
-  it('grava a nova senha com hash e consome o token', async () => {
+  it('grava a nova senha com hash, derruba as sessões abertas e consome o token', async () => {
     prisma.passwordResetToken.findUnique.mockResolvedValueOnce({ id: 'rt-1', userId: 'user-1', expiresAt: futuro() })
     prisma.user.findUnique.mockResolvedValueOnce({ id: 'user-1' })
 
@@ -342,7 +342,7 @@ describe('resetPassword', () => {
     expect(prisma.passwordResetToken.findUnique).toHaveBeenCalledWith({ where: { token: 'tok' } })
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: 'user-1' },
-      data: { password: 'hash(NovaSenha@1)', updatedAt: expect.any(Date) },
+      data: { password: 'hash(NovaSenha@1)', tokenVersion: { increment: 1 }, updatedAt: expect.any(Date) },
     })
     expect(prisma.passwordResetToken.delete).toHaveBeenCalledWith({ where: { id: 'rt-1' } })
   })

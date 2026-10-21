@@ -56,17 +56,42 @@ export async function loadUser(userId: string): Promise<CurrentUser | null> {
   return { ...user, userType, tutor, veterinario, clinica, prestador }
 }
 
+const sessaoRevogada = async (jti: string | undefined) =>
+  !!jti && !!(await prisma.sessaoRevogada.findUnique({ where: { jti }, select: { jti: true } }))
+
+/** Token válido, não encerrado no logout e da versão atual do usuário (redefinir senha sobe a versão). */
+async function sessaoDoToken(token: string) {
+  const decoded = await verifyToken(token)
+  if (!decoded) return { erro: 'Token inválido' as const }
+  const [user, revogada] = await Promise.all([loadUser(String(decoded.userId)), sessaoRevogada(decoded.jti)])
+  if (!user) return { erro: 'Usuário não encontrado' as const }
+  if (revogada || (decoded.tv ?? 0) !== (user.tokenVersion ?? 0)) return { erro: 'Sessão encerrada' as const }
+  return { user, decoded }
+}
+
 /** Equivalente ao jwt_auth_middleware (mesmas mensagens e status). */
 export async function authenticate(req: ApiRequest): Promise<CurrentUser> {
   const token = extractToken(req)
   if (!token) throw new HttpError(401, { message: 'Token de autenticação não encontrado' })
 
-  const decoded = await verifyToken(token)
-  if (!decoded) throw new HttpError(401, { message: 'Token inválido' }, { clearAuthCookie: true })
+  const sessao = await sessaoDoToken(token)
+  if ('erro' in sessao) throw new HttpError(401, { message: sessao.erro }, { clearAuthCookie: true })
+  return sessao.user
+}
 
-  const user = await loadUser(String(decoded.userId))
-  if (!user) throw new HttpError(401, { message: 'Usuário não encontrado' }, { clearAuthCookie: true })
-  return user
+/** Encerra só a sessão deste token (outras sessões do usuário continuam). Token inválido: nada a fazer. */
+export async function revogarSessao(token: string | null) {
+  const decoded = token ? await verifyToken(token) : null
+  if (!decoded?.jti || !decoded.exp) return
+  const agora = new Date()
+  await prisma.$transaction([
+    prisma.sessaoRevogada.deleteMany({ where: { expiraEm: { lt: agora } } }),
+    prisma.sessaoRevogada.upsert({
+      where: { jti: decoded.jti },
+      create: { jti: decoded.jti, expiraEm: new Date(decoded.exp * 1000) },
+      update: {},
+    }),
+  ])
 }
 
 /** jwt_auth_middleware + user_type_middleware. */
@@ -88,8 +113,8 @@ export async function requireUser(req: ApiRequest, allowed?: UserType[]): Promis
 export async function optionalUser(req: ApiRequest) {
   const token = extractToken(req)
   if (!token) return null
-  const decoded = await verifyToken(token)
-  return decoded ? loadUser(String(decoded.userId)) : null
+  const sessao = await sessaoDoToken(token)
+  return 'erro' in sessao ? null : sessao.user
 }
 
 export function setAuthCookie(res: NextResponse, token: string) {

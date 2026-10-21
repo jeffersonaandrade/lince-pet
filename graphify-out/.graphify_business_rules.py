@@ -553,6 +553,22 @@ seguranca_nodes = [
          "confirmarUpload so remove chaves com prefixo pasta/donoId/ do upload novo; URL anterior vinda do cliente nao apaga foto alheia."),
     rule("rule_seguranca_gateway_sem_token_fecha", "Gateway WhatsApp sem GATEWAY_TOKEN recusa tudo",
          "authorized() retorna false quando o token nao esta configurado (antes ?token= vazio passava)."),
+    rule("rule_seguranca_sessao_revogavel", "Sessao de 7 dias; redefinir senha derruba todas, logout so a atual",
+         "JWT com jti e tv (users.token_version); reset de senha incrementa token_version; logout grava o jti em sessoes_revogadas ate expirar; tv diferente ou jti revogado = 401 Sessao encerrada."),
+    rule("rule_seguranca_jwt_tipo_proprio", "JWT de sessao com typ JWT; state do Google Agenda com typ proprio",
+         "verifyToken exige typ JWT; o state do Calendar (typ google-calendar-state) nao vale como sessao."),
+    rule("rule_seguranca_limite_tentativas", "Limite de tentativas por IP em login, senha e cadastro",
+         "Em memoria por instancia: login 10/15min, esqueci/redefinir senha 5/15min, cadastros 10/1h; acima disso 429."),
+    rule("rule_seguranca_corpo_maximo", "Corpo da requisicao ate 6 MB antes de autenticar",
+         "ApiRequest.from recusa com 413 pelo content-length ou contando os bytes lidos."),
+    rule("rule_seguranca_cabecalhos", "Cabecalhos de seguranca em todas as rotas",
+         "HSTS, X-Frame-Options DENY, frame-ancestors none, nosniff, Referrer-Policy, Permissions-Policy (so geolocation self), sem X-Powered-By."),
+    rule("rule_seguranca_motivo_padrao_tutor", "Tutor cancela com motivo de lista fixa, nunca texto livre",
+         "motivoDoTutor traduz o codigo; texto livre ou desconhecido vira 'Cancelado pelo tutor' (o motivo sai pelo WhatsApp oficial)."),
+    rule("rule_seguranca_whatsapp_texto_seguro", "Mensagem de WhatsApp sem links digitados por usuarios",
+         "textoSeguro remove links, quebras de linha e limita tamanho de nomes, pet, local, motivo e servico."),
+    rule("rule_seguranca_webhook_asaas_token", "Webhook Asaas exige token em producao, tempo constante",
+         "webhookAutorizado: sem ASAAS_WEBHOOK_TOKEN so passa fora de producao; timingSafeEqual; 500 sem detalhes."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in seguranca_nodes if n["id"] not in nodes_ids]
@@ -577,7 +593,35 @@ seguranca_impl = {
     "src_server_services_storage": ["rule_seguranca_storage_apaga_so_do_dono"],
     "tests_server_cobertura_storage_test": ["rule_seguranca_storage_apaga_so_do_dono"],
     "services_whatsapp_gateway_src_server": ["rule_seguranca_gateway_sem_token_fecha"],
+    "src_server_auth_jwt": ["rule_seguranca_sessao_revogavel", "rule_seguranca_jwt_tipo_proprio"],
+    "src_app_api_auth_logout_route": ["rule_seguranca_sessao_revogavel"],
+    "tests_server_sessao_test": ["rule_seguranca_sessao_revogavel", "rule_seguranca_jwt_tipo_proprio"],
+    "src_server_services_google_calendar": ["rule_seguranca_jwt_tipo_proprio"],
+    "src_server_rate_limit": ["rule_seguranca_limite_tentativas"],
+    "tests_server_rate_limit_test": ["rule_seguranca_limite_tentativas"],
+    "src_app_api_auth_login_route": ["rule_seguranca_limite_tentativas"],
+    "src_app_api_auth_forgot_password_route": ["rule_seguranca_limite_tentativas"],
+    "src_app_api_auth_reset_password_route": ["rule_seguranca_limite_tentativas"],
+    "src_app_api_tutor_register_route": ["rule_seguranca_limite_tentativas"],
+    "src_app_api_clinicas_register_route": ["rule_seguranca_limite_tentativas"],
+    "src_app_api_veterinarios_route": ["rule_seguranca_limite_tentativas"],
+    "src_app_api_prestadores_register_route": ["rule_seguranca_limite_tentativas"],
+    "next_config": ["rule_seguranca_cabecalhos"],
+    "src_lib_motivos_cancelamento": ["rule_seguranca_motivo_padrao_tutor"],
+    "tests_lib_motivos_cancelamento_test": ["rule_seguranca_motivo_padrao_tutor"],
+    "src_app_api_agendamentos_id_cancelar_route": ["rule_seguranca_motivo_padrao_tutor"],
+    "src_server_services_pedidos_prestador": ["rule_seguranca_motivo_padrao_tutor"],
+    "src_server_services_whatsapp_mensagens": ["rule_seguranca_whatsapp_texto_seguro"],
+    "tests_server_cobertura_whatsapp_mensagens_test": ["rule_seguranca_whatsapp_texto_seguro"],
+    "src_server_services_assinatura_regras": ["rule_seguranca_webhook_asaas_token"],
+    "src_app_api_webhooks_asaas_route": ["rule_seguranca_webhook_asaas_token"],
+    "tests_server_assinatura_regras_test": ["rule_seguranca_webhook_asaas_token"],
 }
+seguranca_impl["src_server_auth_session"] = ["rule_seguranca_token_so_cookie_header", "rule_seguranca_sessao_revogavel"]
+seguranca_impl["src_server_services_auth"] = ["rule_seguranca_email_exato", "rule_seguranca_sessao_revogavel"]
+seguranca_impl["src_server_http"] = ["rule_seguranca_parser_sem_prototipo", "rule_seguranca_corpo_maximo"]
+seguranca_impl["tests_server_http_test"] = ["rule_seguranca_parser_sem_prototipo", "rule_seguranca_corpo_maximo"]
+new_edges += [edge("rule_seguranca_motivo_padrao_tutor", "rule_seguranca_whatsapp_texto_seguro", "references")]
 for code_id, rs in seguranca_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 

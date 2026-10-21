@@ -51,7 +51,7 @@ describe('Google OAuth (equivalente ao ally)', () => {
 })
 
 describe('Cookie de autenticação', () => {
-  it('define auth_token httpOnly por 30 dias e limpa no logout', () => {
+  it('define auth_token httpOnly por 7 dias e limpa no logout', () => {
     const res = NextResponse.json({})
     setAuthCookie(res, 'jwt')
     expect(res.cookies.get('auth_token')).toMatchObject({
@@ -59,7 +59,7 @@ describe('Cookie de autenticação', () => {
       httpOnly: true,
       sameSite: 'lax',
       path: '/',
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: 7 * 24 * 60 * 60,
     })
     clearAuthCookie(res)
     expect(res.cookies.get('auth_token')).toMatchObject({ value: '', maxAge: 0 })

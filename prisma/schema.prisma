@@ -75,6 +75,8 @@ model User {
   /// Canais de aviso de consultas (1 = ligado). O Google Agenda vale enquanto a conta estiver conectada.
   notificarEmail           Int       @default(1) @map("notificar_email") @db.SmallInt
   notificarWhatsapp        Int       @default(1) @map("notificar_whatsapp") @db.SmallInt
+  /// Sobe a cada redefinição de senha; JWT com versão menor deixa de valer (derruba todas as sessões).
+  tokenVersion             Int       @default(0) @map("token_version")
 
   // TODO(verify): no Lucid são hasOne, mas user_id não tem UNIQUE nas migrations, então o Prisma exige lista.
   tutor               Tutor[]
@@ -868,6 +870,15 @@ model Subscription {
 
   @@index([prestadorId])
   @@map("subscriptions")
+}
+
+/// JWT encerrado no logout antes de expirar (só o `jti` daquela sessão). Linha vencida pode ser apagada.
+model SessaoRevogada {
+  jti      String   @id @db.Char(36)
+  expiraEm DateTime @map("expira_em") @db.Timestamp(0)
+
+  @@index([expiraEm])
+  @@map("sessoes_revogadas")
 }
 
 model PasswordResetToken {

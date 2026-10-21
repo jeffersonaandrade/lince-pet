@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { NextRequest } from 'next/server'
 import vine from '@vinejs/vine'
-import { ApiRequest, HttpError, handleError, ok, texto } from '@/server/http'
+import { ApiRequest, CORPO_MAXIMO, HttpError, handleError, ok, texto } from '@/server/http'
 
 describe('json (corpo das respostas)', () => {
   it('nunca envia senha nem tokens do Google, mesmo em relações aninhadas', async () => {
@@ -32,6 +32,22 @@ describe('ApiRequest (equivalente ao bodyparser do Adonis)', () => {
     const r = await ApiRequest.from(req)
     expect(r.all()).toEqual({ page: '2', q: 'abc', nome: 'Ana', bio: null })
     expect(r.only(['nome', 'page'])).toEqual({ nome: 'Ana', page: '2' })
+  })
+
+  it('recusa corpo acima do limite com 413, pelo content-length ou pelo tamanho lido', async () => {
+    const declarado = new NextRequest('http://x/api/a', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'content-length': String(CORPO_MAXIMO + 1) },
+      body: '{}',
+    })
+    await expect(ApiRequest.from(declarado)).rejects.toMatchObject({ status: 413 })
+
+    const grande = new NextRequest('http://x/api/a', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ x: 'a'.repeat(CORPO_MAXIMO) }),
+    })
+    await expect(ApiRequest.from(grande)).rejects.toMatchObject({ status: 413 })
   })
 
   it('lê multipart com campos aninhados e arquivo', async () => {

@@ -10,6 +10,7 @@ import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
 import { podeEnviarEmail } from '@/server/services/canais-notificacao'
 import { googleCalendar } from '@/server/services/google-calendar'
 import { cancelarPedidoPeloTutor, ehPedidoDePrestador } from '@/server/services/pedidos-prestador'
+import { MOTIVO_PADRAO_TUTOR, motivoDoTutor } from '@/lib/motivos-cancelamento'
 import {
   consumeDataConsulta,
   nomeCompleto,
@@ -30,7 +31,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
     return badRequest({ message: 'Usuário não é um tutor válido' })
   }
 
-  const motivoInformado = apiReq.text('motivo')?.trim() || null
+  const motivoInformado = motivoDoTutor(apiReq.text('motivo'))
 
   if (await ehPedidoDePrestador(id, tutor.id)) {
     await cancelarPedidoPeloTutor(tutor.id, id, motivoInformado)
@@ -55,7 +56,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         where: { id: agendamento.id },
         data: updating({
           status: 'cancelado',
-          motivoCancelamento: motivo || 'Cancelado pelo tutor',
+          motivoCancelamento: motivo || MOTIVO_PADRAO_TUTOR,
           canceladoEm: prepareDateTimeString(DateTime.now()),
         }),
       })

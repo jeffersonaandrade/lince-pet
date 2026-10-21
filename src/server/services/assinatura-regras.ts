@@ -1,4 +1,5 @@
 /** Regras puras da assinatura (sem banco nem Asaas), para rotas, webhook e testes. */
+import { timingSafeEqual } from 'node:crypto'
 
 /** Planos que cada tipo pode contratar (vet e prestador dividem target `veterinario` por legado). */
 export const PLANOS_POR_TIPO: Record<'veterinario' | 'clinica' | 'prestador', string[]> = {
@@ -46,16 +47,21 @@ export function fimDoPeriodo(dueDate: string) {
 }
 
 /**
- * Com ASAAS_ENV=production o token do webhook é obrigatório; no sandbox, sem token configurado, aceita
- * (para testar com ngrok). Com token configurado, o header `asaas-access-token` precisa bater.
+ * App em produção (NODE_ENV) ou ASAAS_ENV=production: token do webhook obrigatório. Só em desenvolvimento
+ * com sandbox, sem token configurado, aceita (para testar com ngrok). Com token, o header
+ * `asaas-access-token` precisa bater (comparação em tempo constante).
  */
 export function webhookAutorizado(
   tokenConfigurado: string | undefined,
   tokenRecebido: string | null | undefined,
-  asaasEnv: string | undefined
+  asaasEnv: string | undefined,
+  appEmProducao = false
 ) {
-  if (!tokenConfigurado) return asaasEnv !== 'production'
-  return tokenRecebido === tokenConfigurado
+  if (!tokenConfigurado) return !appEmProducao && asaasEnv !== 'production'
+  if (!tokenRecebido) return false
+  const a = Buffer.from(tokenRecebido)
+  const b = Buffer.from(tokenConfigurado)
+  return a.length === b.length && timingSafeEqual(a, b)
 }
 
 /** Vets que contam no limite da clínica: vínculos aceitos e convites pendentes. */

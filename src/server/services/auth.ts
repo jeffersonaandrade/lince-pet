@@ -28,12 +28,19 @@ export async function findEntityId(userId: string, userType: string): Promise<st
   return undefined
 }
 
-export async function tokenFor(user: { id: string; nome: string; sobrenome: string | null; userType: string }) {
+export async function tokenFor(user: {
+  id: string
+  nome: string
+  sobrenome: string | null
+  userType: string
+  tokenVersion?: number
+}) {
   return generateToken({
     id: user.id,
     nome: user.nome,
     sobrenome: user.sobrenome,
     userType: user.userType as UserType,
+    tokenVersion: user.tokenVersion,
     entityId: await findEntityId(user.id, user.userType),
   })
 }
@@ -193,7 +200,8 @@ export async function resetPassword(token: string, newPassword: string) {
 
   await prisma.user.update({
     where: { id: user.id },
-    data: updating({ password: await hashPassword(newPassword) }),
+    // Subir a versão invalida todos os tokens já emitidos (quem roubou a sessão perde o acesso).
+    data: updating({ password: await hashPassword(newPassword), tokenVersion: { increment: 1 } }),
   })
   await prisma.passwordResetToken.delete({ where: { id: resetToken.id } })
 

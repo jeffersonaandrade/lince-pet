@@ -1,8 +1,10 @@
 import { ApiRequest, json, route } from '@/server/http'
 import { registerTutor } from '@/server/services/tutor'
 import { createTutorValidator } from '@/server/validators/tutor'
+import { LIMITES, limitarTentativas } from '@/server/rate-limit'
 
 export const POST = route(async (req) => {
+  limitarTentativas(req, LIMITES.cadastro)
   try {
     const request = await ApiRequest.from(req)
     const payload = await createTutorValidator.validate(request.all())

@@ -1,5 +1,6 @@
 import { ApiRequest, created, json, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
+import { LIMITES, limitarTentativas } from '@/server/rate-limit'
 import { prisma } from '@/server/db'
 import { updating } from '@/server/lucid'
 import { confirmarUpload, uploadVeterinarioPhoto } from '@/server/services/storage'
@@ -12,6 +13,7 @@ import { listarEquipe } from '@/server/services/clinica-equipe'
 import { createVeterinarioRegistrationValidator } from '@/server/validators/veterinario'
 
 export const POST = route(async (req) => {
+  limitarTentativas(req, LIMITES.cadastro)
   const apiReq = await ApiRequest.from(req)
   const uploadedFile = apiReq.file('profile_pic', { size: '5mb' })
 

@@ -2,8 +2,10 @@ import { ApiRequest, badRequest, created, json, route, serverError } from '@/ser
 import { generateToken } from '@/server/auth/jwt'
 import { setAuthCookie } from '@/server/auth/session'
 import { registerClinica, type ClinicaRegistrationData } from '@/server/services/clinicas'
+import { LIMITES, limitarTentativas } from '@/server/rate-limit'
 
 export const POST = route(async (req) => {
+  limitarTentativas(req, LIMITES.cadastro)
   const data = (await ApiRequest.from(req)).only([
     'nomeFantasia',
     'razaoSocial',

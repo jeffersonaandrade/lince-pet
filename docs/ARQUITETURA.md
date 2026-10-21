@@ -9,7 +9,7 @@ O backend AdonisJS (`Lince-Pet-Backend-main`) foi migrado para Route Handlers do
 | Rotas HTTP | `src/app/api/**/route.ts` | Sempre `route()` + `ApiRequest.from()` + `requireUser()`; responder com `ok/created/...` de `src/server/http.ts` |
 | Infra HTTP | `src/server/http.ts` | `handleError` reproduz o exception handler do Adonis (422 VineJS, `HttpError`, 500 genérico); `json()` serializa como o Lucid |
 | Compatibilidade Lucid | `src/server/lucid.ts` | `creating()`/`updating()` (UUID e timestamps não têm default no schema), `paginate()`, `serialize()` |
-| Auth | `src/server/auth/*` | JWT HS256 com `APP_KEY` (30 dias) no cookie httpOnly `auth_token`; senha scrypt no formato PHC do Adonis; `requireUser(req, [tipos])` = middlewares jwtAuth + userType |
+| Auth | `src/server/auth/*` | JWT HS256 com `APP_KEY` (7 dias, `typ: JWT`, `jti` e versão `tv`) no cookie httpOnly `auth_token`; senha scrypt no formato PHC do Adonis; `requireUser(req, [tipos])` = middlewares jwtAuth + userType |
 | Domínio | `src/server/services/*` | Asaas, storage de imagens (Supabase Storage), e-mail (Resend), WhatsApp, Google Calendar, notificações in-app, limites de plano, onboarding |
 | Validação | `src/server/validators/*` | VineJS v3 (mesmas mensagens do backend antigo) |
 | E-mails | `src/server/emails/*` | Templates Edge convertidos em funções TS que retornam HTML |
@@ -34,6 +34,10 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 ## Fluxos principais
 
 - **Login:** `POST /api/auth/login` grava o cookie `auth_token`; `GET /api/auth/me` devolve o usuário; o frontend não guarda token. O token só é lido do cookie ou do header `Authorization: Bearer`, nunca da query string ou do corpo. E-mail de login, recuperação de senha e Google é comparado sem maiúsculas, mas de forma exata (`findUserByEmail`: `%` e `_` não funcionam como curinga).
+- **Sessão:** o token vale 7 dias. Redefinir a senha sobe `users.token_version` e derruba todas as sessões abertas (token com `tv` diferente = 401 "Sessão encerrada"; token antigo sem `tv` conta como 0). Logout grava o `jti` em `sessoes_revogadas` até a expiração do token e encerra só aquela sessão; linhas vencidas são apagadas no próximo logout. JWT de outro tipo assinado com a mesma `APP_KEY` (state do Google Agenda, `typ: google-calendar-state`) não vale como sessão.
+- **Limite de tentativas:** por IP, em memória (vale por instância do servidor): login 10 / 15 min; esqueci e redefinir senha 5 / 15 min; cadastros (tutor, clínica, vet, prestador) 10 / 1 h. Acima disso, 429.
+- **Tamanho do corpo:** `ApiRequest.from` recusa com 413 corpo acima de 6 MB (pelo `content-length` ou contando o que lê), antes de autenticar.
+- **Cabeçalhos:** `next.config.ts` envia HSTS, `X-Frame-Options: DENY` + `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy` e `Permissions-Policy` (só geolocalização, usada na busca) em todas as rotas, sem `X-Powered-By`.
 - **Parser de requisição:** `ApiRequest` ignora chaves `__proto__`, `constructor` e `prototype` na query e em formulários (evita poluir `Object.prototype` do processo) e só lê campos próprios do objeto.
 - **Google:** login social em `/api/auth/google/*` (state em cookie; só aceita conta Google com `email_verified`) e Calendar em `/api/google/calendar/*` (state JWT + sessão do navegador).
 - **Agendamento:** `POST /api/agendamentos` só aceita `clinica_id` de clínica com vínculo `aceito` com o vet (senão 400); endereço do vet ligado a uma clínica sem vínculo aceito não dá à clínica a consulta. Checa limite do plano, grava, notifica (in-app; e-mail e WhatsApp conforme "Canais de aviso e Google Agenda") e cria evento no Google Agenda via `after()`.
@@ -94,7 +98,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Inadimplência:** `PAYMENT_OVERDUE`, `PAYMENT_REFUNDED`, `PAYMENT_CHARGEBACK_REQUESTED` e `PAYMENT_RECEIVED_IN_CASH_UNDONE` marcam `past_due` e devolvem o dono ao plano padrão, salvo se ele tiver outra assinatura ativa. Pagar a fatura reativa.
 - **Cancelamento:** cancelar remove o plano na hora (sem período restante) e cancela no Asaas. `SUBSCRIPTION_DELETED`/`SUBSCRIPTION_INACTIVATED` marcam `canceled` e rebaixam, com a mesma checagem de outra assinatura ativa. Trocar para `none`/plano grátis = cancelar.
 - **Limite de vets da clínica:** convite (`POST /api/clinicas/professionals`) e aceite de vínculo contam vínculos `aceito` + `pendente`; acima de `maxVeterinarios` ou sem plano pago: 403. Vínculos já existentes não são desfeitos.
-- **Webhook:** `asaas-access-token` precisa bater com `ASAAS_WEBHOOK_TOKEN`; em `ASAAS_ENV=production` o token é obrigatório. Eventos repetidos são ignorados por `webhook_events.event_id`.
+- **Webhook:** `asaas-access-token` precisa bater com `ASAAS_WEBHOOK_TOKEN` (comparação em tempo constante); com o app em produção ou `ASAAS_ENV=production` o token é obrigatório (sem ele, 401). Erro interno responde 500 sem detalhes. Eventos repetidos são ignorados por `webhook_events.event_id`.
 - **Busca de veterinários:** não filtra mais por créditos; `vet_pro` aparece antes de `vet_starter`.
 
 ### Perfis públicos (clínica e veterinário)
@@ -136,6 +140,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Número central:** todas as mensagens saem de um único número da Lince Pet, que distribui avisos para tutores, vets e clínicas. Vet e clínica não conectam número próprio.
 - **Provedor agnóstico:** `src/server/services/whatsapp.ts` define `WhatsAppProvider` e escolhe o driver por `WHATSAPP_PROVIDER` (padrão `log`, que só registra). Trocar de provedor (Z-API, UltraMsg, Evolution...) = novo driver, sem mexer nos fluxos. Provedores não oficiais têm risco de banimento do número.
 - **Eventos e destinatários:** confirmação (tutor) e novo agendamento (profissional) na criação; lembretes 24h e 2h antes (tutor); cancelamento pelo tutor (profissional); cancelamento por bloqueio de agenda (tutor, com o motivo); remarcação (tutor e profissional). Profissional = celular do vet, ou o WhatsApp da clínica se o vet não tiver celular.
+- **Sem texto livre do tutor:** o motivo de cancelamento do tutor é um código de lista fixa (`src/lib/motivos-cancelamento.ts`); texto livre ou código desconhecido vira "Cancelado pelo tutor". Campos digitados por usuários (nomes, pet, local, motivo, serviço) saem sem links (`[link removido]`), sem quebras de linha e com tamanho limitado (`textoSeguro`), porque a mensagem sai do número oficial.
 - **Plano:** só envia se o vet **ou** a clínica da consulta tiver a feature `whatsapp_notifications`. Sem plano: registra `ignorado/sem_plano`.
 - **Opt-out:** `users.notificar_whatsapp` (padrão ligado), de tutor e de vet, alterado em Perfil > Avisos de consulta. Desligado: quem desligou não recebe nada por WhatsApp (a outra parte continua recebendo). Vet que desligou também não recebe pelo WhatsApp da clínica.
 - **Lembretes:** `GET /api/cron/lembretes-whatsapp` (Bearer `CRON_SECRET`; sem segredo configurado, 401), a cada 15 min (`vercel.json` ou `netlify/functions/lembretes-whatsapp.mts`). Janela 24h: entre 24h e 2h antes; janela 2h: até o início. Consulta criada depois que a janela abriu não recebe aquele lembrete (a confirmação já cobre).

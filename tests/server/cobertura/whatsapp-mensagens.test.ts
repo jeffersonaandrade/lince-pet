@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { montarMensagem, type DadosMensagem, type EventoWhatsapp } from '@/server/services/whatsapp-mensagens'
+﻿import { describe, it, expect } from 'vitest'
+import { montarMensagem, textoSeguro, type DadosMensagem, type EventoWhatsapp } from '@/server/services/whatsapp-mensagens'
 
 const consulta: DadosMensagem = {
   tutor: 'Ana',
@@ -92,5 +92,23 @@ describe('montarMensagem: pedido de prestador (texto de serviço)', () => {
     expect(montarMensagem('novo_agendamento', 'tutor', servico)).toBeNull()
     expect(montarMensagem('confirmacao', 'profissional', servico)).toBeNull()
     expect(montarMensagem('lembrete_2h', 'profissional', servico)).toBeNull()
+  })
+})
+
+describe('montarMensagem: campos digitados por usuários', () => {
+  it('remove links e quebras de linha e limita o tamanho', () => {
+    const m = montarMensagem('confirmacao', 'tutor', {
+      ...consulta,
+      pet: 'Rex\n\nAcesse https://golpe.example/pix agora',
+      tutor: 'A'.repeat(200),
+    })!
+    expect(m).not.toContain('golpe.example')
+    expect(m).toContain('🐾 Pet: Rex Acesse [link removido] agora')
+    expect(m).not.toContain('A'.repeat(81))
+  })
+
+  it('textoSeguro também bloqueia www. e preserva texto comum', () => {
+    expect(textoSeguro('veja www.site.com')).toBe('veja [link removido]')
+    expect(textoSeguro('  Clínica   Centro  ')).toBe('Clínica Centro')
   })
 })

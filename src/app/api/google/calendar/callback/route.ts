@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 import { env, requiredEnv } from '@/server/env'
-import { googleCalendar } from '@/server/services/google-calendar'
+import { CALENDAR_STATE_TYPE, googleCalendar } from '@/server/services/google-calendar'
 import { ApiRequest } from '@/server/http'
 import { optionalUser } from '@/server/auth/session'
 
@@ -9,7 +9,7 @@ type CalendarState = { userId?: string; redirectTo?: string }
 
 async function decodeState(state: string) {
   const key = new TextEncoder().encode(requiredEnv('APP_KEY'))
-  const { payload } = await jwtVerify(state, key, { algorithms: ['HS256'] })
+  const { payload } = await jwtVerify(state, key, { algorithms: ['HS256'], typ: CALENDAR_STATE_TYPE })
   return payload as CalendarState
 }
 

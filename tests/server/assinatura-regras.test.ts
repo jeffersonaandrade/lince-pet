@@ -104,6 +104,12 @@ describe('regras de assinatura', () => {
     expect(webhookAutorizado('t'.repeat(32), 't'.repeat(32), 'production')).toBe(true)
   })
 
+  it('app em produção exige token mesmo com ASAAS_ENV de sandbox ou vazio', () => {
+    expect(webhookAutorizado(undefined, undefined, 'sandbox', true)).toBe(false)
+    expect(webhookAutorizado(undefined, undefined, undefined, true)).toBe(false)
+    expect(webhookAutorizado('t'.repeat(32), 't'.repeat(31) + 'x', 'sandbox', true)).toBe(false)
+  })
+
   it('com token configurado, header ausente é recusado', () => {
     expect(webhookAutorizado('t'.repeat(32), null, 'sandbox')).toBe(false)
     expect(webhookAutorizado('t'.repeat(32), undefined, 'production')).toBe(false)

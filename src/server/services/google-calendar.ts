@@ -18,6 +18,9 @@ import { env, requiredEnv } from '../env'
 import { creating, updating } from '../lucid'
 import { consumeDataConsulta, inicioDaConsulta } from './agendamentos'
 
+/** `typ` próprio: o state não pode ser aceito como token de sessão (mesma APP_KEY). */
+export const CALENDAR_STATE_TYPE = 'google-calendar-state'
+
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const GOOGLE_REVOKE_URL = 'https://oauth2.googleapis.com/revoke'
@@ -62,7 +65,7 @@ async function getAuthUrl(userId: string, redirectTo: string = '/explorar'): Pro
   const redirectUri = env('GOOGLE_CALENDAR_CALLBACK_URL')
 
   const state = await new SignJWT({ userId, redirectTo })
-    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setProtectedHeader({ alg: 'HS256', typ: CALENDAR_STATE_TYPE })
     .setIssuedAt()
     .setExpirationTime('15m')
     .sign(new TextEncoder().encode(requiredEnv('APP_KEY')))

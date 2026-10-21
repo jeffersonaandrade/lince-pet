@@ -193,6 +193,36 @@ export function texto(value: unknown): string | undefined {
   return undefined
 }
 
+/** Maior corpo aceito (foto de 5 MB + campos do formulário); lido antes de qualquer autenticação. */
+export const CORPO_MAXIMO = 6 * 1024 * 1024
+
+const corpoGrande = () => new HttpError(413, { message: 'Requisição maior que o permitido' })
+
+/** Lê o corpo parando no limite, mesmo sem `content-length` (envio em partes). */
+async function lerCorpo(req: NextRequest): Promise<Uint8Array<ArrayBuffer>> {
+  if (!req.body) return new Uint8Array()
+  const reader = req.body.getReader()
+  const partes: Uint8Array[] = []
+  let total = 0
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    total += value.byteLength
+    if (total > CORPO_MAXIMO) {
+      await reader.cancel()
+      throw corpoGrande()
+    }
+    partes.push(value)
+  }
+  const corpo = new Uint8Array(total)
+  let pos = 0
+  for (const p of partes) {
+    corpo.set(p, pos)
+    pos += p.byteLength
+  }
+  return corpo
+}
+
 export class ApiRequest {
   private constructor(
     public raw: NextRequest,
@@ -207,8 +237,10 @@ export class ApiRequest {
 
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
       const type = req.headers.get('content-type') || ''
+      const declarado = Number(req.headers.get('content-length') || 0)
+      if (declarado > CORPO_MAXIMO) throw corpoGrande()
       if (type.includes('multipart/form-data') || type.includes('application/x-www-form-urlencoded')) {
-        const form = await req.formData()
+        const form = await new Response(await lerCorpo(req), { headers: { 'content-type': type } }).formData()
         for (const [key, value] of form.entries()) {
           if (typeof value === 'object' && value !== null && 'arrayBuffer' in value) {
             files.set(key, value as File)
@@ -217,7 +249,7 @@ export class ApiRequest {
           }
         }
       } else if (type.includes('json')) {
-        const text = await req.text()
+        const text = new TextDecoder().decode(await lerCorpo(req))
         body = text ? (convertEmptyStrings(JSON.parse(text)) as Campos) : {}
       }
     }

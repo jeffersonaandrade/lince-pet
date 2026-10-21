@@ -62,8 +62,27 @@ function mensagemServico(evento: EventoWhatsapp, para: Destinatario, d: DadosMen
   }
 }
 
+const LINK = /https?:\/\/\S+|www\.\S+|\b[\w-]+(?:\.[\w-]+)*\.(?:com|net|org|br|io|xyz|app|me|link|info|site|online|shop|top|ly)\b\S*/gi
+
+/** Campo digitado por usuário (nome, pet, motivo): sem links e com tamanho limitado, pois sai do número oficial. */
+export const textoSeguro = (valor: string, max = 80) =>
+  valor.replace(LINK, '[link removido]').replace(/\s+/g, ' ').trim().slice(0, max)
+
+function dadosSeguros(d: DadosMensagem): DadosMensagem {
+  return {
+    ...d,
+    tutor: textoSeguro(d.tutor),
+    pet: textoSeguro(d.pet),
+    profissional: textoSeguro(d.profissional),
+    local: textoSeguro(d.local, 200),
+    motivo: d.motivo ? textoSeguro(d.motivo, 200) : d.motivo,
+    servico: d.servico ? textoSeguro(d.servico) : d.servico,
+  }
+}
+
 /** Texto de cada evento por destinatário; null = evento não se aplica a esse destinatário. */
-export function montarMensagem(evento: EventoWhatsapp, para: Destinatario, d: DadosMensagem): string | null {
+export function montarMensagem(evento: EventoWhatsapp, para: Destinatario, dados: DadosMensagem): string | null {
+  const d = dadosSeguros(dados)
   if (d.servico) return mensagemServico(evento, para, d)
   const motivo = d.motivo ? `\nMotivo: ${d.motivo}` : ''
 

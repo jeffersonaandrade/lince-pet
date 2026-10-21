@@ -18,6 +18,7 @@ import { googleCalendar, type AcaoAgenda } from './google-calendar'
 import type { Destinatario, EventoWhatsapp } from './whatsapp-mensagens'
 import type { Modalidade } from './prestadores'
 import { conferirEncaminhamento, vincularAgendamento } from './encaminhamentos'
+import { MOTIVO_PADRAO_TUTOR } from '@/lib/motivos-cancelamento'
 
 /**
  * Pedido de serviço a um prestador. Reaproveita `agendamentos` (prestadorId no lugar de veterinarioId)
@@ -457,7 +458,7 @@ export async function cancelarPedidoPeloTutor(tutorId: string, id: string, motiv
   const pedido = await pedidoDoTutor(tutorId, id)
   await atualizar(id, {
     status: 'cancelado',
-    motivoCancelamento: String(motivo || 'Cancelado pelo tutor').slice(0, 255),
+    motivoCancelamento: String(motivo || MOTIVO_PADRAO_TUTOR).slice(0, 255),
     canceladoEm: prepareDateTimeString(DateTime.now()),
   })
   if (pedido.prestador) await decrementUsage(pedido.prestador, 'prestador')

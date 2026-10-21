@@ -1,7 +1,9 @@
 import { ApiRequest, badRequest, ok, route } from '@/server/http'
 import { resetPassword } from '@/server/services/auth'
+import { LIMITES, limitarTentativas } from '@/server/rate-limit'
 
 export const POST = route(async (req) => {
+  limitarTentativas(req, LIMITES.senha)
   const request = await ApiRequest.from(req)
   const token = request.input('token')
   const password = request.input('password')

@@ -1,4 +1,5 @@
 import { ApiRequest, ok, route, serverError, unauthorized } from '@/server/http'
+import { isProduction } from '@/server/env'
 import { handleAsaasEvent, lerEventoAsaas } from '@/server/services/asaas-webhook'
 import { webhookAutorizado } from '@/server/services/assinatura-regras'
 
@@ -6,7 +7,7 @@ export const POST = route(async (req) => {
   try {
     const request = await ApiRequest.from(req)
     const envToken = process.env.ASAAS_WEBHOOK_TOKEN
-    if (!webhookAutorizado(envToken, request.header('asaas-access-token'), process.env.ASAAS_ENV)) {
+    if (!webhookAutorizado(envToken, request.header('asaas-access-token'), process.env.ASAAS_ENV, isProduction)) {
       console.warn(
         envToken
           ? '[Webhook Asaas] Token inválido recebido.'
@@ -22,7 +23,7 @@ export const POST = route(async (req) => {
     return ok({ received: true })
   } catch (error) {
     console.error('[Webhook Asaas] Erro no processamento:', error)
-    return serverError({ received: false, error: String(error) })
+    return serverError({ received: false })
   }
 })
 
