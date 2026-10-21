@@ -14,6 +14,7 @@ import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImage
 import LottieLoading from "@/components/ui/LottieLoading/LottieLoading";
 import { useAgendaTutor } from "@/hook/tutor/useAgendaTutor";
 import { useReagendamento } from "@/hook/tutor/useReagendamento";
+import { useCancelamentoConsulta } from "@/hook/tutor/useCancelamentoConsulta";
 import { useAvaliacaoConsulta } from "@/hook/tutor/useAvaliacaoConsulta";
 import { usePetsTutor } from "@/hook/tutor/usePetsTutor";
 import { useFotoTutor } from "@/hook/tutor/useFotoTutor";
@@ -24,6 +25,7 @@ import { FavoritesList } from "./FavoritesList";
 import { PetModal } from "./PetModal";
 import { AvaliacaoModal } from "./AvaliacaoModal";
 import { ReagendamentoModal } from "./ReagendamentoModal";
+import { CancelamentoModal } from "./CancelamentoModal";
 
 const tituloSecao = `${styles.sectionTitle} flex items-center gap-2`;
 const rotuloPorte = (porte: string) => PORTES_PET.find((p) => p.value === porte)?.label ?? porte;
@@ -35,6 +37,7 @@ export function TutorDashboard() {
 
   const agenda = useAgendaTutor();
   const reagendamento = useReagendamento(agenda.aplicarReagendamento);
+  const cancelamento = useCancelamentoConsulta(agenda.marcarCancelado);
   const avaliacao = useAvaliacaoConsulta(agenda.marcarAvaliado);
   const pets = usePetsTutor(ehTutor);
   const foto = useFotoTutor((fotoUrl) => updateUser({ fotoUrl }));
@@ -197,7 +200,7 @@ export function TutorDashboard() {
                   <AppointmentItem
                     key={a.id}
                     agendamento={a}
-                    onCancel={agenda.cancelar}
+                    onCancel={cancelamento.abrir}
                     onChanged={carregar}
                     onReschedule={reagendamento.abrir}
                   />
@@ -246,7 +249,7 @@ export function TutorDashboard() {
                       <AppointmentItem
                         key={a.id}
                         agendamento={a}
-                        onCancel={agenda.cancelar}
+                        onCancel={cancelamento.abrir}
                         onChanged={carregar}
                         onReschedule={reagendamento.abrir}
                         onRate={avaliacao.abrir}
@@ -291,6 +294,7 @@ export function TutorDashboard() {
         {pets.modalAberto ? <PetModal pets={pets} /> : null}
         <AvaliacaoModal avaliacao={avaliacao} />
         <ReagendamentoModal reagendamento={reagendamento} />
+        <CancelamentoModal cancelamento={cancelamento} />
 
         {pets.imagemParaEditar ? (
           <ImageEditor

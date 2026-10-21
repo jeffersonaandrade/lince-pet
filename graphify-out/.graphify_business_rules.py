@@ -610,6 +610,8 @@ seguranca_impl = {
     "src_lib_motivos_cancelamento": ["rule_seguranca_motivo_padrao_tutor"],
     "tests_lib_motivos_cancelamento_test": ["rule_seguranca_motivo_padrao_tutor"],
     "src_app_api_agendamentos_id_cancelar_route": ["rule_seguranca_motivo_padrao_tutor"],
+    "src_hook_tutor_usecancelamentoconsulta": ["rule_seguranca_motivo_padrao_tutor"],
+    "src_app_dashboard_tutor_components_cancelamentomodal": ["rule_seguranca_motivo_padrao_tutor"],
     "src_server_services_pedidos_prestador": ["rule_seguranca_motivo_padrao_tutor"],
     "src_server_services_whatsapp_mensagens": ["rule_seguranca_whatsapp_texto_seguro"],
     "tests_server_cobertura_whatsapp_mensagens_test": ["rule_seguranca_whatsapp_texto_seguro"],

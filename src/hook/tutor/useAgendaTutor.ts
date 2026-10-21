@@ -24,14 +24,8 @@ export function useAgendaTutor() {
     }
   }, []);
 
-  const cancelar = useCallback(async (id: string) => {
-    if (!confirm("Tem certeza que deseja cancelar esta consulta?")) return;
-    try {
-      await AgendamentosService.cancelarAgendamento(id);
-      setAgendamentos((lista) => lista.map((a) => (a.id === id ? { ...a, status: "cancelado", pode_cancelar: false } : a)));
-    } catch (error) {
-      alert(mensagemDeErro(error, "Erro ao cancelar agendamento"));
-    }
+  const marcarCancelado = useCallback((id: string) => {
+    setAgendamentos((lista) => lista.map((a) => (a.id === id ? { ...a, status: "cancelado", pode_cancelar: false } : a)));
   }, []);
 
   const marcarAvaliado = useCallback((id: string) => {
@@ -50,5 +44,5 @@ export function useAgendaTutor() {
   const { proximas, historico } = useMemo(() => classificarAgendamentos(agendamentos), [agendamentos]);
   const historicoPorAno = useMemo(() => agruparPorAno(historico), [historico]);
 
-  return { proximas, historicoPorAno, carregando, erro, carregar, cancelar, marcarAvaliado, aplicarReagendamento };
+  return { proximas, historicoPorAno, carregando, erro, carregar, marcarCancelado, marcarAvaliado, aplicarReagendamento };
 }

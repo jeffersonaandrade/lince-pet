@@ -205,9 +205,7 @@ export class AgendamentosService {
         motivo
       );
 
-      await api.patch(`/agendamentos/${agendamentoId}/cancelar`, {
-        motivo: motivo || "Cancelado pelo usuário",
-      });
+      await api.patch(`/agendamentos/${agendamentoId}/cancelar`, { motivo });
 
       console.log("[AgendamentosService] Agendamento cancelado com sucesso");
     } catch (error) {

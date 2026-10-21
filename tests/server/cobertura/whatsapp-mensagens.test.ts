@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { montarMensagem, textoSeguro, type DadosMensagem, type EventoWhatsapp } from '@/server/services/whatsapp-mensagens'
 
 const consulta: DadosMensagem = {

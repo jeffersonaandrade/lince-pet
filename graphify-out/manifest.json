@@ -396,9 +396,9 @@
     "semantic_hash": "2ed04245766cda31f1967e8605859bca"
   },
   "src/services/agendamentos/agendamentos.ts": {
-    "mtime": 1792534131.049641,
-    "seen": 1792534368.5196407,
-    "ast_hash": "75b95b4d3b7f78fdbb082a2c5e2d5124",
+    "mtime": 1792546238.7288423,
+    "seen": 1792546306.8835075,
+    "ast_hash": "923efa251a9fbd82987f068af413aa96",
     "semantic_hash": ""
   },
   "src/services/assinaturas/assinaturas.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792545778.6387317,
-    "seen": 1792545819.403122,
-    "ast_hash": "c8275c9dcfdcca106fd43a1fe3544e0e",
+    "mtime": 1792546283.8424785,
+    "seen": 1792546306.9722269,
+    "ast_hash": "6b75a9767bd146e2b3be97f0b2259169",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2976,9 +2976,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/whatsapp-mensagens.test.ts": {
-    "mtime": 1792545644.007622,
-    "seen": 1792545819.3619978,
-    "ast_hash": "6e13140c8dcf56595590fae56b893696",
+    "mtime": 1792546255.2588964,
+    "seen": 1792546306.915189,
+    "ast_hash": "5e4406e59d6f26171d5e55857d55a896",
     "semantic_hash": ""
   },
   "tests/server/cobertura/whatsapp-notificacoes.test.ts": {
@@ -3042,9 +3042,9 @@
     "semantic_hash": ""
   },
   "src/app/dashboard/tutor/components/TutorDashboard.tsx": {
-    "mtime": 1792534130.568356,
-    "seen": 1792534368.1923242,
-    "ast_hash": "810f1ac7bc643a2134711ec987906813",
+    "mtime": 1792546254.953925,
+    "seen": 1792546306.8083503,
+    "ast_hash": "0ce83fc86ec89feeedc51b0ea43ba233",
     "semantic_hash": ""
   },
   "src/config/pets.ts": {
@@ -3054,9 +3054,9 @@
     "semantic_hash": ""
   },
   "src/hook/tutor/useAgendaTutor.ts": {
-    "mtime": 1792534130.86177,
-    "seen": 1792534368.397247,
-    "ast_hash": "783fd6375158fd3e7130137159512582",
+    "mtime": 1792546238.224084,
+    "seen": 1792546306.8511548,
+    "ast_hash": "57ba33a336bcf705f0eb6e362ed7b2b4",
     "semantic_hash": ""
   },
   "src/hook/tutor/useAvaliacaoConsulta.ts": {
@@ -3258,9 +3258,21 @@
     "semantic_hash": ""
   },
   "tests/server/sessao.test.ts": {
-    "mtime": 1792545706.2025492,
-    "seen": 1792545819.365177,
-    "ast_hash": "c8fe2269d69a397fb603a6b998bf7131",
+    "mtime": 1792546255.100383,
+    "seen": 1792546306.919952,
+    "ast_hash": "a4fea815d7bf6cb0f6b2cf4a52aa81d0",
+    "semantic_hash": ""
+  },
+  "src/app/dashboard/tutor/components/CancelamentoModal.tsx": {
+    "mtime": 1792546237.2615807,
+    "seen": 1792546306.807109,
+    "ast_hash": "16446764be79fb29a2df2fead9c96343",
+    "semantic_hash": ""
+  },
+  "src/hook/tutor/useCancelamentoConsulta.ts": {
+    "mtime": 1792546234.288629,
+    "seen": 1792546306.8515778,
+    "ast_hash": "7fa8dbb2531784f60280104bf17e78dc",
     "semantic_hash": ""
   }
 }
