@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792546709.7101066,
-    "seen": 1792546741.8179474,
-    "ast_hash": "1bfff42af7f55625420ad74c1af1a0c7",
+    "mtime": 1792702119.2341948,
+    "seen": 1792702146.7825012,
+    "ast_hash": "74d146f0a837b7baffb85ff236f5a2a5",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -3273,6 +3273,18 @@
     "mtime": 1792546234.288629,
     "seen": 1792546306.8515778,
     "ast_hash": "7fa8dbb2531784f60280104bf17e78dc",
+    "semantic_hash": ""
+  },
+  "src/app/api/health/route.ts": {
+    "mtime": 1792702092.2420168,
+    "seen": 1792702146.6627107,
+    "ast_hash": "cd52f0ebd0e6953cb97b7bafa65d57d9",
+    "semantic_hash": ""
+  },
+  "tests/server/health.test.ts": {
+    "mtime": 1792702094.0440123,
+    "seen": 1792702146.7500827,
+    "ast_hash": "dd9fcd92fa6387d20d24f8638bb1c8dd",
     "semantic_hash": ""
   }
 }
