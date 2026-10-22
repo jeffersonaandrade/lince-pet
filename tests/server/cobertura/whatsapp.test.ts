@@ -64,6 +64,41 @@ describe('providerAtual (provedor agnóstico)', () => {
     )
   })
 
+  it('gateway repassa a idempotencyKey e é assíncrono', async () => {
+    vi.stubEnv('WHATSAPP_PROVIDER', 'gateway')
+    vi.stubEnv('WHATSAPP_GATEWAY_URL', 'http://gateway.test')
+    vi.stubEnv('WHATSAPP_GATEWAY_TOKEN', 'secret')
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ id: 'job-1' }), { status: 202 })
+    )
+    const p = providerAtual()
+    await p.enviar('55', 'texto', { idempotencyKey: 'envio-1:2' })
+    expect(p.assincrono).toBe(true)
+    expect(fetchMock.mock.calls[0][1]?.body).toBe(JSON.stringify({ to: '55', text: 'texto', idempotencyKey: 'envio-1:2' }))
+  })
+
+  it('gateway consultar mapeia o status do job; 404 = desconhecido', async () => {
+    vi.stubEnv('WHATSAPP_PROVIDER', 'gateway')
+    vi.stubEnv('WHATSAPP_GATEWAY_URL', 'http://gateway.test')
+    vi.stubEnv('WHATSAPP_GATEWAY_TOKEN', 'secret')
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    const resposta = (status: number, body: unknown) => new Response(JSON.stringify(body), { status })
+    const p = providerAtual()
+
+    fetchMock.mockResolvedValueOnce(resposta(200, { status: 'sent' }))
+    await expect(p.consultar!('job-1')).resolves.toBe('enviada')
+    expect(fetchMock.mock.calls[0][0]).toBe('http://gateway.test/messages/job-1')
+
+    fetchMock.mockResolvedValueOnce(resposta(200, { status: 'queued' }))
+    await expect(p.consultar!('job-1')).resolves.toBe('pendente')
+    fetchMock.mockResolvedValueOnce(resposta(200, { status: 'failed' }))
+    await expect(p.consultar!('job-1')).resolves.toBe('falhou')
+    fetchMock.mockResolvedValueOnce(resposta(404, { error: 'não encontrado' }))
+    await expect(p.consultar!('job-1')).resolves.toBe('desconhecido')
+    fetchMock.mockResolvedValueOnce(resposta(503, {}))
+    await expect(p.consultar!('job-1')).rejects.toMatchObject({ temporario: true })
+  })
+
   it('gateway sem URL/token falha sem retry', async () => {
     vi.stubEnv('WHATSAPP_PROVIDER', 'gateway')
     await expect(providerAtual().enviar('55', 'texto')).rejects.toMatchObject({
@@ -126,12 +161,12 @@ describe('erroTemporario (retry só para 429/5xx/rede)', () => {
 describe('enviarComRetry', () => {
   it('sucesso na primeira tentativa', async () => {
     const enviar = vi.fn().mockResolvedValueOnce({ id: 'm1' })
-    expect(await enviarComRetry(fake(enviar), '55', 't', 0)).toEqual({ ok: true, id: 'm1', tentativas: 1 })
+    expect(await enviarComRetry(fake(enviar), '55', 't', { esperaMs: 0 })).toEqual({ ok: true, id: 'm1', tentativas: 1 })
   })
 
   it('erro temporário repete e pode ter sucesso na segunda', async () => {
     const enviar = vi.fn().mockRejectedValueOnce({ response: { status: 500 } }).mockResolvedValueOnce({ id: 'm2' })
-    expect(await enviarComRetry(fake(enviar), '55', 't', 0)).toEqual({ ok: true, id: 'm2', tentativas: 2 })
+    expect(await enviarComRetry(fake(enviar), '55', 't', { esperaMs: 0 })).toEqual({ ok: true, id: 'm2', tentativas: 2 })
   })
 
   it('espera esperaMs * tentativa antes de repetir (padrão 1500ms)', async () => {
@@ -150,21 +185,21 @@ describe('enviarComRetry', () => {
 
   it('erro permanente não repete; mensagem vem do response.data (string)', async () => {
     const enviar = vi.fn().mockRejectedValueOnce({ response: { status: 400, data: 'número inválido' } })
-    expect(await enviarComRetry(fake(enviar), '55', 't', 0)).toEqual({ ok: false, erro: 'número inválido', tentativas: 1 })
+    expect(await enviarComRetry(fake(enviar), '55', 't', { esperaMs: 0 })).toEqual({ ok: false, erro: 'número inválido', temporario: false, tentativas: 1 })
     expect(enviar).toHaveBeenCalledTimes(1)
   })
 
   it('erro temporário até o limite: falha com MAX_TENTATIVAS e data em JSON', async () => {
     const enviar = vi.fn().mockRejectedValue({ response: { status: 503, data: { erro: 'fora' } } })
-    const r = await enviarComRetry(fake(enviar), '55', 't', 0)
-    expect(r).toEqual({ ok: false, erro: '{"erro":"fora"}', tentativas: MAX_TENTATIVAS })
+    const r = await enviarComRetry(fake(enviar), '55', 't', { esperaMs: 0 })
+    expect(r).toEqual({ ok: false, erro: '{"erro":"fora"}', temporario: true, tentativas: MAX_TENTATIVAS })
     expect(enviar).toHaveBeenCalledTimes(MAX_TENTATIVAS)
   })
 
   it('mensagem de Error e de valor não-Error', async () => {
-    const r1 = await enviarComRetry(fake(vi.fn().mockRejectedValueOnce(new Error('boom'))), '55', 't', 0)
+    const r1 = await enviarComRetry(fake(vi.fn().mockRejectedValueOnce(new Error('boom'))), '55', 't', { esperaMs: 0 })
     expect(r1).toMatchObject({ ok: false, erro: 'boom' })
-    const r2 = await enviarComRetry(fake(vi.fn().mockRejectedValueOnce('texto cru')), '55', 't', 0)
+    const r2 = await enviarComRetry(fake(vi.fn().mockRejectedValueOnce('texto cru')), '55', 't', { esperaMs: 0 })
     expect(r2).toMatchObject({ ok: false, erro: 'texto cru' })
   })
 })

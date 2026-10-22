@@ -144,8 +144,8 @@ O modelo está em [`.env.example`](.env.example). Não commite `.env` nem `.env.
 | Arquivos | `AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_PUBLIC_BASE_URL` | Upload no S3 |
 | Asaas | `ASAAS_ENV`, chaves e URLs de sandbox/produção, `ASAAS_WEBHOOK_TOKEN` | Assinaturas. Em `ASAAS_ENV=production` o token do webhook é obrigatório |
 | Google | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, callbacks de login e Calendar | Login social e agenda |
-| WhatsApp | `WHATSAPP_PROVIDER` (padrão `log`), `WHATSAPP_API_URL`, `WHATSAPP_API_KEY`, `WHATSAPP_INSTANCE` | Número central da Lince Pet. `log` não envia mensagem de verdade |
-| Cron | `CRON_SECRET` | Bearer de `GET /api/cron/lembretes-whatsapp` |
+| WhatsApp | `WHATSAPP_PROVIDER` (`log` ou `gateway`), `WHATSAPP_GATEWAY_URL`, `WHATSAPP_GATEWAY_TOKEN` | Número central da Lince Pet. `log` não envia mensagem de verdade; `gateway` usa o serviço do repositório `lince-pet-whatsapp-gateway` |
+| Cron | `CRON_SECRET` | Bearer de `GET /api/cron/lembretes-whatsapp` (lembretes e conciliação da fila de WhatsApp; no Render, chamado pelo cron-job.org a cada 15 min) |
 
 ## Banco
 

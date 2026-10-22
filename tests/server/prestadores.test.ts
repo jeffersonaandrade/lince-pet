@@ -33,8 +33,8 @@ vi.mock('@/server/services/whatsapp', async (importOriginal) => {
   return {
     ...original,
     providerAtual: () => ({ nome: 'fake', enviar: enviarMock }),
-    enviarComRetry: (p: Parameters<typeof original.enviarComRetry>[0], to: string, texto: string) =>
-      original.enviarComRetry(p, to, texto, 0),
+    enviarComRetry: (...[p, to, texto, opts]: Parameters<typeof original.enviarComRetry>) =>
+      original.enviarComRetry(p, to, texto, { ...opts, esperaMs: 0 }),
   }
 })
 

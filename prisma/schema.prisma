@@ -579,20 +579,23 @@ model WhatsappEnvio {
   destinatario      String    @db.VarChar(20)
   referencia        String    @db.VarChar(20)
   telefone          String?   @db.VarChar(20)
-  /// enviado | falhou | ignorado
+  /// processando | aceito (gateway enfileirou) | enviado | falhou | ignorado
   status            String    @db.VarChar(20)
-  /// sem_plano | opt_out | sem_celular | erro
+  /// sem_plano | opt_out | sem_celular | erro | erro_temporario | limite_tentativas | expirado
   motivo            String?   @db.VarChar(30)
   provider          String?   @db.VarChar(30)
   providerMessageId String?   @map("provider_message_id") @db.VarChar(255)
   tentativas        Int       @default(0)
   erro              String?   @db.Text
+  /// Texto enviado; permite reenviar igual se o gateway perder a mensagem.
+  mensagem          String?   @db.Text
   createdAt         DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt         DateTime? @map("updated_at") @db.Timestamp(0)
 
   agendamento Agendamento? @relation(fields: [agendamentoId], references: [id], onDelete: SetNull)
 
   @@unique([agendamentoId, evento, destinatario, referencia], map: "whatsapp_envios_idempotencia_key")
+  @@index([status, updatedAt])
   @@map("whatsapp_envios")
 }
 

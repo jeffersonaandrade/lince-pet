@@ -12,7 +12,8 @@ import { montarMensagem, type Destinatario, type EventoWhatsapp } from './whatsa
 /**
  * Orquestra os avisos de WhatsApp do agendamento. Regras: plano do vet, do prestador ou da clínica com
  * `whatsapp_notifications`, canal WhatsApp ligado por quem recebe (tutor ou vet), celular válido e envio único por
- * (agendamento, evento, destinatário, referência). Nunca lança erro: tudo vai para `whatsapp_envios`.
+ * (agendamento, evento, destinatário, referência). Nunca lança erro: tudo vai para `whatsapp_envios`, que é a fila
+ * oficial (texto guardado em `mensagem`; a conciliação em `whatsapp-fila.ts` confirma e reenvia).
  */
 
 export const FEATURE_WHATSAPP = 'whatsapp_notifications'
@@ -73,6 +74,7 @@ async function reservar(data: {
   telefone: string | null
   status: string
   motivo?: string | null
+  mensagem?: string
 }) {
   try {
     return await prisma.whatsappEnvio.create({ data: creating({ ...data, tentativas: 0 }) })
@@ -124,23 +126,33 @@ async function despachar(
     return registro ? 'ignorado' : 'duplicado'
   }
 
-  const registro = await reservar({ ...base, status: 'processando' })
+  const registro = await reservar({ ...base, status: 'processando', mensagem: texto })
   if (!registro) return 'duplicado'
 
-  const provider = providerAtual()
-  const r = await enviarComRetry(provider, base.telefone!, texto)
-  await prisma.whatsappEnvio.update({
-    where: { id: registro.id },
-    data: updating({
-      provider: provider.nome,
-      tentativas: r.tentativas,
-      ...(r.ok
-        ? { status: 'enviado', providerMessageId: r.id ?? null }
-        : { status: 'falhou', motivo: 'erro', erro: r.erro }),
-    }),
-  })
+  const r = await entregar({ id: registro.id, telefone: base.telefone!, tentativas: 0 }, texto)
   if (!r.ok) console.error(`[WhatsApp] Falha (${evento}/${para}) agendamento ${a.id}: ${r.erro}`)
   return r.ok ? 'enviado' : 'falhou'
+}
+
+/**
+ * Envia uma linha já reservada e grava o resultado. Provedor assíncrono (gateway) fica `aceito` até a conciliação
+ * confirmar. A chave de idempotência muda a cada rodada (`tentativas` só cresce), para o reenvio não reaproveitar
+ * um job que o gateway já marcou como falho.
+ */
+export async function entregar(envio: { id: string; telefone: string; tentativas: number }, texto: string) {
+  const provider = providerAtual()
+  const r = await enviarComRetry(provider, envio.telefone, texto, { idempotencyKey: `${envio.id}:${envio.tentativas + 1}` })
+  await prisma.whatsappEnvio.update({
+    where: { id: envio.id },
+    data: updating({
+      provider: provider.nome,
+      tentativas: envio.tentativas + r.tentativas,
+      ...(r.ok
+        ? { status: provider.assincrono ? 'aceito' : 'enviado', providerMessageId: r.id ?? null, motivo: null, erro: null }
+        : { status: 'falhou', motivo: r.temporario ? 'erro_temporario' : 'erro', erro: r.erro }),
+    }),
+  })
+  return r
 }
 
 /**

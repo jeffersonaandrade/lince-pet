@@ -15,8 +15,8 @@ vi.mock('@/server/services/whatsapp', async (importOriginal) => {
   return {
     ...original,
     providerAtual: () => ({ nome: 'fake', enviar: enviarMock }),
-    enviarComRetry: (p: Parameters<typeof original.enviarComRetry>[0], to: string, texto: string) =>
-      original.enviarComRetry(p, to, texto, 0),
+    enviarComRetry: (...[p, to, texto, opts]: Parameters<typeof original.enviarComRetry>) =>
+      original.enviarComRetry(p, to, texto, { ...opts, esperaMs: 0 }),
   }
 })
 
@@ -72,10 +72,10 @@ describe('normalizarTelefoneE164', () => {
 describe('enviarComRetry', () => {
   it('repete só em erro temporário', async () => {
     const temporario = { nome: 'x', enviar: vi.fn().mockRejectedValueOnce(new WhatsAppError('503', true)).mockResolvedValue({ id: 'ok' }) }
-    await expect(enviarComRetry(temporario, '55', 't', 0)).resolves.toMatchObject({ ok: true, tentativas: 2 })
+    await expect(enviarComRetry(temporario, '55', 't', { esperaMs: 0 })).resolves.toMatchObject({ ok: true, tentativas: 2 })
 
     const definitivo = { nome: 'x', enviar: vi.fn().mockRejectedValue(new WhatsAppError('400', false)) }
-    await expect(enviarComRetry(definitivo, '55', 't', 0)).resolves.toMatchObject({ ok: false, tentativas: 1 })
+    await expect(enviarComRetry(definitivo, '55', 't', { esperaMs: 0 })).resolves.toMatchObject({ ok: false, tentativas: 1 })
     expect(definitivo.enviar).toHaveBeenCalledTimes(1)
   })
 })

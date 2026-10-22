@@ -12,7 +12,7 @@ import type { EventoWhatsapp } from './whatsapp-mensagens'
  * Envio único por janela garantido pela unique de whatsapp_envios.
  */
 
-const STATUS_ATIVOS = ['pendente', 'confirmado', 'agendado', 'marcado']
+export const STATUS_ATIVOS = ['pendente', 'confirmado', 'agendado', 'marcado']
 
 /** Authorization: Bearer CRON_SECRET. Sem CRON_SECRET configurado a rota fica fechada. */
 export function cronAutorizado(authorization: string | null | undefined, secret = env('CRON_SECRET')) {
