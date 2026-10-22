@@ -50,7 +50,7 @@ Veterinário e clínica começam sem plano (`none`) e só usam os recursos pagos
 
 - **Next.js 16** (App Router, Turbopack) e **React 19.2**, em **Node 22**. O `next build` não roda mais o lint: o script `build` chama `eslint` antes
 - **TypeScript**
-- **PostgreSQL 16** com **Prisma 6** (local no Docker ou Supabase)
+- **PostgreSQL 16** com **Prisma 7** e driver `pg` (`@prisma/adapter-pg`), local no Docker ou Supabase. O client é gerado em `src/generated/prisma` (fora do git, no `postinstall`); importe de `@/generated/prisma/client`, não de `@prisma/client`
 - **Tailwind CSS 4** no código novo; CSS Modules nas telas que já existiam
 - **VineJS** na validação da API (mesmo formato de erro do Adonis)
 - **JWT HS256** no cookie httpOnly `auth_token` (7 dias). Senha em scrypt no formato PHC do Adonis
@@ -152,6 +152,8 @@ O modelo está em [`.env.example`](.env.example). Não commite `.env` nem `.env.
 PostgreSQL. Em desenvolvimento, o Compose (`docker-compose.yml`) sobe `postgres:16` na porta **5433**, usuário e senha `lincepet`, banco `lincepet`, e um serviço `migrate` que aplica `prisma migrate deploy` e encerra.
 
 Em produção, `DATABASE_URL` e `DIRECT_URL` ficam no `.env.production` e apontam para o pooler do Supabase em modo sessão (porta 5432). A conexão direta `db.<ref>.supabase.co` é só IPv6. A aplicação autentica com o próprio JWT e usa o usuário `postgres` do banco.
+
+O Prisma 7 não lê o `.env` sozinho: o `prisma.config.ts` carrega com `dotenv` (sem sobrescrever variáveis já definidas) e passa o `DIRECT_URL` ao Migrate. A aplicação conecta pelo `DATABASE_URL` com a config de `src/server/db-conexao.ts`: pool de 5 conexões, timeout de 5 s e, em host do Supabase, SSL verificado com a CA do Supabase embutida no código (o `sslmode` da URL é ignorado). `migrate dev` não roda mais `generate` nem seed: use `npx prisma generate` e `npm run db:seed`.
 
 Convenções que o código assume:
 

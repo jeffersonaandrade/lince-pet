@@ -3,7 +3,7 @@ import { requireUser } from '@/server/auth/session'
 import { prisma } from '@/server/db'
 import { creating } from '@/server/lucid'
 import { enderecoWriteData, findVeterinarioByUser } from '@/server/services/veterinarios'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 
 export const POST = route(async (req) => {
   const apiReq = await ApiRequest.from(req)

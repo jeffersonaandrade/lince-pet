@@ -1,5 +1,5 @@
 import { Scrypt } from '@adonisjs/hash/drivers/scrypt'
-import { Genero, Porte, PrismaClient, TipoClinica, UserType } from '@prisma/client'
+import { Genero, Porte, PrismaClient, TipoClinica, UserType } from '@/generated/prisma/client'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
 

@@ -153,7 +153,7 @@ describe('webhook Asaas: pagamento confirmado', () => {
   })
 
   it('evento concorrente (unique violado) é ignorado sem erro', async () => {
-    const { Prisma } = await import('@prisma/client')
+    const { Prisma } = await import('@/generated/prisma/client')
     prismaMock.webhookEvent.create.mockRejectedValueOnce(
       new Prisma.PrismaClientKnownRequestError('dup', { code: 'P2002', clientVersion: 'x' })
     )
@@ -350,7 +350,7 @@ describe('webhook Asaas: idempotência e transação', () => {
   })
 
   it('P2002 sem chave de evento sobe o erro', async () => {
-    const { Prisma } = await import('@prisma/client')
+    const { Prisma } = await import('@/generated/prisma/client')
     prismaMock.subscription.findFirst.mockRejectedValueOnce(
       new Prisma.PrismaClientKnownRequestError('dup', { code: 'P2002', clientVersion: 'x' })
     )
@@ -360,7 +360,7 @@ describe('webhook Asaas: idempotência e transação', () => {
   })
 
   it('outro erro do Prisma ou erro com code P2002 fora do Prisma sobe', async () => {
-    const { Prisma } = await import('@prisma/client')
+    const { Prisma } = await import('@/generated/prisma/client')
     prismaMock.webhookEvent.create.mockRejectedValueOnce(
       new Prisma.PrismaClientKnownRequestError('fk', { code: 'P2003', clientVersion: 'x' })
     )

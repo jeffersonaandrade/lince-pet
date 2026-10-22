@@ -1,6 +1,6 @@
 import 'server-only'
 import { DateTime } from 'luxon'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import type { UploadedFile } from '../http'
 

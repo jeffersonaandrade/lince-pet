@@ -1,10 +1,13 @@
-import { PrismaClient } from '@prisma/client'
+import 'dotenv/config'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@/generated/prisma/client'
+import { configDaConexao } from '@/server/db-conexao'
 import { randomUUID } from 'node:crypto'
 import { especialidadesVeterinarias } from '../src/data/especialidades'
 import { DIFERENCIAIS, PLANOS_ASSINATURA, PLANOS_SAUDE, TIPOS_SERVICO } from './catalogo'
 import { seedDemonstracao } from './demo'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({ adapter: new PrismaPg(configDaConexao(process.env.DATABASE_URL ?? '')) })
 
 function agora() {
   const date = new Date()

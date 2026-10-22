@@ -1,4 +1,4 @@
-import type { Pet } from '@prisma/client'
+import type { Pet } from '@/generated/prisma/client'
 import { prisma } from '@/server/db'
 import { ApiRequest, ok, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'

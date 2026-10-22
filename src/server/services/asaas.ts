@@ -1,6 +1,6 @@
 import 'server-only'
 import axios, { type AxiosInstance } from 'axios'
-import type { Clinica, Prestador, Tutor, User, Veterinario } from '@prisma/client'
+import type { Clinica, Prestador, Tutor, User, Veterinario } from '@/generated/prisma/client'
 import { env } from '../env'
 import { dataLocal } from './assinatura-regras'
 

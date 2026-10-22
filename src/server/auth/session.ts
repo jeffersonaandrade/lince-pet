@@ -1,6 +1,6 @@
 import 'server-only'
 import type { NextResponse } from 'next/server'
-import type { Clinica, Prestador, TipoServico, Tutor, User, Veterinario } from '@prisma/client'
+import type { Clinica, Prestador, TipoServico, Tutor, User, Veterinario } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { HttpError, type ApiRequest } from '../http'
 import { isProduction } from '../env'

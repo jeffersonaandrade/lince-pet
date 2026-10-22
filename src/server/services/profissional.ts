@@ -1,5 +1,5 @@
 import 'server-only'
-import type { TipoServico } from '@prisma/client'
+import type { TipoServico } from '@/generated/prisma/client'
 import { prisma, type Usuario } from '../db'
 import { nomeCompleto } from './agendamentos'
 

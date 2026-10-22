@@ -1,5 +1,5 @@
 import 'server-only'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 import type { CurrentUser } from '../auth/session'
 import { updating } from '../lucid'
 import type { AsaasService } from './asaas'

@@ -1,6 +1,6 @@
 import 'server-only'
 import vine from '@vinejs/vine'
-import { Prisma, type Prestador, type ServicoOferecido, type TipoServico, type User } from '@prisma/client'
+import { Prisma, type Prestador, type ServicoOferecido, type TipoServico, type User } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { HttpError } from '../http'
 import { creating, updating } from '../lucid'

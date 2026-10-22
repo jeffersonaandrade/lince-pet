@@ -12,7 +12,7 @@ import type {
   Tutor,
   User,
   Veterinario,
-} from '@prisma/client'
+} from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { env, requiredEnv } from '../env'
 import { creating, updating } from '../lucid'

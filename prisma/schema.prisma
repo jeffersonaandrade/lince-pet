@@ -4,19 +4,19 @@
 // - Colunas booleanas continuam Int (0/1) em SMALLINT: o frontend compara com
 //   0 e 1. Não virar Boolean nativo.
 // - Nomes de campos = nomes das propriedades dos models Lucid (@map p/ coluna).
-// - DATABASE_URL é a conexão da aplicação (no Supabase, o pooler na porta 6543
-//   com ?pgbouncer=true). DIRECT_URL é a conexão direta (porta 5432), usada
-//   só pelo Prisma Migrate.
+// - DATABASE_URL é a conexão da aplicação (driver pg via @prisma/adapter-pg,
+//   em src/server/db.ts). DIRECT_URL é a conexão do Prisma Migrate, lida no
+//   prisma.config.ts.
 // =============================================================================
 
 generator client {
-  provider = "prisma-client-js"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 /// ENUMs nativos do Postgres. Mapeados como String, o Prisma falha ao ler (P2032).

@@ -1,6 +1,6 @@
 import 'server-only'
 import { DateTime } from 'luxon'
-import type { Agendamento, Avaliacao, Pet, Tutor, User } from '@prisma/client'
+import type { Agendamento, Avaliacao, Pet, Tutor, User } from '@/generated/prisma/client'
 import { prisma } from '../db'
 
 type AvaliacaoComRelacoes = Avaliacao & {

@@ -573,6 +573,8 @@ seguranca_nodes = [
          "ApiRequest.limpar: trim no corpo (JSON/form) com vazio -> null; query so trim; chaves com senha/password nao mudam."),
     rule("rule_seguranca_webhook_asaas_token", "Webhook Asaas exige token em producao, tempo constante",
          "webhookAutorizado: sem ASAAS_WEBHOOK_TOKEN so passa fora de producao; timingSafeEqual; 500 sem detalhes."),
+    rule("rule_infra_ssl_supabase_ca", "Conexao com o Supabase sempre com SSL verificado pela CA do Supabase",
+         "configDaConexao: host supabase usa ssl { ca: SUPABASE_CA, rejectUnauthorized: true } e ignora sslmode da URL; pool 5, timeout 5 s; nunca desligar a verificacao."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in seguranca_nodes if n["id"] not in nodes_ids]
@@ -624,6 +626,9 @@ seguranca_impl = {
     "src_server_services_assinatura_regras": ["rule_seguranca_webhook_asaas_token"],
     "src_app_api_webhooks_asaas_route": ["rule_seguranca_webhook_asaas_token"],
     "tests_server_assinatura_regras_test": ["rule_seguranca_webhook_asaas_token"],
+    "src_server_db_conexao": ["rule_infra_ssl_supabase_ca"],
+    "src_server_db": ["rule_infra_ssl_supabase_ca"],
+    "tests_server_db_conexao_test": ["rule_infra_ssl_supabase_ca"],
 }
 seguranca_impl["src_server_auth_session"] = ["rule_seguranca_token_so_cookie_header", "rule_seguranca_sessao_revogavel"]
 seguranca_impl["src_server_services_auth"] = ["rule_seguranca_email_exato", "rule_seguranca_sessao_revogavel"]

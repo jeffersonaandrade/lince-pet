@@ -1,7 +1,7 @@
 import 'server-only'
 import { randomUUID } from 'node:crypto'
 import { DateTime } from 'luxon'
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@/generated/prisma/client'
 
 /**
  * Comportamentos que o Lucid fazia automaticamente e o Prisma não faz

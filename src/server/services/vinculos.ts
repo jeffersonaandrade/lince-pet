@@ -1,5 +1,5 @@
 import 'server-only'
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { HttpError } from '../http'
 import { creating } from '../lucid'

@@ -9,7 +9,9 @@
  */
 import { existsSync } from 'node:fs'
 import mysql from 'mysql2/promise'
-import { PrismaClient } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient } from '@/generated/prisma/client'
+import { configDaConexao } from '@/server/db-conexao'
 import {
   type ColunaPg,
   type Fk,
@@ -52,7 +54,7 @@ async function main() {
     typeCast: (field, next) => (field.type === 'JSON' ? field.string() : next()),
   })
   await origem.query("SET time_zone = '+00:00'")
-  const destino = new PrismaClient({ datasourceUrl: destinoUrl })
+  const destino = new PrismaClient({ adapter: new PrismaPg(configDaConexao(destinoUrl!)) })
 
   try {
     console.log(`Origem MySQL:  ${hostDe(origemUrl!)}`)

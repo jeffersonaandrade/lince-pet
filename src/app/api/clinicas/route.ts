@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/server/db'
 import { ApiRequest, ok, route } from '@/server/http'
 import {

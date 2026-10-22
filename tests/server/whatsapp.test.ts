@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { DateTime } from 'luxon'
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@/generated/prisma/client'
 
 const prismaMock = vi.hoisted(() => ({
   agendamento: { findUnique: vi.fn(), findMany: vi.fn() },

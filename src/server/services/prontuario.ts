@@ -1,7 +1,7 @@
 import 'server-only'
 import vine from '@vinejs/vine'
 import { DateTime } from 'luxon'
-import type { Prisma, RegistroClinico } from '@prisma/client'
+import type { Prisma, RegistroClinico } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { HttpError } from '../http'
 import { creating, updating } from '../lucid'

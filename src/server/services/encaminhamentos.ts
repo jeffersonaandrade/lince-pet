@@ -1,7 +1,7 @@
 import 'server-only'
 import { after } from 'next/server'
 import vine from '@vinejs/vine'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 import { prisma, type Usuario } from '../db'
 import { HttpError } from '../http'
 import { creating, updating } from '../lucid'

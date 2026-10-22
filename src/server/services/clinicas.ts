@@ -1,6 +1,6 @@
 import 'server-only'
 import { DateTime } from 'luxon'
-import { Prisma, TipoClinica, UserType, type Clinica, type Especialidade, type User, type VeterinarioEndereco } from '@prisma/client'
+import { Prisma, TipoClinica, UserType, type Clinica, type Especialidade, type User, type VeterinarioEndereco } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { serializeUser } from '../auth/session'
 import { hashPassword } from '../auth/password'

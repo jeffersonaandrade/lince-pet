@@ -1,5 +1,5 @@
 import 'server-only'
-import { Prisma, type Veterinario } from '@prisma/client'
+import { Prisma, type Veterinario } from '@/generated/prisma/client'
 import type { Infer } from '@vinejs/vine/types'
 import { prisma } from '../db'
 import { HttpError } from '../http'

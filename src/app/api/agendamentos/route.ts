@@ -1,7 +1,7 @@
 import { after } from 'next/server'
 import { DateTime } from 'luxon'
 import { randomInt } from 'node:crypto'
-import type { Prisma } from '@prisma/client'
+import type { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/server/db'
 import { ApiRequest, badRequest, created, HttpError, json, notFound, ok, route, serverError, unauthorized } from '@/server/http'
 import { conferirEncaminhamento, vincularAgendamento } from '@/server/services/encaminhamentos'

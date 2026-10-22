@@ -1,5 +1,7 @@
 import 'server-only'
-import { PrismaClient, type User } from '@prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
+import { PrismaClient, type User } from '@/generated/prisma/client'
+import { configDaConexao } from './db-conexao'
 
 /** User como sai do client global (sem senha nem tokens do Google). */
 export type Usuario = Omit<User, 'password' | 'googleAccessToken' | 'googleRefreshToken' | 'googleTokenExpiresAt'>
@@ -10,6 +12,7 @@ export type Usuario = Omit<User, 'password' | 'googleAccessToken' | 'googleRefre
  */
 const createClient = () =>
   new PrismaClient({
+    adapter: new PrismaPg(configDaConexao(process.env.DATABASE_URL ?? '')),
     log: process.env.NODE_ENV === 'production' ? ['error'] : ['warn', 'error'],
     omit: {
       user: {

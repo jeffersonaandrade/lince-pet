@@ -9,7 +9,7 @@ import {
   type User,
   type Veterinario,
   type VeterinarioEndereco,
-} from '@prisma/client'
+} from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { serializeUser, type PublicUser } from '../auth/session'
 import { hashPassword } from '../auth/password'
