@@ -19,10 +19,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: false,
   },
-  // ESLint também bloqueia o build: o repositório está sem erros de lint.
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
   images: {
     unoptimized: true,
     remotePatterns: [

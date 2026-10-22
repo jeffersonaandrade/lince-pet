@@ -103,6 +103,9 @@ interface Veterinario {
   limitReached?: boolean;
 }
 
+const DIAS_SEMANA = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
+const getDayName = (date: Date) => DIAS_SEMANA[date.getDay()];
+
 export default function VeterinarioProfile() {
   const params = useParams();
   const router = useRouter();
@@ -374,11 +377,6 @@ export default function VeterinarioProfile() {
     if (diffDays < 0) return;
     setSelectedDay(diffDays);
     setSelectedTimeSlot(null);
-  };
-
-  const getDayName = (date: Date) => {
-    const dayNames = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
-    return dayNames[date.getDay()];
   };
 
   const generateTimeSlots = () => {

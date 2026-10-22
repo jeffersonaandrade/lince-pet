@@ -35,6 +35,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<ErrorState | null>(null);
   const [sucesso, setSucesso] = useState<string | null>(null);
+  const [abertoEm] = useState(() => Date.now());
 
   useEffect(() => {
     if (loading) return;
@@ -69,7 +70,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
   const planoAtual = status?.plan?.code ?? null;
   const ehAtual = (code: string) => code === planoAtual && status?.statusLabel === "ativa";
   const testeNaContratacao = Boolean(status?.testeDisponivel);
-  const vencimentoTeste = new Date(Date.now() + DIAS_TESTE_GRATIS * 86_400_000).toLocaleDateString("pt-BR");
+  const vencimentoTeste = new Date(abertoEm + DIAS_TESTE_GRATIS * 86_400_000).toLocaleDateString("pt-BR");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

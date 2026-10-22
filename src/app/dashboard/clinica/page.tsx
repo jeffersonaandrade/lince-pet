@@ -90,6 +90,107 @@ interface DashboardData {
   proximasConsultas: AgendamentoDashboard[];
 }
 
+const StatusIcon = ({
+  kind,
+}: {
+  kind: "check" | "x" | "clock" | "progress" | "check-circle" | "dot";
+}) => {
+  const common = {
+    width: 14,
+    height: 14,
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+  } as const;
+  switch (kind) {
+    case "check":
+      return (
+        <svg {...common} aria-hidden>
+          <path
+            d="M20 6L9 17l-5-5"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    case "x":
+      return (
+        <svg {...common} aria-hidden>
+          <path
+            d="M18 6L6 18M6 6l12 12"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    case "clock":
+      return (
+        <svg {...common} aria-hidden>
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+          />
+          <path
+            d="M12 7v5l4 2"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    case "progress":
+      return (
+        <svg {...common} aria-hidden>
+          <path
+            d="M12 3a9 9 0 109 9"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    case "check-circle":
+      return (
+        <svg {...common} aria-hidden>
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+          />
+          <path
+            d="M16 10l-4 4-2-2"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    default:
+      return (
+        <svg {...common} aria-hidden>
+          <circle cx="12" cy="12" r="4" />
+        </svg>
+      );
+  }
+};
+
 export default function ClinicaDashboard() {
   const { user, loading, updateUser } = useAuth();
   const router = useRouter();
@@ -318,107 +419,6 @@ export default function ClinicaDashboard() {
     )
       return { color: "#d97706", label: "Aguardando", icon: "clock" as const };
     return { color: "#e67e22", label: "", icon: "dot" as const };
-  };
-
-  const StatusIcon = ({
-    kind,
-  }: {
-    kind: "check" | "x" | "clock" | "progress" | "check-circle" | "dot";
-  }) => {
-    const common = {
-      width: 14,
-      height: 14,
-      viewBox: "0 0 24 24",
-      fill: "currentColor",
-    } as const;
-    switch (kind) {
-      case "check":
-        return (
-          <svg {...common} aria-hidden>
-            <path
-              d="M20 6L9 17l-5-5"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        );
-      case "x":
-        return (
-          <svg {...common} aria-hidden>
-            <path
-              d="M18 6L6 18M6 6l12 12"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        );
-      case "clock":
-        return (
-          <svg {...common} aria-hidden>
-            <circle
-              cx="12"
-              cy="12"
-              r="9"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-            />
-            <path
-              d="M12 7v5l4 2"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        );
-      case "progress":
-        return (
-          <svg {...common} aria-hidden>
-            <path
-              d="M12 3a9 9 0 109 9"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        );
-      case "check-circle":
-        return (
-          <svg {...common} aria-hidden>
-            <circle
-              cx="12"
-              cy="12"
-              r="9"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-            />
-            <path
-              d="M16 10l-4 4-2-2"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        );
-      default:
-        return (
-          <svg {...common} aria-hidden>
-            <circle cx="12" cy="12" r="4" />
-          </svg>
-        );
-    }
   };
 
   const carregarEstatisticas = async () => {

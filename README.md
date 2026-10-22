@@ -48,12 +48,12 @@ Veterinário e clínica começam sem plano (`none`) e só usam os recursos pagos
 
 ## Stack
 
-- **Next.js 15** (App Router, Turbopack) e **React 19**
+- **Next.js 16** (App Router, Turbopack) e **React 19.2**, em **Node 22**. O `next build` não roda mais o lint: o script `build` chama `eslint` antes
 - **TypeScript**
 - **PostgreSQL 16** com **Prisma 6** (local no Docker ou Supabase)
 - **Tailwind CSS 4** no código novo; CSS Modules nas telas que já existiam
 - **VineJS** na validação da API (mesmo formato de erro do Adonis)
-- **JWT HS256** no cookie httpOnly `auth_token` (30 dias). Senha em scrypt no formato PHC do Adonis
+- **JWT HS256** no cookie httpOnly `auth_token` (7 dias). Senha em scrypt no formato PHC do Adonis
 - **Asaas** (assinaturas), **Resend** (e-mail), **S3** (uploads), **Google** (login e Calendar), **WhatsApp** (provedor trocável; o padrão `log` só registra no console)
 - **Vitest** e **Stryker** nos testes de servidor
 
