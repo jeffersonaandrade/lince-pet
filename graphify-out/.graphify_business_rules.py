@@ -132,9 +132,13 @@ whatsapp_nodes = [
     rule("rule_whatsapp_lembretes_24h_2h", "WhatsApp: lembretes 24h e 2h via cron protegido",
          "GET /api/cron/lembretes-whatsapp com Bearer CRON_SECRET a cada 15 min; janela 24h (24h a 2h antes) e 2h (ate o inicio); consulta criada apos a janela abrir pula aquele lembrete."),
     rule("rule_whatsapp_idempotencia", "WhatsApp: envio idempotente e registrado",
-         "whatsapp_envios com unique (consulta, evento, destinatario, data+hora); cron repetido nao duplica; remarcacao muda a referencia; status enviado/falhou/ignorado."),
+         "whatsapp_envios com unique (consulta, evento, destinatario, data+hora); cron repetido nao duplica; remarcacao muda a referencia; status processando/aceito/enviado/falhou/ignorado."),
     rule("rule_whatsapp_nao_bloqueia", "WhatsApp: falha nunca bloqueia o fluxo",
-         "Envio em after(), ate 2 tentativas so para erro temporario (429/5xx/rede); erro do provedor e registrado e nao derruba agendamento/cancelamento/remarcacao."),
+         "Envio em after(), ate 2 tentativas so para erro temporario (429/5xx/rede/timeout 10 s); erro do provedor e registrado e nao derruba agendamento/cancelamento/remarcacao; a conciliacao tenta de novo."),
+    rule("rule_whatsapp_fila_conciliacao", "WhatsApp: whatsapp_envios e a fila; cron concilia e reenvia",
+         "Texto guardado em mensagem; conciliarEnvios no cron (lote 50): aceito parado 2 min consulta o gateway (enviado/falhou/404 reenvia), processando parado 5 min e falhou/erro_temporario reenviam; limite 3 tentativas (limite_tentativas); so reenvia aviso que ainda faz sentido (consulta futura, ativa e mesma data/hora, senao expirado); update condicional evita reenvio duplo; chave <envio>:<rodada>."),
+    rule("rule_whatsapp_gateway_isolado", "WhatsApp: gateway + Evolution em servico Render separado",
+         "Repo lince-pet-whatsapp-gateway, imagem unica gateway+Evolution, Render free proprio acordado pelo UptimeRobot; sessao no schema evolution do mesmo Supabase (role evolution_app sem acesso ao public); app usa so WHATSAPP_GATEWAY_URL/TOKEN e nunca toca o schema evolution; cron externo (cron-job.org) a cada 15 min."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in whatsapp_nodes if n["id"] not in nodes_ids]
@@ -142,15 +146,21 @@ whatsapp_rules = [n["id"] for n in whatsapp_nodes]
 new_edges += [edge("concept_regras_de_negocio", r) for r in whatsapp_rules]
 new_edges += [edge("rule_whatsapp_eventos_destinatarios", r) for r in whatsapp_rules if r != "rule_whatsapp_eventos_destinatarios"]
 new_edges += [edge("rule_whatsapp_eventos_destinatarios", "rule_bloqueio_cancela_consultas", "references")]
+new_edges += [edge("rule_whatsapp_fila_conciliacao", "rule_whatsapp_idempotencia", "references")]
+new_edges += [edge("rule_whatsapp_gateway_isolado", "rule_seguranca_gateway_sem_token_fecha", "references")]
 impl.update({
-    "src_server_services_whatsapp": ["rule_whatsapp_provedor_agnostico", "rule_whatsapp_numero_central", "rule_whatsapp_nao_bloqueia"],
+    "src_server_services_whatsapp": [
+        "rule_whatsapp_provedor_agnostico", "rule_whatsapp_numero_central", "rule_whatsapp_nao_bloqueia", "rule_whatsapp_gateway_isolado",
+    ],
+    "src_server_services_whatsapp_fila": ["rule_whatsapp_fila_conciliacao", "rule_whatsapp_idempotencia"],
+    "tests_server_whatsapp_fila_test": ["rule_whatsapp_fila_conciliacao"],
     "src_server_services_whatsapp_mensagens": ["rule_whatsapp_eventos_destinatarios"],
     "src_server_services_whatsapp_notificacoes": [
         "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_regra_plano", "rule_whatsapp_opt_out",
-        "rule_whatsapp_idempotencia", "rule_whatsapp_nao_bloqueia",
+        "rule_whatsapp_idempotencia", "rule_whatsapp_nao_bloqueia", "rule_whatsapp_fila_conciliacao",
     ],
     "src_server_services_whatsapp_lembretes": ["rule_whatsapp_lembretes_24h_2h", "rule_whatsapp_idempotencia"],
-    "src_app_api_cron_lembretes_whatsapp_route": ["rule_whatsapp_lembretes_24h_2h"],
+    "src_app_api_cron_lembretes_whatsapp_route": ["rule_whatsapp_lembretes_24h_2h", "rule_whatsapp_fila_conciliacao"],
     "netlify_functions_lembretes_whatsapp": ["rule_whatsapp_lembretes_24h_2h"],
     "src_app_api_agendamentos_route": ["rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia"],
     "src_app_api_agendamentos_id_cancelar_route": ["rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia"],
@@ -598,7 +608,6 @@ seguranca_impl = {
     "src_app_api_clinicas_professionals_search_route": ["rule_seguranca_vet_documentos_privados"],
     "src_server_services_storage": ["rule_seguranca_storage_apaga_so_do_dono"],
     "tests_server_cobertura_storage_test": ["rule_seguranca_storage_apaga_so_do_dono"],
-    "services_whatsapp_gateway_src_server": ["rule_seguranca_gateway_sem_token_fecha"],
     "src_server_auth_jwt": ["rule_seguranca_sessao_revogavel", "rule_seguranca_jwt_tipo_proprio"],
     "src_app_api_auth_logout_route": ["rule_seguranca_sessao_revogavel"],
     "tests_server_sessao_test": ["rule_seguranca_sessao_revogavel", "rule_seguranca_jwt_tipo_proprio"],

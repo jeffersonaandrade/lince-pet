@@ -1,8 +1,8 @@
 {
   "eslint.config.mjs": {
-    "mtime": 1792703767.8219335,
-    "seen": 1792704033.2317476,
-    "ast_hash": "eecb268c134df4d989c0429a248db59f",
+    "mtime": 1792704591.7341878,
+    "seen": 1792708037.4653375,
+    "ast_hash": "61abae357bffde464f66054d46b6b062",
     "semantic_hash": ""
   },
   "next.config.ts": {
@@ -1986,9 +1986,9 @@
     "semantic_hash": ""
   },
   "src/server/services/whatsapp.ts": {
-    "mtime": 1792101344.0411773,
-    "seen": 1792534368.4860303,
-    "ast_hash": "e96bc7cae90e931eced614fceffda38e",
+    "mtime": 1792707799.352682,
+    "seen": 1792708037.6022944,
+    "ast_hash": "6887aca288ecb124045d38c16de23518",
     "semantic_hash": ""
   },
   "src/app/api/google/calendar/auth/route.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792704538.3250859,
-    "seen": 1792704567.980404,
-    "ast_hash": "4d5b863c794b2821e367c671af844af3",
+    "mtime": 1792707967.4220552,
+    "seen": 1792708037.6672244,
+    "ast_hash": "34123b177c4de40234a4236cea2af495",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2178,15 +2178,15 @@
     "semantic_hash": ""
   },
   "src/app/api/cron/lembretes-whatsapp/route.ts": {
-    "mtime": 1791514977.4312458,
-    "seen": 1791515176.518523,
-    "ast_hash": "3d5fb83c932508edbeafa67014d92f45",
+    "mtime": 1792707833.4013612,
+    "seen": 1792708037.4919734,
+    "ast_hash": "3487a9a0dd03ed6bc7983f4b84a87e3a",
     "semantic_hash": ""
   },
   "src/server/services/whatsapp-lembretes.ts": {
-    "mtime": 1791514978.1560004,
-    "seen": 1791515176.5542092,
-    "ast_hash": "ac09007385eec546f6ec9b0d1f00d2b6",
+    "mtime": 1792707880.2158184,
+    "seen": 1792708037.6020043,
+    "ast_hash": "a8ccc7c94efdd9128c1128aac3a8a7e2",
     "semantic_hash": ""
   },
   "src/server/services/whatsapp-mensagens.ts": {
@@ -2196,15 +2196,15 @@
     "semantic_hash": ""
   },
   "src/server/services/whatsapp-notificacoes.ts": {
-    "mtime": 1792704217.139096,
-    "seen": 1792704567.9248729,
-    "ast_hash": "eb8f64db37b2caf309972bccf1351880",
+    "mtime": 1792707824.606585,
+    "seen": 1792708037.6022918,
+    "ast_hash": "116eb070013374ac507714867eace069",
     "semantic_hash": ""
   },
   "tests/server/whatsapp.test.ts": {
-    "mtime": 1792704217.1699755,
-    "seen": 1792704567.949842,
-    "ast_hash": "2dd772ea32f2cd9cce94450f21b0730a",
+    "mtime": 1792707848.8546498,
+    "seen": 1792708037.6318052,
+    "ast_hash": "231b382a15bb26c417d30dba4ebc57fa",
     "semantic_hash": ""
   },
   "vercel.json": {
@@ -2610,9 +2610,9 @@
     "semantic_hash": ""
   },
   "tests/server/prestadores.test.ts": {
-    "mtime": 1792534131.6139622,
-    "seen": 1792534368.6488285,
-    "ast_hash": "2eeba3e32c49e29bb22a171ccea3d8d6",
+    "mtime": 1792707846.5999227,
+    "seen": 1792708037.6296074,
+    "ast_hash": "a0c15529dd4a6504425c19d6d673211b",
     "semantic_hash": ""
   },
   "src/app/api/agendamentos/[id]/encaminhamentos/route.ts": {
@@ -2982,15 +2982,15 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/whatsapp-notificacoes.test.ts": {
-    "mtime": 1792704217.1661658,
-    "seen": 1792704567.9457119,
-    "ast_hash": "5c5ed0702604999f8dabe5e64701a5f7",
+    "mtime": 1792707910.5602808,
+    "seen": 1792708037.6273513,
+    "ast_hash": "856b87aaef3dc0c7ca59a2732a8a6185",
     "semantic_hash": ""
   },
   "tests/server/cobertura/whatsapp.test.ts": {
-    "mtime": 1792101344.0421824,
-    "seen": 1792534368.6321313,
-    "ast_hash": "a3d2294783e1bd69a45162c0e665b959",
+    "mtime": 1792707862.4351993,
+    "seen": 1792708037.627354,
+    "ast_hash": "361f03a6f68c1e6ca3b9e17ae4078447",
     "semantic_hash": ""
   },
   "stryker.config.json": {
@@ -3161,76 +3161,10 @@
     "ast_hash": "3e41050b20aaef3bfb7eff3011776aef",
     "semantic_hash": ""
   },
-  "services/whatsapp-gateway/package.json": {
-    "mtime": 1792101344.0331047,
-    "seen": 1792534367.991484,
-    "ast_hash": "eb98a93cd893a63bb7d8e080189796d2",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/src/circuit-breaker.ts": {
-    "mtime": 1792101344.033666,
-    "seen": 1792534367.9914994,
-    "ast_hash": "73fb3877a8a74d38d187a5c0f504ad86",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/src/config.ts": {
-    "mtime": 1792101344.0346727,
-    "seen": 1792534367.9915113,
-    "ast_hash": "64c15d5c1074c524a8b1a74fff1128bc",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/src/evolution-provider.ts": {
-    "mtime": 1792101344.0356724,
-    "seen": 1792534367.9915214,
-    "ast_hash": "9bf2fac9e3f628f3c652c5f4a4516ba3",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/src/evolution-webhook.ts": {
-    "mtime": 1792101344.0356724,
-    "seen": 1792534367.9915333,
-    "ast_hash": "96fb30de5f925d45bdfafc8f7241b791",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/src/provider.ts": {
-    "mtime": 1792101344.0366726,
-    "seen": 1792534367.9915428,
-    "ast_hash": "39bd13edff059262f2be0a3bfc829807",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/src/queue.ts": {
-    "mtime": 1792101344.0376732,
-    "seen": 1792534367.9915526,
-    "ast_hash": "97d39d3980478525fe02727df66af0e6",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/src/server.ts": {
-    "mtime": 1792539625.7722714,
-    "seen": 1792544735.01298,
-    "ast_hash": "22b7a412f4d24167cfeeefb071151b22",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/tsconfig.json": {
-    "mtime": 1792101344.0386727,
-    "seen": 1792534367.9915712,
-    "ast_hash": "6f3a690be47842464c1e15f39fe81a94",
-    "semantic_hash": ""
-  },
   "README.md": {
-    "mtime": 1792704536.042039,
-    "seen": 1792704567.9801416,
-    "ast_hash": "51381f6ad224a9dc51777bbf850e726e",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/README.md": {
-    "mtime": 1792101344.0310986,
-    "seen": 1792534369.148479,
-    "ast_hash": "c5e982dcf0f8a70420fbef0752c5254f",
-    "semantic_hash": ""
-  },
-  "services/whatsapp-gateway/docker-compose.evolution.yml": {
-    "mtime": 1792101344.0310986,
-    "seen": 1792534369.1484952,
-    "ast_hash": "267be0ede470cae8dc355329e023b649",
+    "mtime": 1792708014.3920507,
+    "seen": 1792708037.6669552,
+    "ast_hash": "cb86193ae0463074199188586a919404",
     "semantic_hash": ""
   },
   "src/lib/motivos-cancelamento.ts": {
@@ -3303,6 +3237,18 @@
     "mtime": 1792704228.7411194,
     "seen": 1792704567.946004,
     "ast_hash": "6477667b6c1b87e2f1e74685e57d18d4",
+    "semantic_hash": ""
+  },
+  "src/server/services/whatsapp-fila.ts": {
+    "mtime": 1792707882.5259163,
+    "seen": 1792708037.602001,
+    "ast_hash": "c82dd21b0c39d2c3916682eb7d1f3c25",
+    "semantic_hash": ""
+  },
+  "tests/server/whatsapp-fila.test.ts": {
+    "mtime": 1792707899.3088014,
+    "seen": 1792708037.6318018,
+    "ast_hash": "72ab99a287611fc546b8c9fba7a49c64",
     "semantic_hash": ""
   }
 }
