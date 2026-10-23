@@ -20,10 +20,14 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const destino = new URL(event.notification.data?.url || "/", self.location.origin).href;
+  let destino = self.location.origin + "/";
+  try {
+    const url = new URL(event.notification.data?.url || "/", self.location.origin);
+    if (url.origin === self.location.origin) destino = url.href;
+  } catch { /* Payload inválido abre a página inicial. */ }
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((abas) => {
-      const aberta = abas.find((aba) => aba.url.startsWith(self.location.origin));
+      const aberta = abas.find((aba) => new URL(aba.url).origin === self.location.origin);
       if (aberta) {
         return aberta.focus().then((aba) => (aba && "navigate" in aba ? aba.navigate(destino) : aba));
       }

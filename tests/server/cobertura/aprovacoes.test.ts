@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const prismaMock = vi.hoisted(() => ({
-  veterinario: { findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
-  clinica: { findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+  veterinario: { findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
+  clinica: { findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
 }))
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 
@@ -16,6 +16,8 @@ import {
   decidirRt,
   listarPendentes,
   resolverDecisao,
+  revisaoCrmv,
+  revisaoRt,
   salvarRt,
   statusAposTroca,
   ufDoCrmv,
@@ -27,6 +29,8 @@ const data = new Date('2026-10-20T10:00:00Z')
 
 beforeEach(() => {
   vi.clearAllMocks()
+  prismaMock.veterinario.updateMany.mockResolvedValue({ count: 1 })
+  prismaMock.clinica.updateMany.mockResolvedValue({ count: 1 })
   sinoMock.mockResolvedValue(undefined)
   emailMock.mockResolvedValue({ success: true })
 })
@@ -74,16 +78,29 @@ describe('listarPendentes', () => {
 })
 
 describe('decidirCrmv', () => {
+  it('recusa decisão sobre dados alterados desde a listagem', async () => {
+    prismaMock.veterinario.findUnique.mockResolvedValue({ id: 'v1', crmv: '2-SP', crmvStatus: 'pendente', updatedAt: new Date(data.getTime() + 1), user })
+    await expect(decidirCrmv('v1', { decisao: 'aprovar', revisao: revisaoCrmv({ crmv: '1-SP', updatedAt: data }) })).rejects.toMatchObject({ status: 409 })
+    expect(prismaMock.veterinario.updateMany).not.toHaveBeenCalled()
+    expect(sinoMock).not.toHaveBeenCalled()
+  })
+
+  it('alteração concorrente entre leitura e gravação não aprova nem avisa', async () => {
+    prismaMock.veterinario.findUnique.mockResolvedValue({ id: 'v1', crmv: '1-SP', crmvStatus: 'pendente', updatedAt: data, user })
+    prismaMock.veterinario.updateMany.mockResolvedValueOnce({ count: 0 })
+    await expect(decidirCrmv('v1', { decisao: 'aprovar', revisao: revisaoCrmv({ crmv: '1-SP', updatedAt: data }) })).rejects.toMatchObject({ status: 409 })
+    expect(sinoMock).not.toHaveBeenCalled()
+  })
   it('aprovar libera o vet e avisa', async () => {
-    prismaMock.veterinario.findUnique.mockResolvedValue({ id: 'v1', crmv: '1-SP', crmvStatus: 'pendente', user })
-    expect(await decidirCrmv('v1', { decisao: 'aprovar' })).toEqual({ id: 'v1', status: 'aprovado', motivo: null })
-    expect(prismaMock.veterinario.update.mock.calls[0][0].data).toMatchObject({ crmvStatus: 'aprovado', crmvMotivo: null })
+    prismaMock.veterinario.findUnique.mockResolvedValue({ id: 'v1', crmv: '1-SP', crmvStatus: 'pendente', updatedAt: data, user })
+    expect(await decidirCrmv('v1', { decisao: 'aprovar', revisao: revisaoCrmv({ crmv: '1-SP', updatedAt: data }) })).toEqual({ id: 'v1', status: 'aprovado', motivo: null })
+    expect(prismaMock.veterinario.updateMany.mock.calls[0][0].data).toMatchObject({ crmvStatus: 'aprovado', crmvMotivo: null })
     expect(sinoMock).toHaveBeenCalledWith(expect.objectContaining({ userId: 'u1', type: 'CRMV_APROVADO' }))
   })
 
   it('reprovar grava e avisa o motivo', async () => {
-    prismaMock.veterinario.findUnique.mockResolvedValue({ id: 'v1', crmv: '1-SP', crmvStatus: 'pendente', user })
-    await decidirCrmv('v1', { decisao: 'reprovar', motivo: 'Não consta no CFMV' })
+    prismaMock.veterinario.findUnique.mockResolvedValue({ id: 'v1', crmv: '1-SP', crmvStatus: 'pendente', updatedAt: data, user })
+    await decidirCrmv('v1', { decisao: 'reprovar', revisao: revisaoCrmv({ crmv: '1-SP', updatedAt: data }), motivo: 'Não consta no CFMV' })
     expect(sinoMock).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'CRMV_REPROVADO', message: expect.stringContaining('Motivo: Não consta no CFMV') })
     )
@@ -92,36 +109,36 @@ describe('decidirCrmv', () => {
 
   it('não encontrado: 404; fora de análise: 409; vet sem usuário não avisa', async () => {
     prismaMock.veterinario.findUnique.mockResolvedValueOnce(null)
-    await expect(decidirCrmv('v1', { decisao: 'aprovar' })).rejects.toMatchObject({ status: 404 })
+    await expect(decidirCrmv('v1', { decisao: 'aprovar', revisao: revisaoCrmv({ crmv: '1-SP', updatedAt: data }) })).rejects.toMatchObject({ status: 404 })
     prismaMock.veterinario.findUnique.mockResolvedValueOnce({ id: 'v1', crmvStatus: 'aprovado' })
-    await expect(decidirCrmv('v1', { decisao: 'aprovar' })).rejects.toMatchObject({ status: 409 })
-    prismaMock.veterinario.findUnique.mockResolvedValueOnce({ id: 'v1', crmvStatus: 'pendente', user: null })
-    await decidirCrmv('v1', { decisao: 'aprovar' })
+    await expect(decidirCrmv('v1', { decisao: 'aprovar', revisao: revisaoCrmv({ crmv: '1-SP', updatedAt: data }) })).rejects.toMatchObject({ status: 409 })
+    prismaMock.veterinario.findUnique.mockResolvedValueOnce({ id: 'v1', crmv: '1-SP', crmvStatus: 'pendente', updatedAt: data, user: null })
+    await decidirCrmv('v1', { decisao: 'aprovar', revisao: revisaoCrmv({ crmv: '1-SP', updatedAt: data }) })
     expect(sinoMock).not.toHaveBeenCalled()
   })
 })
 
 describe('decidirRt', () => {
   it('aprovar libera os exames da clínica e avisa', async () => {
-    prismaMock.clinica.findUnique.mockResolvedValue({ id: 'c1', rtStatus: 'pendente', rtNome: 'Dra', rtCrmv: '1-SP', user })
-    await decidirRt('c1', { decisao: 'aprovar' })
-    expect(prismaMock.clinica.update.mock.calls[0][0].data).toMatchObject({ rtStatus: 'aprovado', rtMotivo: null })
+    prismaMock.clinica.findUnique.mockResolvedValue({ id: 'c1', rtStatus: 'pendente', rtNome: 'Dra', rtCrmv: '1-SP', updatedAt: data, user })
+    await decidirRt('c1', { decisao: 'aprovar', revisao: revisaoRt({ rtNome: 'Dra', rtCrmv: '1-SP', updatedAt: data }) })
+    expect(prismaMock.clinica.updateMany.mock.calls[0][0].data).toMatchObject({ rtStatus: 'aprovado', rtMotivo: null })
     expect(sinoMock).toHaveBeenCalledWith(expect.objectContaining({ type: 'RT_APROVADO' }))
   })
 
   it('reprovar com motivo', async () => {
-    prismaMock.clinica.findUnique.mockResolvedValue({ id: 'c1', rtStatus: 'pendente', user })
-    await decidirRt('c1', { decisao: 'reprovar', motivo: 'CRMV de outra pessoa' })
+    prismaMock.clinica.findUnique.mockResolvedValue({ id: 'c1', rtStatus: 'pendente', rtNome: 'Dra', rtCrmv: '1-SP', updatedAt: data, user })
+    await decidirRt('c1', { decisao: 'reprovar', revisao: revisaoRt({ rtNome: 'Dra', rtCrmv: '1-SP', updatedAt: data }), motivo: 'CRMV de outra pessoa' })
     expect(sinoMock).toHaveBeenCalledWith(expect.objectContaining({ type: 'RT_REPROVADO', message: expect.stringContaining('CRMV de outra pessoa') }))
   })
 
   it('não encontrada: 404; fora de análise: 409; sem usuário não avisa', async () => {
     prismaMock.clinica.findUnique.mockResolvedValueOnce(null)
-    await expect(decidirRt('c1', { decisao: 'aprovar' })).rejects.toMatchObject({ status: 404 })
+    await expect(decidirRt('c1', { decisao: 'aprovar', revisao: revisaoRt({ rtNome: 'Dra', rtCrmv: '1-SP', updatedAt: data }) })).rejects.toMatchObject({ status: 404 })
     prismaMock.clinica.findUnique.mockResolvedValueOnce({ id: 'c1', rtStatus: null })
-    await expect(decidirRt('c1', { decisao: 'aprovar' })).rejects.toMatchObject({ status: 409 })
-    prismaMock.clinica.findUnique.mockResolvedValueOnce({ id: 'c1', rtStatus: 'pendente', user: null })
-    await decidirRt('c1', { decisao: 'aprovar' })
+    await expect(decidirRt('c1', { decisao: 'aprovar', revisao: revisaoRt({ rtNome: 'Dra', rtCrmv: '1-SP', updatedAt: data }) })).rejects.toMatchObject({ status: 409 })
+    prismaMock.clinica.findUnique.mockResolvedValueOnce({ id: 'c1', rtStatus: 'pendente', rtNome: 'Dra', rtCrmv: '1-SP', updatedAt: data, user: null })
+    await decidirRt('c1', { decisao: 'aprovar', revisao: revisaoRt({ rtNome: 'Dra', rtCrmv: '1-SP', updatedAt: data }) })
     expect(sinoMock).not.toHaveBeenCalled()
   })
 })

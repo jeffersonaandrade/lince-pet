@@ -8,7 +8,7 @@ import {
   fetchGoogleUser,
   frontendBaseUrl,
 } from '@/server/auth/google'
-import { findUserByEmail, tokenFor } from '@/server/services/auth'
+import { userForVerifiedGoogleEmail, tokenFor } from '@/server/services/auth'
 
 export const GET = route(async (req) => {
   const origin = req.nextUrl.origin
@@ -22,11 +22,11 @@ export const GET = route(async (req) => {
   }
 
   const error = callbackError(params, req.cookies.get(GOOGLE_STATE_COOKIE)?.value ?? null)
-  if (error) return redirect(`${frontend}/login?error=${error}`)
+  if (error) return redirect(`${frontend}/login?${new URLSearchParams({ error })}`)
 
   try {
     const googleUser = await fetchGoogleUser(params.get('code')!, origin)
-    const user = await findUserByEmail(googleUser.email)
+    const user = await userForVerifiedGoogleEmail(googleUser.email)
 
     if (user) {
       const res = redirect(`${frontend}/dashboard`)

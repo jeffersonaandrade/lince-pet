@@ -19,6 +19,7 @@ import type { Destinatario, EventoWhatsapp } from './whatsapp-mensagens'
 import type { Modalidade } from './prestadores'
 import { conferirEncaminhamento, vincularAgendamento } from './encaminhamentos'
 import { MOTIVO_PADRAO_TUTOR } from '@/lib/motivos-cancelamento'
+import { bloquearAgenda } from './agenda-lock'
 
 /**
  * Pedido de serviço a um prestador. Reaproveita `agendamentos` (prestadorId no lugar de veterinarioId)
@@ -238,6 +239,7 @@ export async function criarPedido(tutor: { id: string; user: Usuario }, prestado
   }
 
   const pedido = await prisma.$transaction(async (tx) => {
+    await bloquearAgenda(tx, 'prestador', prestador.id)
     const ocupado = await tx.agendamento.findFirst({
       where: ocupaWhere(prestador.id, periodo.inicio.toJSDate(), periodo.fim.toJSDate()),
     })
@@ -366,8 +368,8 @@ export async function listarPedidosDoPrestador(prestadorId: string, status?: str
   return pedidos.map((p) => serializarPedido(p, 'prestador'))
 }
 
-async function pedidoDoPrestador(prestadorId: string, id: string) {
-  const pedido = await prisma.agendamento.findFirst({ where: { id, prestadorId }, include: includePedido })
+async function pedidoDoPrestador(prestadorId: string, id: string, db: Prisma.TransactionClient | typeof prisma = prisma) {
+  const pedido = await db.agendamento.findFirst({ where: { id, prestadorId }, include: includePedido })
   if (!pedido) throw erro('Pedido não encontrado', 404)
   return pedido
 }
@@ -401,22 +403,33 @@ export async function recusarPedido(prestadorId: string, id: string, motivo?: st
 }
 
 export async function iniciarPedido(prestadorId: string, id: string, code: unknown) {
-  const pedido = await pedidoDoPrestador(prestadorId, id)
-  if (!code || typeof code !== 'string') throw erro('Código é obrigatório')
-  if (pedido.status !== 'confirmado') throw erro('Só pedidos aceitos podem ser iniciados')
-  const tentativas = pedido.startCodeAttempts ?? 0
-  if (tentativas >= MAX_TENTATIVAS_CODIGO) {
-    throw erro('Muitas tentativas inválidas. Peça ao tutor para remarcar o pedido.')
-  }
-  if (!pedido.startCode || !pedido.startCodeExpiresAt) throw erro('Este pedido não possui código ativo')
-  const agora = new Date()
-  if (agora > pedido.startCodeExpiresAt) throw erro('Código expirado')
-  if (code !== pedido.startCode) {
-    await prisma.agendamento.update({ where: { id }, data: updating({ startCodeAttempts: tentativas + 1 }) })
-    throw erro('Código inválido')
-  }
-  const atualizado = await atualizar(id, { status: 'em andamento', startCodeUsedAt: agora, startedAt: agora })
-  return serializarPedido(atualizado, 'prestador')
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`inicio:${id}`}, 0))`
+    const pedido = await pedidoDoPrestador(prestadorId, id, tx)
+    if (!code || typeof code !== 'string') throw erro('Código é obrigatório')
+    if (pedido.status !== 'confirmado') throw erro('Só pedidos aceitos podem ser iniciados')
+    const tentativas = pedido.startCodeAttempts ?? 0
+    if (tentativas >= MAX_TENTATIVAS_CODIGO) {
+      throw erro('Muitas tentativas inválidas. Peça ao tutor para remarcar o pedido.')
+    }
+    if (!pedido.startCode || !pedido.startCodeExpiresAt) throw erro('Este pedido não possui código ativo')
+    const agora = new Date()
+    if (agora > pedido.startCodeExpiresAt) throw erro('Código expirado')
+    if (code !== pedido.startCode) {
+      await tx.agendamento.update({ where: { id }, data: updating({ startCodeAttempts: tentativas + 1 }) })
+      // Não lançar dentro da transação: o contador precisa ser commitado.
+      return { erroCodigo: true as const }
+    }
+    const atualizado = await tx.agendamento.update({
+      where: { id, status: 'confirmado', startCodeUsedAt: null },
+      data: updating({ status: 'em andamento', startCodeUsedAt: agora, startedAt: agora }),
+      include: includePedido,
+    })
+    return serializarPedido(atualizado, 'prestador')
+  }).then((resultado) => {
+    if ('erroCodigo' in resultado) throw erro('Código inválido')
+    return resultado
+  })
 }
 
 export async function concluirPedido(prestadorId: string, id: string) {
@@ -479,12 +492,25 @@ export async function remarcarPedido(tutorId: string, id: string, body: unknown)
   const periodo = calcularPeriodo(modalidade, d, duracao)
   await validarAgenda(prestador, modalidade, periodo, id)
 
-  const atualizado = await atualizar(id, {
-    status: 'pendente',
-    confirmadoEm: null,
-    startCodeAttempts: 0,
-    ...camposDoPeriodo(periodo),
-    ...(pedido.servicoOferecido ? { precoConsulta: precoDo(pedido.servicoOferecido.preco, modalidade, periodo) } : {}),
+  const atualizado = await prisma.$transaction(async (tx) => {
+    await bloquearAgenda(tx, 'prestador', prestador.id)
+    const atual = await tx.agendamento.findUnique({ where: { id } })
+    if (!atual || !podeSerCancelado(atual.status)) throw erro('Este pedido não pode mais ser alterado', 409)
+    const ocupado = await tx.agendamento.findFirst({
+      where: ocupaWhere(prestador.id, periodo.inicio.toJSDate(), periodo.fim.toJSDate(), id),
+    })
+    if (ocupado) throw erro(MENSAGEM_OCUPADO, 409)
+    return tx.agendamento.update({
+      where: { id },
+      data: updating({
+        status: 'pendente',
+        confirmadoEm: null,
+        startCodeAttempts: 0,
+        ...camposDoPeriodo(periodo),
+        ...(pedido.servicoOferecido ? { precoConsulta: precoDo(pedido.servicoOferecido.preco, modalidade, periodo) } : {}),
+      }),
+      include: includePedido,
+    })
   })
   after(() => avisarPedido('remarcado', id))
   return serializarPedido(atualizado, 'tutor')

@@ -5,7 +5,8 @@ export function destinoSeguro(valor: string | null | undefined): string {
   if (!valor || !valor.startsWith("/") || valor.startsWith("//") || valor.includes("\\")) return "/";
   try {
     const url = new URL(valor, BASE);
-    if (url.origin !== BASE || url.pathname === "/login") return "/";
+    // "/.//host" normaliza para "//host", que o navegador lê como outra origem.
+    if (url.origin !== BASE || url.pathname === "/login" || url.pathname.startsWith("//")) return "/";
     return `${url.pathname}${url.search}${url.hash}`;
   } catch {
     return "/";

@@ -65,8 +65,8 @@ export function assinanteDaAssinatura(sub: {
   return null
 }
 
-/** Troca o plano; quem tem limite mensal (veterinário e prestador) zera o contador, salvo `zerarContador: false`. */
-export async function definirPlano(db: Db, a: Pick<Assinante, 'tipo' | 'id'>, code: string, zerarContador = true) {
+/** Troca o plano preservando o uso mensal; a renovação do mês cuida do reset. */
+export async function definirPlano(db: Db, a: Pick<Assinante, 'tipo' | 'id'>, code: string, zerarContador = false) {
   const where = { id: a.id }
   const comContador = updating(
     zerarContador

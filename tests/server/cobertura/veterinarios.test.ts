@@ -4,17 +4,19 @@ import { DateTime } from 'luxon'
 
 const prismaMock = vi.hoisted(() => {
   const tx = {
+    $executeRaw: vi.fn(),
     user: { create: vi.fn() },
     veterinario: { create: vi.fn() },
     especialidadeRelacionamento: { findMany: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn() },
     veterinarioPlano: { findMany: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn() },
+    experienciaVeterinario: { deleteMany: vi.fn(), createMany: vi.fn() },
   }
   return {
     tx,
     veterinario: { findFirst: vi.fn(), findMany: vi.fn(), update: vi.fn() },
     user: { update: vi.fn() },
     especialidadeRelacionamento: { findMany: vi.fn() },
-    experienciaVeterinario: { deleteMany: vi.fn(), create: vi.fn() },
+    experienciaVeterinario: tx.experienciaVeterinario,
     veterinarioEndereco: { findFirst: vi.fn() },
     $queryRaw: vi.fn(),
     $transaction: vi.fn(async (arg: unknown) =>
@@ -251,20 +253,19 @@ describe('sync de especialidades e planos', () => {
 })
 
 describe('replaceExperiencias', () => {
-  it.each([[undefined], [null], ['x'], [[]]])('entrada %j: só apaga as antigas', async (entrada) => {
+  it.each([[undefined], [null], [[]]])('entrada %j: limpa em transação', async (entrada) => {
     await replaceExperiencias('vet-1', entrada)
     expect(prismaMock.experienciaVeterinario.deleteMany).toHaveBeenCalledWith({ where: { veterinarioId: 'vet-1' } })
-    expect(prismaMock.$transaction).not.toHaveBeenCalled()
+    expect(prismaMock.$transaction).toHaveBeenCalledOnce()
   })
 
   it('recria as experiências convertendo colunas, datas e tinyint', async () => {
-    prismaMock.experienciaVeterinario.create.mockImplementation(({ data }) => data)
     await replaceExperiencias('vet-1', [
       { local: 'Hosp', cargo: 'Vet', data_inicio: '2020-01-02', data_fim: null, descricao: 'd', ativo: true },
       null,
     ])
     expect(prismaMock.$transaction).toHaveBeenCalledTimes(1)
-    const [primeira, segunda] = prismaMock.experienciaVeterinario.create.mock.calls.map((c) => c[0].data)
+    const [primeira, segunda] = prismaMock.experienciaVeterinario.createMany.mock.calls[0][0].data
     expect(primeira).toMatchObject({
       veterinarioId: 'vet-1',
       local: 'Hosp',
@@ -280,6 +281,11 @@ describe('replaceExperiencias', () => {
 
   it('experiência com campo desconhecido falha', async () => {
     await expect(replaceExperiencias('vet-1', [{ empresa: 'X' }])).rejects.toThrow('ExperienciaVeterinario')
+  })
+
+  it.each([['x'], [Array(31).fill({ local: 'Hosp', cargo: 'Vet' })], [[{ local: 'Hosp', cargo: 'Vet', descricao: 'x'.repeat(5001) }]]])('entrada fora dos limites preserva experiências anteriores', async (entrada) => {
+    await expect(replaceExperiencias('vet-1', entrada)).rejects.toThrow()
+    expect(prismaMock.experienciaVeterinario.deleteMany).not.toHaveBeenCalled()
   })
 })
 

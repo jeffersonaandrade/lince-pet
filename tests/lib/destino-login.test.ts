@@ -19,6 +19,9 @@ describe('destinoSeguro', () => {
     'javascript:alert(1)',
     '/login',
     '/login?next=/x',
+    '/.//malicioso.com',
+    '/a/..//malicioso.com',
+    '/%2e//malicioso.com',
   ])('recusa %s e manda para a home', (valor) => {
     expect(destinoSeguro(valor)).toBe('/')
   })

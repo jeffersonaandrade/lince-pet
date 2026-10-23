@@ -7,11 +7,32 @@ export const GET = route(async (req) => {
   const user = await requireUser(await ApiRequest.from(req), ['tutor'])
   const tutor = await prisma.tutor.findFirst({
     where: { userId: user.id },
-    include: {
+    select: {
       favorites: {
-        include: {
-          veterinario: { include: { user: true, enderecos: true } },
-          clinica: { include: { user: true } },
+        select: {
+          id: true,
+          tutorId: true,
+          veterinarioId: true,
+          clinicaId: true,
+          createdAt: true,
+          veterinario: {
+            select: {
+              id: true,
+              fotoUrl: true,
+              user: { select: { nome: true } },
+              enderecos: { select: { cidade: true, estado: true } },
+            },
+          },
+          clinica: {
+            select: {
+              id: true,
+              nomeClinica: true,
+              fotoPerfil: true,
+              cidade: true,
+              estado: true,
+              user: { select: { nome: true } },
+            },
+          },
         },
       },
     },

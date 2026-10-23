@@ -60,6 +60,22 @@ export async function findUserByEmail(email: string) {
   return mesmoEmail(await prisma.user.findFirst({ where: filtroEmail(email) }), email)
 }
 
+/** Só recebe e-mail cuja titularidade foi comprovada pelo provedor OAuth. */
+export async function userForVerifiedGoogleEmail(email: string) {
+  // A senha de um cadastro não verificado pode ter sido escolhida por outra pessoa.
+  const password = await hashPassword(randomBytes(32).toString('base64url'))
+  return prisma.$transaction(async (tx) => {
+    const user = mesmoEmail(await tx.user.findFirst({ where: filtroEmail(email) }), email)
+    if (!user) return null
+    const changed = await tx.user.updateMany({
+      where: { id: user.id, isEmailVerified: 0 },
+      data: updating({ password, isEmailVerified: 1, tokenVersion: { increment: 1 } }),
+    })
+    if (changed.count) await tx.passwordResetToken.deleteMany({ where: { userId: user.id } })
+    return tx.user.findUnique({ where: { id: user.id } })
+  })
+}
+
 /** Equivalente ao User.verifyCredentials do withAuthFinder (E_INVALID_CREDENTIALS). */
 async function verifyCredentials(email: string, password: string) {
   const invalid = new HttpError(400, { status: 400, message: 'Invalid user credentials' })
@@ -192,6 +208,7 @@ export async function forgotPassword(email: string) {
 }
 
 export async function resetPassword(token: string, newPassword: string) {
+  if (newPassword.length < 8 || newPassword.length > 255) throw new Error('A senha deve ter entre 8 e 255 caracteres.')
   const resetToken = await prisma.passwordResetToken.findUnique({ where: { token } })
   if (!resetToken) throw new Error(INVALID_RESET_TOKEN)
 
@@ -203,12 +220,19 @@ export async function resetPassword(token: string, newPassword: string) {
   const user = resetToken.userId ? await prisma.user.findUnique({ where: { id: resetToken.userId } }) : null
   if (!user) throw new Error('Usuário não encontrado.')
 
-  await prisma.user.update({
-    where: { id: user.id },
-    // Subir a versão invalida todos os tokens já emitidos (quem roubou a sessão perde o acesso).
-    data: updating({ password: await hashPassword(newPassword), tokenVersion: { increment: 1 } }),
+  const password = await hashPassword(newPassword)
+  await prisma.$transaction(async (tx) => {
+    // Consumo condicional: só uma requisição pode trocar a senha com este token.
+    const consumed = await tx.passwordResetToken.deleteMany({
+      where: { id: resetToken.id, expiresAt: { gt: new Date() } },
+    })
+    if (consumed.count !== 1) throw new Error(INVALID_RESET_TOKEN)
+    await tx.user.update({
+      where: { id: user.id },
+      data: updating({ password, isEmailVerified: 1, tokenVersion: { increment: 1 } }),
+    })
+    await tx.passwordResetToken.deleteMany({ where: { userId: user.id } })
   })
-  await prisma.passwordResetToken.delete({ where: { id: resetToken.id } })
 
   return { message: 'Senha redefinida com sucesso!' }
 }
