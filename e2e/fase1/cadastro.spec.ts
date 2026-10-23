@@ -20,17 +20,29 @@ test.describe('cadastro', () => {
     await expect(emailNoMenu(page, email)).toBeVisible()
   })
 
-  test('tutor menor de 18 anos é recusado', async ({ page }) => {
+  test('tutor menor de 18 anos não consegue escolher a data de nascimento', async ({ page }) => {
+    const limite = new Date()
+    limite.setFullYear(limite.getFullYear() - 18)
     await page.goto('/signup/tutor')
-    await page.getByLabel('Email').fill(emailUnico('menor'))
-    await page.getByLabel('Senha', { exact: true }).fill(SENHA)
-    await page.getByLabel('Nome', { exact: true }).fill('Ana')
-    await page.getByLabel('Sobrenome').fill('Teste')
-    await page.getByLabel('Data de Nascimento').click()
-    await page.locator('select').selectOption(String(new Date().getFullYear() - 10))
-    await page.getByText('15', { exact: true }).click()
+    const data = page.getByLabel('Data de Nascimento')
+    await data.click()
+    const ano = page.locator('select')
+    await expect(ano, 'abre no ano em que a pessoa faz 18 anos').toHaveValue(String(limite.getFullYear()))
+    await expect(ano.locator('option').first(), 'nenhum ano mais recente na lista').toHaveText(String(limite.getFullYear()))
+
+    const depoisDoLimite = page.locator('[class*="disabled"]').filter({ hasText: /^\d+$/ })
+    if ((await depoisDoLimite.count()) > 0) {
+      await depoisDoLimite.last().click()
+      await expect(data, 'dia depois do limite não é aceito').toHaveValue('')
+    }
+
+    await page
+      .locator('[class*="day"]:not([class*="otherMonth"]):not([class*="disabled"])')
+      .filter({ hasText: new RegExp(`^${limite.getDate()}$`) })
+      .click()
+    await expect(data).not.toHaveValue('')
     await page.getByRole('button', { name: 'Continuar' }).click()
-    await expect(page.getByText('Você deve ter pelo menos 18 anos para se cadastrar.')).toBeVisible()
+    await expect(page.getByText('Você deve ter pelo menos 18 anos para se cadastrar.')).toHaveCount(0)
   })
 
   test('e-mail já cadastrado é recusado', async ({ page }) => {

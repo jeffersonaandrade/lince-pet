@@ -1746,9 +1746,9 @@
     "semantic_hash": ""
   },
   "src/server/services/auth.ts": {
-    "mtime": 1792765392.9016943,
-    "seen": 1792768246.7341228,
-    "ast_hash": "1aede5cd0253f47a99a34e6d07a91240",
+    "mtime": 1792771529.6608481,
+    "seen": 1792772167.0965378,
+    "ast_hash": "b831174129cc2401b8ce0b0137831092",
     "semantic_hash": ""
   },
   "src/server/validators/auth.ts": {
@@ -2832,9 +2832,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/auth.test.ts": {
-    "mtime": 1792765662.7391303,
-    "seen": 1792768246.7568297,
-    "ast_hash": "7c8b25f49b13b98a714789582374a962",
+    "mtime": 1792771533.5739512,
+    "seen": 1792772167.1405296,
+    "ast_hash": "a8defb7bb9e0bbc47e9be2122b27579c",
     "semantic_hash": ""
   },
   "tests/server/cobertura/avaliacoes.test.ts": {
@@ -3312,9 +3312,9 @@
     "semantic_hash": ""
   },
   "e2e/fase1/cadastro.spec.ts": {
-    "mtime": 1792720097.035812,
-    "seen": 1792727235.503638,
-    "ast_hash": "ab2f6d4f99c0e29e0e0d7e08b5e558a6",
+    "mtime": 1792772078.387215,
+    "seen": 1792772166.9276516,
+    "ast_hash": "07f22e1276446d552b1e957472e4cdc8",
     "semantic_hash": ""
   },
   "e2e/fase1/login.spec.ts": {
@@ -3765,6 +3765,12 @@
     "mtime": 1792766589.9049327,
     "seen": 1792768246.7622707,
     "ast_hash": "ed5b985a8ba6705b1031c8b164e8c7b6",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/admin-aprovacoes.spec.ts": {
+    "mtime": 1792771784.4622462,
+    "seen": 1792772166.9248495,
+    "ast_hash": "975717410a52cc9298f491ecf695960c",
     "semantic_hash": ""
   }
 }
