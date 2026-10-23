@@ -140,7 +140,7 @@ export default function PrestadorSignup() {
                 type="button"
                 onClick={() => setVerSenha((v) => !v)}
                 aria-label={verSenha ? "Ocultar senha" : "Mostrar senha"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 hover:text-slate-600"
               >
                 {verSenha ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>

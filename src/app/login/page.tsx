@@ -7,6 +7,7 @@ import styles from "./login.module.css";
 import { login } from "@/services/auth/auth";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { mensagemDaApi } from "@/lib/erros";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -39,7 +40,8 @@ export default function LoginPage() {
         router.replace("/");
       }
     } catch (error) {
-      setError("Credenciais inválidas. Tente novamente.");
+      const limite = (error as { response?: { status?: number } })?.response?.status === 429;
+      setError(limite ? mensagemDaApi(error) || "Muitas tentativas. Tente novamente em alguns minutos." : "Credenciais inválidas. Tente novamente.");
       console.error("Login error:", error);
     } finally {
       setLoading(false);

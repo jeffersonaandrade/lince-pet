@@ -125,6 +125,7 @@ Sem o seed, a listagem de planos e o cadastro de especialidades ficam vazios: o 
 | `npm run test:coverage` | Cobertura de `src/server/services` (mínimo 95% por arquivo) |
 | `npm run test:mutation` | Stryker nos serviços críticos (lento; sob demanda ou CI noturno) |
 | `npm run test:contract` | Compara Adonis e Next quando `CONTRACT_ADONIS_URL` e `CONTRACT_NEXT_URL` existem |
+| `npm run test:e2e` | Playwright contra o banco local (`:ui` e `:headed` para ver o navegador) |
 | `npm run db:up` / `db:down` | Sobe ou derruba o Postgres local |
 | `npm run db:migrate` | `prisma migrate deploy` |
 | `npm run db:seed` | Catálogo e dados de demonstração |
@@ -193,6 +194,22 @@ npm run test:coverage
 Os unitários ficam em `tests/server`. A meta de cobertura é 95% de linhas, statements e funções em cada arquivo de `src/server/services`. Prisma, Asaas, S3, Resend, WhatsApp e Google são mockados. Os testes por serviço estão em `tests/server/cobertura/`.
 
 `npm run test:mutation` mede se os testes quebram quando o código muda (Stryker), nos fluxos de assinatura, equipe, bloqueios, pedidos de prestador e encaminhamentos. Meta de mutation score: 80% por arquivo. A primeira execução leva dezenas de minutos.
+
+### e2e (Playwright)
+
+```bash
+npm run db:up          # Postgres local na 5433
+npm run test:e2e       # sobe o Next na 3000, roda o seed e a suíte
+```
+
+- Só roda contra o banco local: o `globalSetup` recusa `DATABASE_URL` fora de `127.0.0.1:5433`/`localhost:5433` e roda o seed antes. Os testes criam e alteram dados.
+- O servidor do teste usa `TZ=UTC`, `MAIL_DRIVER=log`, `WHATSAPP_PROVIDER=log` (sem gateway) e um `CRON_SECRET` aleatório: nenhum e-mail ou WhatsApp sai de verdade.
+- `e2e/jornada/consulta-completa.spec.ts` faz o caminho inteiro só pelas telas, com uma janela do tutor e outra do vet: agendar, remarcar, cancelar com motivo, iniciar com o código, registro clínico, anotação privada, finalizar e conferir o prontuário de cada pet. Para assistir: `$env:E2E_SLOWMO='400'; npx playwright test e2e/jornada --headed`.
+- Pastas: `e2e/fase1` (cadastro, login, senha, sessão), `fase2`, `demandas` (consulta, bloqueios, encaminhamento, prestadores, planos, canais, prontuário), `filtros` (`/explorar`) e `responsivo` (360, 390 e 768 px).
+- **Pela tela:** a ação testada (agendar, cancelar, remarcar, bloquear, encaminhar, pedir serviço, editar perfil) é feita clicando, com os helpers de `e2e/telas.ts`. A API só aparece em passos `invasão (fora da tela): ...`, para ataques que a tela não deixa fazer (pet de outro tutor, id alheio, upload inválido), e o banco (`e2e/db.ts`) só confere o resultado.
+- Antes de cada rodada o `globalSetup` cancela consultas futuras ativas de pets criados pelos testes, para sobras de rodadas que falharam não ocuparem a agenda.
+- Tempo: a suíte inteira leva uns 15 min com `--headed` e `E2E_SLOWMO=100`, e menos sem navegador visível. Uma pasta leva de 1 a 3 min (`npx playwright test e2e/fase2 --headed --trace on`); o relatório abre com `npx playwright show-report` (porta 9323).
+- Testes marcados com `test.fail()` documentam defeitos conhecidos; quando o defeito for corrigido, o teste acusa e a marcação sai.
 
 `tests/server/site-links.test.ts` falha se o Header ou o Footer apontar para `#` ou para rota inexistente, e se o copyright tiver ano fixo.
 

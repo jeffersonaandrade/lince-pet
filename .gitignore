@@ -56,3 +56,8 @@ graphify-out/cache/
 graphify-out/20*/
 
 /readme
+# Playwright (e2e)
+/e2e/.auth/
+/test-results/
+/playwright-report/
+/.playwright-mcp/

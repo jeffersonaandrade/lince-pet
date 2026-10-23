@@ -620,7 +620,7 @@ export default function ClinicaDashboard() {
                   </div>
                   <Link
                     href="/dashboard/clinica/alterar-plano"
-                    className={styles.planLink}
+                    className={`${styles.planLink} min-h-6`}
                   >
                     Alterar plano
                   </Link>

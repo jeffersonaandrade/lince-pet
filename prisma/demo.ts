@@ -282,6 +282,9 @@ export const VETERINARIOS: VetDemo[] = [
   }),
 ]
 
+/** O painel do vet exige o passo 8 (o processStep7 grava 8 ao concluir); com 7 ele volta para o onboarding. */
+const ONBOARDING_VET_CONCLUIDO = 8
+
 export const CLINICAS: ClinicaDemo[] = [
   {
     email: 'contato@petcenter.mockup.com',
@@ -610,7 +613,7 @@ export async function seedDemonstracao(prisma: PrismaClient) {
           creditos: seed.creditos,
           onboardingComplete: 1,
           isVerified: 1,
-          onboardingStep: 7,
+          onboardingStep: ONBOARDING_VET_CONCLUIDO,
           subscriptionPlanCode: seed.planCode,
           monthlyAppointmentsUsed: seed.consultasNoMes,
           monthlyAppointmentsResetAt: quando,
@@ -618,6 +621,8 @@ export async function seedDemonstracao(prisma: PrismaClient) {
           updatedAt: quando,
         },
       })
+    } else if ((vet.onboardingStep ?? 0) < ONBOARDING_VET_CONCLUIDO) {
+      vet = await prisma.veterinario.update({ where: { id: vet.id }, data: { onboardingStep: ONBOARDING_VET_CONCLUIDO } })
     }
 
     for (const nome of seed.especialidades) {

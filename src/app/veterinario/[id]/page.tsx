@@ -992,7 +992,7 @@ export default function VeterinarioProfile() {
                     ) : <p>Nenhum pet encontrado.</p>}
                   </div>
                 </div>
-                <button className={styles.bookButton} onClick={confirmarAgendamento} disabled={salvando}>Confirmar</button>
+                <button className={styles.bookButton} onClick={confirmarAgendamento} disabled={salvando || loadingPets}>Confirmar</button>
               </div>
             </div>
           </ModalPortal>

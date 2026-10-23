@@ -250,7 +250,8 @@ export default function Dropdown<T = string>(props: DropdownProps<T>) {
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={placeholder}
-          className={styles.input}
+          aria-label={placeholder}
+          className={`${styles.input} min-h-6`}
           disabled={disabled}
         />
         <ChevronDown

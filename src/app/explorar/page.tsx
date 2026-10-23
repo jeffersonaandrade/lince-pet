@@ -353,7 +353,7 @@ function ExplorarContent() {
         </p>
         <SearchBar extra={<OrdenacaoLista />} />
 
-        <div className={styles.tabsContainer}>
+        <div className={`${styles.tabsContainer} overflow-x-auto [&>button]:shrink-0 [&>button]:whitespace-nowrap`}>
           <button
             className={`${styles.tabButton} ${activeTab === 'veterinarios' ? styles.activeTab : ''}`}
             onClick={() => handleTabChange('veterinarios')}
@@ -495,7 +495,7 @@ function ExplorarContent() {
                       <div className={styles.addressSection}>
                         <span className={styles.addressText}>{vet.endereco}</span>
                         <button
-                          className={styles.mapsButton}
+                          className={`${styles.mapsButton} min-h-6`}
                           onClick={(e) => {
                             e.stopPropagation();
                             openInMaps(vet.endereco);
@@ -620,7 +620,7 @@ function ExplorarContent() {
                       <div className={styles.addressSection}>
                         <span className={styles.addressText}>{clinic.endereco}</span>
                         <button
-                          className={styles.mapsButton}
+                          className={`${styles.mapsButton} min-h-6`}
                           onClick={(e) => {
                             e.stopPropagation();
                             openInMaps(clinic.endereco);

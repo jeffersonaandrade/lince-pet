@@ -12,6 +12,7 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  agentRules: false,
   async headers() {
     return [{ source: "/:path*", headers: SECURITY_HEADERS }];
   },

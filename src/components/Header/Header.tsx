@@ -188,6 +188,8 @@ export default function Header() {
               <div className={styles.userSection} ref={dropdownRef}>
                 <button
                   className={styles.userButton}
+                  aria-label="Menu da conta"
+                  aria-expanded={isDropdownOpen}
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <div style={{ position: "relative", display: "inline-block" }}>

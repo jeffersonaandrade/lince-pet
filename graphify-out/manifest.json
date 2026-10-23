@@ -6,15 +6,15 @@
     "semantic_hash": ""
   },
   "next.config.ts": {
-    "mtime": 1792703668.51587,
-    "seen": 1792704033.2321088,
-    "ast_hash": "7946d194bb42b9ef459ea2adc476836d",
+    "mtime": 1792718884.5941622,
+    "seen": 1792727235.504243,
+    "ast_hash": "13c5aed971d295ab1c449ecf8fcd9fb6",
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1792704187.8896582,
-    "seen": 1792704567.847783,
-    "ast_hash": "aedbf9db2ce69f0cb357e64283ab7806",
+    "mtime": 1792729644.2282763,
+    "seen": 1792729681.1880062,
+    "ast_hash": "5c387316a42b24e33bd32ce4a7a568d7",
     "semantic_hash": ""
   },
   "src/app/clinicas/[id]/page.tsx": {
@@ -36,9 +36,9 @@
     "semantic_hash": ""
   },
   "src/app/dashboard/clinica/page.tsx": {
-    "mtime": 1792703759.7447689,
-    "seen": 1792704033.277807,
-    "ast_hash": "97ea7f81946b2e36428dd44c996efcd5",
+    "mtime": 1792720604.2911942,
+    "seen": 1792727235.5507994,
+    "ast_hash": "2a7883e4de79308a6b6afe2217ea2456",
     "semantic_hash": ""
   },
   "src/app/dashboard/clinica/perfil/page.tsx": {
@@ -66,9 +66,9 @@
     "semantic_hash": ""
   },
   "src/app/dashboard/veterinario/page.tsx": {
-    "mtime": 1792534130.5926666,
-    "seen": 1792534368.1960566,
-    "ast_hash": "3e4cabf1f07913d2edb8fdcf51510931",
+    "mtime": 1792720911.8237374,
+    "seen": 1792727235.554864,
+    "ast_hash": "f13cb9f13e5126c158f775a11f842f3e",
     "semantic_hash": ""
   },
   "src/app/dashboard/veterinario/perfil/page.tsx": {
@@ -78,9 +78,9 @@
     "semantic_hash": ""
   },
   "src/app/explorar/page.tsx": {
-    "mtime": 1792534130.6083002,
-    "seen": 1792534368.1983314,
-    "ast_hash": "0885333f7da6070c6a2b0d4e3f8f66b3",
+    "mtime": 1792720604.6292853,
+    "seen": 1792727235.555445,
+    "ast_hash": "1a9e013b0eb4caa4f97d618e9246de5e",
     "semantic_hash": ""
   },
   "src/app/forgot-password/page.tsx": {
@@ -96,9 +96,9 @@
     "semantic_hash": "c01f07a7b41a83ba4b46855d6b3ca506"
   },
   "src/app/login/page.tsx": {
-    "mtime": 1792534130.6220028,
-    "seen": 1792534368.2000995,
-    "ast_hash": "6176b2924a167c49c3c01e29cece3a50",
+    "mtime": 1792724388.3019419,
+    "seen": 1792727235.5560832,
+    "ast_hash": "1588f197c996a2129858e4260ff425dc",
     "semantic_hash": ""
   },
   "src/app/not-found.tsx": {
@@ -174,9 +174,9 @@
     "semantic_hash": ""
   },
   "src/app/veterinario/[id]/page.tsx": {
-    "mtime": 1792703762.526792,
-    "seen": 1792704033.29046,
-    "ast_hash": "5df8f9cc943f84fad7f3a35cbcbbeedf",
+    "mtime": 1792722026.300336,
+    "seen": 1792727235.5628605,
+    "ast_hash": "eae64e6c65c444fe8bd31811475f912a",
     "semantic_hash": ""
   },
   "src/components/CityAutocomplete/CityAutocomplete.tsx": {
@@ -198,9 +198,9 @@
     "semantic_hash": ""
   },
   "src/components/Header/Header.tsx": {
-    "mtime": 1792534130.7491527,
-    "seen": 1792534368.300989,
-    "ast_hash": "b16ff4ff456e01644e5de7fb3f16e08e",
+    "mtime": 1792719007.9723923,
+    "seen": 1792727235.5676603,
+    "ast_hash": "a454b6c039229909572af93a5c6b55f2",
     "semantic_hash": ""
   },
   "src/components/Home/PlatformFeatures/PlatformFeatures.tsx": {
@@ -312,10 +312,10 @@
     "semantic_hash": "2c0aff28a725576768ef0573022250a5"
   },
   "src/components/ui/Dropdown.tsx": {
-    "mtime": 1791505313.3397727,
-    "seen": 1791506113.1792746,
-    "ast_hash": "87fda37c922098961f14d7772cd199f7",
-    "semantic_hash": "87fda37c922098961f14d7772cd199f7"
+    "mtime": 1792720589.4985166,
+    "seen": 1792727235.5778012,
+    "ast_hash": "e150a36d557d2b185ed0a79d09a3e99a",
+    "semantic_hash": ""
   },
   "src/components/ui/LottieLoading/LottieLoading.tsx": {
     "mtime": 1792534130.8069646,
@@ -330,9 +330,9 @@
     "semantic_hash": "5d4868a151862652aeb08810d00f2d21"
   },
   "src/components/ui/SearchSection.tsx": {
-    "mtime": 1792534130.8179698,
-    "seen": 1792534368.3761976,
-    "ast_hash": "e070a243f1e56771ee91b69e853a9078",
+    "mtime": 1792720589.2910814,
+    "seen": 1792727235.5783825,
+    "ast_hash": "40555178ea64e68220eac85872134d08",
     "semantic_hash": ""
   },
   "src/components/ui/Skeleton/Skeleton.tsx": {
@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "src/server/services/mail.ts": {
-    "mtime": 1791508293.9733481,
-    "seen": 1791508445.107723,
-    "ast_hash": "f27b338808d1649247e7e6804b283e2f",
+    "mtime": 1792718974.4647572,
+    "seen": 1792727235.5986233,
+    "ast_hash": "4edaf98d75105547f8bcfaa4f25d6e30",
     "semantic_hash": ""
   },
   "src/server/services/pets.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792707967.4220552,
-    "seen": 1792708037.6672244,
-    "ast_hash": "34123b177c4de40234a4236cea2af495",
+    "mtime": 1792729651.633075,
+    "seen": 1792729681.332228,
+    "ast_hash": "849954617d76a39e679eb22d8566f715",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2358,9 +2358,9 @@
     "semantic_hash": ""
   },
   "prisma/demo.ts": {
-    "mtime": 1792704217.1721332,
-    "seen": 1792704567.8485007,
-    "ast_hash": "b2e1e090428aca417ff9957b6e9cf3d7",
+    "mtime": 1792720540.4578924,
+    "seen": 1792727235.5050962,
+    "ast_hash": "8c53cd9f4b53ac84d05ddfbdc2cd6b29",
     "semantic_hash": ""
   },
   "prisma/seed.ts": {
@@ -2514,9 +2514,9 @@
     "semantic_hash": ""
   },
   "src/app/signup/prestador/page.tsx": {
-    "mtime": 1791558099.7654305,
-    "seen": 1791558885.2123933,
-    "ast_hash": "c17c65a9f301e2a99395ab8765c020da",
+    "mtime": 1792720590.0288558,
+    "seen": 1792727235.5610442,
+    "ast_hash": "e0c2d248bd8e657471f416d72afac7d9",
     "semantic_hash": ""
   },
   "src/components/Prestador/CardPlano.tsx": {
@@ -3162,9 +3162,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792708014.3920507,
-    "seen": 1792708037.6669552,
-    "ast_hash": "cb86193ae0463074199188586a919404",
+    "mtime": 1792729647.7355688,
+    "seen": 1792729681.3317523,
+    "ast_hash": "cef225150536ca514a6ecd8844a309b6",
     "semantic_hash": ""
   },
   "src/lib/motivos-cancelamento.ts": {
@@ -3249,6 +3249,162 @@
     "mtime": 1792707899.3088014,
     "seen": 1792708037.6318018,
     "ast_hash": "72ab99a287611fc546b8c9fba7a49c64",
+    "semantic_hash": ""
+  },
+  "e2e/agenda.ts": {
+    "mtime": 1792722429.307807,
+    "seen": 1792727235.5036185,
+    "ast_hash": "907fb2d0bd5cfded7948c880986a91d4",
+    "semantic_hash": ""
+  },
+  "e2e/auth.setup.ts": {
+    "mtime": 1792718862.919972,
+    "seen": 1792727235.503623,
+    "ast_hash": "300089d8917decf76d0ddf66a3897b9a",
+    "semantic_hash": ""
+  },
+  "e2e/db.ts": {
+    "mtime": 1792719140.9214394,
+    "seen": 1792727235.5036247,
+    "ast_hash": "e0099b8f265c940b7f852e7edaba12d2",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/bloqueios.spec.ts": {
+    "mtime": 1792726039.8873591,
+    "seen": 1792727235.5036268,
+    "ast_hash": "e9325dac16f57272d2153be3ca2d0c56",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/canais.spec.ts": {
+    "mtime": 1792726116.0171247,
+    "seen": 1792727235.5036285,
+    "ast_hash": "fc133409a3d7cb0d032616dff47d8caa",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/consulta-do-vet.spec.ts": {
+    "mtime": 1792726143.0923526,
+    "seen": 1792727235.5036302,
+    "ast_hash": "0341e36c50c336993581a0794fa39a37",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/encaminhamento.spec.ts": {
+    "mtime": 1792726345.5915117,
+    "seen": 1792727235.5036316,
+    "ast_hash": "156d10392dbf24e345523e9e0f85f79f",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/planos.spec.ts": {
+    "mtime": 1792726133.6708176,
+    "seen": 1792727235.5036328,
+    "ast_hash": "2f4834d5ca04c5247c0bb40c322e0714",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/prestadores.spec.ts": {
+    "mtime": 1792726965.852206,
+    "seen": 1792727235.5036347,
+    "ast_hash": "ee272b003e701eb604ec8453a363e23e",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/prontuario-ui.spec.ts": {
+    "mtime": 1792722620.289396,
+    "seen": 1792727235.5036368,
+    "ast_hash": "6122476433fe26014079d896f24ae79d",
+    "semantic_hash": ""
+  },
+  "e2e/fase1/cadastro.spec.ts": {
+    "mtime": 1792720097.035812,
+    "seen": 1792727235.503638,
+    "ast_hash": "ab2f6d4f99c0e29e0e0d7e08b5e558a6",
+    "semantic_hash": ""
+  },
+  "e2e/fase1/login.spec.ts": {
+    "mtime": 1792724393.1468492,
+    "seen": 1792727235.5036395,
+    "ast_hash": "fb0d9e13abb35666c5d8b6b0e050380d",
+    "semantic_hash": ""
+  },
+  "e2e/fase1/rate-limit.spec.ts": {
+    "mtime": 1792724670.6699102,
+    "seen": 1792727235.5036411,
+    "ast_hash": "f839e93be9a5fdd822f9ee4d5df42317",
+    "semantic_hash": ""
+  },
+  "e2e/fase1/senha.spec.ts": {
+    "mtime": 1792724415.0662525,
+    "seen": 1792727235.5036426,
+    "ast_hash": "d17325163464d01b44905c79b8c1d280",
+    "semantic_hash": ""
+  },
+  "e2e/fase1/sessao.spec.ts": {
+    "mtime": 1792724410.801896,
+    "seen": 1792727235.503644,
+    "ast_hash": "cae550aae455b6bad97e9b3ae3e2d9a2",
+    "semantic_hash": ""
+  },
+  "e2e/fase2/agendamento.spec.ts": {
+    "mtime": 1792724833.395154,
+    "seen": 1792727235.5036454,
+    "ast_hash": "eebcd3511e25cd964edfcc5a31418c25",
+    "semantic_hash": ""
+  },
+  "e2e/fase2/prontuario.spec.ts": {
+    "mtime": 1792725307.0886793,
+    "seen": 1792727235.503647,
+    "ast_hash": "859a5c1f3d40d7240dc902a58aa0cd16",
+    "semantic_hash": ""
+  },
+  "e2e/fase2/publico-e-seguranca.spec.ts": {
+    "mtime": 1792725150.3485017,
+    "seen": 1792727235.5036485,
+    "ast_hash": "0fa10f00839643c11dd26030d621ad83",
+    "semantic_hash": ""
+  },
+  "e2e/filtros/explorar.spec.ts": {
+    "mtime": 1792723671.4509635,
+    "seen": 1792727235.5036502,
+    "ast_hash": "d4b27637d2f9e98bfc8bdba2fbac37fa",
+    "semantic_hash": ""
+  },
+  "e2e/fixtures.ts": {
+    "mtime": 1792724392.6264207,
+    "seen": 1792727235.5036516,
+    "ast_hash": "3f1b9e50c852f6feaea19f3ebe9117ce",
+    "semantic_hash": ""
+  },
+  "e2e/global-setup.ts": {
+    "mtime": 1792725568.573503,
+    "seen": 1792727235.503653,
+    "ast_hash": "c27cf89c028e08d1c838dd61cd36c3f4",
+    "semantic_hash": ""
+  },
+  "e2e/jornada/consulta-completa.spec.ts": {
+    "mtime": 1792725320.1442218,
+    "seen": 1792727235.5036552,
+    "ast_hash": "540f2458eccaa9880afcf2dd4e15f6c8",
+    "semantic_hash": ""
+  },
+  "e2e/responsivo/layout.ts": {
+    "mtime": 1792720912.2913744,
+    "seen": 1792727235.5036566,
+    "ast_hash": "be3adb4021bbbe2792e6db609d52dbf2",
+    "semantic_hash": ""
+  },
+  "e2e/responsivo/telas.spec.ts": {
+    "mtime": 1792720609.5967677,
+    "seen": 1792727235.503658,
+    "ast_hash": "ac408d9e07b7433c4b568ce292745ee4",
+    "semantic_hash": ""
+  },
+  "e2e/telas.ts": {
+    "mtime": 1792725796.4775343,
+    "seen": 1792727235.5036597,
+    "ast_hash": "696ea0d4b1a64911c1d96bc46131973d",
+    "semantic_hash": ""
+  },
+  "playwright.config.ts": {
+    "mtime": 1792729632.8834572,
+    "seen": 1792729681.1880093,
+    "ast_hash": "42ea456d739a0ee2e13f27cb0ec5a11c",
     "semantic_hash": ""
   }
 }

@@ -653,7 +653,7 @@ export default function VeterinarioDashboard() {
                   </div>
                   <Link
                     href="/dashboard/veterinario/alterar-plano"
-                    className={styles.planLink}
+                    className={`${styles.planLink} min-h-6`}
                     style={{
                       color: subscriptionUsage?.limit && subscriptionUsage.used >= subscriptionUsage.limit * 0.8 ? '#dc2626' : undefined,
                       fontWeight: subscriptionUsage?.limit && subscriptionUsage.used >= subscriptionUsage.limit * 0.8 ? 'bold' : undefined

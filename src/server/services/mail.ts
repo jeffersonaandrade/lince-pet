@@ -9,6 +9,10 @@ export const defaultFrom = () => env('EMAIL_FROM') || 'onboarding@resend.dev'
 
 /** Equivalente ao `mail.send` do Adonis; lança erro se o Resend recusar. */
 export async function sendMail(message: { to: string; subject: string; html: string; from?: string }) {
+  if (env('MAIL_DRIVER') === 'log' && process.env.NODE_ENV !== 'production') {
+    console.info(`[mail] não enviado (MAIL_DRIVER=log): "${message.subject}" para ${message.to}`)
+    return
+  }
   const { error } = await resend().emails.send({
     from: message.from || defaultFrom(),
     to: message.to,

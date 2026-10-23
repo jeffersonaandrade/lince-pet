@@ -31,14 +31,22 @@ export default function SearchSection({
   isPlainInput = false,
 }: SearchSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLDivElement>(null);
+
+  // No celular a faixa inteira parece o campo: tocar no rótulo ou no espaço em volta foca o input.
+  const focarCampo = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget && e.target !== labelRef.current) return;
+    sectionRef.current?.querySelector("input")?.focus();
+  };
 
   return (
     <div
       ref={sectionRef}
+      onClick={focarCampo}
       className={`${styles.searchSection} ${showRightBorder ? styles.withRightBorder : ""
         }`}
     >
-      <div className={styles.sectionLabel}>{label}</div>
+      <div ref={labelRef} className={styles.sectionLabel}>{label}</div>
       <div className={styles.sectionInputRow}>
         {isPlainInput ? (
           <input
@@ -46,7 +54,8 @@ export default function SearchSection({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className={styles.input}
+            aria-label={label}
+            className={`${styles.input} min-h-6`}
           />
         ) : (
           <Dropdown

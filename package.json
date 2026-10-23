@@ -16,6 +16,9 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:contract": "vitest run tests/contract",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
     "test:coverage": "vitest run --coverage",
     "test:mutation": "stryker run",
     "db:pull": "prisma db pull && prisma generate",
@@ -46,6 +49,7 @@
     "sharp": "^0.35.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@stryker-mutator/core": "^10.0.0",
     "@stryker-mutator/vitest-runner": "^10.0.0",
     "@tailwindcss/postcss": "^4.3.3",

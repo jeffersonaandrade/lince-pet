@@ -652,6 +652,24 @@ new_edges += [edge("rule_seguranca_motivo_padrao_tutor", "rule_seguranca_whatsap
 for code_id, rs in seguranca_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 
+e2e_nodes = [
+    rule("rule_e2e_so_banco_local", "e2e: so contra o banco local (127.0.0.1:5433)",
+         "globalSetup aborta se DATABASE_URL nao for o Postgres local, roda o seed e cancela consultas futuras ativas de pets criados pelos testes. Nunca roda contra producao."),
+    rule("rule_e2e_sem_envio_real", "e2e: sem e-mail nem WhatsApp de verdade",
+         "Servidor do teste com MAIL_DRIVER=log, WHATSAPP_PROVIDER=log sem gateway e CRON_SECRET aleatorio. Sem e2e de WhatsApp: um envio real derrubou a sessao do numero central (23/10/2026); WhatsApp coberto so pelos unitarios."),
+    rule("rule_e2e_pela_tela", "e2e: a acao testada e feita pela tela",
+         "Agendar, cancelar, remarcar, bloquear, encaminhar, pedir servico e editar perfil sao feitos clicando (e2e/telas.ts); API so em passos 'invasao (fora da tela)'; banco so confere o resultado."),
+]
+new_nodes += [n for n in e2e_nodes if n["id"] not in {x["id"] for x in new_nodes}]
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in e2e_nodes]
+new_edges += [edge("rule_e2e_sem_envio_real", "rule_whatsapp_provedor_agnostico", "references")]
+impl.update({
+    "e2e_global_setup": ["rule_e2e_so_banco_local"],
+    "e2e_db": ["rule_e2e_so_banco_local"],
+    "playwright_config": ["rule_e2e_sem_envio_real"],
+    "e2e_telas": ["rule_e2e_pela_tela"],    "e2e_fixtures": ["rule_e2e_pela_tela"],
+})
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 
