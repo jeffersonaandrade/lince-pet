@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp, ClipboardList, Scale, Send } from "lucide-react";
+import { ChevronDown, ChevronUp, ClipboardList, FlaskConical, Scale, Send } from "lucide-react";
+import { BotaoLaudo } from "@/components/Exames/BotaoLaudo";
 import {
   ProntuarioService,
   type ConsultaProntuario,
@@ -30,6 +31,27 @@ function ItemConsulta({ consulta }: { consulta: ConsultaProntuario }) {
   const [aberto, setAberto] = useState(false);
   const r = consulta.registro;
   const subtitulo = [consulta.veterinario_nome, consulta.clinica_nome, consulta.local_nome].filter(Boolean).join(" · ");
+
+  if (consulta.exames) {
+    return (
+      <li className="flex flex-wrap items-start justify-between gap-2 rounded-lg border border-solid border-slate-200 bg-white px-3 py-2" aria-label={`Exame de ${formatarData(consulta.data_consulta)}`}>
+        <span className="flex flex-col gap-0.5">
+          <span className="flex items-center gap-1.5 text-sm font-semibold text-slate-800">
+            <FlaskConical size={14} className="text-sky-600" />
+            {formatarData(consulta.data_consulta)}
+            {consulta.horario_consulta ? ` às ${consulta.horario_consulta}` : ""} · Exame
+          </span>
+          <span className="text-xs text-slate-600">{consulta.exames.join(", ")}</span>
+          {subtitulo && <span className="text-xs text-slate-500">{subtitulo}</span>}
+        </span>
+        {consulta.laudo ? (
+          <BotaoLaudo agendamentoId={consulta.agendamento_id} />
+        ) : (
+          <span className="text-xs font-semibold text-slate-500">Laudo pendente</span>
+        )}
+      </li>
+    );
+  }
 
   return (
     <li className="rounded-lg border border-solid border-slate-200 bg-white">

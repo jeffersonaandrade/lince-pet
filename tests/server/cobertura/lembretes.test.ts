@@ -80,6 +80,8 @@ describe('lembretes por todos os canais (sem plano)', () => {
       agendamentoId: 'ag-1',
       quando: 'amanha',
       petNome: 'Rex',
+      exames: null,
+      preparo: null,
     })
     expect(emailMock).toHaveBeenCalledWith('ana@exemplo.com', {
       nomeTutor: 'Ana',
@@ -88,6 +90,8 @@ describe('lembretes por todos os canais (sem plano)', () => {
       data: '10/10/2026',
       hora: '14:00',
       local: 'Clínica Centro',
+      exames: null,
+      preparo: null,
     })
     expect(whatsappMock).toHaveBeenCalledWith('lembrete_24h', expect.objectContaining({ id: 'ag-1' }), ['tutor'])
   })
@@ -171,5 +175,38 @@ describe('avisarLembrete', () => {
     await expect(avisarLembrete('lembrete_2h', agendamento())).resolves.toBe(false)
     expect(sinoMock).not.toHaveBeenCalled()
     erro.mockRestore()
+  })
+})
+
+describe('lembrete de exame', () => {
+  const exame = () =>
+    agendamento({
+      tipoConsulta: 'exame',
+      veterinario: null,
+      clinica: { nomeClinica: 'Clínica Centro' },
+      exames: [
+        { nome: 'Hemograma', preparo: 'Jejum de 8h' },
+        { nome: 'Raio-X', preparo: null },
+      ],
+    })
+
+  it('sino e e-mail falam de exame, com os exames, a clínica e o preparo', async () => {
+    await avisarLembrete('lembrete_24h', exame())
+
+    expect(sinoMock).toHaveBeenCalledWith(
+      expect.objectContaining({ veterinarioNome: 'Clínica Centro', exames: 'Hemograma, Raio-X', preparo: 'Hemograma: Jejum de 8h' })
+    )
+    expect(emailMock).toHaveBeenCalledWith('ana@exemplo.com', expect.objectContaining({ exames: 'Hemograma, Raio-X', preparo: 'Hemograma: Jejum de 8h' }))
+  })
+
+  it('e-mail de exame troca o título e mostra o preparo', () => {
+    const html = lembreteConsultaEmail({
+      nomeTutor: 'Ana', pet: 'Rex', profissional: 'Clínica Centro', data: '10/10/2026', hora: '14:00', local: 'Rua A',
+      exames: 'Hemograma', preparo: 'Hemograma: Jejum de 8h',
+    })
+    expect(html).toContain('Seu exame é amanhã')
+    expect(html).toContain('Jejum de 8h')
+    expect(html).toContain('Na clínica')
+    expect(html).not.toContain('Sua consulta é amanhã')
   })
 })

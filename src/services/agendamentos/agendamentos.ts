@@ -56,6 +56,9 @@ export interface AgendamentoTutor {
   codigo_inicio?: string | null;
   clinica_id?: string | null;
   clinica_foto?: string | null;
+  /** Agendamento de exame (`tipo_consulta = 'exame'`): exames escolhidos com o preparo. */
+  exames?: { nome: string; preparo: string | null }[] | null;
+  laudo_disponivel?: boolean;
   veterinario: {
     id: string;
     nome: string;

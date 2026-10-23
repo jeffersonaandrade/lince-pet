@@ -2,9 +2,9 @@ import type { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/server/db'
 import { ApiRequest, ok, route } from '@/server/http'
 import {
+  clinicaPublica,
   especialidadesPorEntidade,
   mediaAvaliacoes,
-  serializeClinica,
   usuarioPublico,
 } from '@/server/services/clinicas'
 
@@ -36,7 +36,7 @@ export const GET = route(async (req) => {
     clinicas.map(({ user, clinicaPlanos, avaliacoes, ...clinica }) => {
       const { rating, totalReviews } = mediaAvaliacoes(avaliacoes.map((a) => a.estrelasClinica))
       return {
-        ...serializeClinica(clinica),
+        ...clinicaPublica(clinica),
         user: usuarioPublico(user),
         especialidades: especialidades.get(clinica.id) ?? [],
         planos: clinicaPlanos.map((cp) => cp.plano),

@@ -159,7 +159,12 @@ describe('getUserProfile', () => {
       createdAt: baseUser.createdAt,
       fotoUrl: null,
       googleCalendarAuthorized: false,
+      isAdmin: false,
     })
+  })
+
+  it('admin: isAdmin vem do is_admin', () => {
+    expect(getUserProfile({ ...baseUser, isAdmin: 1 } as never).isAdmin).toBe(true)
   })
 
   it('tutor sem registro de tutor carregado devolve só o perfil base', () => {

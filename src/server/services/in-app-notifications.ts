@@ -69,10 +69,17 @@ export const inAppNotifications = {
       `Sua consulta com Dr(a). ${p.veterinarioNome} foi remarcada para ${p.dataConsulta} às ${p.horarioConsulta}.`,
       { agendamentoId: p.agendamentoId }),
 
-  notifyAppointmentReminderToTutor: (p: TutorAppointmentParams & { quando: 'amanha' | 'em_breve'; petNome?: string | null }) =>
-    create(p.tutorUserId, 'LEMBRETE_CONSULTA', p.quando === 'amanha' ? 'Sua consulta é amanhã' : 'Sua consulta é daqui a pouco',
-      `${p.petNome ? `${p.petNome} tem consulta` : 'Consulta'} com ${p.veterinarioNome} em ${p.dataConsulta} às ${p.horarioConsulta}.`,
-      { agendamentoId: p.agendamentoId }),
+  notifyAppointmentReminderToTutor: (
+    p: TutorAppointmentParams & { quando: 'amanha' | 'em_breve'; petNome?: string | null; exames?: string | null; preparo?: string | null }
+  ) =>
+    p.exames
+      ? create(p.tutorUserId, 'LEMBRETE_CONSULTA', p.quando === 'amanha' ? 'Seu exame é amanhã' : 'Seu exame é daqui a pouco',
+          `${p.petNome ? `${p.petNome} tem exame` : 'Exame'} (${p.exames}) na ${p.veterinarioNome} em ${p.dataConsulta} às ${p.horarioConsulta}.` +
+            (p.preparo ? ` Preparo: ${p.preparo}` : ''),
+          { agendamentoId: p.agendamentoId })
+      : create(p.tutorUserId, 'LEMBRETE_CONSULTA', p.quando === 'amanha' ? 'Sua consulta é amanhã' : 'Sua consulta é daqui a pouco',
+          `${p.petNome ? `${p.petNome} tem consulta` : 'Consulta'} com ${p.veterinarioNome} em ${p.dataConsulta} às ${p.horarioConsulta}.`,
+          { agendamentoId: p.agendamentoId }),
 
   notifyAppointmentCancelledByAgendaBlockToTutor: (p: {
     tutorUserId: string

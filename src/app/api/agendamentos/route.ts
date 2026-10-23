@@ -14,6 +14,7 @@ import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
 import { podeEnviarEmail } from '@/server/services/canais-notificacao'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import { descreverPeriodo } from '@/server/services/pedidos-prestador'
+import { APROVADO, MENSAGEM_CRMV_EM_ANALISE } from '@/server/services/aprovacoes'
 import {
   consumeDataConsulta,
   jaPassou,
@@ -85,6 +86,9 @@ export const POST = route(async (req) => {
 
     if (!veterinario) {
       return notFound({ message: 'Veterinário não encontrado' })
+    }
+    if (veterinario.crmvStatus !== APROVADO) {
+      return badRequest({ message: MENSAGEM_CRMV_EM_ANALISE })
     }
 
     let finalPrice: Prisma.Decimal | number = veterinario.precoConsulta || 0
@@ -379,6 +383,8 @@ export const GET = route(async (req) => {
             servicoOferecido: true,
             pet: true,
             clinica: true,
+            exames: { select: { nome: true, preparo: true } },
+            laudo: { select: { id: true } },
           },
           orderBy: [{ dataConsulta: 'desc' }, { horarioConsulta: 'asc' }],
         })
@@ -421,6 +427,8 @@ export const GET = route(async (req) => {
         avaliado: avaliadosSet.has(agendamento.id),
         clinica_id: agendamento.clinicaId,
         clinica_foto: agendamento.clinica?.fotoPerfil || null,
+        exames: agendamento.tipoConsulta === 'exame' ? agendamento.exames : null,
+        laudo_disponivel: Boolean(agendamento.laudo),
         veterinario: veterinario
           ? {
               id: veterinario.id,

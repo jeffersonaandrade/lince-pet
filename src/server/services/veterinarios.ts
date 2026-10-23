@@ -16,6 +16,7 @@ import { hashPassword } from '../auth/password'
 import { creating, updating } from '../lucid'
 import { canCreateAppointment } from './subscription'
 import { PLANO_PADRAO } from './assinante'
+import { APROVADO } from './aprovacoes'
 
 type Db = Prisma.TransactionClient | typeof prisma
 
@@ -333,7 +334,7 @@ export type SearchFilters = {
 }
 
 export async function searchVeterinarios(filters: SearchFilters) {
-  const conds: Prisma.Sql[] = [Prisma.sql`TRUE`]
+  const conds: Prisma.Sql[] = [Prisma.sql`v.crmv_status = ${APROVADO}`]
   if (filters.search) {
     const like = `%${filters.search}%`
     conds.push(Prisma.sql`(EXISTS (SELECT 1 FROM users u WHERE u.id = v.user_id AND CONCAT(u.nome, ' ', u.sobrenome) ILIKE ${like}) OR v.bio ILIKE ${like})`)
@@ -383,7 +384,7 @@ export async function getVeterinarioById(id: string) {
 
     const data = formatVeterinarioData(veterinario)
     const limitCheck = await canCreateAppointment(veterinario)
-    return { ...data, limitReached: !limitCheck.allowed }
+    return { ...data, limitReached: !limitCheck.allowed, crmvAprovado: veterinario.crmvStatus === APROVADO }
   } catch (error) {
     if ((error as { status?: number }).status === 404) throw error
     console.error('❌ [VeterinariosService] Erro inesperado ao buscar veterinário ID:', id, error)

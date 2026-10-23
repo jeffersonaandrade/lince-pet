@@ -1,9 +1,10 @@
 import { prisma } from '@/server/db'
 import { notFound, ok, route } from '@/server/http'
+import { APROVADO } from '@/server/services/aprovacoes'
 import {
+  clinicaPublica,
   especialidadesPorEntidade,
   mediaAvaliacoes,
-  serializeClinica,
   serializeEndereco,
   usuarioPublico,
   veterinarioPublico,
@@ -18,7 +19,7 @@ export const GET = route<{ id: string }>(async (_req, { id }) => {
         clinicaPlanos: { include: { plano: true } },
         avaliacoes: { where: { estrelasClinica: { not: null } } },
         veterinarioClinicas: {
-          where: { status: 'aceito' },
+          where: { status: 'aceito', veterinario: { crmvStatus: APROVADO } },
           include: {
             veterinario: {
               include: { user: true, avaliacoes: true, enderecos: { where: { clinicaId: id } } },
@@ -51,7 +52,7 @@ export const GET = route<{ id: string }>(async (_req, { id }) => {
     const { rating, totalReviews } = mediaAvaliacoes(avaliacoes.map((a) => a.estrelasClinica))
 
     return ok({
-      ...serializeClinica(attrs),
+      ...clinicaPublica(attrs),
       user: usuarioPublico(user),
       especialidades: especialidadesClinica.get(clinica.id) ?? [],
       planos: clinicaPlanos.map((cp) => cp.plano),

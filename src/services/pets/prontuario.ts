@@ -27,6 +27,9 @@ export interface ConsultaProntuario {
   veterinario_nome: string | null;
   clinica_nome: string | null;
   registro: RegistroClinico | null;
+  /** Agendamento de exame: nomes dos exames (null nas consultas). */
+  exames?: string[] | null;
+  laudo?: { nome_arquivo: string | null; enviado_em: string } | null;
 }
 
 export interface Prontuario {

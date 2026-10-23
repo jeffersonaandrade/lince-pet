@@ -418,11 +418,11 @@ describe('registerVeterinario', () => {
 })
 
 describe('searchVeterinarios', () => {
-  it('sem filtros: só TRUE, ordena vet_pro antes de vet_starter e não filtra por créditos', async () => {
+  it('sem filtros: só o CRMV aprovado, ordena vet_pro antes de vet_starter e não filtra por créditos', async () => {
     await expect(searchVeterinarios({})).resolves.toEqual([])
     const sql = sqlDaBusca()
-    expect(sql.sql).toMatch(/WHERE TRUE\s+ORDER BY/)
-    expect(sql.values).toEqual([])
+    expect(sql.sql).toMatch(/WHERE v\.crmv_status = \?\s+ORDER BY/)
+    expect(sql.values).toEqual(['aprovado'])
     expect(sql.sql).not.toMatch(/creditos/i)
     const pro = sql.sql.indexOf("WHEN v.subscription_plan_code IN ('vet_pro', 'pro_plus') THEN 1")
     const starter = sql.sql.indexOf("WHEN v.subscription_plan_code IN ('vet_starter', 'pro') THEN 2")
@@ -434,12 +434,13 @@ describe('searchVeterinarios', () => {
   it('monta todos os filtros com parâmetros (sem interpolar texto do usuário)', async () => {
     await searchVeterinarios({ search: 'Ana', cidade: 'Recife', estado: 'PE', especialidade: 'Cardio', plano: 'Pet Love' })
     const sql = sqlDaBusca()
-    expect(sql.values).toEqual(['%Ana%', '%Ana%', '%Recife%', 'PE', '%Cardio%', '%Pet Love%'])
-    expect(sql.text).toContain("CONCAT(u.nome, ' ', u.sobrenome) ILIKE $1) OR v.bio ILIKE $2")
-    expect(sql.text).toContain('e.cidade ILIKE $3')
-    expect(sql.text).toContain('e.estado = $4')
-    expect(sql.text).toContain("er.entidade_tipo = 'veterinario' AND es.nome ILIKE $5")
-    expect(sql.text).toContain('vp.veterinario_id = v.id AND p.name ILIKE $6')
+    expect(sql.values).toEqual(['aprovado', '%Ana%', '%Ana%', '%Recife%', 'PE', '%Cardio%', '%Pet Love%'])
+    expect(sql.text).toContain('v.crmv_status = $1')
+    expect(sql.text).toContain("CONCAT(u.nome, ' ', u.sobrenome) ILIKE $2) OR v.bio ILIKE $3")
+    expect(sql.text).toContain('e.cidade ILIKE $4')
+    expect(sql.text).toContain('e.estado = $5')
+    expect(sql.text).toContain("er.entidade_tipo = 'veterinario' AND es.nome ILIKE $6")
+    expect(sql.text).toContain('vp.veterinario_id = v.id AND p.name ILIKE $7')
     expect(sql.sql.match(/ AND EXISTS/g)?.length).toBeGreaterThanOrEqual(4)
     expect(sql.sql).not.toContain('Ana')
     expect(sql.sql).not.toMatch(/creditos/i)
@@ -448,7 +449,7 @@ describe('searchVeterinarios', () => {
   it('filtro único: só a condição correspondente', async () => {
     await searchVeterinarios({ estado: 'SP' })
     const sql = sqlDaBusca()
-    expect(sql.values).toEqual(['SP'])
+    expect(sql.values).toEqual(['aprovado', 'SP'])
     expect(sql.sql).not.toContain('ILIKE')
   })
 

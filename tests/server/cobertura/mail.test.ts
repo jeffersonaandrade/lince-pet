@@ -49,6 +49,20 @@ describe('sendMail', () => {
     await expect(mail.sendMail({ to: 'x', subject: 's', html: 'h' })).rejects.toThrow('[mail] validation_error: to inválido')
   })
 
+  it('MAIL_DRIVER=log fora de produção só registra; em produção envia', async () => {
+    const info = vi.spyOn(console, 'info').mockImplementation(() => {})
+    vi.stubEnv('MAIL_DRIVER', 'log')
+    await mail.sendMail({ to: 'a@b.com', subject: 'Oi', html: 'h' })
+    expect(resend.send).not.toHaveBeenCalled()
+    expect(info).toHaveBeenCalledWith(expect.stringContaining('"Oi" para a@b.com'))
+
+    vi.stubEnv('NODE_ENV', 'production')
+    resend.send.mockResolvedValueOnce({ error: null })
+    await mail.sendMail({ to: 'a@b.com', subject: 'Oi', html: 'h' })
+    expect(resend.send).toHaveBeenCalledTimes(1)
+    info.mockRestore()
+  })
+
   it('sem RESEND_API_KEY lança antes de enviar', async () => {
     vi.stubEnv('RESEND_API_KEY', '')
     await expect(mail.sendMail({ to: 'a@b.com', subject: 's', html: 'h' })).rejects.toThrow('RESEND_API_KEY')

@@ -8,6 +8,7 @@ const prismaMock = vi.hoisted(() => ({
   pet: { findUnique: vi.fn() },
   prestador: { findUnique: vi.fn() },
   servicoOferecido: { findUnique: vi.fn() },
+  agendamentoExame: { findMany: vi.fn() },
   user: { findUnique: vi.fn(), update: vi.fn() },
   agendamentoGoogleEvento: { findUnique: vi.fn(), upsert: vi.fn(), delete: vi.fn() },
 }))
@@ -454,6 +455,49 @@ describe('sincronizarEvento: pedido de prestador', () => {
     await googleCalendar.sincronizarEvento('ped-1', 'criar')
     expect(axiosMock.post).toHaveBeenCalledTimes(1)
     expect(axiosMock.post.mock.calls[0][2].headers.Authorization).toBe('Bearer tok-u-tutor')
+  })
+})
+
+describe('sincronizarEvento: exame na clínica', () => {
+  const EXAME = {
+    ...CONSULTA,
+    id: 'ex-1',
+    veterinarioId: null,
+    tipoConsulta: 'exame',
+    inicioEm: new Date('2026-10-20T13:00:00Z'),
+    fimEm: new Date('2026-10-20T14:30:00Z'),
+    precoConsulta: 149.9,
+  }
+
+  it('só o tutor recebe, com exames, horário de fim, pagamento na clínica e preparo', async () => {
+    prismaMock.agendamento.findUnique.mockResolvedValue(EXAME)
+    prismaMock.agendamentoExame.findMany.mockResolvedValue([
+      { nome: 'Hemograma', preparo: 'Jejum de 8h' },
+      { nome: 'Raio-X', preparo: null },
+    ])
+    await googleCalendar.sincronizarEvento('ex-1', 'criar')
+
+    expect(prismaMock.agendamentoExame.findMany).toHaveBeenCalledWith({ where: { agendamentoId: 'ex-1' }, select: { nome: true, preparo: true } })
+    expect(axiosMock.post).toHaveBeenCalledTimes(1)
+    const evento = axiosMock.post.mock.calls[0][1]
+    expect(evento.summary).toBe('Exame - Rex (Clínica Centro)')
+    expect(evento.description).toContain('🧪 Exames: Hemograma, Raio-X')
+    expect(evento.description).toContain('📅 20/10/2026 10:00 até 11:30')
+    expect(evento.description).toContain('R$ 149.90 (pagamento na clínica)')
+    expect(evento.description).toContain('• Hemograma: Jejum de 8h')
+    expect(evento.description).not.toContain('Raio-X: ')
+  })
+
+  it('padrões: sem exames, pet, local, fim e preço', async () => {
+    prismaMock.pet.findUnique.mockResolvedValue(null)
+    prismaMock.agendamento.findUnique.mockResolvedValue({ ...EXAME, fimEm: null, localNome: null, localEndereco: null, precoConsulta: null })
+    prismaMock.agendamentoExame.findMany.mockResolvedValue([])
+    await googleCalendar.sincronizarEvento('ex-1', 'criar')
+    const evento = axiosMock.post.mock.calls[0][1]
+    expect(evento.summary).toBe('Exame - Pet (Clínica)')
+    expect(evento.description).toContain('🧪 Exames: Exame')
+    expect(evento.description).not.toContain('Preparo:')
+    expect(evento.start.dateTime).toBe(evento.end.dateTime)
   })
 })
 

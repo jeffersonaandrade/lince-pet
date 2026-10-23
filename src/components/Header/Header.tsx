@@ -17,6 +17,7 @@ import {
   UserPlus,
   Info,
   Phone,
+  ShieldCheck,
 } from "lucide-react";
 import UserImage from "../ui/UserImage/UserImage";
 import styles from "./header.module.css";
@@ -244,6 +245,17 @@ export default function Header() {
                         <span>Histórico</span>
                       </button>
                     </Link>
+                    {user.isAdmin && (
+                      <Link href="/admin/aprovacoes">
+                        <button
+                          className={styles.dropdownItem}
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <ShieldCheck size={16} />
+                          <span>Admin</span>
+                        </button>
+                      </Link>
+                    )}
                     <div className={styles.dropdownDivider}></div>
                     <button
                       className={styles.dropdownItem}
@@ -371,6 +383,18 @@ export default function Header() {
                     </span>
                     Perfil
                   </Link>
+                  {user.isAdmin && (
+                    <Link
+                      href="/admin/aprovacoes"
+                      className={styles.mobileMenuLink}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <span className={styles.menuIcon}>
+                        <ShieldCheck size={18} />
+                      </span>
+                      Admin
+                    </Link>
+                  )}
                   <button
                     type="button"
                     className={`${styles.mobileMenuLink} ${styles.dangerLink}`}

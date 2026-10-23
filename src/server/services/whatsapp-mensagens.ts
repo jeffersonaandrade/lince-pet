@@ -20,6 +20,9 @@ export type DadosMensagem = {
   motivo?: string | null
   /** Pedido de prestador: nome do serviço ("Banho completo"). Ausente = consulta veterinária. */
   servico?: string | null
+  /** Agendamento de exame: nomes dos exames e o preparo (só os lembretes saem por aqui). */
+  exames?: string | null
+  preparo?: string | null
 }
 
 const rodape = '\n\n_Lince Pet: avisos automáticos de consultas. Para não receber, desative no seu perfil._'
@@ -62,6 +65,19 @@ function mensagemServico(evento: EventoWhatsapp, para: Destinatario, d: DadosMen
   }
 }
 
+function mensagemExame(evento: EventoWhatsapp, para: Destinatario, d: DadosMensagem): string | null {
+  if (para !== 'tutor') return null
+  const info = `🔬 Exames: ${d.exames}\n${detalhes(d)}${d.preparo ? `\n⚠️ Preparo: ${d.preparo}` : ''}\n💳 Pagamento na clínica`
+  switch (evento) {
+    case 'lembrete_24h':
+      return `Olá, ${d.tutor}! Lembrete: o exame de ${d.pet} na ${d.profissional} é amanhã.\n\n${info}${rodape}`
+    case 'lembrete_2h':
+      return `Olá, ${d.tutor}! O exame de ${d.pet} na ${d.profissional} começa em cerca de 2 horas.\n\n${info}${rodape}`
+    default:
+      return null
+  }
+}
+
 const LINK = /https?:\/\/\S+|www\.\S+|\b[\w-]+(?:\.[\w-]+)*\.(?:com|net|org|br|io|xyz|app|me|link|info|site|online|shop|top|ly)\b\S*/gi
 
 /** Campo digitado por usuário (nome, pet, motivo): sem links e com tamanho limitado, pois sai do número oficial. */
@@ -77,12 +93,15 @@ function dadosSeguros(d: DadosMensagem): DadosMensagem {
     local: textoSeguro(d.local, 200),
     motivo: d.motivo ? textoSeguro(d.motivo, 200) : d.motivo,
     servico: d.servico ? textoSeguro(d.servico) : d.servico,
+    exames: d.exames ? textoSeguro(d.exames, 200) : d.exames,
+    preparo: d.preparo ? textoSeguro(d.preparo, 300) : d.preparo,
   }
 }
 
 /** Texto de cada evento por destinatário; null = evento não se aplica a esse destinatário. */
 export function montarMensagem(evento: EventoWhatsapp, para: Destinatario, dados: DadosMensagem): string | null {
   const d = dadosSeguros(dados)
+  if (d.exames) return mensagemExame(evento, para, d)
   if (d.servico) return mensagemServico(evento, para, d)
   const motivo = d.motivo ? `\nMotivo: ${d.motivo}` : ''
 

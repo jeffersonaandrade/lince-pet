@@ -29,12 +29,28 @@ export const usuarioPublico = (user: Partial<User> | null | undefined) =>
 /** Veterinário exibido a terceiros: sem documentos (CPF/CNPJ, LGPD) nem dados internos de plano e créditos. */
 const CAMPOS_PRIVADOS_VETERINARIO = new Set([
   'cpf', 'cnpj', 'creditos', 'subscriptionPlanCode', 'monthlyAppointmentsUsed', 'monthlyAppointmentsResetAt',
+  'crmvMotivo', 'crmvEnviadoEm',
 ])
+
+/** Clínica exibida a terceiros: a análise do RT (motivo da reprovação, data do envio) é só da clínica e do admin. */
+export function clinicaPublica<T extends Partial<Clinica>>(clinica: T) {
+  const { rtMotivo, rtEnviadoEm, ...rest } = serializeClinica(clinica)
+  void rtMotivo
+  void rtEnviadoEm
+  return rest
+}
 
 export function veterinarioPublico<T extends Record<string, unknown>>(vet: T) {
   return Object.fromEntries(Object.entries(vet).filter(([k]) => !CAMPOS_PRIVADOS_VETERINARIO.has(k))) as Omit<
     T,
-    'cpf' | 'cnpj' | 'creditos' | 'subscriptionPlanCode' | 'monthlyAppointmentsUsed' | 'monthlyAppointmentsResetAt'
+    | 'cpf'
+    | 'cnpj'
+    | 'creditos'
+    | 'subscriptionPlanCode'
+    | 'monthlyAppointmentsUsed'
+    | 'monthlyAppointmentsResetAt'
+    | 'crmvMotivo'
+    | 'crmvEnviadoEm'
   >
 }
 

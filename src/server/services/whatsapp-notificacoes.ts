@@ -27,6 +27,7 @@ const include = {
   prestador: { include: { user: true, tipoServico: true } },
   servicoOferecido: true,
   clinica: true,
+  exames: { select: { nome: true, preparo: true } },
 } satisfies Prisma.AgendamentoInclude
 
 export const carregarAgendamento = (id: string) => prisma.agendamento.findUnique({ where: { id }, include })
@@ -50,8 +51,18 @@ function telefoneDe(a: AgendamentoWhatsapp, para: Destinatario) {
   return normalizarTelefoneE164(profissionalDe(a).user?.celular) || normalizarTelefoneE164(a.clinica?.whatsapp)
 }
 
+/** Nomes e preparo dos exames; null se não for agendamento de exame. */
+export function examesDoAgendamento(a: Pick<AgendamentoWhatsapp, 'tipoConsulta' | 'exames'>) {
+  if (a.tipoConsulta !== 'exame' || !a.exames?.length) return null
+  const preparo = a.exames.filter((e) => e.preparo).map((e) => `${e.nome}: ${e.preparo}`)
+  return { nomes: a.exames.map((e) => e.nome).join(', '), preparo: preparo.length ? preparo.join(' | ') : null }
+}
+
 export function dadosDaMensagem(a: AgendamentoWhatsapp, motivo?: string | null) {
+  const exames = examesDoAgendamento(a)
   return {
+    exames: exames?.nomes ?? null,
+    preparo: exames?.preparo ?? null,
     tutor: a.tutor?.user ? nomeCompleto(a.tutor.user) : 'Tutor',
     pet: a.pet?.nome || 'seu pet',
     profissional: profissionalDe(a).nome,

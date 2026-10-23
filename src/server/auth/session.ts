@@ -109,6 +109,27 @@ export async function requireUser(req: ApiRequest, allowed?: UserType[]): Promis
   return user
 }
 
+/** Conta de clínica logada, com o registro da clínica. */
+export async function requireClinica(req: ApiRequest): Promise<Clinica> {
+  const user = await requireUser(req, ['clinica'])
+  if (!user.clinica) throw new HttpError(404, { message: 'Clínica não encontrada' })
+  return user.clinica
+}
+
+/** Conta de tutor logada, com o registro do tutor. */
+export async function requireTutor(req: ApiRequest): Promise<Tutor> {
+  const user = await requireUser(req, ['tutor'])
+  if (!user.tutor) throw new HttpError(400, { message: 'Apenas tutores podem agendar exames' })
+  return user.tutor
+}
+
+/** Admin da Lince (`users.is_admin`), de qualquer tipo de conta. */
+export async function requireAdmin(req: ApiRequest): Promise<CurrentUser> {
+  const user = await authenticate(req)
+  if (user.isAdmin !== 1) throw new HttpError(403, { message: 'Acesso restrito ao administrador da Lince Pet.' })
+  return user
+}
+
 /** Usuário opcional (rotas públicas que se comportam diferente quando logado). */
 export async function optionalUser(req: ApiRequest) {
   const token = extractToken(req)

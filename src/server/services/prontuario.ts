@@ -136,6 +136,8 @@ export async function prontuarioDoPet(petId: string) {
       veterinario: { select: { user: { select: { nome: true, sobrenome: true } } } },
       clinica: { select: { nomeClinica: true } },
       registroClinico: true,
+      exames: { select: { nome: true } },
+      laudo: { select: { nomeArquivo: true, enviadoEm: true } },
     },
     orderBy: [{ dataConsulta: 'desc' }, { horarioConsulta: 'desc' }],
   })
@@ -150,6 +152,8 @@ export async function prontuarioDoPet(petId: string) {
     veterinario_nome: nomeCompleto(c.veterinario?.user),
     clinica_nome: c.clinica?.nomeClinica ?? null,
     registro: serializeRegistro(c.registroClinico),
+    exames: c.tipoConsulta === 'exame' ? c.exames.map((e) => e.nome) : null,
+    laudo: c.laudo ? { nome_arquivo: c.laudo.nomeArquivo, enviado_em: c.laudo.enviadoEm } : null,
   }))
 }
 

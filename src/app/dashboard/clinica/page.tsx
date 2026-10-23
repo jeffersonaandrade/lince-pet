@@ -631,6 +631,9 @@ export default function ClinicaDashboard() {
                 <Link href="/dashboard/clinica/perfil" className={styles.editProfileButton}>
                   Editar Perfil
                 </Link>
+                <Link href="/dashboard/clinica/exames" className={styles.editProfileButton}>
+                  Exames
+                </Link>
               </div>
             </div>
           </div>

@@ -211,7 +211,7 @@ export default function VeterinarioProfile() {
             descricao: exp.descricao ?? undefined,
           })),
           planos: vetData.planos || [],
-          limitReached: vetData.limitReached || false
+          limitReached: vetData.limitReached || vetData.crmvAprovado === false
         };
 
         try {

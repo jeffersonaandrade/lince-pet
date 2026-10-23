@@ -55,6 +55,8 @@ export async function avisarLembrete(evento: EventoLembrete, a: AgendamentoWhats
       agendamentoId: a.id,
       quando: evento === 'lembrete_24h' ? 'amanha' : 'em_breve',
       petNome: a.pet?.nome,
+      exames: d.exames,
+      preparo: d.preparo,
     })
     if (evento === 'lembrete_24h' && podeEnviarEmail(tutorUser)) {
       await notifications.sendLembreteConsulta(tutorUser.email, {
@@ -64,6 +66,8 @@ export async function avisarLembrete(evento: EventoLembrete, a: AgendamentoWhats
         data: d.data,
         hora: d.hora,
         local: d.local,
+        exames: d.exames,
+        preparo: d.preparo,
       })
     }
     return true

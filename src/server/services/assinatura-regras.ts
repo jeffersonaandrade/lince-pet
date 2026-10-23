@@ -64,6 +64,25 @@ export function webhookAutorizado(
   return a.length === b.length && timingSafeEqual(a, b)
 }
 
+/**
+ * Módulo de exames: só planos pagos de clínica. Valor = exames agendados por mês (null = ilimitado).
+ * Fica no código (não no banco) para valer em produção sem alterar dados dos planos.
+ */
+export const LIMITE_EXAMES_MES: Record<string, number | null> = { starter: 100, clinic: 300, clinic_pro: null }
+
+export const planoComExames = (code: string | null | undefined) =>
+  !!code && Object.prototype.hasOwnProperty.call(LIMITE_EXAMES_MES, code)
+
+/** Inadimplência devolve a clínica ao plano padrão: os agendamentos feitos ficam, os novos param aqui. */
+export function podeAgendarExame(code: string | null | undefined, agendadosNoMes: number) {
+  if (!planoComExames(code)) return { ok: false as const, motivo: 'Esta clínica não está recebendo agendamentos de exames no momento.' }
+  const limite = LIMITE_EXAMES_MES[code as string]
+  if (limite != null && agendadosNoMes >= limite) {
+    return { ok: false as const, motivo: 'Esta clínica atingiu o limite de exames do mês. Tente outra data ou outra clínica.' }
+  }
+  return { ok: true as const, motivo: null }
+}
+
 /** Vets que contam no limite da clínica: vínculos aceitos e convites pendentes. */
 export function podeVincularVet(maxVeterinarios: number | null | undefined, vinculados: number, temPlano: boolean) {
   if (!temPlano) return { ok: false, motivo: 'Assine um plano para vincular veterinários à clínica.' }

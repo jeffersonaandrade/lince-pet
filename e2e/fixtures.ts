@@ -9,6 +9,8 @@ export const CONTAS = {
   veterinario2: { email: 'dr.ricardo.mockup@petcare.com', dashboard: '/dashboard/veterinario' },
   clinica: { email: 'contato@petcenter.mockup.com', dashboard: '/dashboard/clinica' },
   prestador: { email: 'tosa.bianca.mockup@email.com', dashboard: '/dashboard/prestador' },
+  /** Tutor do seed promovido a admin pelo global-setup (só no banco local). */
+  admin: { email: 'pedro.oliveira.mockup@email.com', dashboard: '/dashboard/tutor' },
 } as const
 
 export type Perfil = keyof typeof CONTAS

@@ -10,6 +10,7 @@ import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
 import { podeEnviarEmail } from '@/server/services/canais-notificacao'
 import { googleCalendar } from '@/server/services/google-calendar'
 import { cancelarPedidoPeloTutor, ehPedidoDePrestador } from '@/server/services/pedidos-prestador'
+import { cancelarExamePeloTutor, ehAgendamentoDeExame } from '@/server/services/exames'
 import { MOTIVO_PADRAO_TUTOR, motivoDoTutor } from '@/lib/motivos-cancelamento'
 import {
   consumeDataConsulta,
@@ -36,6 +37,10 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
   if (await ehPedidoDePrestador(id, tutor.id)) {
     await cancelarPedidoPeloTutor(tutor.id, id, motivoInformado)
     return ok({ message: 'Pedido cancelado com sucesso' })
+  }
+  if (await ehAgendamentoDeExame(id, tutor.id)) {
+    await cancelarExamePeloTutor(tutor.id, id, motivoInformado)
+    return ok({ message: 'Exame cancelado com sucesso' })
   }
 
   try {

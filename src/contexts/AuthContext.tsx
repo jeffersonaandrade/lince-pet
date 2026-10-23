@@ -26,7 +26,13 @@ interface User {
   subscriptionPlanCode?: string | null;
   monthlyAppointmentsUsed?: number;
   tipoServico?: { slug: string; nome: string; modalidade: string };
+  isAdmin?: boolean;
+  crmv?: string | null;
+  crmvStatus?: StatusAnalise;
+  crmvMotivo?: string | null;
 }
+
+export type StatusAnalise = "pendente" | "aprovado" | "reprovado";
 
 interface AuthContextType {
   user: User | null;

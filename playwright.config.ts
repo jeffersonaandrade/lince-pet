@@ -52,6 +52,9 @@ export default defineConfig({
       VAPID_PUBLIC_KEY: vapid.publicKey,
       VAPID_PRIVATE_KEY: vapid.privateKey,
       VAPID_SUBJECT: 'mailto:e2e@lincepet.local',
+      // Laudos numa pasta local com link HMAC, sem tocar no bucket do Supabase.
+      LAUDOS_STORAGE_DIR: 'test-results/laudos',
+      LAUDOS_STORAGE_SECRET: randomBytes(24).toString('hex'),
     },
   },
 })

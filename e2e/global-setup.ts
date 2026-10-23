@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { Pool } from 'pg'
 import { configDaConexao } from '../src/server/db-conexao'
+import { CONTAS } from './fixtures'
 
 const HOSTS_LOCAIS = ['127.0.0.1:5433', 'localhost:5433']
 
@@ -30,5 +31,7 @@ export default async function globalSetup() {
      where status in ('pendente', 'confirmado', 'em_andamento') and data_consulta >= to_char(current_date, 'YYYY-MM-DD')
        and pet_id in (select id from pets where nome ~ ' \\d{5,}$' or nome like 'E2E %')`
   )
+  // Admin só no banco local: o seed também roda fora dos testes e as contas de demonstração têm senha conhecida.
+  await db.query(`update users set is_admin = 1 where email = $1`, [CONTAS.admin.email])
   await db.end()
 }

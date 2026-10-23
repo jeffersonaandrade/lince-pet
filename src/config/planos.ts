@@ -58,6 +58,7 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
     buttonText: 'Assinar plano',
     benefits: [
       'Até 5 veterinários na equipe',
+      'Agenda de exames (até 100 por mês)',
       'Notificações por e-mail e WhatsApp',
       'QR Code / Link da clínica',
       `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
@@ -72,6 +73,7 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
     buttonText: 'Assinar plano',
     benefits: [
       'Até 15 veterinários na equipe',
+      'Agenda de exames (até 300 por mês)',
       'Dashboard de métricas nível básico',
       'Busca prioritária no explorar',
       `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
@@ -86,6 +88,7 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
     buttonText: 'Assinar plano',
     benefits: [
       'Veterinários ilimitados na equipe',
+      'Agenda de exames ilimitada',
       'Topo da categoria de busca',
       'Dashboard de métricas nível completo',
       `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
@@ -116,6 +119,7 @@ const ROTULOS_FEATURE: Record<string, string> = {
   basic_dashboard: 'Dashboard de métricas básico',
   featured_search: 'Destaque na busca',
   complete_dashboard: 'Dashboard de métricas completo',
+  exames: 'Agenda de exames',
 }
 
 export function formatarPrecoPlano(priceCents: number) {

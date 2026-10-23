@@ -128,6 +128,15 @@ describe('avisos in-app (sino)', () => {
 
     await inAppNotifications.notifyAppointmentReminderToTutor({ ...p, quando: 'em_breve' })
     expect(gravado()).toMatchObject({ title: 'Sua consulta é daqui a pouco', message: 'Consulta com João em 10/10/2026 às 14:00.' })
+
+    const exame = { ...p, veterinarioNome: 'Clínica Centro', exames: 'Hemograma' }
+    await inAppNotifications.notifyAppointmentReminderToTutor({ ...exame, quando: 'amanha', petNome: 'Rex', preparo: 'Jejum de 8h' })
+    expect(gravado()).toMatchObject({
+      title: 'Seu exame é amanhã',
+      message: 'Rex tem exame (Hemograma) na Clínica Centro em 10/10/2026 às 14:00. Preparo: Jejum de 8h',
+    })
+    await inAppNotifications.notifyAppointmentReminderToTutor({ ...exame, quando: 'em_breve' })
+    expect(gravado()).toMatchObject({ title: 'Seu exame é daqui a pouco', message: 'Exame (Hemograma) na Clínica Centro em 10/10/2026 às 14:00.' })
   })
 
   it('erro do banco propaga para quem chamou', async () => {

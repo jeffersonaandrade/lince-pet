@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/contexts/AuthContext";
+import AvisoAnalise from "@/components/AvisoAnalise/AvisoAnalise";
 import { useRouter } from "next/navigation";
 import { urlDeLogin } from "@/lib/destino-login";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
@@ -569,6 +570,12 @@ export default function VeterinarioDashboard() {
       </div>
 
       <div className={styles.contentWrapper}>
+        <AvisoAnalise
+          item="Seu CRMV"
+          status={user.crmvStatus}
+          motivo={user.crmvMotivo}
+          consequencia="Enquanto isso, seu perfil não aparece na busca e não recebe agendamentos."
+        />
         <section className={styles.headerInfo}>
           <div className={styles.logoWrapper}>
             <ProfileImageUploader

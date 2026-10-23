@@ -613,6 +613,7 @@ export async function seedDemonstracao(prisma: PrismaClient) {
           creditos: seed.creditos,
           onboardingComplete: 1,
           isVerified: 1,
+          crmvStatus: 'aprovado',
           onboardingStep: ONBOARDING_VET_CONCLUIDO,
           subscriptionPlanCode: seed.planCode,
           monthlyAppointmentsUsed: seed.consultasNoMes,

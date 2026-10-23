@@ -732,6 +732,55 @@ login_impl = {
 for code_id, rs in login_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 
+exames_nodes = [
+    rule("rule_admin_is_admin", "Admin da Lince = users.is_admin (promovido so por UPDATE confirmado)",
+         "requireAdmin: sem login 401, nao admin 403. Menu Admin e /admin/aprovacoes so para admin. Nao ha cadastro de admin pela tela."),
+    rule("rule_admin_aprova_crmv_rt", "Admin aprova CRMV do vet e RT da clinica; reprovar exige motivo",
+         "Status pendente/aprovado/reprovado. Vets ativos na migracao entraram aprovados. Vet novo ou troca de CRMV/RT volta a pendente. Decisao avisa no sino, navegador e e-mail."),
+    rule("rule_admin_trava_nao_aprovado", "Vet nao aprovado fora da busca e sem agendamento; RT nao aprovado esconde exames",
+         "POST /api/agendamentos com vet nao aprovado responde 400. Clinica com RT pendente/reprovado cadastra exames mas nao aparece ao publico."),
+    rule("rule_exames_modulo_da_clinica", "Exames sao modulo da conta de clinica, so em plano pago com limite mensal",
+         "starter 100, clinic 300, clinic_pro ilimitado (LIMITE_EXAMES_MES). Inadimplencia mantem exames marcados e bloqueia novos (403). Visivel so com modulo ligado, RT aprovado e plano."),
+    rule("rule_exames_capacidade_409", "Horario de exame respeita funcionamento, bloqueios e capacidade simultanea; sem vaga 409",
+         "Duracao = soma dos exames. Checagem refeita na transacao com pg_advisory_xact_lock."),
+    rule("rule_exames_confirmado_pagamento_clinica", "Exame nasce confirmado, pagamento na clinica",
+         "Total = soma dos exames ou preco do combo; itens copiam nome, preparo, preco e duracao em agendamento_exames. Encaminhamento opcional (aceito, mesmo pet, clinica destino)."),
+    rule("rule_exames_combo_minimo", "Combo tem pelo menos 2 exames ativos da mesma clinica",
+         "Desativar um exame tira o combo do ar. Exame com agendamento futuro so e desativado."),
+    rule("rule_exames_laudo_pdf", "Laudo: PDF ate 10 MB, so depois de o exame estar realizado",
+         "Bucket privado lincepet-laudos, sem policies, escrita so pelo backend. Reenviar substitui. Avisa tutor e vet/clinica de origem do encaminhamento."),
+    rule("rule_exames_laudo_acesso_prontuario", "Laudo visivel a quem ve o prontuario do pet; outro usuario 403",
+         "Download por URL assinada de 60 s. Driver local em disco so em dev/e2e, proibido em producao."),
+    rule("rule_exames_avisos_lembretes", "Exame avisa tutor e clinica e entra na agenda Google do tutor; lembretes 24h/2h com preparo",
+         "Agendado, remarcado e cancelado: sino, navegador e e-mail. Lembrete de exame so para o tutor."),
+]
+new_nodes += [n for n in exames_nodes if n["id"] not in {x["id"] for x in new_nodes}]
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in exames_nodes]
+new_edges += [edge("rule_exames_avisos_lembretes", "rule_avisos_lembretes_tutor", "references")]
+exames_impl = {
+    "src_server_auth_session": ["rule_admin_is_admin"],
+    "src_app_admin_aprovacoes_page": ["rule_admin_is_admin", "rule_admin_aprova_crmv_rt"],
+    "src_server_services_aprovacoes": ["rule_admin_aprova_crmv_rt"],
+    "src_server_services_aviso_usuario": ["rule_admin_aprova_crmv_rt"],
+    "src_app_api_admin_aprovacoes_route": ["rule_admin_aprova_crmv_rt"],
+    "src_server_services_onboarding": ["rule_admin_aprova_crmv_rt"],
+    "src_server_services_veterinarios": ["rule_admin_trava_nao_aprovado"],
+    "src_server_services_assinatura_regras": ["rule_exames_modulo_da_clinica"],
+    "src_server_services_exames_regras": ["rule_exames_modulo_da_clinica", "rule_exames_combo_minimo", "rule_admin_trava_nao_aprovado"],
+    "src_server_services_exames": ["rule_exames_capacidade_409", "rule_exames_confirmado_pagamento_clinica", "rule_exames_combo_minimo", "rule_exames_modulo_da_clinica"],
+    "src_server_services_exames_avisos": ["rule_exames_avisos_lembretes"],
+    "src_server_services_laudos": ["rule_exames_laudo_pdf", "rule_exames_laudo_acesso_prontuario"],
+    "src_server_services_laudos_storage": ["rule_exames_laudo_pdf", "rule_exames_laudo_acesso_prontuario"],
+    "src_components_exames_agendaexames": ["rule_exames_laudo_pdf"],
+    "src_components_prontuario_prontuariopet": ["rule_exames_laudo_acesso_prontuario"],
+    "tests_server_cobertura_exames_test": ["rule_exames_capacidade_409", "rule_exames_confirmado_pagamento_clinica"],
+    "tests_server_cobertura_laudos_test": ["rule_exames_laudo_pdf", "rule_exames_laudo_acesso_prontuario"],
+    "tests_server_cobertura_aprovacoes_test": ["rule_admin_aprova_crmv_rt"],
+    "e2e_demandas_clinica_exames_spec": ["rule_admin_aprova_crmv_rt", "rule_exames_capacidade_409", "rule_exames_laudo_acesso_prontuario"],
+}
+for code_id, rs in exames_impl.items():
+    impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

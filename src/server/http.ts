@@ -207,7 +207,7 @@ export const CORPO_MAXIMO = 6 * 1024 * 1024
 const corpoGrande = () => new HttpError(413, { message: 'Requisição maior que o permitido' })
 
 /** Lê o corpo parando no limite, mesmo sem `content-length` (envio em partes). */
-async function lerCorpo(req: NextRequest): Promise<Uint8Array<ArrayBuffer>> {
+async function lerCorpo(req: NextRequest, maximo = CORPO_MAXIMO): Promise<Uint8Array<ArrayBuffer>> {
   if (!req.body) return new Uint8Array()
   const reader = req.body.getReader()
   const partes: Uint8Array[] = []
@@ -216,7 +216,7 @@ async function lerCorpo(req: NextRequest): Promise<Uint8Array<ArrayBuffer>> {
     const { done, value } = await reader.read()
     if (done) break
     total += value.byteLength
-    if (total > CORPO_MAXIMO) {
+    if (total > maximo) {
       await reader.cancel()
       throw corpoGrande()
     }
@@ -238,7 +238,8 @@ export class ApiRequest {
     private files: Map<string, File>
   ) {}
 
-  static async from(req: NextRequest) {
+  /** `maximo`: limite do corpo nesta rota (o laudo em PDF aceita mais que o padrão). */
+  static async from(req: NextRequest, { maximo = CORPO_MAXIMO }: { maximo?: number } = {}) {
     const method = req.method.toUpperCase()
     let body: Campos = {}
     const files = new Map<string, File>()
@@ -246,9 +247,9 @@ export class ApiRequest {
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
       const type = req.headers.get('content-type') || ''
       const declarado = Number(req.headers.get('content-length') || 0)
-      if (declarado > CORPO_MAXIMO) throw corpoGrande()
+      if (declarado > maximo) throw corpoGrande()
       if (type.includes('multipart/form-data') || type.includes('application/x-www-form-urlencoded')) {
-        const form = await new Response(await lerCorpo(req), { headers: { 'content-type': type } }).formData()
+        const form = await new Response(await lerCorpo(req, maximo), { headers: { 'content-type': type } }).formData()
         for (const [key, value] of form.entries()) {
           if (typeof value === 'object' && value !== null && 'arrayBuffer' in value) {
             files.set(key, value as File)
@@ -257,7 +258,7 @@ export class ApiRequest {
           }
         }
       } else if (type.includes('json')) {
-        const text = new TextDecoder().decode(await lerCorpo(req))
+        const text = new TextDecoder().decode(await lerCorpo(req, maximo))
         body = text ? (convertEmptyStrings(JSON.parse(text)) as Campos) : {}
       }
     }

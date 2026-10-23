@@ -18,6 +18,7 @@ import {
   type ProfissionalDaClinica,
 } from "@/lib/clinica-perfil";
 import { mensagemDeErro } from "@/lib/erros";
+import { SecaoExamesClinica } from "@/components/Exames/SecaoExamesClinica";
 
 import {
   MapPin,
@@ -452,6 +453,8 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                   </div>
                 </section>
               )}
+
+              <SecaoExamesClinica clinicaId={id} className={styles.section} />
 
               {/* Professionals */}
               <section className={styles.section}>

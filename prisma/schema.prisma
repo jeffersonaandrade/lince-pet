@@ -77,6 +77,8 @@ model User {
   notificarWhatsapp        Int       @default(1) @map("notificar_whatsapp") @db.SmallInt
   /// Sobe a cada redefinição de senha; JWT com versão menor deixa de valer (derruba todas as sessões).
   tokenVersion             Int       @default(0) @map("token_version")
+  /// Admin da Lince (aprova CRMV de vets e RT de clínicas). Promovido só direto no banco.
+  isAdmin                  Int       @default(0) @map("is_admin") @db.SmallInt
 
   // TODO(verify): no Lucid são hasOne, mas user_id não tem UNIQUE nas migrations, então o Prisma exige lista.
   tutor               Tutor[]
@@ -140,6 +142,10 @@ model Veterinario {
   subscriptionPlanCode       String?   @default("pro") @map("subscription_plan_code") @db.VarChar(50)
   monthlyAppointmentsUsed    Int?      @default(0) @map("monthly_appointments_used")
   monthlyAppointmentsResetAt DateTime? @map("monthly_appointments_reset_at") @db.Timestamp(0)
+  /// Análise do CRMV pelo admin: pendente | aprovado | reprovado. Só aprovado aparece na busca e recebe agendamento.
+  crmvStatus                 String    @default("pendente") @map("crmv_status") @db.VarChar(20)
+  crmvMotivo                 String?   @map("crmv_motivo") @db.VarChar(500)
+  crmvEnviadoEm              DateTime? @map("crmv_enviado_em") @db.Timestamp(0)
 
   user                     User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   enderecos                VeterinarioEndereco[]
@@ -157,6 +163,7 @@ model Veterinario {
   encaminhamentosEnviados  Encaminhamento[]         @relation("EncaminhamentoOrigemVet")
   encaminhamentosRecebidos Encaminhamento[]         @relation("EncaminhamentoDestinoVet")
 
+  @@index([crmvStatus])
   @@map("veterinarios")
 }
 
@@ -190,9 +197,19 @@ model Clinica {
   fotoCapa              String?      @map("foto_capa") @db.VarChar(255)
   sobre                 String?      @db.Text
   subscriptionPlanCode  String?      @default("free") @map("subscription_plan_code") @db.VarChar(255)
+  /// Módulo de exames ligado pela clínica (exige plano com exames e RT aprovado para ficar público).
+  examesAtivo           Int          @default(0) @map("exames_ativo") @db.SmallInt
+  /// Responsável técnico. rtStatus: null (não informado) | pendente | aprovado | reprovado.
+  rtNome                String?      @map("rt_nome") @db.VarChar(255)
+  rtCrmv                String?      @map("rt_crmv") @db.VarChar(15)
+  rtStatus              String?      @map("rt_status") @db.VarChar(20)
+  rtMotivo              String?      @map("rt_motivo") @db.VarChar(500)
+  rtEnviadoEm           DateTime?    @map("rt_enviado_em") @db.Timestamp(0)
 
   user                     User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   favorites                Favorite[]
+  examesOferecidos         ExameOferecido[]
+  combosExame              ComboExame[]
   avaliacoes               Avaliacao[]
   agendamentos             Agendamento[]
   veterinarioEnderecos     VeterinarioEndereco[]
@@ -203,6 +220,7 @@ model Clinica {
   encaminhamentosEnviados  Encaminhamento[]      @relation("EncaminhamentoOrigemClinica")
   encaminhamentosRecebidos Encaminhamento[]      @relation("EncaminhamentoDestinoClinica")
 
+  @@index([rtStatus])
   @@map("clinicas")
 }
 
@@ -527,9 +545,102 @@ model Agendamento {
   googleEventos           AgendamentoGoogleEvento[]
   encaminhamentosEnviados Encaminhamento[]          @relation("EncaminhamentoOrigem")
   encaminhamentoOrigem    Encaminhamento?           @relation("EncaminhamentoDestino")
+  exames                  AgendamentoExame[]
+  laudo                   LaudoExame?
 
   @@index([prestadorId, inicioEm])
+  @@index([clinicaId, inicioEm])
   @@map("agendamentos")
+}
+
+/// Exame que a clínica oferece. `capacidade` = quantos do mesmo exame cabem no mesmo horário.
+model ExameOferecido {
+  id         String    @id @db.Char(36)
+  clinicaId  String    @map("clinica_id") @db.Char(36)
+  nome       String    @db.VarChar(150)
+  descricao  String?   @db.VarChar(500)
+  /// Orientação ao tutor (ex.: "jejum de 8h"); vai nos lembretes.
+  preparo    String?   @db.VarChar(500)
+  preco      Decimal   @db.Decimal(10, 2)
+  duracaoMin Int       @map("duracao_min")
+  capacidade Int       @default(1)
+  ativo      Int       @default(1) @db.SmallInt
+  createdAt  DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime? @map("updated_at") @db.Timestamp(0)
+
+  clinica      Clinica            @relation(fields: [clinicaId], references: [id], onDelete: Cascade)
+  combos       ComboExameItem[]
+  agendamentos AgendamentoExame[]
+
+  @@index([clinicaId, ativo])
+  @@map("exames_oferecidos")
+}
+
+/// Pacote de exames com preço próprio (ex.: "Check-up geriátrico").
+model ComboExame {
+  id        String    @id @db.Char(36)
+  clinicaId String    @map("clinica_id") @db.Char(36)
+  nome      String    @db.VarChar(150)
+  descricao String?   @db.VarChar(500)
+  preco     Decimal   @db.Decimal(10, 2)
+  ativo     Int       @default(1) @db.SmallInt
+  createdAt DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
+
+  clinica      Clinica            @relation(fields: [clinicaId], references: [id], onDelete: Cascade)
+  itens        ComboExameItem[]
+  agendamentos AgendamentoExame[]
+
+  @@index([clinicaId, ativo])
+  @@map("combos_exame")
+}
+
+model ComboExameItem {
+  comboId String @map("combo_id") @db.Char(36)
+  exameId String @map("exame_id") @db.Char(36)
+
+  combo ComboExame     @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  exame ExameOferecido @relation(fields: [exameId], references: [id], onDelete: Cascade)
+
+  @@id([comboId, exameId])
+  @@index([exameId])
+  @@map("combo_exame_itens")
+}
+
+/// Exames de um agendamento de exame. Preço e duração copiados no momento do agendamento.
+model AgendamentoExame {
+  id            String   @id @db.Char(36)
+  agendamentoId String   @map("agendamento_id") @db.Char(36)
+  exameId       String?  @map("exame_id") @db.Char(36)
+  comboId       String?  @map("combo_id") @db.Char(36)
+  nome          String   @db.VarChar(150)
+  preparo       String?  @db.VarChar(500)
+  /// Preço do exame avulso; nos itens de combo é 0 (o preço do combo fica no total do agendamento).
+  preco         Decimal  @db.Decimal(10, 2)
+  duracaoMin    Int      @map("duracao_min")
+
+  agendamento Agendamento     @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  exame       ExameOferecido? @relation(fields: [exameId], references: [id], onDelete: SetNull)
+  combo       ComboExame?     @relation(fields: [comboId], references: [id], onDelete: SetNull)
+
+  @@index([agendamentoId])
+  @@index([exameId])
+  @@map("agendamento_exames")
+}
+
+/// Laudo em PDF do exame, no bucket privado de laudos (download só por URL assinada curta).
+model LaudoExame {
+  id            String    @id @db.Char(36)
+  agendamentoId String    @unique @map("agendamento_id") @db.Char(36)
+  caminho       String    @db.VarChar(500)
+  nomeArquivo   String?   @map("nome_arquivo") @db.VarChar(255)
+  tamanhoBytes  Int?      @map("tamanho_bytes")
+  enviadoPor    String?   @map("enviado_por") @db.Char(36)
+  enviadoEm     DateTime  @map("enviado_em") @db.Timestamp(0)
+
+  agendamento Agendamento @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+
+  @@map("laudos_exame")
 }
 
 /// Evento criado no Google Agenda de um participante; permite atualizar (remarcação) e apagar (cancelamento).

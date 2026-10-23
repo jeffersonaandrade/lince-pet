@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { AlertCircle, Clock, CreditCard, Dog, MapPin, Maximize2, PawPrint } from "lucide-react";
+import { AlertCircle, Clock, CreditCard, Dog, FlaskConical, MapPin, Maximize2, PawPrint } from "lucide-react";
 import styles from "../tutor.module.css";
 import { RemarcarPedidoModal } from "@/components/Prestador/RemarcarPedidoModal";
+import { RemarcarExameModal } from "@/components/Exames/RemarcarExameModal";
+import { BotaoLaudo } from "@/components/Exames/BotaoLaudo";
 import { classeStatus, rotuloStatus } from "@/lib/agenda-tutor";
 import type { AgendamentoTutor } from "@/services/agendamentos/agendamentos";
 
@@ -38,11 +40,15 @@ type Props = {
 export function AppointmentItem({ agendamento, onCancel, onReschedule, onChanged, onRate, podeAvaliar = false }: Props) {
   const [remarcando, setRemarcando] = useState(false);
   const { prestador, pet } = agendamento;
-  const profissional = prestador
-    ? `${prestador.nome} ${prestador.sobrenome ?? ""}`.trim()
-    : `Dr(a). ${`${agendamento.veterinario?.nome ?? ""} ${agendamento.veterinario?.sobrenome ?? ""}`.trim()}`;
+  const exames = agendamento.tipo_consulta === "exame" ? agendamento.exames ?? [] : null;
+  const profissional = exames
+    ? "Exame na clínica"
+    : prestador
+      ? `${prestador.nome} ${prestador.sobrenome ?? ""}`.trim()
+      : `Dr(a). ${`${agendamento.veterinario?.nome ?? ""} ${agendamento.veterinario?.sobrenome ?? ""}`.trim()}`;
   const hora = agendamento.horario_consulta?.slice(0, 5) || "--:--";
-  const podeRemarcar = prestador ? Boolean(prestador.servico_id) : Boolean(agendamento.veterinario);
+  const podeRemarcar = exames ? true : prestador ? Boolean(prestador.servico_id) : Boolean(agendamento.veterinario);
+  const remarcaNoModal = Boolean(exames || prestador);
 
   return (
     <div className={styles.appointmentItem}>
@@ -63,7 +69,25 @@ export function AppointmentItem({ agendamento, onCancel, onReschedule, onChanged
                   <PawPrint size={12} /> {prestador.tipo_servico}
                 </span>
               ) : null}
+              {exames ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-700">
+                  <FlaskConical size={12} /> Exame
+                </span>
+              ) : null}
             </div>
+            {exames ? (
+              <div className="mt-1 text-sm text-slate-600">
+                <strong className="font-semibold">{exames.map((e) => e.nome).join(", ")}</strong>
+                {exames
+                  .filter((e) => e.preparo)
+                  .map((e) => (
+                    <p key={e.nome} className="text-xs text-amber-700">
+                      Preparo ({e.nome}): {e.preparo}
+                    </p>
+                  ))}
+                <p className="text-xs text-slate-500">Pagamento na clínica</p>
+              </div>
+            ) : null}
             {prestador ? (
               <div className="mt-1 text-sm text-slate-600">
                 {prestador.servico ? <strong className="font-semibold">{prestador.servico}</strong> : null}
@@ -135,11 +159,13 @@ export function AppointmentItem({ agendamento, onCancel, onReschedule, onChanged
         ) : null}
 
         <div className={`${styles.appointmentFooter} mt-4 flex justify-end gap-3 border-t border-slate-100 pt-4`}>
-          {podeAvaliar && onRate ? (
+          {podeAvaliar && onRate && !exames ? (
             <button type="button" onClick={() => onRate(agendamento)} className={`${styles.primaryButton} px-4 py-2 text-sm`}>
               {prestador ? "Avaliar Serviço" : "Avaliar Consulta"}
             </button>
           ) : null}
+
+          {exames && agendamento.laudo_disponivel ? <BotaoLaudo agendamentoId={agendamento.id} /> : null}
 
           {agendamento.avaliado ? (
             <span className="flex items-center gap-1 text-sm font-semibold text-green-600">Avaliado</span>
@@ -150,7 +176,7 @@ export function AppointmentItem({ agendamento, onCancel, onReschedule, onChanged
               {podeRemarcar ? (
                 <button
                   type="button"
-                  onClick={() => (prestador ? setRemarcando(true) : onReschedule(agendamento))}
+                  onClick={() => (remarcaNoModal ? setRemarcando(true) : onReschedule(agendamento))}
                   className={`${botaoAcao} border-orange-100 text-orange-600 hover:bg-orange-50`}
                 >
                   Reagendar
@@ -167,6 +193,17 @@ export function AppointmentItem({ agendamento, onCancel, onReschedule, onChanged
           ) : null}
         </div>
       </div>
+
+      {remarcando && exames ? (
+        <RemarcarExameModal
+          agendamentoId={agendamento.id}
+          onFechar={() => setRemarcando(false)}
+          onRemarcado={() => {
+            setRemarcando(false);
+            onChanged();
+          }}
+        />
+      ) : null}
 
       {remarcando && prestador?.servico_id ? (
         <RemarcarPedidoModal

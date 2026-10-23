@@ -110,6 +110,19 @@ describe('processStep1 (CRMV)', () => {
     const vet = vetCompleto({ onboardingStep: null })
     const res = await processStep1(userCom(vet), { crmv: 'PE-999' } as never)
     expect(res).toEqual({ success: true, currentStep: 2, veterinarioId: 'vet-1' })
+    expect(vets.saveVeterinario).toHaveBeenCalledWith(vet, {
+      crmv: 'PE-999',
+      onboardingStep: 2,
+      crmvStatus: 'pendente',
+      crmvMotivo: null,
+      crmvEnviadoEm: expect.any(Date),
+    })
+  })
+
+  it('mesmo CRMV já aprovado: não volta para análise', async () => {
+    prisma.veterinario.findFirst.mockResolvedValueOnce(null)
+    const vet = vetCompleto({ onboardingStep: null, crmv: 'PE-999', crmvStatus: 'aprovado' })
+    await processStep1(userCom(vet), { crmv: 'PE-999' } as never)
     expect(vets.saveVeterinario).toHaveBeenCalledWith(vet, { crmv: 'PE-999', onboardingStep: 2 })
   })
 

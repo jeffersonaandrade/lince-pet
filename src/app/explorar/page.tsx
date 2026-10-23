@@ -11,10 +11,11 @@ import styles from "./explorar.module.css";
 import { searchClinicas, type FiltrosBusca } from "../../services/clinicas/clinicas";
 import Skeleton from "../../components/ui/Skeleton/Skeleton";
 import ListaProfissionais from "../../components/Prestador/ListaProfissionais";
+import ListaExames from "../../components/Exames/ListaExames";
 import OrdenacaoLista from "../../components/Home/SearchBar/OrdenacaoLista";
 import { lerOrdenacao, ordenarLista } from "../../lib/ordenacao";
 
-type Aba = "veterinarios" | "clinicas" | "profissionais";
+type Aba = "veterinarios" | "clinicas" | "profissionais" | "exames";
 
 interface Veterinario {
   id: string;
@@ -61,7 +62,7 @@ function ExplorarContent() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Aba>(() => {
     const tabParam = searchParams.get("tab");
-    return tabParam === "clinicas" || tabParam === "profissionais" ? tabParam : "veterinarios";
+    return tabParam === "clinicas" || tabParam === "profissionais" || tabParam === "exames" ? tabParam : "veterinarios";
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [specialtyTerm, setSpecialtyTerm] = useState("");
@@ -145,7 +146,7 @@ function ExplorarContent() {
     setSearchTerm(searchParams.get("search") || "");
     setSpecialtyTerm(searchParams.get("specialty") || "");
     const tabParam = searchParams.get("tab");
-    if (tabParam === "clinicas" || tabParam === "veterinarios" || tabParam === "profissionais") {
+    if (tabParam === "clinicas" || tabParam === "veterinarios" || tabParam === "profissionais" || tabParam === "exames") {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
@@ -157,6 +158,9 @@ function ExplorarContent() {
     }
     if (activeTab === "profissionais") {
       return location ? `Profissionais pet em ${location}` : "Profissionais pet";
+    }
+    if (activeTab === "exames") {
+      return location ? `Exames em ${location}` : "Exames para o seu pet";
     }
 
     if (location) {
@@ -372,12 +376,19 @@ function ExplorarContent() {
           >
             Profissionais pet
           </button>
+          <button
+            className={`${styles.tabButton} ${activeTab === 'exames' ? styles.activeTab : ''}`}
+            onClick={() => handleTabChange('exames')}
+          >
+            Exames
+          </button>
         </div>
       </div>
 
       {activeTab === 'profissionais' ? <ListaProfissionais /> : null}
+      {activeTab === 'exames' ? <ListaExames /> : null}
 
-      {activeTab !== 'profissionais' ? (<>
+      {activeTab === 'veterinarios' || activeTab === 'clinicas' ? (<>
       <div className={styles.results}>
         <div className={styles.resultsInfo}>
           {loading ? (

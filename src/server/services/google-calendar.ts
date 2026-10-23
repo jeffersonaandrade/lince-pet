@@ -179,6 +179,7 @@ type EventContext = {
   prestadorUser?: CalendarUser | null
   tipoServico?: TipoServico | null
   servico?: ServicoOferecido | null
+  exames?: { nome: string; preparo: string | null }[]
 }
 
 const LEMBRETES = {
@@ -226,7 +227,37 @@ function montarEventoServico(ctx: EventContext, role: Papel) {
   }
 }
 
+/** Exame na clínica: só o tutor tem evento (a clínica usa a agenda do painel). */
+function montarEventoExame(ctx: EventContext) {
+  const { agendamento, pet } = ctx
+  const inicio = DateTime.fromJSDate(agendamento.inicioEm!).setZone('America/Sao_Paulo')
+  const fim = DateTime.fromJSDate(agendamento.fimEm ?? agendamento.inicioEm!).setZone('America/Sao_Paulo')
+  const petNome = pet?.nome || 'Pet'
+  const clinica = agendamento.localNome || 'Clínica'
+  const local = `${clinica}${agendamento.localEndereco ? ` - ${agendamento.localEndereco}` : ''}`
+  const exames = ctx.exames ?? []
+  const preparos = exames.filter((e) => e.preparo).map((e) => `• ${e.nome}: ${e.preparo}`)
+  const linhas = [
+    `🧪 Exames: ${exames.map((e) => e.nome).join(', ') || 'Exame'}`,
+    `🐾 Pet: ${petNome}`,
+    `📅 ${inicio.toFormat('dd/MM/yyyy HH:mm')} até ${fim.toFormat('HH:mm')}`,
+    `📍 ${local}`,
+    `💰 Valor: R$ ${(Number(agendamento.precoConsulta) || 0).toFixed(2)} (pagamento na clínica)`,
+    ...(preparos.length ? ['', 'Preparo:', ...preparos] : []),
+  ]
+  return {
+    summary: `Exame - ${petNome} (${clinica})`,
+    location: local,
+    description: linhas.join('\n'),
+    status: 'confirmed',
+    start: { dateTime: inicio.toISO(), timeZone: 'America/Sao_Paulo' },
+    end: { dateTime: fim.toISO(), timeZone: 'America/Sao_Paulo' },
+    reminders: LEMBRETES,
+  }
+}
+
 function montarEvento(ctx: EventContext, role: Papel) {
+  if (ctx.agendamento.tipoConsulta === 'exame' && ctx.agendamento.inicioEm) return montarEventoExame(ctx)
   if (ctx.agendamento.prestadorId && ctx.agendamento.inicioEm) return montarEventoServico(ctx, role)
   const { agendamento, pet } = ctx
   const startDateTime = buildEventDateTime(
@@ -375,12 +406,15 @@ async function carregarContexto(agendamento: string | CalendarAgendamento): Prom
     ? await prisma.servicoOferecido.findUnique({ where: { id: a.servicoOferecidoId } })
     : null
 
-  const [tutorUser, vetUser, prestadorUser] = await Promise.all([
+  const [tutorUser, vetUser, prestadorUser, exames] = await Promise.all([
     findUserWithTokens(tutor?.userId),
     findUserWithTokens(veterinario?.userId),
     findUserWithTokens(prestador?.userId),
+    a.tipoConsulta === 'exame'
+      ? prisma.agendamentoExame.findMany({ where: { agendamentoId: a.id }, select: { nome: true, preparo: true } })
+      : Promise.resolve([]),
   ])
-  return { agendamento: a, tutorUser, vetUser, pet, prestadorUser, tipoServico: prestador?.tipoServico ?? null, servico }
+  return { agendamento: a, tutorUser, vetUser, pet, prestadorUser, tipoServico: prestador?.tipoServico ?? null, servico, exames }
 }
 
 /**

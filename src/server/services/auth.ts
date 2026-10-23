@@ -103,6 +103,7 @@ export function getUserProfile(user: CurrentUser) {
     createdAt: user.createdAt,
     fotoUrl: user.profilePic || null,
     googleCalendarAuthorized: !!user.googleCalendarAuthorized,
+    isAdmin: user.isAdmin === 1,
   }
 
   if (user.userType === 'tutor' && user.tutor) {
@@ -116,6 +117,8 @@ export function getUserProfile(user: CurrentUser) {
       cpf: vet.cpf,
       cnpj: vet.cnpj,
       crmv: vet.crmv,
+      crmvStatus: vet.crmvStatus,
+      crmvMotivo: vet.crmvMotivo,
       bio: vet.bio,
       fotoUrl: vet.fotoUrl || baseProfile.fotoUrl,
       atendePresencial: vet.atendePresencial,
@@ -141,6 +144,7 @@ export function getUserProfile(user: CurrentUser) {
       quantidadeVets: clinica.quantidadeVets,
       onboardingComplete: clinica.onboardingComplete,
       isVerified: clinica.isVerified,
+      subscriptionPlanCode: clinica.subscriptionPlanCode || null,
       fotoUrl: clinica.fotoPerfil || baseProfile.fotoUrl,
     }
   }

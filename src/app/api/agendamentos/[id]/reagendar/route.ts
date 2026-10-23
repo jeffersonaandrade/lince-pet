@@ -12,6 +12,7 @@ import { googleCalendar } from '@/server/services/google-calendar'
 import { nomeCompleto, podeSerCancelado, prepareDataConsulta } from '@/server/services/agendamentos'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import { ehPedidoDePrestador, remarcarPedido } from '@/server/services/pedidos-prestador'
+import { ehAgendamentoDeExame, remarcarExame } from '@/server/services/exames'
 
 /** PATCH /agendamentos/:id/reagendar */
 export const PATCH = route<{ id: string }>(async (req, { id }) => {
@@ -29,6 +30,10 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
   if (await ehPedidoDePrestador(id, tutor.id)) {
     const pedido = await remarcarPedido(tutor.id, id, apiReq.body)
     return ok({ message: 'Pedido remarcado. Aguarde o profissional aceitar novamente.', agendamento: pedido })
+  }
+  if (await ehAgendamentoDeExame(id, tutor.id)) {
+    const exame = await remarcarExame(tutor.id, id, apiReq.body)
+    return ok({ message: 'Exame remarcado com sucesso', agendamento: exame })
   }
 
   const data_consulta = apiReq.text('data_consulta')

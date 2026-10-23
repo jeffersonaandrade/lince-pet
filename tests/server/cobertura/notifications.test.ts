@@ -320,3 +320,20 @@ describe('sendPedidoServico', () => {
     expect(r.success).toBe(false)
   })
 })
+
+describe('sendLembreteConsulta', () => {
+  const base = { nomeTutor: 'Ana', pet: 'Rex', profissional: 'Dr. João', data: '10/10/2026', hora: '14:00', local: 'Centro' }
+
+  it('consulta e exame têm assuntos diferentes', async () => {
+    await notifications.sendLembreteConsulta('ana@x.com', base)
+    expect(ultimoEnvio().subject).toBe('Sua consulta é amanhã - Lince Pet')
+    await notifications.sendLembreteConsulta('ana@x.com', { ...base, exames: 'Hemograma', preparo: 'Jejum' })
+    expect(ultimoEnvio().subject).toBe('Seu exame é amanhã - Lince Pet')
+    expect(ultimoEnvio().html).toContain('Jejum')
+  })
+
+  it('falha no envio devolve success:false', async () => {
+    sendMailMock.mockRejectedValueOnce(new Error('x'))
+    expect((await notifications.sendLembreteConsulta('ana@x.com', base)).success).toBe(false)
+  })
+})

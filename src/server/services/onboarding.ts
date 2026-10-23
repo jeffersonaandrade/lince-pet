@@ -22,6 +22,7 @@ import {
   syncPlanosVeterinario,
   toDateColumn,
 } from './veterinarios'
+import { statusAposTroca } from './aprovacoes'
 
 type Result = { success: boolean; [key: string]: unknown }
 
@@ -69,7 +70,14 @@ export async function processStep1(user: CurrentUser, payload: Infer<typeof step
   }
 
   const step = nextStep(veterinario, 2)
-  await saveVeterinario(veterinario, { crmv: payload.crmv, onboardingStep: step })
+  const crmvStatus = statusAposTroca(veterinario.crmv, payload.crmv, veterinario.crmvStatus)
+  await saveVeterinario(veterinario, {
+    crmv: payload.crmv,
+    onboardingStep: step,
+    ...(crmvStatus !== veterinario.crmvStatus || veterinario.crmv !== payload.crmv
+      ? { crmvStatus, crmvMotivo: null, crmvEnviadoEm: new Date() }
+      : {}),
+  })
   return { success: true, currentStep: step, veterinarioId: veterinario.id }
 }
 

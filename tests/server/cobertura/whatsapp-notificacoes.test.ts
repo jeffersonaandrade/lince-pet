@@ -21,6 +21,7 @@ vi.mock('@/server/services/whatsapp', async (importOriginal) => {
 
 import {
   carregarAgendamento,
+  examesDoAgendamento,
   notificarAgendamento,
   notificarTutorAvulso,
   planoPermiteWhatsapp,
@@ -77,12 +78,29 @@ beforeEach(() => {
 })
 
 describe('carregarAgendamento e referência', () => {
-  it('carrega com tutor, pet, vet, prestador, serviço e clínica', async () => {
+  it('carrega com tutor, pet, vet, prestador, serviço, clínica e exames', async () => {
     prismaMock.agendamento.findUnique.mockResolvedValueOnce({ id: 'ag-1' })
     await carregarAgendamento('ag-1')
     const arg = prismaMock.agendamento.findUnique.mock.calls[0][0]
     expect(arg.where).toEqual({ id: 'ag-1' })
-    expect(Object.keys(arg.include).sort()).toEqual(['clinica', 'pet', 'prestador', 'servicoOferecido', 'tutor', 'veterinario'])
+    expect(Object.keys(arg.include).sort()).toEqual(['clinica', 'exames', 'pet', 'prestador', 'servicoOferecido', 'tutor', 'veterinario'])
+  })
+
+  it('exames: nomes e preparo só no agendamento de exame', () => {
+    const exames = [
+      { nome: 'Hemograma', preparo: 'Jejum de 8h' },
+      { nome: 'Raio-X', preparo: null },
+    ]
+    expect(examesDoAgendamento({ tipoConsulta: 'exame', exames } as never)).toEqual({
+      nomes: 'Hemograma, Raio-X',
+      preparo: 'Hemograma: Jejum de 8h',
+    })
+    expect(examesDoAgendamento({ tipoConsulta: 'exame', exames: [{ nome: 'Raio-X', preparo: null }] } as never)).toEqual({
+      nomes: 'Raio-X',
+      preparo: null,
+    })
+    expect(examesDoAgendamento({ tipoConsulta: 'presencial', exames } as never)).toBeNull()
+    expect(examesDoAgendamento({ tipoConsulta: 'exame', exames: [] } as never)).toBeNull()
   })
 
   it('referência usa só a data (10 chars) + hora; sem dados vira vazia', () => {
