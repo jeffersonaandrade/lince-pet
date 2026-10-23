@@ -6,6 +6,7 @@ import { Check, ShieldCheck, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { urlDeLogin } from "@/lib/destino-login";
 import { AprovacoesService, type CrmvPendente, type Decisao, type RtPendente } from "@/services/admin/aprovacoes";
+import AdminNav from "@/components/AdminNav/AdminNav";
 
 type Pedido = { id: string; titulo: string; linhas: string[]; enviadoEm: string | null };
 
@@ -196,6 +197,7 @@ export default function AprovacoesAdminPage() {
 
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-8 px-4 pb-16 pt-28">
+      <AdminNav />
       <header className="flex items-center gap-3">
         <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
           <ShieldCheck size={24} />
