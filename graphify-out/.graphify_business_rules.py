@@ -139,6 +139,10 @@ whatsapp_nodes = [
          "Texto guardado em mensagem; conciliarEnvios no cron (lote 50): aceito parado 2 min consulta o gateway (enviado/falhou/404 reenvia), processando parado 5 min e falhou/erro_temporario reenviam; limite 3 tentativas (limite_tentativas); so reenvia aviso que ainda faz sentido (consulta futura, ativa e mesma data/hora, senao expirado); update condicional evita reenvio duplo; chave <envio>:<rodada>."),
     rule("rule_whatsapp_gateway_isolado", "WhatsApp: gateway + Evolution em servico Render separado",
          "Repo lince-pet-whatsapp-gateway, imagem unica gateway+Evolution, Render free proprio acordado pelo UptimeRobot; sessao no schema evolution do mesmo Supabase (role evolution_app sem acesso ao public); app usa so WHATSAPP_GATEWAY_URL/TOKEN e nunca toca o schema evolution; cron externo (cron-job.org) a cada 15 min."),
+    rule("rule_whatsapp_producao_enderecos", "WhatsApp em producao: URL do gateway e job do cron",
+         "WHATSAPP_GATEWAY_URL = https://lince-pet-whatsapp-gateway.onrender.com (tudo parte dela). Job cron-job.org: GET https://lincepet.com.br/api/cron/lembretes-whatsapp a cada 15 min (America/Fortaleza), header Authorization: Bearer CRON_SECRET; test run 200 em 22/10/2026."),
+    rule("rule_whatsapp_contas_provisorias", "WhatsApp: Render do gateway e cron-job.org em contas particulares (provisorio)",
+         "Hoje em contas pessoais do responsavel tecnico; no futuro a LincePet cria conta propria no cron-job.org e move o gateway para o Render pago da empresa, refazendo variaveis, job, monitores UptimeRobot e WHATSAPP_GATEWAY_URL; sessao no banco, sem novo pareamento se DATABASE_CONNECTION_URI for mantida."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in whatsapp_nodes if n["id"] not in nodes_ids]
@@ -148,6 +152,7 @@ new_edges += [edge("rule_whatsapp_eventos_destinatarios", r) for r in whatsapp_r
 new_edges += [edge("rule_whatsapp_eventos_destinatarios", "rule_bloqueio_cancela_consultas", "references")]
 new_edges += [edge("rule_whatsapp_fila_conciliacao", "rule_whatsapp_idempotencia", "references")]
 new_edges += [edge("rule_whatsapp_gateway_isolado", "rule_seguranca_gateway_sem_token_fecha", "references")]
+new_edges += [edge("rule_whatsapp_gateway_isolado", r, "references") for r in ("rule_whatsapp_producao_enderecos", "rule_whatsapp_contas_provisorias")]
 impl.update({
     "src_server_services_whatsapp": [
         "rule_whatsapp_provedor_agnostico", "rule_whatsapp_numero_central", "rule_whatsapp_nao_bloqueia", "rule_whatsapp_gateway_isolado",
@@ -160,7 +165,7 @@ impl.update({
         "rule_whatsapp_idempotencia", "rule_whatsapp_nao_bloqueia", "rule_whatsapp_fila_conciliacao",
     ],
     "src_server_services_whatsapp_lembretes": ["rule_whatsapp_lembretes_24h_2h", "rule_whatsapp_idempotencia"],
-    "src_app_api_cron_lembretes_whatsapp_route": ["rule_whatsapp_lembretes_24h_2h", "rule_whatsapp_fila_conciliacao"],
+    "src_app_api_cron_lembretes_whatsapp_route": ["rule_whatsapp_lembretes_24h_2h", "rule_whatsapp_fila_conciliacao", "rule_whatsapp_producao_enderecos"],
     "netlify_functions_lembretes_whatsapp": ["rule_whatsapp_lembretes_24h_2h"],
     "src_app_api_agendamentos_route": ["rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia"],
     "src_app_api_agendamentos_id_cancelar_route": ["rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia"],
