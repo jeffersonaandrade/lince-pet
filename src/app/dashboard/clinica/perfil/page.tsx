@@ -19,6 +19,7 @@ import {
 import { getEspecialidades, getPlanos } from "@/services/veterinarios/veterinarios";
 import { Search, UserPlus, Trash2, CheckCircle } from "lucide-react";
 import { mensagemDaApi } from "@/lib/erros";
+import { NotificacoesNavegador } from "@/components/PreferenciasNotificacao/NotificacoesNavegador";
 import styles from "./perfil.module.css";
 
 interface Especialidade {
@@ -522,6 +523,15 @@ export default function PerfilClinica() {
                             </button>
                         ))}
                     </div>
+                </div>
+
+                {/* ── Avisos ────────────────────────────────────────────────────── */}
+                <div className={styles.section} onChange={(e) => e.stopPropagation()}>
+                    <h2 className={styles.sectionTitle}>Avisos</h2>
+                    <p className={styles.sectionDescription}>
+                        Receba os avisos do sino também como notificação do navegador.
+                    </p>
+                    <NotificacoesNavegador onAviso={showToast} />
                 </div>
 
                 {/* ── Profissionais Vinculados ──────────────────────────────────── */}

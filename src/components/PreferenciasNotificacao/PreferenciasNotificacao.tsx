@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Calendar } from "lucide-react";
 import { API_BASE_URL } from "@/hook/api";
 import { CanaisService, type CanaisNotificacao } from "@/services/notificacoes/canais";
+import { NotificacoesNavegador } from "./NotificacoesNavegador";
 
 type Aviso = (message: string, type?: "success" | "error") => void;
 
@@ -12,7 +13,7 @@ type Canal = "email" | "whatsapp";
 const DESCRICOES: Record<Canal, { titulo: string; texto: string }> = {
   email: {
     titulo: "E-mail",
-    texto: "Confirmação, cancelamento e remarcação de consultas no e-mail do cadastro.",
+    texto: "Confirmação, cancelamento, remarcação e lembrete na véspera da consulta no e-mail do cadastro.",
   },
   whatsapp: {
     titulo: "WhatsApp",
@@ -76,6 +77,7 @@ export function PreferenciasNotificacao({ onAviso, children }: { onAviso: Aviso;
             </span>
           </label>
         ))}
+        <NotificacoesNavegador onAviso={onAviso} />
         {children}
       </div>
     </section>

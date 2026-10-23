@@ -10,6 +10,7 @@ import {
 } from "@/services/notifications/notifications";
 import ClinicRequestModal from "./ClinicRequestModal";
 import { dashboardDoTipo } from "@/utils/tipoConta";
+import { NavegadorService, navegadorSuportaPush } from "@/services/notificacoes/navegador";
 import styles from "./notificationBell.module.css";
 
 // ============================================================
@@ -62,6 +63,7 @@ const NOTIFICATION_CONFIG: Record<
     ENCAMINHAMENTO_NOVO: { icon: <Send size={18} />, color: "#8b5cf6" },
     ENCAMINHAMENTO_ACEITO: { icon: <Check size={18} />, color: "#22c55e" },
     ENCAMINHAMENTO_RECUSADO: { icon: <X size={18} />, color: "#ef4444" },
+    LEMBRETE_CONSULTA: { icon: <Calendar size={18} />, color: "#3b82f6" },
 };
 
 // Ícone/cor padrão caso o type não esteja mapeado
@@ -124,6 +126,7 @@ export default function NotificationBell({
     const [notifications, setNotifications] = useState<NotificationItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [markingAll, setMarkingAll] = useState(false);
+    const [conviteFechado, setConviteFechado] = useState(false);
 
     // Estado para o Modal de Solicitação de Clínica
     const [requestData, setRequestData] = useState<{ id: string; nome: string } | null>(null);
@@ -182,7 +185,7 @@ export default function NotificationBell({
                 router.push(dashboardDoTipo(user?.userType));
             } else if (notif.type.startsWith('ENCAMINHAMENTO_')) {
                 router.push(`${dashboardDoTipo(user?.userType)}#encaminhamentos`);
-            } else if (notif.type === 'NOVO_AGENDAMENTO' || notif.type === 'AGENDAMENTO_CANCELADO' || notif.type === 'AGENDAMENTO_REAGENDADO') {
+            } else if (notif.type === 'NOVO_AGENDAMENTO' || notif.type === 'AGENDAMENTO_CANCELADO' || notif.type === 'AGENDAMENTO_REAGENDADO' || notif.type === 'LEMBRETE_CONSULTA') {
                 router.push(dashboardDoTipo(user?.userType));
             } else if (notif.type === 'AGENDAMENTO_CONFIRMADO') {
                 router.push('/dashboard/tutor');
@@ -238,6 +241,15 @@ export default function NotificationBell({
             console.error("Erro ao marcar todas como lidas:", err);
         } finally {
             setMarkingAll(false);
+        }
+    };
+
+    const ativarNavegador = async () => {
+        setConviteFechado(true);
+        try {
+            await NavegadorService.ativar();
+        } catch (err) {
+            console.error("Erro ao ativar notificações do navegador:", err);
         }
     };
 
@@ -359,6 +371,16 @@ export default function NotificationBell({
                             })
                         )}
                     </div>
+
+                    {!conviteFechado && navegadorSuportaPush() && Notification.permission === "default" && (
+                        <button
+                            type="button"
+                            onClick={ativarNavegador}
+                            className="w-full border-t border-slate-100 px-4 py-2 text-center text-xs font-semibold text-orange-600 hover:bg-orange-50"
+                        >
+                            Ativar notificações no navegador
+                        </button>
+                    )}
                 </div>
             )}
             {/* Modal de Solicitação de Vínculo */}

@@ -10,6 +10,7 @@ import { appointmentRescheduled } from '../emails/appointment_rescheduled'
 import { appointmentRescheduledVet } from '../emails/appointment_rescheduled_vet'
 import { newAppointmentVet } from '../emails/new_appointment_vet'
 import { pedidoServicoEmail, type PedidoServicoEmailData } from '../emails/pedido_servico'
+import { lembreteConsultaEmail, type LembreteConsultaEmailData } from '../emails/lembrete_consulta'
 
 type SendResult = { success: true } | { success: false; error: unknown }
 
@@ -343,8 +344,21 @@ async function sendPedidoServico(
   }
 }
 
+/** Lembrete da véspera da consulta ao tutor. */
+async function sendLembreteConsulta(email: string, payload: Omit<LembreteConsultaEmailData, 'logoHtml'>): Promise<SendResult> {
+  try {
+    const html = lembreteConsultaEmail({ ...payload, logoHtml: buildLogoHtml(LOGO_STYLE) })
+    await sendMail({ to: email, from: fromAddress(), subject: 'Sua consulta é amanhã - Lince Pet', html })
+    return { success: true }
+  } catch (error) {
+    console.error('❌ [NotificationService] Erro ao enviar lembrete de consulta:', error)
+    return { success: false, error }
+  }
+}
+
 export const notifications = {
   sendPedidoServico,
+  sendLembreteConsulta,
   sendAppointmentConfirmation,
   sendAppointmentCancellation,
   sendAppointmentRescheduled,

@@ -277,6 +277,13 @@ export const POST = route(async (req) => {
         horarioConsulta: agendamento.horarioConsulta!,
         agendamentoId: agendamento.id,
       })
+      await inAppNotifications.notifyAppointmentScheduledToTutor({
+        tutorUserId: user.id,
+        veterinarioNome: nomeCompleto(vetUser),
+        dataConsulta: dataFormatada,
+        horarioConsulta: agendamento.horarioConsulta!,
+        agendamentoId: agendamento.id,
+      })
       console.log('✅ [InAppNotification] Notificação criada com sucesso')
     } catch (e) {
       console.error('❌ [Agendamento] Erro crítico ao processar notificações:', e)

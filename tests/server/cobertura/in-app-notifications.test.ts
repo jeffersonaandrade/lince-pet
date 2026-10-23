@@ -3,6 +3,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 const prismaMock = vi.hoisted(() => ({ notification: { create: vi.fn() } }))
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 
+const pushMock = vi.hoisted(() => vi.fn())
+vi.mock('@/server/services/push', () => ({ enviarPush: pushMock }))
+
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 
 const gravado = () => prismaMock.notification.create.mock.calls.at(-1)![0].data
@@ -88,6 +91,43 @@ describe('avisos in-app (sino)', () => {
 
     await inAppNotifications.createGenericNotification({ userId: 'u-1', type: 'X', title: 't', message: 'm', actionData: { a: 1 } })
     expect(gravado().actionData).toEqual({ a: 1 })
+  })
+
+  it('todo aviso do sino também vai ao navegador, com link para o painel do usuário', async () => {
+    prismaMock.notification.create.mockResolvedValue({ user: { userType: 'tutor' } })
+    await inAppNotifications.createGenericNotification({ userId: 'u-1', type: 'X', title: 'Título', message: 'Texto' })
+
+    expect(prismaMock.notification.create.mock.calls[0][0].select).toEqual({ user: { select: { userType: true } } })
+    expect(pushMock).toHaveBeenCalledWith('u-1', { titulo: 'Título', mensagem: 'Texto', url: '/dashboard/tutor' })
+  })
+
+  it('sem tipo de usuário o link do navegador vai para o início', async () => {
+    await inAppNotifications.createGenericNotification({ userId: 'u-1', type: 'X', title: 't', message: 'm' })
+    expect(pushMock).toHaveBeenCalledWith('u-1', expect.objectContaining({ url: '/' }))
+  })
+
+  it('agendamento, remarcação e lembretes avisam o tutor', async () => {
+    const p = { tutorUserId: 'u-tutor', veterinarioNome: 'João', dataConsulta: '10/10/2026', horarioConsulta: '14:00', agendamentoId: 'ag-1' }
+    await inAppNotifications.notifyAppointmentScheduledToTutor(p)
+    expect(gravado()).toMatchObject({
+      userId: 'u-tutor',
+      type: 'AGENDAMENTO_CONFIRMADO',
+      title: 'Consulta agendada',
+      message: 'Sua consulta com Dr(a). João está marcada para 10/10/2026 às 14:00.',
+    })
+
+    await inAppNotifications.notifyAppointmentRescheduledToTutor(p)
+    expect(gravado()).toMatchObject({ type: 'AGENDAMENTO_REAGENDADO', title: 'Consulta remarcada', message: expect.stringContaining('remarcada para 10/10/2026') })
+
+    await inAppNotifications.notifyAppointmentReminderToTutor({ ...p, quando: 'amanha', petNome: 'Rex' })
+    expect(gravado()).toMatchObject({
+      type: 'LEMBRETE_CONSULTA',
+      title: 'Sua consulta é amanhã',
+      message: 'Rex tem consulta com João em 10/10/2026 às 14:00.',
+    })
+
+    await inAppNotifications.notifyAppointmentReminderToTutor({ ...p, quando: 'em_breve' })
+    expect(gravado()).toMatchObject({ title: 'Sua consulta é daqui a pouco', message: 'Consulta com João em 10/10/2026 às 14:00.' })
   })
 
   it('erro do banco propaga para quem chamou', async () => {

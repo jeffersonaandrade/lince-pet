@@ -5,7 +5,10 @@ import { cronAutorizado, processarLembretes } from '@/server/services/whatsapp-l
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
-/** GET /cron/lembretes-whatsapp (Authorization: Bearer CRON_SECRET): lembretes + conciliação da fila de envios. */
+/**
+ * GET /cron/lembretes-whatsapp (Authorization: Bearer CRON_SECRET): lembretes de consulta ao tutor (sino, navegador,
+ * e-mail na véspera e WhatsApp) + conciliação da fila de envios. URL mantida pelo cron externo já configurado.
+ */
 export const GET = route(async (req) => {
   const apiReq = await ApiRequest.from(req)
   if (!cronAutorizado(apiReq.header('authorization'))) {

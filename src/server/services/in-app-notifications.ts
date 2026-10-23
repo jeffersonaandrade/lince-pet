@@ -2,11 +2,16 @@ import 'server-only'
 import type { Prisma } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { creating } from '../lucid'
+import { enviarPush } from './push'
 
+/** Grava no sino e espelha como notificação do navegador nos aparelhos inscritos do usuário. */
 async function create(userId: string, type: string, title: string, message: string, actionData: Prisma.InputJsonObject | null) {
-  await prisma.notification.create({
+  const notificacao = await prisma.notification.create({
     data: creating({ userId, type, title, message, isRead: 0, actionData: actionData ?? undefined }),
+    select: { user: { select: { userType: true } } },
   })
+  const tipo = notificacao?.user?.userType
+  await enviarPush(userId, { titulo: title, mensagem: message, url: tipo ? `/dashboard/${tipo}` : '/' })
 }
 
 const stars = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n)
@@ -14,6 +19,14 @@ const stars = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n)
 type AppointmentParams = {
   veterinarioUserId: string
   tutorNome: string
+  dataConsulta: string
+  horarioConsulta: string
+  agendamentoId: string
+}
+
+type TutorAppointmentParams = {
+  tutorUserId: string
+  veterinarioNome: string
   dataConsulta: string
   horarioConsulta: string
   agendamentoId: string
@@ -44,6 +57,21 @@ export const inAppNotifications = {
   }) =>
     create(p.tutorUserId, 'AGENDAMENTO_CONFIRMADO', 'Consulta confirmada!',
       `Dr(a). ${p.veterinarioNome} confirmou sua consulta de ${p.dataConsulta} às ${p.horarioConsulta}.`,
+      { agendamentoId: p.agendamentoId }),
+
+  notifyAppointmentScheduledToTutor: (p: TutorAppointmentParams) =>
+    create(p.tutorUserId, 'AGENDAMENTO_CONFIRMADO', 'Consulta agendada',
+      `Sua consulta com Dr(a). ${p.veterinarioNome} está marcada para ${p.dataConsulta} às ${p.horarioConsulta}.`,
+      { agendamentoId: p.agendamentoId }),
+
+  notifyAppointmentRescheduledToTutor: (p: TutorAppointmentParams) =>
+    create(p.tutorUserId, 'AGENDAMENTO_REAGENDADO', 'Consulta remarcada',
+      `Sua consulta com Dr(a). ${p.veterinarioNome} foi remarcada para ${p.dataConsulta} às ${p.horarioConsulta}.`,
+      { agendamentoId: p.agendamentoId }),
+
+  notifyAppointmentReminderToTutor: (p: TutorAppointmentParams & { quando: 'amanha' | 'em_breve'; petNome?: string | null }) =>
+    create(p.tutorUserId, 'LEMBRETE_CONSULTA', p.quando === 'amanha' ? 'Sua consulta é amanhã' : 'Sua consulta é daqui a pouco',
+      `${p.petNome ? `${p.petNome} tem consulta` : 'Consulta'} com ${p.veterinarioNome} em ${p.dataConsulta} às ${p.horarioConsulta}.`,
       { agendamentoId: p.agendamentoId }),
 
   notifyAppointmentCancelledByAgendaBlockToTutor: (p: {

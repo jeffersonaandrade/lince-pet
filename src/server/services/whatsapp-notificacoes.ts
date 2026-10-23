@@ -50,7 +50,7 @@ function telefoneDe(a: AgendamentoWhatsapp, para: Destinatario) {
   return normalizarTelefoneE164(profissionalDe(a).user?.celular) || normalizarTelefoneE164(a.clinica?.whatsapp)
 }
 
-function dadosDaMensagem(a: AgendamentoWhatsapp, motivo?: string | null) {
+export function dadosDaMensagem(a: AgendamentoWhatsapp, motivo?: string | null) {
   return {
     tutor: a.tutor?.user ? nomeCompleto(a.tutor.user) : 'Tutor',
     pet: a.pet?.nome || 'seu pet',

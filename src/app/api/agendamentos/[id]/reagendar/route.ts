@@ -136,6 +136,13 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         horarioConsulta: agendamento.horarioConsulta!,
         agendamentoId: agendamento.id,
       })
+      await inAppNotifications.notifyAppointmentRescheduledToTutor({
+        tutorUserId: user.id,
+        veterinarioNome: nomeCompleto(vetUser),
+        dataConsulta: data,
+        horarioConsulta: agendamento.horarioConsulta!,
+        agendamentoId: agendamento.id,
+      })
     } catch (notifError) {
       console.error('❌ Erro ao notificar reagendamento:', notifError)
     }

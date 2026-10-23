@@ -6,6 +6,7 @@ const prismaMock = vi.hoisted(() => ({
   agendamento: { findUnique: vi.fn(), findMany: vi.fn() },
   subscriptionPlan: { findUnique: vi.fn() },
   whatsappEnvio: { create: vi.fn(), update: vi.fn() },
+  avisoLembrete: { create: vi.fn() },
 }))
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 
@@ -55,6 +56,8 @@ beforeEach(() => {
   prismaMock.whatsappEnvio.create.mockImplementation(({ data }: { data: object }) => ({ id: 'envio-1', ...data }))
   prismaMock.whatsappEnvio.update.mockResolvedValue({})
   enviarMock.mockResolvedValue({ id: 'msg-1' })
+  // Sino, navegador e e-mail dos lembretes ficam em lembretes.test.ts; aqui o lembrete já saiu por eles.
+  prismaMock.avisoLembrete.create.mockRejectedValue(duplicado())
 })
 
 describe('normalizarTelefoneE164', () => {

@@ -670,6 +670,44 @@ impl.update({
     "e2e_telas": ["rule_e2e_pela_tela"],    "e2e_fixtures": ["rule_e2e_pela_tela"],
 })
 
+avisos_nodes = [
+    rule("rule_avisos_navegador_espelha_sino", "Avisos: notificacao do navegador espelha o sino",
+         "Todo aviso gravado pelo create() do sino tambem sai como Web Push em cada aparelho que o usuario ativou (link /dashboard/{tipo}). Todos os tipos de usuario, sem plano. Sem chaves VAPID fica desligado sem erro; falha no push nunca derruba o fluxo."),
+    rule("rule_avisos_push_por_aparelho", "Avisos: push ativado por aparelho",
+         "Interruptor 'Notificacoes no navegador (este aparelho)' no perfil (tutor, vet, prestador e clinica) e convite no menu do sino enquanto a permissao nao foi pedida. Inscricoes em push_inscricoes, uma por endpoint; 404/410 apaga. iPhone so com o site instalado na tela inicial."),
+    rule("rule_avisos_sino_tutor_agendar_remarcar", "Avisos: tutor recebe no sino consulta agendada e remarcada",
+         "Ao agendar, o tutor recebe 'Consulta agendada'; ao remarcar, 'Consulta remarcada' (alem do aviso ao vet). Cobre o que antes so ia por WhatsApp."),
+    rule("rule_avisos_lembretes_tutor", "Avisos: lembretes de consulta so para o tutor (24h e 2h)",
+         "Pelo cron dos lembretes, sem plano: 24h e 2h no sino e no navegador; por e-mail so o de 24h ('Sua consulta e amanha', respeita notificar_email). Envio unico por (consulta, evento, data+hora) em avisos_lembrete; remarcar libera novos."),
+    rule("rule_avisos_whatsapp_fora_do_ar", "Avisos: WhatsApp fora do ar em producao",
+         "Numero central banido (23/10/2026): producao roda sem WHATSAPP_PROVIDER (padrao log). Nenhum codigo de WhatsApp removido."),
+]
+new_nodes += [n for n in avisos_nodes if n["id"] not in {x["id"] for x in new_nodes}]
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in avisos_nodes]
+new_edges += [edge("rule_avisos_navegador_espelha_sino", "rule_canais_por_usuario", "references")]
+new_edges += [edge("rule_avisos_lembretes_tutor", "rule_whatsapp_lembretes_24h_2h", "references")]
+new_edges += [edge("rule_avisos_whatsapp_fora_do_ar", "rule_whatsapp_provedor_agnostico", "references")]
+avisos_impl = {
+    "src_server_services_push": ["rule_avisos_navegador_espelha_sino", "rule_avisos_push_por_aparelho"],
+    "src_server_services_in_app_notifications": ["rule_avisos_navegador_espelha_sino", "rule_avisos_sino_tutor_agendar_remarcar"],
+    "src_app_api_push_inscricao_route": ["rule_avisos_push_por_aparelho"],
+    "src_app_api_push_chave_publica_route": ["rule_avisos_navegador_espelha_sino"],
+    "src_components_preferenciasnotificacao_notificacoesnavegador": ["rule_avisos_push_por_aparelho"],
+    "src_services_notificacoes_navegador": ["rule_avisos_push_por_aparelho"],
+    "src_components_notificationbell_notificationbell": ["rule_avisos_push_por_aparelho"],
+    "src_app_manifest": ["rule_avisos_push_por_aparelho"],
+    "src_app_api_agendamentos_route": ["rule_avisos_sino_tutor_agendar_remarcar"],
+    "src_app_api_agendamentos_id_reagendar_route": ["rule_avisos_sino_tutor_agendar_remarcar"],
+    "src_server_services_whatsapp_lembretes": ["rule_avisos_lembretes_tutor"],
+    "src_server_emails_lembrete_consulta": ["rule_avisos_lembretes_tutor"],
+    "src_server_services_whatsapp": ["rule_avisos_whatsapp_fora_do_ar"],
+    "tests_server_cobertura_push_test": ["rule_avisos_navegador_espelha_sino", "rule_avisos_push_por_aparelho"],
+    "tests_server_cobertura_lembretes_test": ["rule_avisos_lembretes_tutor"],
+    "e2e_demandas_avisos_navegador_spec": ["rule_avisos_sino_tutor_agendar_remarcar", "rule_avisos_push_por_aparelho"],
+}
+for code_id, rs in avisos_impl.items():
+    impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

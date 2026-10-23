@@ -1,5 +1,8 @@
 import { randomBytes } from 'node:crypto'
 import { defineConfig, devices } from '@playwright/test'
+import webpush from 'web-push'
+
+const vapid = webpush.generateVAPIDKeys()
 
 const PORT = 3000
 
@@ -46,6 +49,9 @@ export default defineConfig({
       WHATSAPP_GATEWAY_URL: '',
       WHATSAPP_GATEWAY_TOKEN: '',
       CRON_SECRET: randomBytes(24).toString('hex'),
+      VAPID_PUBLIC_KEY: vapid.publicKey,
+      VAPID_PRIVATE_KEY: vapid.privateKey,
+      VAPID_SUBJECT: 'mailto:e2e@lincepet.local',
     },
   },
 })

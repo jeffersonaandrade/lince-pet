@@ -87,6 +87,7 @@ model User {
   notifications       Notification[]
   passwordResetTokens PasswordResetToken[]
   googleEventos       AgendamentoGoogleEvento[]
+  pushInscricoes      PushInscricao[]
 
   @@index([userType])
   @@index([email])
@@ -522,6 +523,7 @@ model Agendamento {
   anotacao                AgendamentoAnotacao?
   registroClinico         RegistroClinico?
   whatsappEnvios          WhatsappEnvio[]
+  avisosLembrete          AvisoLembrete[]
   googleEventos           AgendamentoGoogleEvento[]
   encaminhamentosEnviados Encaminhamento[]          @relation("EncaminhamentoOrigem")
   encaminhamentoOrigem    Encaminhamento?           @relation("EncaminhamentoDestino")
@@ -597,6 +599,38 @@ model WhatsappEnvio {
   @@unique([agendamentoId, evento, destinatario, referencia], map: "whatsapp_envios_idempotencia_key")
   @@index([status, updatedAt])
   @@map("whatsapp_envios")
+}
+
+/// Lembretes de consulta já disparados (sino, navegador e e-mail), um por (agendamento, evento, referencia).
+/// `referencia` = data+hora da consulta, então uma remarcação libera novos lembretes.
+model AvisoLembrete {
+  agendamentoId String    @map("agendamento_id") @db.Char(36)
+  /// lembrete_24h | lembrete_2h
+  evento        String    @db.VarChar(30)
+  referencia    String    @db.VarChar(20)
+  createdAt     DateTime? @map("created_at") @db.Timestamp(0)
+
+  agendamento Agendamento @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+
+  @@id([agendamentoId, evento, referencia])
+  @@map("avisos_lembrete")
+}
+
+/// Aparelhos inscritos nas notificações do navegador (Web Push), um por endpoint.
+model PushInscricao {
+  id        String    @id @db.Char(36)
+  userId    String    @map("user_id") @db.Char(36)
+  endpoint  String    @unique @db.Text
+  p256dh    String    @db.VarChar(255)
+  auth      String    @db.VarChar(255)
+  userAgent String?   @map("user_agent") @db.VarChar(500)
+  createdAt DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_inscricoes")
 }
 
 /// Registro clínico da consulta: compõe o prontuário do pet (visível ao tutor e a vets/clínicas que atendem o pet).

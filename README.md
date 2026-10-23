@@ -146,6 +146,7 @@ O modelo está em [`.env.example`](.env.example). Não commite `.env` nem `.env.
 | Asaas | `ASAAS_ENV`, chaves e URLs de sandbox/produção, `ASAAS_WEBHOOK_TOKEN` | Assinaturas. Em `ASAAS_ENV=production` o token do webhook é obrigatório |
 | Google | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, callbacks de login e Calendar | Login social e agenda |
 | WhatsApp | `WHATSAPP_PROVIDER` (`log` ou `gateway`), `WHATSAPP_GATEWAY_URL`, `WHATSAPP_GATEWAY_TOKEN` | Número central da Lince Pet. `log` não envia mensagem de verdade; `gateway` usa o serviço do repositório `lince-pet-whatsapp-gateway` |
+| Notificações do navegador | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (`mailto:`) | Web Push. Gerar com `npx web-push generate-vapid-keys`. Sem as chaves, o push fica desligado sem erro |
 | Cron | `CRON_SECRET` | Bearer de `GET /api/cron/lembretes-whatsapp` (lembretes e conciliação da fila de WhatsApp; no Render, chamado pelo cron-job.org a cada 15 min) |
 
 ## Banco
@@ -180,6 +181,7 @@ A cópia do MySQL antigo (`npm run db:migrar-mysql`) sem `--executar` só confer
 - **Google Agenda.** Tutor e veterinário conectam a própria conta. Para o veterinário, conectar exige plano Pro. Criar, remarcar e cancelar consulta sincroniza o evento. Falha do Google não derruba o agendamento. Desconectar para de criar eventos novos e não apaga os que já existem.
 - **WhatsApp.** Um número só, da Lince Pet. Veterinários e clínicas não conectam número próprio. Sai se o veterinário ou a clínica da consulta tiver a feature `whatsapp_notifications` e se o destinatário não tiver desligado o canal. Lembretes de 24h e 2h: `GET /api/cron/lembretes-whatsapp` a cada 15 minutos (`vercel.json`), com `Authorization: Bearer <CRON_SECRET>`.
 - **E-mail (Resend) e sino in-app.** O sino não desliga. O e-mail desliga no perfil; o código de início da consulta também aparece no painel do tutor.
+- **Notificações do navegador.** Todo aviso do sino também vai para os aparelhos em que o usuário ativou (perfil ou convite no sino), sem depender de plano. Lembretes ao tutor: 24h antes (sino, navegador e e-mail) e 2h antes (sino e navegador), pelo mesmo cron do WhatsApp. Enquanto o número de WhatsApp estiver fora, produção roda com `WHATSAPP_PROVIDER` ausente ou `log`.
 - **S3.** Upload multipart vira arquivo público no bucket.
 
 Envio de e-mail, WhatsApp e Google roda depois da resposta (`after()`). Falha desses canais não desfaz agendamento, cancelamento ou remarcação.
@@ -203,7 +205,7 @@ npm run test:e2e       # sobe o Next na 3000, roda o seed e a suíte
 ```
 
 - Só roda contra o banco local: o `globalSetup` recusa `DATABASE_URL` fora de `127.0.0.1:5433`/`localhost:5433` e roda o seed antes. Os testes criam e alteram dados.
-- O servidor do teste usa `TZ=UTC`, `MAIL_DRIVER=log`, `WHATSAPP_PROVIDER=log` (sem gateway) e um `CRON_SECRET` aleatório: nenhum e-mail ou WhatsApp sai de verdade.
+- O servidor do teste usa `TZ=UTC`, `MAIL_DRIVER=log`, `WHATSAPP_PROVIDER=log` (sem gateway), um `CRON_SECRET` aleatório e chaves VAPID geradas na hora: nenhum e-mail ou WhatsApp sai de verdade.
 - `e2e/jornada/consulta-completa.spec.ts` faz o caminho inteiro só pelas telas, com uma janela do tutor e outra do vet: agendar, remarcar, cancelar com motivo, iniciar com o código, registro clínico, anotação privada, finalizar e conferir o prontuário de cada pet. Para assistir: `$env:E2E_SLOWMO='400'; npx playwright test e2e/jornada --headed`.
 - Pastas: `e2e/fase1` (cadastro, login, senha, sessão), `fase2`, `demandas` (consulta, bloqueios, encaminhamento, prestadores, planos, canais, prontuário), `filtros` (`/explorar`) e `responsivo` (360, 390 e 768 px).
 - **Pela tela:** a ação testada (agendar, cancelar, remarcar, bloquear, encaminhar, pedir serviço, editar perfil) é feita clicando, com os helpers de `e2e/telas.ts`. A API só aparece em passos `invasão (fora da tela): ...`, para ataques que a tela não deixa fazer (pet de outro tutor, id alheio, upload inválido), e o banco (`e2e/db.ts`) só confere o resultado.

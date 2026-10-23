@@ -12,9 +12,9 @@
     "semantic_hash": ""
   },
   "package.json": {
-    "mtime": 1792729644.2282763,
-    "seen": 1792729681.1880062,
-    "ast_hash": "5c387316a42b24e33bd32ce4a7a568d7",
+    "mtime": 1792758686.467194,
+    "seen": 1792759600.74453,
+    "ast_hash": "0d98b20fe82f200ebe6ac073606cca19",
     "semantic_hash": ""
   },
   "src/app/clinicas/[id]/page.tsx": {
@@ -42,9 +42,9 @@
     "semantic_hash": ""
   },
   "src/app/dashboard/clinica/perfil/page.tsx": {
-    "mtime": 1792534130.534407,
-    "seen": 1792534368.1854472,
-    "ast_hash": "44db75ccfd35a43db9b47121d8a5962b",
+    "mtime": 1792758851.9068577,
+    "seen": 1792759600.8057272,
+    "ast_hash": "92a375245d7abf807e685c10a02d43af",
     "semantic_hash": ""
   },
   "src/app/dashboard/tutor/page.tsx": {
@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "src/components/NotificationBell/NotificationBell.tsx": {
-    "mtime": 1792534130.7843025,
-    "seen": 1792534368.3131666,
-    "ast_hash": "3588d38bb22f0c7c3156f87505c61561",
+    "mtime": 1792758858.0435796,
+    "seen": 1792759600.8365896,
+    "ast_hash": "4360963e83ca95bc0791a8dfc41d70dc",
     "semantic_hash": ""
   },
   "src/components/PremiumGateModal/PremiumGateModal.tsx": {
@@ -762,9 +762,9 @@
     "semantic_hash": ""
   },
   "src/server/services/in-app-notifications.ts": {
-    "mtime": 1792704217.1315126,
-    "seen": 1792704567.9229023,
-    "ast_hash": "e922fa3093c3bc9bcbddedddaf6e6da5",
+    "mtime": 1792758870.8722696,
+    "seen": 1792759600.8774216,
+    "ast_hash": "a6a902e9af45f0fdc34ea2fe33aa4ad2",
     "semantic_hash": ""
   },
   "src/server/services/mail.ts": {
@@ -1836,9 +1836,9 @@
     "semantic_hash": ""
   },
   "src/app/api/agendamentos/[id]/reagendar/route.ts": {
-    "mtime": 1792534129.9527068,
-    "seen": 1792534367.9991791,
-    "ast_hash": "185302cb56a826cee9fa1e6e9a05b3bc",
+    "mtime": 1792758879.5301745,
+    "seen": 1792759600.750929,
+    "ast_hash": "71ea0859db6a26f5628cace3382ee878",
     "semantic_hash": ""
   },
   "src/app/api/agendamentos/disponibilidade/[veterinario_id]/route.ts": {
@@ -1848,9 +1848,9 @@
     "semantic_hash": ""
   },
   "src/app/api/agendamentos/route.ts": {
-    "mtime": 1792704217.058247,
-    "seen": 1792704567.8534813,
-    "ast_hash": "70225302916c64a3f1a80f07f2aaab22",
+    "mtime": 1792758870.3570788,
+    "seen": 1792759600.7514472,
+    "ast_hash": "a0e59f94e32202f68c5482a3c252f32a",
     "semantic_hash": ""
   },
   "src/app/api/onboarding/complete/route.ts": {
@@ -1980,9 +1980,9 @@
     "semantic_hash": ""
   },
   "src/server/services/notifications.ts": {
-    "mtime": 1792534131.0116048,
-    "seen": 1792534368.4611292,
-    "ast_hash": "ed412e822f4b3e5a720ea0e6798a3340",
+    "mtime": 1792758909.555753,
+    "seen": 1792759600.8778625,
+    "ast_hash": "9c1e9454339d4380a0207aef6c46538c",
     "semantic_hash": ""
   },
   "src/server/services/whatsapp.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792729651.633075,
-    "seen": 1792729681.332228,
-    "ast_hash": "849954617d76a39e679eb22d8566f715",
+    "mtime": 1792759545.0688863,
+    "seen": 1792759600.9825182,
+    "ast_hash": "5280fd9bde5f327613e7d4d962fcbe25",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2178,15 +2178,15 @@
     "semantic_hash": ""
   },
   "src/app/api/cron/lembretes-whatsapp/route.ts": {
-    "mtime": 1792707833.4013612,
-    "seen": 1792708037.4919734,
-    "ast_hash": "3487a9a0dd03ed6bc7983f4b84a87e3a",
+    "mtime": 1792758928.604392,
+    "seen": 1792759600.7663798,
+    "ast_hash": "18e403dcdc8cae54b777c3c67c187ca1",
     "semantic_hash": ""
   },
   "src/server/services/whatsapp-lembretes.ts": {
-    "mtime": 1792707880.2158184,
-    "seen": 1792708037.6020043,
-    "ast_hash": "a8ccc7c94efdd9128c1128aac3a8a7e2",
+    "mtime": 1792758922.0307512,
+    "seen": 1792759600.8842106,
+    "ast_hash": "b83b19b49f35388a04fb5365ce635cfc",
     "semantic_hash": ""
   },
   "src/server/services/whatsapp-mensagens.ts": {
@@ -2196,15 +2196,15 @@
     "semantic_hash": ""
   },
   "src/server/services/whatsapp-notificacoes.ts": {
-    "mtime": 1792707824.606585,
-    "seen": 1792708037.6022918,
-    "ast_hash": "116eb070013374ac507714867eace069",
+    "mtime": 1792758909.9693959,
+    "seen": 1792759600.8845568,
+    "ast_hash": "e22278d660cda6effcb636120bf94b81",
     "semantic_hash": ""
   },
   "tests/server/whatsapp.test.ts": {
-    "mtime": 1792707848.8546498,
-    "seen": 1792708037.6318052,
-    "ast_hash": "231b382a15bb26c417d30dba4ebc57fa",
+    "mtime": 1792759056.359903,
+    "seen": 1792759600.927935,
+    "ast_hash": "da4b0a4dd81cc64b638793ac9a7419eb",
     "semantic_hash": ""
   },
   "vercel.json": {
@@ -2322,9 +2322,9 @@
     "semantic_hash": ""
   },
   "src/components/PreferenciasNotificacao/PreferenciasNotificacao.tsx": {
-    "mtime": 1791555755.6714866,
-    "seen": 1791555792.6131842,
-    "ast_hash": "d04c696686a9fc148e4cd11fdb0a62e2",
+    "mtime": 1792758834.1144466,
+    "seen": 1792759600.8365963,
+    "ast_hash": "fe4a29dfefe8983dbb965110cc0a1c80",
     "semantic_hash": ""
   },
   "src/server/services/canais-notificacao.ts": {
@@ -2880,9 +2880,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/in-app-notifications.test.ts": {
-    "mtime": 1791567147.9559548,
-    "seen": 1791567604.937066,
-    "ast_hash": "4268a94fffbe15a2e5aefea46ab15a4d",
+    "mtime": 1792759046.3322582,
+    "seen": 1792759600.9117963,
+    "ast_hash": "8665c918071e32fd7f59e2234693dae0",
     "semantic_hash": ""
   },
   "tests/server/cobertura/mail.test.ts": {
@@ -3162,9 +3162,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792729647.7355688,
-    "seen": 1792729681.3317523,
-    "ast_hash": "cef225150536ca514a6ecd8844a309b6",
+    "mtime": 1792759554.034619,
+    "seen": 1792759600.9820673,
+    "ast_hash": "39b010fd5ceb893c7f693b4209ee047c",
     "semantic_hash": ""
   },
   "src/lib/motivos-cancelamento.ts": {
@@ -3366,9 +3366,9 @@
     "semantic_hash": ""
   },
   "e2e/fixtures.ts": {
-    "mtime": 1792724392.6264207,
-    "seen": 1792727235.5036516,
-    "ast_hash": "3f1b9e50c852f6feaea19f3ebe9117ce",
+    "mtime": 1792758496.8803215,
+    "seen": 1792759600.741174,
+    "ast_hash": "c29bf9392077302bd2e88eb3456cb5ee",
     "semantic_hash": ""
   },
   "e2e/global-setup.ts": {
@@ -3402,9 +3402,99 @@
     "semantic_hash": ""
   },
   "playwright.config.ts": {
-    "mtime": 1792729632.8834572,
-    "seen": 1792729681.1880093,
-    "ast_hash": "42ea456d739a0ee2e13f27cb0ec5a11c",
+    "mtime": 1792759189.4697652,
+    "seen": 1792759600.7445352,
+    "ast_hash": "ac2f8960ddb5736e73960df48a5377d8",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/avisos-navegador.spec.ts": {
+    "mtime": 1792759402.0180259,
+    "seen": 1792759600.7339323,
+    "ast_hash": "0e4a4978e54300c511dad270d8055230",
+    "semantic_hash": ""
+  },
+  "src/app/api/push/chave-publica/route.ts": {
+    "mtime": 1792758782.5647366,
+    "seen": 1792759600.7886772,
+    "ast_hash": "d7488cb732e0aef608db2fe817cd8206",
+    "semantic_hash": ""
+  },
+  "src/app/api/push/inscricao/route.ts": {
+    "mtime": 1792758784.1093254,
+    "seen": 1792759600.7886817,
+    "ast_hash": "4ad929c1c558e4d240d2ae5a159d7b96",
+    "semantic_hash": ""
+  },
+  "src/app/manifest.ts": {
+    "mtime": 1792758822.2641568,
+    "seen": 1792759600.814192,
+    "ast_hash": "bd7bd80c25841e71c92c3fe2221721df",
+    "semantic_hash": ""
+  },
+  "src/components/PreferenciasNotificacao/NotificacoesNavegador.tsx": {
+    "mtime": 1792760037.9323592,
+    "seen": 1792760734.4770534,
+    "ast_hash": "b0f728f11f532f12ae16923821b305d5",
+    "semantic_hash": ""
+  },
+  "src/server/emails/lembrete_consulta.ts": {
+    "mtime": 1792758908.0897279,
+    "seen": 1792759600.8677697,
+    "ast_hash": "4da02385a4891b87bd22e3f9058cae60",
+    "semantic_hash": ""
+  },
+  "src/server/services/push.ts": {
+    "mtime": 1792758773.9265444,
+    "seen": 1792759600.881106,
+    "ast_hash": "2665dc927dc0f314f016418ab839e458",
+    "semantic_hash": ""
+  },
+  "src/services/notificacoes/navegador.ts": {
+    "mtime": 1792758821.8313358,
+    "seen": 1792759600.892521,
+    "ast_hash": "4b24f37a0eafbf4f8929a08306897d67",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/lembretes.test.ts": {
+    "mtime": 1792759142.8722773,
+    "seen": 1792759600.9118018,
+    "ast_hash": "6e21efeb5a7daf27e88f9b6304385e85",
+    "semantic_hash": ""
+  },
+  "tests/server/cobertura/push.test.ts": {
+    "mtime": 1792759043.500015,
+    "seen": 1792759600.9159484,
+    "ast_hash": "cfe0c9097b7409c9e5e4e26076caaa5e",
+    "semantic_hash": ""
+  },
+  ".preview-avisos/1-perfil-antes.png": {
+    "mtime": 1792760476.2666209,
+    "seen": 1792760734.5523467,
+    "ast_hash": "c7e8d3ed5d6035125df971be6963afd8",
+    "semantic_hash": ""
+  },
+  ".preview-avisos/2-perfil-ativo.png": {
+    "mtime": 1792760504.3589609,
+    "seen": 1792760734.5523489,
+    "ast_hash": "e35bc91bb4a0685fc9bb3fb537bf561d",
+    "semantic_hash": ""
+  },
+  ".preview-avisos/3-sino.png": {
+    "mtime": 1792760532.28523,
+    "seen": 1792760734.5523508,
+    "ast_hash": "07972c6d70edd54c9cae24bd25c243ea",
+    "semantic_hash": ""
+  },
+  ".preview-avisos/4-clinica.png": {
+    "mtime": 1792760549.0844953,
+    "seen": 1792760734.552352,
+    "ast_hash": "a4e31ac493c463bfd532641e94fefb76",
+    "semantic_hash": ""
+  },
+  ".preview-avisos/5-email.png": {
+    "mtime": 1792760552.4117317,
+    "seen": 1792760734.5523534,
+    "ast_hash": "b503d83dbea2fa0f2e8f32fe0cba697c",
     "semantic_hash": ""
   }
 }
