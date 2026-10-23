@@ -64,7 +64,7 @@ export function estatisticasError(error: unknown) {
   const e = detalhesDoErro(error)
   return {
     message: 'Erro interno ao buscar estatísticas',
-    error: e.message,
+    error: isDev() ? e.message : undefined,
     stack: isDev() ? e.stack : undefined,
   }
 }

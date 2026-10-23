@@ -21,7 +21,7 @@ export default async function globalSetup() {
   if (!HOSTS_LOCAIS.includes(host)) {
     throw new Error(`e2e recusado: DATABASE_URL precisa apontar para o banco local (${HOSTS_LOCAIS.join(' ou ')}).`)
   }
-  execSync('npx prisma db seed', { stdio: 'inherit' })
+  execSync('npx prisma db seed', { stdio: 'inherit', env: { ...process.env, SEED_DEMO: 'true' } })
 
   // Consultas futuras que execuções anteriores deixaram abertas lotam a grade dos vets do seed.
   // Pets criados pelos testes terminam com o sufixo numérico de Date.now() ou começam com "E2E".

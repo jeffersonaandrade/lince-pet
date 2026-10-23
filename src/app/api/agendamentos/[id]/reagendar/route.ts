@@ -13,6 +13,7 @@ import { nomeCompleto, podeSerCancelado, prepareDataConsulta } from '@/server/se
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import { ehPedidoDePrestador, remarcarPedido } from '@/server/services/pedidos-prestador'
 import { ehAgendamentoDeExame, remarcarExame } from '@/server/services/exames'
+import { bloquearAgenda, horarioCanonico } from '@/server/services/agenda-lock'
 
 /** PATCH /agendamentos/:id/reagendar */
 export const PATCH = route<{ id: string }>(async (req, { id }) => {
@@ -54,6 +55,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
   }
 
   const horario = horario_consulta
+  if (!horarioCanonico(horario)) return badRequest({ message: 'Horário inválido. Use HH:mm.' })
 
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -63,9 +65,10 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         return notFound({ message: 'Agendamento não encontrado' })
       }
 
-      if (!podeSerCancelado(agendamento.status)) {
-        return badRequest({ message: 'Este agendamento não pode ser reagendado' })
-      }
+      if (agendamento.veterinarioId) await bloquearAgenda(tx, 'veterinario', agendamento.veterinarioId)
+      // O estado pode ter mudado enquanto aguardávamos o lock.
+      const atual = await tx.agendamento.findUnique({ where: { id: agendamento.id } })
+      if (!atual || !podeSerCancelado(atual.status)) return badRequest({ message: 'Este agendamento não pode ser reagendado' })
 
       const agendamentoExistente = await tx.agendamento.findFirst({
         where: {
@@ -73,7 +76,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
           dataConsulta: dataConsultaObj.toSQLDate(),
           horarioConsulta: horario,
           id: { not: agendamento.id },
-          status: { in: ['pendente', 'confirmado'] },
+          status: { in: ['pendente', 'confirmado', 'em andamento'] },
         },
       })
 

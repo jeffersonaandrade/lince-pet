@@ -127,7 +127,7 @@ async function main() {
   await seedPlanosSaude()
   await seedDiferenciais()
   await seedTiposServico()
-  await seedDemonstracao(prisma)
+  if (process.env.SEED_DEMO === 'true') await seedDemonstracao(prisma)
   const [planos, especialidades, saude, diferenciais] = await Promise.all([
     prisma.subscriptionPlan.count(),
     prisma.especialidade.count({ where: { nome: { in: [...especialidadesVeterinarias] } } }),

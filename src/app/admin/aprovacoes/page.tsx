@@ -170,12 +170,15 @@ export default function AprovacoesAdminPage() {
 
   const decidir = (tipo: "crmv" | "rt") => async (id: string, d: Decisao) => {
     try {
-      await (tipo === "crmv" ? AprovacoesService.decidirCrmv(id, d) : AprovacoesService.decidirRt(id, d));
+      const revisao = (tipo === "crmv" ? vets : clinicas).find((item) => item.id === id)?.revisao;
+      if (!revisao) throw new Error("Atualize a lista antes de decidir.");
+      const decisao = { ...d, revisao };
+      await (tipo === "crmv" ? AprovacoesService.decidirCrmv(id, decisao) : AprovacoesService.decidirRt(id, decisao));
       setAviso({ texto: d.decisao === "aprovar" ? "Aprovado. O usuário foi avisado." : "Reprovado. O usuário foi avisado." });
       if (tipo === "crmv") setVets((atual) => atual.filter((v) => v.id !== id));
       else setClinicas((atual) => atual.filter((c) => c.id !== id));
     } catch {
-      setAviso({ texto: "Não foi possível registrar a decisão.", erro: true });
+      setAviso({ texto: "Não foi possível registrar a decisão. Atualize a lista e confira os dados novamente.", erro: true });
     }
   };
 

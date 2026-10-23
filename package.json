@@ -15,6 +15,7 @@
     "db:migrar-mysql": "tsx scripts/migrar-dados-mysql.ts",
     "lint": "eslint",
     "test": "vitest run",
+    "test:security": "node --test tests/security/regressions.mjs",
     "test:contract": "vitest run tests/contract",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

@@ -83,14 +83,15 @@ describe('dono, filtro e referência externa', () => {
 })
 
 describe('definirPlano', () => {
-  it('vet e prestador zeram o contador ao trocar de plano', async () => {
+  it('vet e prestador preservam o contador ao trocar de plano', async () => {
     await definirPlano(tx, { tipo: 'veterinario', id: 'v' }, 'vet_pro')
     expect(db.veterinario.update.mock.calls[0][0]).toMatchObject({
       where: { id: 'v' },
-      data: { subscriptionPlanCode: 'vet_pro', monthlyAppointmentsUsed: 0, monthlyAppointmentsResetAt: expect.any(Date) },
+      data: { subscriptionPlanCode: 'vet_pro' },
     })
     await definirPlano(tx, { tipo: 'prestador', id: 'p' }, 'pro')
-    expect(db.prestador.update.mock.calls[0][0].data).toMatchObject({ subscriptionPlanCode: 'pro', monthlyAppointmentsUsed: 0 })
+    expect(db.prestador.update.mock.calls[0][0].data).toMatchObject({ subscriptionPlanCode: 'pro' })
+    expect(db.prestador.update.mock.calls[0][0].data).not.toHaveProperty('monthlyAppointmentsUsed')
   })
 
   it('zerarContador:false mantém o contador', async () => {

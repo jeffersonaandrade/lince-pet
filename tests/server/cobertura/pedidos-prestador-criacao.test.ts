@@ -8,6 +8,7 @@ const prismaMock = vi.hoisted(() => {
     servicoOferecido: { findFirst: vi.fn() },
     bloqueioAgenda: { findMany: vi.fn() },
     agendamento: { findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
+    $executeRaw: vi.fn(),
   }
   return Object.assign(m, { $transaction: vi.fn() })
 })
@@ -95,6 +96,7 @@ beforeEach(() => {
   prismaMock.bloqueioAgenda.findMany.mockResolvedValue([])
   prismaMock.agendamento.findFirst.mockResolvedValue(null)
   prismaMock.agendamento.findMany.mockResolvedValue([])
+  prismaMock.agendamento.findUnique.mockResolvedValue({ id: 'ped-1', status: 'confirmado' })
   prismaMock.agendamento.create.mockImplementation(({ data }: { data: Record<string, unknown> }) => ({
     ...data,
     id: 'ped-1',

@@ -6,8 +6,9 @@ const mocks = vi.hoisted(() => ({
     veterinario: { findFirst: vi.fn() },
     clinica: { findFirst: vi.fn() },
     prestador: { findFirst: vi.fn() },
-    user: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+    user: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
     passwordResetToken: { deleteMany: vi.fn(), create: vi.fn(), findUnique: vi.fn(), delete: vi.fn() },
+    $transaction: vi.fn(),
   },
   generateToken: vi.fn(async () => 'jwt-falso'),
   hashPassword: vi.fn(async (s: string) => `hash(${s})`),
@@ -30,6 +31,7 @@ import {
   getUserProfile,
   forgotPassword,
   resetPassword,
+  userForVerifiedGoogleEmail,
 } from '@/server/services/auth'
 
 const { prisma } = mocks
@@ -312,29 +314,34 @@ describe('forgotPassword', () => {
 describe('resetPassword', () => {
   const futuro = () => new Date(Date.now() + 60_000)
 
+  beforeEach(() => {
+    prisma.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(prisma))
+    prisma.passwordResetToken.deleteMany.mockResolvedValue({ count: 1 })
+  })
+
   it('token inexistente: erro de token inválido', async () => {
     prisma.passwordResetToken.findUnique.mockResolvedValueOnce(null)
-    await expect(resetPassword('tok', 'nova')).rejects.toThrow('Token inválido ou expirado.')
+    await expect(resetPassword('tok', 'NovaSenha@1')).rejects.toThrow('Token inválido ou expirado.')
     expect(prisma.user.update).not.toHaveBeenCalled()
   })
 
   it('token expirado é apagado e rejeitado', async () => {
     prisma.passwordResetToken.findUnique.mockResolvedValueOnce({ id: 'rt-1', userId: 'user-1', expiresAt: new Date(Date.now() - 1000) })
-    await expect(resetPassword('tok', 'nova')).rejects.toThrow('Token inválido ou expirado.')
+    await expect(resetPassword('tok', 'NovaSenha@1')).rejects.toThrow('Token inválido ou expirado.')
     expect(prisma.passwordResetToken.delete).toHaveBeenCalledWith({ where: { id: 'rt-1' } })
     expect(prisma.user.update).not.toHaveBeenCalled()
   })
 
   it('token sem usuário: "Usuário não encontrado."', async () => {
     prisma.passwordResetToken.findUnique.mockResolvedValueOnce({ id: 'rt-1', userId: null, expiresAt: futuro() })
-    await expect(resetPassword('tok', 'nova')).rejects.toThrow('Usuário não encontrado.')
+    await expect(resetPassword('tok', 'NovaSenha@1')).rejects.toThrow('Usuário não encontrado.')
     expect(prisma.user.findUnique).not.toHaveBeenCalled()
   })
 
   it('usuário apagado: "Usuário não encontrado."', async () => {
     prisma.passwordResetToken.findUnique.mockResolvedValueOnce({ id: 'rt-1', userId: 'user-1', expiresAt: futuro() })
     prisma.user.findUnique.mockResolvedValueOnce(null)
-    await expect(resetPassword('tok', 'nova')).rejects.toThrow('Usuário não encontrado.')
+    await expect(resetPassword('tok', 'NovaSenha@1')).rejects.toThrow('Usuário não encontrado.')
   })
 
   it('grava a nova senha com hash, derruba as sessões abertas e consome o token', async () => {
@@ -347,8 +354,44 @@ describe('resetPassword', () => {
     expect(prisma.passwordResetToken.findUnique).toHaveBeenCalledWith({ where: { token: 'tok' } })
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: 'user-1' },
-      data: { password: 'hash(NovaSenha@1)', tokenVersion: { increment: 1 }, updatedAt: expect.any(Date) },
+      data: { password: 'hash(NovaSenha@1)', isEmailVerified: 1, tokenVersion: { increment: 1 }, updatedAt: expect.any(Date) },
     })
-    expect(prisma.passwordResetToken.delete).toHaveBeenCalledWith({ where: { id: 'rt-1' } })
+    expect(prisma.passwordResetToken.deleteMany).toHaveBeenCalledWith({ where: { id: 'rt-1', expiresAt: { gt: expect.any(Date) } } })
+  })
+
+  it('senha curta é recusada antes de consultar o token', async () => {
+    await expect(resetPassword('tok', 'curta')).rejects.toThrow('entre 8 e 255')
+    expect(prisma.passwordResetToken.findUnique).not.toHaveBeenCalled()
+  })
+
+  it('token consumido por outra requisição não permite trocar a senha', async () => {
+    prisma.passwordResetToken.findUnique.mockResolvedValueOnce({ id: 'rt-1', userId: 'user-1', expiresAt: futuro() })
+    prisma.user.findUnique.mockResolvedValueOnce({ id: 'user-1' })
+    prisma.passwordResetToken.deleteMany.mockResolvedValueOnce({ count: 0 })
+    await expect(resetPassword('tok', 'NovaSenha@1')).rejects.toThrow('Token inválido')
+    expect(prisma.user.update).not.toHaveBeenCalled()
+  })
+})
+
+describe('Google com e-mail comprovado', () => {
+  beforeEach(() => prisma.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(prisma)))
+
+  it('revoga senha, sessões e resets do cadastro não verificado antes de emitir sessão', async () => {
+    prisma.user.findFirst.mockResolvedValueOnce({ id: 'u1', email: 'ana@exemplo.com', isEmailVerified: 0 })
+    prisma.user.updateMany.mockResolvedValueOnce({ count: 1 })
+    prisma.user.findUnique.mockResolvedValueOnce({ id: 'u1', tokenVersion: 1, isEmailVerified: 1 })
+    expect(await userForVerifiedGoogleEmail('ana@exemplo.com')).toMatchObject({ tokenVersion: 1, isEmailVerified: 1 })
+    expect(prisma.user.updateMany).toHaveBeenCalledWith({
+      where: { id: 'u1', isEmailVerified: 0 },
+      data: expect.objectContaining({ isEmailVerified: 1, tokenVersion: { increment: 1 }, password: expect.any(String) }),
+    })
+    expect(prisma.passwordResetToken.deleteMany).toHaveBeenCalledWith({ where: { userId: 'u1' } })
+  })
+
+  it('não apaga resets nem altera a senha de conta já verificada', async () => {
+    prisma.user.findFirst.mockResolvedValueOnce({ id: 'u1', email: 'ana@exemplo.com', isEmailVerified: 1 })
+    prisma.user.updateMany.mockResolvedValueOnce({ count: 0 })
+    await userForVerifiedGoogleEmail('ana@exemplo.com')
+    expect(prisma.passwordResetToken.deleteMany).not.toHaveBeenCalled()
   })
 })

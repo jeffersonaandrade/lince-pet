@@ -559,6 +559,8 @@ async function usuario(
 }
 
 export async function seedDemonstracao(prisma: PrismaClient) {
+  if (process.env.NODE_ENV === 'production') throw new Error('Seed de demonstração proibido em produção.')
+  if (process.env.SEED_DEMO !== 'true') throw new Error('Contas de demonstração exigem SEED_DEMO=true em ambiente local.')
   const senhaHash = await scrypt.make(SENHA_DEMO)
   const quando = agora()
   const especialidadeId = await mapaPorNome(prisma, 'especialidade', [

@@ -17,6 +17,7 @@ import { creating, updating } from '../lucid'
 import { canCreateAppointment } from './subscription'
 import { PLANO_PADRAO } from './assinante'
 import { APROVADO } from './aprovacoes'
+import { HttpError } from '../http'
 
 type Db = Prisma.TransactionClient | typeof prisma
 
@@ -201,10 +202,14 @@ export async function syncPlanosVeterinario(veterinarioId: string, ids: unknown[
 
 /** `related('experiencias').query().delete()` + `createMany(experiencias)`. */
 export async function replaceExperiencias(veterinarioId: string, experiencias: unknown) {
-  await prisma.experienciaVeterinario.deleteMany({ where: { veterinarioId } })
-  if (!Array.isArray(experiencias) || experiencias.length === 0) return
-  const rows = experiencias.map((exp) => {
+  if (experiencias != null && !Array.isArray(experiencias)) throw new HttpError(422, { message: 'Experiências inválidas' })
+  const items = (experiencias ?? []) as unknown[]
+  if (items.length > 30) throw new HttpError(422, { message: 'Informe no máximo 30 experiências' })
+  const rows = items.map((exp) => {
     const attrs = mergeExperiencia((exp ?? {}) as Record<string, unknown>)
+    if (String(attrs.local ?? '').length > 255 || String(attrs.cargo ?? '').length > 255 || String(attrs.descricao ?? '').length > 5000) {
+      throw new HttpError(422, { message: 'Experiência excede o tamanho permitido' })
+    }
     return creating({
       veterinarioId,
       local: attrs.local as string,
@@ -215,7 +220,11 @@ export async function replaceExperiencias(veterinarioId: string, experiencias: u
       ativo: toTinyInt(attrs.ativo),
     })
   })
-  await prisma.$transaction(rows.map((data) => prisma.experienciaVeterinario.create({ data })))
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`experiencias:${veterinarioId}`}, 0))`
+    await tx.experienciaVeterinario.deleteMany({ where: { veterinarioId } })
+    if (rows.length) await tx.experienciaVeterinario.createMany({ data: rows })
+  })
 }
 
 /** Endereço primário; senão, qualquer endereço ativo. */

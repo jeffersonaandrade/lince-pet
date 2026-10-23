@@ -7,6 +7,7 @@ export type CrmvPendente = {
   crmv: string | null;
   uf: string | null;
   enviado_em: string | null;
+  revisao: string | null;
 };
 
 export type RtPendente = {
@@ -20,9 +21,10 @@ export type RtPendente = {
   rt_crmv: string | null;
   uf: string | null;
   enviado_em: string | null;
+  revisao: string | null;
 };
 
-export type Decisao = { decisao: "aprovar" | "reprovar"; motivo?: string };
+export type Decisao = { decisao: "aprovar" | "reprovar"; motivo?: string; revisao?: string };
 
 export const AprovacoesService = {
   async listar(): Promise<{ veterinarios: CrmvPendente[]; clinicas: RtPendente[] }> {

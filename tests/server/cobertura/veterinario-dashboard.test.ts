@@ -122,7 +122,7 @@ describe('mensagens de erro', () => {
     vi.stubEnv('NODE_ENV', 'production')
     expect(estatisticasError(erro)).toEqual({
       message: 'Erro interno ao buscar estatísticas',
-      error: 'falhou',
+      error: undefined,
       stack: undefined,
     })
     expect(estatisticasError(null)).toMatchObject({ error: undefined })

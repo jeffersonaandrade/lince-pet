@@ -3,6 +3,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 const prismaMock = vi.hoisted(() => ({
   bloqueioAgenda: { findMany: vi.fn(), findFirst: vi.fn(), create: vi.fn(), delete: vi.fn() },
   agendamento: { findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+  $executeRaw: vi.fn(),
+  $transaction: vi.fn(),
 }))
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 
@@ -95,6 +97,7 @@ const rodarAfter = async () => {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  prismaMock.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(prismaMock))
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(AGORA)
   prismaMock.agendamento.update.mockImplementation(({ data }: { data: Record<string, unknown> }) => ({ ...pedido(), ...data }))

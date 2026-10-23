@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const prismaMock = vi.hoisted(() => ({
-  pushInscricao: { findMany: vi.fn(), deleteMany: vi.fn(), upsert: vi.fn() },
+  pushInscricao: { findMany: vi.fn(), deleteMany: vi.fn(), upsert: vi.fn(), count: vi.fn(), findUnique: vi.fn() },
+  $executeRaw: vi.fn(),
+  $transaction: vi.fn(),
 }))
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
 
@@ -17,7 +19,7 @@ import {
 } from '@/server/services/push'
 
 const aviso = { titulo: 'Consulta agendada', mensagem: 'Amanhã às 14:00', url: '/dashboard/tutor' }
-const aparelho = (id: string) => ({ id, endpoint: `https://push.exemplo/${id}`, p256dh: 'p', auth: 'a' })
+const aparelho = (id: string) => ({ id, endpoint: `https://fcm.googleapis.com/${id}`, p256dh: 'p', auth: 'a' })
 const erroHttp = (statusCode: number) => Object.assign(new Error('push'), { statusCode })
 
 beforeEach(() => {
@@ -27,6 +29,9 @@ beforeEach(() => {
   vi.stubEnv('VAPID_SUBJECT', 'mailto:teste@lincepet.com')
   prismaMock.pushInscricao.findMany.mockResolvedValue([aparelho('1'), aparelho('2')])
   enviarMock.mockResolvedValue({ statusCode: 201 })
+  prismaMock.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(prismaMock))
+  prismaMock.pushInscricao.findUnique.mockResolvedValue(null)
+  prismaMock.pushInscricao.count.mockResolvedValue(0)
 })
 
 afterEach(() => vi.unstubAllEnvs())
@@ -35,12 +40,13 @@ describe('enviarPush', () => {
   it('envia para todos os aparelhos do usuário com título, mensagem e link', async () => {
     const resumo = await enviarPush('u-1', aviso)
 
-    expect(prismaMock.pushInscricao.findMany).toHaveBeenCalledWith({ where: { userId: 'u-1' } })
+    expect(prismaMock.pushInscricao.findMany).toHaveBeenCalledWith({ where: { userId: 'u-1' }, take: 10, orderBy: { id: 'asc' } })
     expect(enviarMock).toHaveBeenCalledTimes(2)
     const [inscricao, corpo, opcoes] = enviarMock.mock.calls[0]
-    expect(inscricao).toEqual({ endpoint: 'https://push.exemplo/1', keys: { p256dh: 'p', auth: 'a' } })
+    expect(inscricao).toEqual({ endpoint: 'https://fcm.googleapis.com/1', keys: { p256dh: 'p', auth: 'a' } })
     expect(JSON.parse(corpo)).toEqual({ title: 'Consulta agendada', body: 'Amanhã às 14:00', url: '/dashboard/tutor' })
     expect(opcoes.vapidDetails).toEqual({ subject: 'mailto:teste@lincepet.com', publicKey: 'pub', privateKey: 'priv' })
+    expect(opcoes.timeout).toBe(5000)
     expect(resumo).toEqual({ enviados: 2, removidos: 0 })
   })
 
@@ -84,6 +90,12 @@ describe('enviarPush', () => {
     await enviarPush('u-1', aviso)
     expect(enviarMock.mock.calls[0][2].vapidDetails.subject).toBe('mailto:contato@lincepet.com')
   })
+
+  it('não envia para um endpoint arbitrário salvo antes da correção', async () => {
+    prismaMock.pushInscricao.findMany.mockResolvedValue([{ ...aparelho('1'), endpoint: 'https://127.0.0.1/internal' }])
+    expect(await enviarPush('u-1', aviso)).toEqual({ enviados: 0, removidos: 0 })
+    expect(enviarMock).not.toHaveBeenCalled()
+  })
 })
 
 describe('inscrição do aparelho', () => {
@@ -96,6 +108,19 @@ describe('inscrição do aparelho', () => {
     expect(inscricaoValida({ endpoint: valida.endpoint })).toBe(false)
     expect(inscricaoValida({ ...valida, keys: { p256dh: 'p'.repeat(300), auth: 'a' } })).toBe(false)
     expect(inscricaoValida(null)).toBe(false)
+  })
+
+  it.each(['https://127.0.0.1/x', 'https://intranet/x', 'https://fcm.googleapis.com.evil.test/x', 'https://fcm.googleapis.com:8443/x', 'https://user:pass@fcm.googleapis.com/x'])('recusa destino %s', (endpoint) => {
+    expect(inscricaoValida({ ...valida, endpoint })).toBe(false)
+  })
+
+  it('limita aparelhos sem impedir renovação de inscrição já pertencente ao usuário', async () => {
+    prismaMock.pushInscricao.count.mockResolvedValue(10)
+    await expect(salvarInscricao('u-1', valida)).rejects.toMatchObject({ status: 409 })
+    expect(prismaMock.pushInscricao.upsert).not.toHaveBeenCalled()
+    prismaMock.pushInscricao.findUnique.mockResolvedValue({ userId: 'u-1' })
+    await salvarInscricao('u-1', valida)
+    expect(prismaMock.pushInscricao.upsert).toHaveBeenCalledOnce()
   })
 
   it('salva por endpoint (o aparelho troca de dono se outro usuário entrar nele)', async () => {

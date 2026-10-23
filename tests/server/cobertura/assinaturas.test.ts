@@ -91,7 +91,8 @@ describe('trocarPlano: casos extras', () => {
 
     expect(asaas.ensureCustomerForPrestador).toHaveBeenCalled()
     expect(asaas.createSubscription.mock.calls[0][0]).toMatchObject({ customerId: 'cus_pre', externalReference: 'prestador:pre-1' })
-    expect(prismaMock.prestador.update.mock.calls[0][0].data).toMatchObject({ subscriptionPlanCode: 'pro', monthlyAppointmentsUsed: 0 })
+    expect(prismaMock.prestador.update.mock.calls[0][0].data).toMatchObject({ subscriptionPlanCode: 'pro' })
+    expect(prismaMock.prestador.update.mock.calls[0][0].data).not.toHaveProperty('monthlyAppointmentsUsed')
     expect(r).toMatchObject({ emTeste: true, checkoutUrl: null, message: 'Plano ativado no período de teste.' })
   })
 

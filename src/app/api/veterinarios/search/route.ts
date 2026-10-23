@@ -11,6 +11,6 @@ export const GET = route(async (req) => {
     return json({ veterinarios })
   } catch (error) {
     console.error('❌ [VeterinariosController] Erro em searchPublic:', error)
-    return serverError({ message: 'Erro interno do servidor', error: (error as Error).message })
+    return serverError({ message: 'Erro interno do servidor' })
   }
 })

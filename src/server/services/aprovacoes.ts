@@ -1,5 +1,6 @@
 import 'server-only'
 import vine from '@vinejs/vine'
+import { createHash } from 'node:crypto'
 import { prisma } from '../db'
 import { HttpError } from '../http'
 import { updating } from '../lucid'
@@ -24,8 +25,15 @@ export const decisaoValidator = vine.compile(
   vine.object({
     decisao: vine.enum(['aprovar', 'reprovar'] as const),
     motivo: vine.string().trim().maxLength(MAX_MOTIVO).optional().nullable(),
+    revisao: vine.string().maxLength(64),
   })
 )
+
+// updated_at tem resolução de segundos. O fingerprint também inclui os dados revisados.
+export const revisaoCrmv = (v: { crmv?: string | null; updatedAt?: Date | null }) =>
+  createHash('sha256').update(JSON.stringify([v.crmv, v.updatedAt?.toISOString()])).digest('hex')
+export const revisaoRt = (c: { rtNome?: string | null; rtCrmv?: string | null; updatedAt?: Date | null }) =>
+  createHash('sha256').update(JSON.stringify([c.rtNome, c.rtCrmv, c.updatedAt?.toISOString()])).digest('hex')
 
 /** Reprovar exige motivo; aprovar limpa o motivo anterior. */
 export function resolverDecisao(d: { decisao: 'aprovar' | 'reprovar'; motivo?: string | null }) {
@@ -65,6 +73,7 @@ export async function listarPendentes() {
       crmv: v.crmv,
       uf: ufDoCrmv(v.crmv),
       enviado_em: (v.crmvEnviadoEm ?? v.updatedAt ?? v.createdAt)?.toISOString() ?? null,
+      revisao: revisaoCrmv(v),
     })),
     clinicas: clinicas.map((c) => ({
       id: c.id,
@@ -77,6 +86,7 @@ export async function listarPendentes() {
       rt_crmv: c.rtCrmv,
       uf: ufDoCrmv(c.rtCrmv),
       enviado_em: (c.rtEnviadoEm ?? c.updatedAt)?.toISOString() ?? null,
+      revisao: revisaoRt(c),
     })),
   }
 }
@@ -93,11 +103,17 @@ const TEXTO_DECISAO = {
 } as const
 
 export async function decidirCrmv(veterinarioId: string, body: unknown) {
-  const { status, motivo } = resolverDecisao(await decisaoValidator.validate(body))
+  const d = await decisaoValidator.validate(body)
+  const { status, motivo } = resolverDecisao(d)
   const vet = await prisma.veterinario.findUnique({ where: { id: veterinarioId }, include: { user: true } })
   if (!vet) throw erro('Veterinário não encontrado', 404)
   if (vet.crmvStatus !== 'pendente') throw erro('Este CRMV não está em análise', 409)
-  await prisma.veterinario.update({ where: { id: vet.id }, data: updating({ crmvStatus: status, crmvMotivo: motivo }) })
+  if (revisaoCrmv(vet) !== d.revisao) throw erro('Dados alterados. Atualize a lista antes de decidir.', 409)
+  const salvo = await prisma.veterinario.updateMany({
+    where: { id: vet.id, crmvStatus: 'pendente', updatedAt: vet.updatedAt, crmv: vet.crmv },
+    data: updating({ crmvStatus: status, crmvMotivo: motivo }),
+  })
+  if (salvo.count !== 1) throw erro('Dados alterados. Atualize a lista antes de decidir.', 409)
   if (vet.user) {
     const texto = TEXTO_DECISAO.crmv[status]
     await avisarUsuario(vet.user, {
@@ -111,11 +127,17 @@ export async function decidirCrmv(veterinarioId: string, body: unknown) {
 }
 
 export async function decidirRt(clinicaId: string, body: unknown) {
-  const { status, motivo } = resolverDecisao(await decisaoValidator.validate(body))
+  const d = await decisaoValidator.validate(body)
+  const { status, motivo } = resolverDecisao(d)
   const clinica = await prisma.clinica.findUnique({ where: { id: clinicaId }, include: { user: true } })
   if (!clinica) throw erro('Clínica não encontrada', 404)
   if (clinica.rtStatus !== 'pendente') throw erro('Este responsável técnico não está em análise', 409)
-  await prisma.clinica.update({ where: { id: clinica.id }, data: updating({ rtStatus: status, rtMotivo: motivo }) })
+  if (revisaoRt(clinica) !== d.revisao) throw erro('Dados alterados. Atualize a lista antes de decidir.', 409)
+  const salvo = await prisma.clinica.updateMany({
+    where: { id: clinica.id, rtStatus: 'pendente', updatedAt: clinica.updatedAt, rtCrmv: clinica.rtCrmv, rtNome: clinica.rtNome },
+    data: updating({ rtStatus: status, rtMotivo: motivo }),
+  })
+  if (salvo.count !== 1) throw erro('Dados alterados. Atualize a lista antes de decidir.', 409)
   if (clinica.user) {
     const texto = TEXTO_DECISAO.rt[status]
     await avisarUsuario(clinica.user, {

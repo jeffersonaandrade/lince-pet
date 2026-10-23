@@ -15,6 +15,7 @@ import { podeEnviarEmail } from '@/server/services/canais-notificacao'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import { descreverPeriodo } from '@/server/services/pedidos-prestador'
 import { APROVADO, MENSAGEM_CRMV_EM_ANALISE } from '@/server/services/aprovacoes'
+import { bloquearAgenda, horarioCanonico } from '@/server/services/agenda-lock'
 import {
   consumeDataConsulta,
   jaPassou,
@@ -73,6 +74,8 @@ export const POST = route(async (req) => {
     if (!pet_id) {
       return badRequest({ message: 'Selecione um pet para a consulta' })
     }
+
+    if (!horarioCanonico(horario_consulta)) return badRequest({ message: 'Horário inválido. Use HH:mm.' })
 
     const pet = await prisma.pet.findFirst({ where: { id: pet_id, tutorId: tutor.id } })
     if (!pet) {
@@ -185,6 +188,16 @@ export const POST = route(async (req) => {
     }
 
     let agendamento = await prisma.$transaction(async (tx) => {
+      await bloquearAgenda(tx, 'veterinario', veterinario_id)
+      const ocupado = await tx.agendamento.findFirst({
+        where: {
+          veterinarioId: veterinario_id,
+          dataConsulta: dataConsulta.toSQLDate(),
+          horarioConsulta: horario_consulta,
+          status: { in: ['pendente', 'confirmado', 'em andamento'] },
+        },
+      })
+      if (ocupado) throw new HttpError(409, { message: 'Horário já ocupado. Escolha outro horário.' })
       const novo = await tx.agendamento.create({
         data: creating({
           tutorId: tutor.id,
@@ -328,13 +341,14 @@ export const POST = route(async (req) => {
       },
     })
   } catch (error) {
+    if (error instanceof HttpError) return json(error.body, error.status)
     console.error('❌ [Agendamento] Erro ao criar agendamento:', error)
     console.error('❌ [Agendamento] Stack:', (error as Error).stack)
     console.error('❌ [Agendamento] Detalhes:', JSON.stringify(error, null, 2))
 
     return serverError({
       message: 'Erro interno do servidor ao criar agendamento',
-      error: (error as Error).message,
+      error: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined,
       details: process.env.NODE_ENV === 'development' ? error : undefined,
     })
   }
