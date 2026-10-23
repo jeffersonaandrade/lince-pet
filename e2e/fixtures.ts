@@ -27,8 +27,8 @@ export const ipUnico = () =>
   `10.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}.${1 + Math.floor(Math.random() * 250)}`
 
 export const test = base.extend({
-  extraHTTPHeaders: async ({}, use) => {
-    await use({ 'x-forwarded-for': ipUnico() })
+  extraHTTPHeaders: async ({}, fornecer) => {
+    await fornecer({ 'x-forwarded-for': ipUnico() })
   },
 })
 
