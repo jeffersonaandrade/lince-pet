@@ -94,8 +94,9 @@ export default function TutorSignup() {
   };
 
   const getMaxDate = (): string => {
-    const today = new Date();
-    return formatDateToISO(today);
+    const limite = new Date();
+    limite.setFullYear(limite.getFullYear() - 18);
+    return formatDateToISO(limite);
   };
 
   return (
@@ -237,6 +238,7 @@ export default function TutorSignup() {
                       selectedDate={formData.dataNascimento ? new Date(formData.dataNascimento + "T12:00:00") : null}
                       onSelect={(isoDate) => {
                         setFormData((prev) => ({ ...prev, dataNascimento: isoDate }));
+                        setError((prev) => (prev?.fieldErrors?.dataNascimento ? null : prev));
                         setShowDatePicker(false);
                       }}
                       onClose={() => setShowDatePicker(false)}

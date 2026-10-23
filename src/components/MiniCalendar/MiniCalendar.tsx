@@ -18,7 +18,10 @@ interface MiniCalendarProps {
 }
 
 const MiniCalendar: React.FC<MiniCalendarProps> = ({ selectedDate, onSelect, onClose, minDate, maxDate, showYearPicker = false }) => {
-  const [currentMonth, setCurrentMonth] = useState(moment(selectedDate || new Date()).startOf('month'));
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const inicial = selectedDate ?? (maxDate && moment(maxDate).isBefore(moment()) ? moment(maxDate).toDate() : new Date());
+    return moment(inicial).startOf('month');
+  });
   
   const today = moment().startOf('day');
   const minMoment = minDate ? moment(minDate).startOf('day') : null;
@@ -58,7 +61,7 @@ const MiniCalendar: React.FC<MiniCalendarProps> = ({ selectedDate, onSelect, onC
               onChange={(e) => setCurrentMonth(currentMonth.clone().year(parseInt(e.target.value)))}
               className={styles.yearSelect}
             >
-              {Array.from({ length: 120 }, (_, i) => moment().year() - i).map(year => (
+              {Array.from({ length: 120 }, (_, i) => Math.min(moment().year(), maxMoment?.year() ?? Infinity) - i).map(year => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
