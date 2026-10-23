@@ -1,7 +1,9 @@
 # Graph Report - Lince-Pet-main  (2026-10-23)
 
 ## Corpus Check
-- cluster-only mode — file stats not available
+- 639 files · ~310,995 words
+- Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 62 file(s) not represented in the graph (top: .css 48, .mdc 6, (none) 4)
 
 ## Summary
 - 3813 nodes · 11319 edges · 250 communities (163 shown, 87 thin omitted)
@@ -9,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0bb5638d`
+- Built from commit: `408e80e8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -278,14 +280,14 @@
 ## Surprising Connections (you probably didn't know these)
 - `Relacoes User->tutor/veterinario/clinica como listas` --conceptually_related_to--> `requireUser()`  [INFERRED]
   docs/ARQUITETURA.md → src/server/auth/session.ts
-- `Banco` --references--> `User`  [INFERRED]
-  README.md → src/contexts/AuthContext.tsx
 - `e2e (Playwright)` --references--> `globalSetup()`  [INFERRED]
   README.md → e2e/global-setup.ts
+- `Webhook Asaas idempotente via webhook_events.event_id` --implements--> `POST`  [EXTRACTED]
+  docs/ARQUITETURA.md → src/app/api/webhooks/asaas/route.ts
+- `Banco` --references--> `User`  [INFERRED]
+  README.md → src/contexts/AuthContext.tsx
 - `Mapa do repositório` --references--> `requireUser()`  [INFERRED]
   README.md → src/server/auth/session.ts
-- `Banco` --references--> `creating()`  [INFERRED]
-  README.md → src/server/lucid.ts
 
 ## Import Cycles
 - None detected.
@@ -948,7 +950,7 @@ Cohesion: 0.67
 Nodes (3): Required Behavior, Seam Rules, What Counts as a Useful Seam
 
 ## Knowledge Gaps
-- **19 isolated node(s):** `postcss`, `@prisma/client`, `react-big-calendar`, `recharts`, `@stryker-mutator/core` (+14 more)
+- **19 isolated node(s):** `@prisma/client`, `react-big-calendar`, `recharts`, `@stryker-mutator/core`, `@stryker-mutator/vitest-runner` (+14 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1548 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **87 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -956,16 +958,16 @@ Nodes (3): Required Behavior, Seam Rules, What Counts as a Useful Seam
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `next` connect `react` to `ok`, `services/bloqueios.ts`, `requireUser`, `veterinario/[id]/page.tsx`, `handleApiError`, `dashboard/veterinario/page.tsx`, `useAuth`, `laudos.ts`, `pedidos-prestador.ts`, `services/encaminhamentos.ts`, `TutorDashboard.tsx`, `onboarding/page.tsx`, `services/clinicas.ts`, `exames/page.tsx`, `services/exames.ts`, `Regras de negocio (docs/ARQUITETURA.md)`, `package.json`, `clinica/perfil/page.tsx`, `NotificationBell.tsx`, `next.config.ts`, `assinatura-regras.ts`, `push.ts`, `unauthorized`, `jwt.ts`, `contato/page.tsx`, `erros.ts`, `google.ts`, `rate-limit.ts`, `AlterarPlano.tsx`, `PaginaInstitucional.tsx`, `vinculos.ts`, `exames/[id]/page.tsx`, `precos/page.tsx`, `vitest`, `env`, `google-agenda.test.ts`, `LottieLoading.tsx`, `servicos/page.tsx`?**
-  _High betweenness centrality (0.223) - this node is a cross-community bridge._
+  _High betweenness centrality (0.227) - this node is a cross-community bridge._
 - **Are the 2 inferred relationships involving `requireUser()` (e.g. with `Relacoes User->tutor/veterinario/clinica como listas` and `Mapa do repositório`) actually correct?**
   _`requireUser()` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **What connects `postcss`, `@prisma/client`, `react-big-calendar` to the rest of the system?**
+- **What connects `@prisma/client`, `react-big-calendar`, `recharts` to the rest of the system?**
   _19 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `ok` be split into smaller, more focused modules?**
   _Cohesion score 0.0415542024982738 - nodes in this community are weakly interconnected._
 - **Why does `vitest` connect `vitest` to `services/bloqueios.ts`, `requireUser`, `react`, `veterinario/[id]/page.tsx`, `dashboard/veterinario/page.tsx`, `useAuth`, `laudos.ts`, `pedidos-prestador.ts`, `google-calendar.ts`, `services/encaminhamentos.ts`, `services/veterinarios.ts`, `services/clinicas.ts`, `agenda-tutor.ts`, `whatsapp.ts`, `demo.ts`, `services/onboarding.ts`, `Regras de negocio (docs/ARQUITETURA.md)`, `package.json`, `cobertura/bloqueios.test.ts`, `services/prontuario.ts`, `services/assinaturas.ts`, `storage.ts`, `assinatura-regras.ts`, `push.ts`, `veterinario-dashboard.ts`, `asaas-webhook.ts`, `pedidos-prestador-criacao.test.ts`, `services/aprovacoes.ts`, `unauthorized`, `HttpError`, `exames-avisos.ts`, `jwt.ts`, `cobertura/prestadores.test.ts`, `asaas.ts`, `services/auth.ts`, `seed.ts`, `migrar-dados-mysql.ts`, `erros.ts`, `services/anotacoes.ts`, `server/encaminhamentos.test.ts`, `google.ts`, `rate-limit.ts`, `server/prestadores.test.ts`, `subscription.ts`, `vinculos.ts`, `server/assinaturas.test.ts`, `global-setup.ts`, `whatsapp-mensagens.ts`, `exames.test.ts`, `google-agenda.test.ts`, `services/brazilapi.ts`, `exames-regras.test.ts`, `motivos-cancelamento.ts`, `profissional.ts`, `health/route.ts`, `cobertura/assinaturas.test.ts`, `lembretes.test.ts`?**
-  _High betweenness centrality (0.078) - this node is a cross-community bridge._
+  _High betweenness centrality (0.073) - this node is a cross-community bridge._
 - **Should `services/bloqueios.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.04723809523809524 - nodes in this community are weakly interconnected._
-- **Why does `react` connect `react` to `veterinario/[id]/page.tsx`, `handleApiError`, `dashboard/veterinario/page.tsx`, `useAuth`, `veterinarios/bloqueios.ts`, `TutorDashboard.tsx`, `onboarding/page.tsx`, `agenda-tutor.ts`, `exames/page.tsx`, `CityAutocomplete.tsx`, `package.json`, `clinica/perfil/page.tsx`, `NotificationBell.tsx`, `api.tsx`, `ProntuarioPet.tsx`, `erros.ts`, `AlterarPlano.tsx`, `PaginaInstitucional.tsx`, `exames/[id]/page.tsx`, `motivos-cancelamento.ts`, `AppointmentItem.tsx`?**
-  _High betweenness centrality (0.050) - this node is a cross-community bridge._
+- **Should `requireUser` be split into smaller, more focused modules?**
+  _Cohesion score 0.08109651627641348 - nodes in this community are weakly interconnected._
