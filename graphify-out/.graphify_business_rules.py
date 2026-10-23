@@ -708,6 +708,30 @@ avisos_impl = {
 for code_id, rs in avisos_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 
+login_nodes = [
+    rule("rule_login_volta_origem", "Login devolve a pagina de origem (so caminhos do site)",
+         "Pagina protegida sem sessao manda para /login?next=<caminho atual> (urlDeLogin); apos entrar volta ao caminho com busca e ancora. destinoSeguro recusa //outro.site, URL absoluta, barra invertida e /login (vai para a home)."),
+    rule("rule_emails_levam_consultas_tutor", "E-mails de consulta levam a /dashboard/tutor#consultas",
+         "Confirmacao, remarcacao e lembrete apontam para as Proximas Consultas e o Historico no painel do tutor (URL_CONSULTAS_TUTOR); o painel rola ate a ancora depois de carregar."),
+]
+new_nodes += [n for n in login_nodes if n["id"] not in {x["id"] for x in new_nodes}]
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in login_nodes]
+new_edges += [edge("rule_emails_levam_consultas_tutor", "rule_site_sem_link_quebrado", "references")]
+new_edges += [edge("rule_emails_levam_consultas_tutor", "rule_login_volta_origem", "references")]
+login_impl = {
+    "src_lib_destino_login": ["rule_login_volta_origem"],
+    "src_app_login_page": ["rule_login_volta_origem"],
+    "tests_lib_destino_login_test": ["rule_login_volta_origem"],
+    "e2e_fase1_login_spec": ["rule_login_volta_origem", "rule_emails_levam_consultas_tutor"],
+    "src_lib_agenda_tutor": ["rule_emails_levam_consultas_tutor"],
+    "src_app_dashboard_tutor_components_tutordashboard": ["rule_emails_levam_consultas_tutor"],
+    "src_server_emails_appointment_confirmation": ["rule_emails_levam_consultas_tutor"],
+    "src_server_emails_appointment_rescheduled": ["rule_emails_levam_consultas_tutor"],
+    "src_server_emails_lembrete_consulta": ["rule_emails_levam_consultas_tutor"],
+}
+for code_id, rs in login_impl.items():
+    impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

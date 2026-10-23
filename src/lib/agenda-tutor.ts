@@ -1,6 +1,10 @@
 import type { AgendamentoTutor, DisponibilidadeResponse } from "@/services/agendamentos/agendamentos";
 import { dataParaIso, diaDaSemana, normalizarGrade, type GradeSemanal } from "./horarios";
 
+/** Âncora das "Próximas Consultas" no painel do tutor; os e-mails de consulta apontam para ela. */
+export const ANCORA_CONSULTAS = "consultas";
+export const URL_CONSULTAS_TUTOR = `https://www.lincepet.com.br/dashboard/tutor#${ANCORA_CONSULTAS}`;
+
 const STATUS_PROXIMAS = new Set(["pendente", "confirmado", "em andamento"]);
 const STATUS_CONCLUIDA = new Set(["realizado", "concluido", "concluida"]);
 

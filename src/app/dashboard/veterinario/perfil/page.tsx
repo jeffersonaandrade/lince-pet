@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { VeterinarioProfileService, type LocalAtendimento } from "@/services/veterinarios/profile";
 import { getOnboardingProgress, getEspecialidades, getPlanos, type Experience } from "@/services/veterinarios/veterinarios";
@@ -249,7 +250,7 @@ export default function PerfilVeterinario() {
     if (loading) return;
 
     if (!user || user.userType !== "veterinario") {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
 

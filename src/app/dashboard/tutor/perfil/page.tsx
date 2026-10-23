@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { TutorService } from "@/services/tutor/tutor";
 import { PreferenciasNotificacao, ConexaoGoogleAgenda } from "@/components/PreferenciasNotificacao/PreferenciasNotificacao";
@@ -53,7 +54,7 @@ export default function PerfilTutor() {
     useEffect(() => {
         if (loading) return;
         if (!user || user.userType !== "tutor") {
-            router.push("/login");
+            router.push(urlDeLogin());
             return;
         }
         if (user.nome) {

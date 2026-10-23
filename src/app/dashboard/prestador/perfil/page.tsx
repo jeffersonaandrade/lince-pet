@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { useAuth } from "@/contexts/AuthContext";
 import { PrestadoresService, type PerfilPrestador } from "@/services/prestadores/prestadores";
 import { FormApresentacao, FormEndereco, FormServicos } from "@/components/Prestador/FormsPrestador";
@@ -34,7 +35,7 @@ export default function PerfilPrestadorPage() {
 
   useEffect(() => {
     if (loading) return;
-    if (!user) return router.push("/login");
+    if (!user) return router.push(urlDeLogin());
     if (user.userType !== "prestador") return router.push("/");
     carregar().catch(() => mostrarAviso("Não foi possível carregar seu perfil.", "error"));
   }, [user, loading, router, carregar, mostrarAviso]);

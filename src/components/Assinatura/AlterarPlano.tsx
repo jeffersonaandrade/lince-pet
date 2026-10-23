@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import Image from "next/image";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -40,7 +41,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
     if (user.userType !== tipo) {

@@ -1,5 +1,6 @@
 import 'server-only'
 import { e } from './edge'
+import { URL_CONSULTAS_TUTOR } from '@/lib/agenda-tutor'
 
 export type AppointmentRescheduledData = {
   nomeTutor: string
@@ -260,7 +261,7 @@ ${
         </div>
 
         <div class="button-container">
-          <a href="https://www.lincepet.com.br/meus-agendamentos" class="button">Ver Meus Agendamentos</a>
+          <a href="${URL_CONSULTAS_TUTOR}" class="button">Ver Meus Agendamentos</a>
         </div>
 
         <p style="margin-top: 30px; font-size: 14px; text-align: center;">

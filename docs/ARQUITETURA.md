@@ -114,6 +114,8 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 ### Site institucional e links
 
 - **Sem link quebrado:** Header e Footer não têm `href="#"` nem apontam para rota inexistente; página que ainda não existe não ganha link. `tests/server/site-links.test.ts` garante isso.
+- **Login devolve à página de origem:** página protegida sem sessão manda para `/login?next=<caminho atual>` (`urlDeLogin` em `src/lib/destino-login.ts`) e, depois de entrar, o login volta para esse caminho, com busca e âncora. Só vale caminho do próprio site (`destinoSeguro`); `//outro.site`, URL absoluta, `\` ou `/login` caem na home.
+- **E-mails de consulta levam às consultas do tutor:** confirmação, remarcação e lembrete apontam para `/dashboard/tutor#consultas` (`URL_CONSULTAS_TUTOR` em `src/lib/agenda-tutor.ts`), onde ficam "Próximas Consultas" e o "Histórico de Consultas"; o painel rola até as próximas consultas depois de carregar.
 - **Contatos centralizados:** e-mail, WhatsApp e redes sociais ficam em `src/config/site.ts`. Campo vazio não vira link (mostra "Em breve"); rede social sem URL não aparece no rodapé.
 - **Links externos** (WhatsApp, redes) abrem em nova aba (`target="_blank" rel="noopener noreferrer"`).
 - **Ano vigente no copyright:** o rodapé do site (`src/components/Footer/AnoAtual.tsx`, client, para não ficar preso ao ano do build) e os e-mails de consulta (`src/server/emails/*`) mostram sempre o ano atual. `tests/server/site-links.test.ts` falha se houver "© 20xx" fixo em `src`.

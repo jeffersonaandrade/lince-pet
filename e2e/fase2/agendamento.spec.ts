@@ -211,6 +211,6 @@ test.describe('sem login', () => {
     test.skip(!(await horario.isVisible().catch(() => false)), 'sem horário livre')
     await horario.click()
     await page.getByRole('button', { name: 'Agendar', exact: true }).click()
-    await expect(page).toHaveURL(/\/login$/)
+    await expect(page, 'depois de entrar, volta para a agenda do vet').toHaveURL(/\/login\?next=%2Fveterinario%2F/)
   })
 })

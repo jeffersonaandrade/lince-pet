@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { CustomCheckbox } from "@/components/ui/CustomCheckbox/CustomCheckbox";
 import { Check } from "lucide-react";
 import {
@@ -134,7 +135,7 @@ export default function ClinicaOnboardingPage() {
   useEffect(() => {
     if (loading) return;
     if (!user) {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
     if (user.userType !== "clinica") {

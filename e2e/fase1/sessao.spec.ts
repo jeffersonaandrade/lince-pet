@@ -1,4 +1,4 @@
-import { abrirMenuDaConta, cadastrarTutorPelaTela, CONTAS, entrar, expect, SEM_SESSAO, sessao, test } from '../fixtures'
+import { abrirMenuDaConta, cadastrarTutorPelaTela, CONTAS, entrar, expect, loginQueVoltaPara, SEM_SESSAO, sessao, test } from '../fixtures'
 
 const PAINEIS = ['/dashboard/tutor', '/dashboard/veterinario', '/dashboard/clinica', '/dashboard/prestador']
 const TELAS_PRIVADAS = [...PAINEIS, ...PAINEIS.map((p) => `${p}/perfil`)]
@@ -16,7 +16,7 @@ test.describe('sem login', () => {
         }
       })
       await page.goto(tela)
-      await expect(page).toHaveURL(/\/login$/)
+      await expect(page).toHaveURL(loginQueVoltaPara(tela))
       await expect(page.getByRole('button', { name: 'Entrar' })).toBeVisible()
       expect(privadas, 'nenhuma rota privada respondeu 200 para o visitante').toEqual([])
     })
@@ -77,12 +77,12 @@ test.describe('logout', () => {
     await page.getByRole('button', { name: 'Sair' }).click()
     await expect(page.getByRole('link', { name: 'Entrar' })).toBeVisible()
     await page.goto(CONTAS.tutor.dashboard)
-    await expect(page).toHaveURL(/\/login$/)
+    await expect(page).toHaveURL(loginQueVoltaPara(CONTAS.tutor.dashboard))
 
     const copia = await browser.newContext({ storageState: cookiesAntes })
     const outra = await copia.newPage()
     await outra.goto(CONTAS.tutor.dashboard)
-    await expect(outra, 'token roubado antes do logout não vale mais').toHaveURL(/\/login$/)
+    await expect(outra, 'token roubado antes do logout não vale mais').toHaveURL(loginQueVoltaPara(CONTAS.tutor.dashboard))
     await copia.close()
 
     await entrar(page, email)

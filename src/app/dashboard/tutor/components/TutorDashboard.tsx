@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import Image from "next/image";
 import Link from "next/link";
 import { ClipboardList, Clock, Dog, History, Pencil, Send, Star, User as UserIcon } from "lucide-react";
@@ -18,7 +19,7 @@ import { useCancelamentoConsulta } from "@/hook/tutor/useCancelamentoConsulta";
 import { useAvaliacaoConsulta } from "@/hook/tutor/useAvaliacaoConsulta";
 import { usePetsTutor } from "@/hook/tutor/usePetsTutor";
 import { useFotoTutor } from "@/hook/tutor/useFotoTutor";
-import { consultaConcluida } from "@/lib/agenda-tutor";
+import { ANCORA_CONSULTAS, consultaConcluida } from "@/lib/agenda-tutor";
 import { PORTES_PET } from "@/config/pets";
 import { AppointmentItem } from "./AppointmentItem";
 import { FavoritesList } from "./FavoritesList";
@@ -46,10 +47,15 @@ export function TutorDashboard() {
   const { carregar } = agenda;
   useEffect(() => {
     if (loading) return;
-    if (!user) router.push("/login");
+    if (!user) router.push(urlDeLogin());
     else if (!ehTutor) router.push("/");
     else carregar();
   }, [loading, user, ehTutor, router, carregar]);
+
+  useEffect(() => {
+    if (agenda.carregando || window.location.hash !== `#${ANCORA_CONSULTAS}`) return;
+    document.getElementById(ANCORA_CONSULTAS)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [agenda.carregando]);
 
   if (loading) {
     return (
@@ -183,7 +189,7 @@ export function TutorDashboard() {
               </div>
             </div>
 
-            <div className={styles.card}>
+            <div id={ANCORA_CONSULTAS} className={`${styles.card} scroll-mt-24`}>
               <div className={styles.cardHeader}>
                 <h2 className={tituloSecao}>
                   <Clock size={20} className={styles.metaInfoIcon} />

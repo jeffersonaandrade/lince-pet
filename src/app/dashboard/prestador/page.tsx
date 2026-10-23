@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { Star } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -29,7 +30,7 @@ export default function DashboardPrestador() {
 
   useEffect(() => {
     if (loading) return;
-    if (!user) return router.push("/login");
+    if (!user) return router.push(urlDeLogin());
     if (user.userType !== "prestador") return router.push("/");
 
     (async () => {

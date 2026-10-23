@@ -1,4 +1,4 @@
-﻿import { abrirMenuDaConta, CONTAS, emailNoMenu, entrar, expect, test, type Perfil } from '../fixtures'
+import { abrirMenuDaConta, CONTAS, SENHA, emailNoMenu, entrar, expect, test, type Perfil } from '../fixtures'
 
 const ERRO_LOGIN = 'Credenciais inválidas. Tente novamente.'
 const PERFIS: Perfil[] = ['tutor', 'veterinario', 'clinica', 'prestador']
@@ -33,6 +33,26 @@ test.describe('login', () => {
     await expect(page).toHaveURL('/')
     await abrirMenuDaConta(page)
     await expect(emailNoMenu(page, CONTAS.tutor.email)).toBeVisible()
+  })
+
+  test('link do e-mail sem sessão: o login devolve às próximas consultas', async ({ page }) => {
+    await page.goto('/dashboard/tutor#consultas')
+    await expect(page).toHaveURL(/\/login\?next=%2Fdashboard%2Ftutor%23consultas$/)
+    await page.getByLabel('Email').fill(CONTAS.tutor.email)
+    await page.getByLabel('Senha', { exact: true }).fill(SENHA)
+    await page.getByRole('button', { name: 'Entrar' }).click()
+    await expect(page).toHaveURL(/\/dashboard\/tutor#consultas$/)
+    const card = page.locator('#consultas')
+    await expect(card.getByRole('heading', { name: 'Próximas Consultas' })).toBeVisible()
+    await expect(card).toBeInViewport()
+  })
+
+  test('next para outro site é ignorado e o login vai para a home', async ({ page }) => {
+    await page.goto('/login?next=%2F%2Fmalicioso.com')
+    await page.getByLabel('Email').fill(CONTAS.tutor.email)
+    await page.getByLabel('Senha', { exact: true }).fill(SENHA)
+    await page.getByRole('button', { name: 'Entrar' }).click()
+    await expect(page).toHaveURL('/')
   })
 
   test('login pela tela: a resposta que chega ao navegador não traz a senha nem tokens', async ({ page }) => {

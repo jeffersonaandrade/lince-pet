@@ -15,6 +15,10 @@ export type Perfil = keyof typeof CONTAS
 
 export const sessao = (perfil: Perfil) => `e2e/.auth/${perfil}.json`
 
+/** URL do login que devolve a `destino` depois de entrar. */
+export const loginQueVoltaPara = (destino: string) =>
+  new RegExp(`/login\\?next=${encodeURIComponent(destino).replace(/[.*()]/g, '\\$&')}$`)
+
 /** Contextos novos herdam o `storageState` do `test.use`; este força um visitante sem login. */
 export const SEM_SESSAO = { cookies: [], origins: [] }
 

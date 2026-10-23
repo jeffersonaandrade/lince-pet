@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { useEffect, useState, useMemo, useRef } from "react";
 import {
   ClinicaDashboardService,
@@ -533,7 +534,7 @@ export default function ClinicaDashboard() {
   useEffect(() => {
     if (loading) return;
     if (!usuarioId) {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
     if (tipoUsuario !== "clinica") {

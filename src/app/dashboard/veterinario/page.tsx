@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import {
   getOnboardingProgress,
@@ -401,7 +402,7 @@ export default function VeterinarioDashboard() {
     if (loading) return;
 
     if (!user) {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import Image from "next/image";
 import {
   Star,
@@ -258,7 +259,7 @@ export default function VeterinarioProfile() {
 
   const handleToggleFavorite = async () => {
     if (!user || user.userType !== 'tutor') {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
     if (!veterinario) return;
@@ -426,7 +427,7 @@ export default function VeterinarioProfile() {
   const handleAgendar = () => {
     if (!user) {
       setErroAgendamento("Você precisa estar logado para agendar uma consulta");
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
     if (!selectedTimeSlot) {

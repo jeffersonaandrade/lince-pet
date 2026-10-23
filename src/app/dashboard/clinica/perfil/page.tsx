@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import {
@@ -227,7 +228,7 @@ export default function PerfilClinica() {
     useEffect(() => {
         if (loading) return;
         if (tipoUsuario !== "clinica") {
-            router.push("/login");
+            router.push(urlDeLogin());
             return;
         }
         if (nomeDoUsuario) setNome(nomeDoUsuario);

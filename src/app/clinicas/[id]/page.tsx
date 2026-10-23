@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import Image from "next/image";
 import Header from "@/components/Header/Header";
 import { useAuth } from "@/contexts/AuthContext";
@@ -239,7 +240,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
 
   const handleAgendar = () => {
     if (!user) {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
     setShowAgendamentoModal(true);
@@ -307,7 +308,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
 
   const handleToggleFavorite = async () => {
     if (!user || user.userType !== 'tutor') {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
     if (!clinic) return;

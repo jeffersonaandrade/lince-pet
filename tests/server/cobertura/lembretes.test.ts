@@ -139,7 +139,8 @@ describe('e-mail da véspera', () => {
       logoHtml: '<img alt="logo" />',
     })
     expect(html).toContain('Sua consulta é amanhã')
-    expect(html).toContain('Olá, Ana!')
+    expect(html).toContain('Olá, <strong>Ana</strong>!')
+    expect(html).toContain('/dashboard/tutor#consultas')
     expect(html).toContain('Rex &lt;b&gt;')
     expect(html).not.toContain('Rex <b>')
     for (const v of ['João Souza', '10/10/2026', '14:00', 'Clínica Centro', '<img alt="logo" />']) expect(html).toContain(v)

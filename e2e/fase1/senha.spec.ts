@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test'
 import { tokenDeRedefinicao } from '../db'
-import { cadastrarTutorPelaTela, entrar, expect, SEM_SESSAO, SENHA, sair, test } from '../fixtures'
+import { cadastrarTutorPelaTela, entrar, expect, loginQueVoltaPara, SEM_SESSAO, SENHA, sair, test } from '../fixtures'
 
 const MENSAGEM_GENERICA = /Se esse e-mail estiver cadastrado|Se o e-mail estiver cadastrado/i
 
@@ -50,7 +50,7 @@ test.describe('esqueci a senha', () => {
 
     await test.step('o navegador que estava logado perde a sessão', async () => {
       await paginaAntiga.reload()
-      await expect(paginaAntiga).toHaveURL(/\/login$/)
+      await expect(paginaAntiga).toHaveURL(loginQueVoltaPara('/dashboard/tutor'))
       await antiga.close()
     })
 

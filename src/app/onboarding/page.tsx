@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
+import { urlDeLogin } from "@/lib/destino-login";
 import { CustomCheckbox } from "@/components/ui/CustomCheckbox/CustomCheckbox";
 import Dropdown from "@/components/ui/Dropdown";
 import { Check, Plus, MapPin, X, Clock, OctagonAlert } from "lucide-react";
@@ -461,7 +462,7 @@ export default function OnboardingPage() {
     if (loading) return;
 
     if (!user) {
-      router.push("/login");
+      router.push(urlDeLogin());
       return;
     }
 

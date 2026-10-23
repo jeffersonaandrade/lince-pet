@@ -8,6 +8,7 @@ import { login } from "@/services/auth/auth";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { mensagemDaApi } from "@/lib/erros";
+import { destinoSeguro } from "@/lib/destino-login";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -37,7 +38,7 @@ export default function LoginPage() {
           // Se falhar, não bloqueia o fluxo de login — apenas logamos para diagnóstico
           console.warn("checkAuth falhou após login:", e);
         }
-        router.replace("/");
+        router.replace(destinoSeguro(new URLSearchParams(window.location.search).get("next")));
       }
     } catch (error) {
       const limite = (error as { response?: { status?: number } })?.response?.status === 429;
