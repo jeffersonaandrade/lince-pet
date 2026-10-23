@@ -115,7 +115,7 @@ describe('login', () => {
     expect(mocks.verifyPassword).toHaveBeenCalledWith(usuarioBanco.password, 'Senha@123')
     expect(res).toEqual({
       message: 'Login realizado com sucesso',
-      user: { id: 'user-1', email: 'Ana@Exemplo.com', userType: 'tutor', nome: 'Ana' },
+      user: { id: 'user-1', email: 'Ana@Exemplo.com', userType: 'tutor', nome: 'Ana', isAdmin: false },
       token: 'jwt-falso',
     })
     expect(JSON.stringify(res)).not.toContain('scrypt')

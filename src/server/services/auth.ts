@@ -85,6 +85,7 @@ export async function login(email: string, password: string) {
       email: user.email,
       userType: user.userType,
       nome: user.nome,
+      isAdmin: user.isAdmin === 1,
     },
     token,
   }
