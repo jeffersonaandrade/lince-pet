@@ -60,6 +60,10 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 
 Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/rules/graphify.mdc`).
 
+### Entrega e versionamento
+
+- **Commit e push direto na main autorizados:** autorização do usuário registrada em 23/10/2026, válida para os trabalhos autorizados deste projeto enquanto não for revogada. Ao finalizar, executar as verificações pertinentes, commitar as alterações e fazer push diretamente em `main`, sem pedir nova confirmação para essas ações. Atualizar as referências do remoto e integrar alterações existentes antes do push, preservando o histórico e o trabalho de outras pessoas; não usar force-push. Informar o commit enviado e os resultados ou pendências da validação. A autorização de versionamento não amplia o escopo da tarefa nem equivale a confirmar que o deploy em produção terminou.
+
 ### Bloqueio pontual de agenda
 
 - **Grade semanal x bloqueio pontual:** a grade semanal é recorrente e não é alterada pelo bloqueio. O bloqueio vale só para as datas informadas (bloquear 15/10 não afeta 22/10).

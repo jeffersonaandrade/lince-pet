@@ -5,6 +5,12 @@ alwaysApply: true
 
 This project has a graphify knowledge graph at graphify-out/.
 
+## Entrega autorizada pelo usuário
+
+- Ao concluir trabalho autorizado neste projeto, executar as verificações pertinentes, commitar e fazer push direto na `main`, sem pedir nova confirmação. Autorização registrada em 23/10/2026, enquanto não revogada.
+- Atualizar o remoto e integrar alterações existentes preservando histórico e trabalho de terceiros; não usar force-push. Relatar o commit enviado e os resultados ou pendências dos testes. Push não confirma o término do deploy.
+- Fonte: seção "Entrega e versionamento" de `docs/ARQUITETURA.md`; nó `rule_entrega_commit_push_main` no Graphify.
+
 **MANDATORY: Before using Read, Grep, Glob, or Bash to explore the codebase, you MUST run graphify first:**
 - `graphify query "<question>"` — scoped subgraph for any codebase or architecture question
 - `graphify path "<A>" "<B>"` — dependency path between two symbols

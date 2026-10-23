@@ -781,6 +781,13 @@ exames_impl = {
 for code_id, rs in exames_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 
+entrega_nodes = [
+    rule("rule_entrega_commit_push_main", "Entrega: commit e push direto na main autorizados",
+         "Autorizacao do usuario em 23/10/2026, enquanto nao revogada: ao concluir trabalho autorizado neste projeto, executar verificacoes pertinentes, commitar e fazer push direto na main sem pedir nova confirmacao. Atualizar remoto e integrar alteracoes existentes preservando historico e trabalho de terceiros, sem force-push. Relatar commit e resultados ou pendencias; push nao confirma termino do deploy. Regra operacional tambem registrada em .cursor/rules/graphify.mdc."),
+]
+new_nodes += entrega_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in entrega_nodes]
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 
