@@ -374,7 +374,9 @@ describe('resetPassword', () => {
 })
 
 describe('Google com e-mail comprovado', () => {
-  beforeEach(() => prisma.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(prisma)))
+  beforeEach(() => {
+    prisma.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(prisma))
+  })
 
   it('revoga senha, sessões e resets do cadastro não verificado antes de emitir sessão', async () => {
     prisma.user.findFirst.mockResolvedValueOnce({ id: 'u1', email: 'ana@exemplo.com', isEmailVerified: 0 })

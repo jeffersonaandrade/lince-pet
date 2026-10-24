@@ -812,7 +812,7 @@ new_edges += [edge("src_server_services_asaas_webhook", "finding_asaas_cancelame
 
 cancelamento_nodes = [
     rule("concept_assinatura_banco_acesso_e_cobranca", "Assinatura: plano de acesso no banco nao comprova pagamento",
-         "subscription_plan_code em veterinarios/clinicas/prestadores governa acesso; subscriptions registra recorrencia e trial_end. Active pode ser teste; cortesias legadas nao tem subscriptions. Veterinario pro legado corresponde ao nivel Starter; vet_pro/pro_plus ao superior. Prestador pro usa outra categoria. MCP prezaxlfnpzirpbaodns em 24/10/2026 confirmou esses estados e aplicou 20261024180000_asaas_cancelamentos com historicos Prisma/Supabase e RLS verificados, sem alterar planos. Evidencias em docs/PLANOS-E-MIGRACAO-SUPABASE-2026-10-24.md. Default pro legado no banco nao deve ser confundido com nova contratacao paga."),
+         "subscription_plan_code em veterinarios/clinicas/prestadores governa acesso; subscriptions registra recorrencia e trial_end. Active pode ser teste; cortesias legadas nao tem subscriptions. Veterinario pro legado corresponde ao nivel Starter; vet_pro/pro_plus ao superior. Prestador pro usa outra categoria. MCP prezaxlfnpzirpbaodns em 24/10/2026 confirmou esses estados e aplicou 20261024180000_asaas_cancelamentos com historicos Prisma/Supabase e RLS verificados, sem alterar planos. Evidencias em docs/PLANOS-E-MIGRACAO-SUPABASE-2026-10-24.md. Default legado pro foi corrigido para none em 24/10/2026 sem mudar contas existentes; plano de acesso nao comprova contratacao paga."),
     rule("rule_asaas_cancelamento_reconciliacao", "Asaas: fila duravel de cancelamento com lease e backoff",
          "asaas_cancelamentos registra pedido antes de HTTP; lease 2min, ate tres jobs por execucao, backoff 1min a 1h. GET antes de DELETE reconcilia resposta perdida. Transacoes curtas sem HTTP, lock por assinante; webhook e worker concluem atomicamente. Cron existente lembretes-whatsapp drena fila; cron/assinaturas dedicado aceita mesmo CRON_SECRET. Cron operacional obrigatorio; falhas persistentes exigem intervencao."),
     rule("rule_asaas_cancelamento_troca", "Asaas: trocar plano preserva obrigacao de cancelar recorrencia anterior",
@@ -836,6 +836,27 @@ cancelamento_impl = {
     "src_components_assinatura_alterarplano": ["rule_assinatura_interface_cancelar_retomar"],
 }
 for code_id, rs in cancelamento_impl.items():
+    impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
+
+laboratorio_nodes = [
+    rule("rule_veterinario_default_none_preserva_testes", "Veterinario: default none no banco sem rebaixar perfis existentes",
+         "Novas insercoes de veterinarios sem plano explicito recebem none no PostgreSQL e Prisma, alinhado ao cadastro. Migracao 20261024200000_veterinario_plano_padrao_none altera somente DEFAULT, sem UPDATE. Aplicada via MCP prezaxlfnpzirpbaodns em 24/10/2026 com historicos Prisma/Supabase; perfil legado e de teste manual em producao conforme dono e teve plano preservado."),
+    rule("rule_laboratorio_cadastro_sem_veterinarios", "Laboratorio: cadastro e exames sem veterinarios vinculados",
+         "Laboratorio usa conta clinica e agenda exames sem criar nem vincular veterinarios. Cadastro inicia quantidade_vets em 0, nao em 1 ficticio; a contagem real e a dos vinculos. Exames continuam exigindo plano pago e RT aprovado, com veterinario_id nulo no agendamento. Dois tutores podem agendar exames avulsos do mesmo laboratorio respeitando capacidade por exame."),
+    rule("rule_laboratorio_link_preserva_encaminhamento", "Laboratorio: Agendar exame preserva encaminhamento e pet",
+         "Do painel do tutor ao perfil da clinica e a /exames/:id, manter parametros encaminhamento e pet no link Agendar exame. Antes o segundo link descartava o contexto e perdia o vinculo. Sem encaminhamento, agendamento direto permanece. Backend valida aceite, tutor, pet e destino; parametros nao dao permissao. Regressao e2e confere agendamento_destino_id persistido e ausencia de veterinario vinculado."),
+]
+new_nodes += laboratorio_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in laboratorio_nodes]
+new_edges += [edge("rule_veterinario_default_none_preserva_testes", "rule_assinatura_cortesia_legado", "references"), edge("rule_laboratorio_cadastro_sem_veterinarios", "rule_exames_modulo_da_clinica", "references")]
+laboratorio_impl = {
+    "src_server_services_veterinarios": ["rule_veterinario_default_none_preserva_testes"],
+    "src_server_services_clinicas": ["rule_laboratorio_cadastro_sem_veterinarios"],
+    "src_components_exames_secaoexamesclinica": ["rule_laboratorio_link_preserva_encaminhamento"],
+    "src_app_clinicas_id_page": ["rule_laboratorio_link_preserva_encaminhamento"],
+    "e2e_demandas_laboratorio_spec": [n["id"] for n in laboratorio_nodes],
+}
+for code_id, rs in laboratorio_impl.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
 for code_id, rs in impl.items():

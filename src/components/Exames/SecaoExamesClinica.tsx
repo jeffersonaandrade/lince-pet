@@ -6,7 +6,9 @@ import { FlaskConical } from "lucide-react";
 import { ExamesService, formatarDuracao, formatarPreco, type OfertaExames } from "@/services/exames/exames";
 
 /** Seção "Exames" do perfil público da clínica; some quando ela não oferece exames visíveis. */
-export function SecaoExamesClinica({ clinicaId, className }: { clinicaId: string; className?: string }) {
+type Props = { clinicaId: string; className?: string; encaminhamentoId?: string | null; petId?: string | null };
+
+export function SecaoExamesClinica({ clinicaId, className, encaminhamentoId, petId }: Props) {
   const [oferta, setOferta] = useState<OfertaExames | null>(null);
 
   useEffect(() => {
@@ -16,6 +18,10 @@ export function SecaoExamesClinica({ clinicaId, className }: { clinicaId: string
   }, [clinicaId]);
 
   if (!oferta) return null;
+  const parametros = new URLSearchParams();
+  if (encaminhamentoId) parametros.set("encaminhamento", encaminhamentoId);
+  if (petId) parametros.set("pet", petId);
+  const consulta = parametros.toString();
   return (
     <section className={className} aria-label="Exames">
       <h2>Exames</h2>
@@ -42,7 +48,7 @@ export function SecaoExamesClinica({ clinicaId, className }: { clinicaId: string
         ))}
       </ul>
       <Link
-        href={`/exames/${clinicaId}`}
+        href={`/exames/${clinicaId}${consulta ? `?${consulta}` : ""}`}
         className="mt-4 inline-block rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-orange-600"
       >
         Agendar exame

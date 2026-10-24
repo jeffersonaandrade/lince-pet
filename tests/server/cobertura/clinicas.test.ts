@@ -233,7 +233,7 @@ describe('registerClinica', () => {
       nomeClinica: 'Clínica Pet',
       razaoSocial: 'Pet LTDA',
       tipoClinica: 'multipla',
-      quantidadeVets: '1',
+      quantidadeVets: '0',
       cnpj: '12345678000199',
       endereco: 'Rua A, 10 - Centro',
       horariosFuncionamento: Prisma.DbNull,

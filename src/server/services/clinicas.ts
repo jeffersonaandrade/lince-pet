@@ -201,7 +201,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
           nomeClinica: str(data.nomeFantasia),
           razaoSocial: str(data.razaoSocial),
           tipoClinica: TipoClinica.multipla,
-          quantidadeVets: '1',
+          quantidadeVets: '0',
           cnpj: String(data.cnpj),
           telefone: str(data.telefone),
           endereco: data.rua ? `${data.rua}, ${data.numero} - ${data.bairro}` : '',

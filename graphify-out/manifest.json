@@ -18,9 +18,9 @@
     "semantic_hash": ""
   },
   "src/app/clinicas/[id]/page.tsx": {
-    "mtime": 1792766102.2314932,
-    "seen": 1792768246.6833718,
-    "ast_hash": "144201533bd757963e67647a3f972528",
+    "mtime": 1792878452.8881812,
+    "seen": 1792878635.9339185,
+    "ast_hash": "a3f584b02476cc21aac569e7fc235d82",
     "semantic_hash": ""
   },
   "src/app/clinicas/page.tsx": {
@@ -1632,9 +1632,9 @@
     "semantic_hash": ""
   },
   "src/server/services/clinicas.ts": {
-    "mtime": 1792765519.8254888,
-    "seen": 1792768246.7360091,
-    "ast_hash": "7be4505e6de2152d5498dc58ccb98545",
+    "mtime": 1792878406.9986942,
+    "seen": 1792878635.9834154,
+    "ast_hash": "74ff3e8fe30ff31d4d0bde6a82f7beec",
     "semantic_hash": ""
   },
   "src/server/validators/clinica.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792877427.6597068,
-    "seen": 1792877471.879341,
-    "ast_hash": "7882f8d48879243cb84babaef763ea20",
+    "mtime": 1792878537.1571894,
+    "seen": 1792878636.059203,
+    "ast_hash": "456f3c232be4071a940db941f4fcb797",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2832,9 +2832,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/auth.test.ts": {
-    "mtime": 1792782151.7062433,
-    "seen": 1792866749.5656033,
-    "ast_hash": "f26c5b3c76e1a9b98fffcfa1fc6b1796",
+    "mtime": 1792878149.8816967,
+    "seen": 1792878636.0092795,
+    "ast_hash": "141dbd6a8bc2dcda0a82a049d37d7b2d",
     "semantic_hash": ""
   },
   "tests/server/cobertura/avaliacoes.test.ts": {
@@ -2862,9 +2862,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/clinicas.test.ts": {
-    "mtime": 1792704217.1582644,
-    "seen": 1792704567.9415972,
-    "ast_hash": "858b64cd9ca2ac6f30735434c00c0711",
+    "mtime": 1792878406.999692,
+    "seen": 1792878636.0104098,
+    "ast_hash": "23aa2326ae13ede85fb2f99c5429b98d",
     "semantic_hash": ""
   },
   "tests/server/cobertura/encaminhamentos.test.ts": {
@@ -3666,9 +3666,9 @@
     "semantic_hash": ""
   },
   "src/components/Exames/SecaoExamesClinica.tsx": {
-    "mtime": 1792766098.276961,
-    "seen": 1792768246.7052226,
-    "ast_hash": "edcadecab34dc77ac4a0585fb2b7f432",
+    "mtime": 1792878452.8866737,
+    "seen": 1792878635.95418,
+    "ast_hash": "5c27cd5b2f29d20bfd25f240fdc1c22c",
     "semantic_hash": ""
   },
   "src/components/Exames/ui.tsx": {
@@ -3924,9 +3924,15 @@
     "semantic_hash": ""
   },
   "docs/PLANOS-E-MIGRACAO-SUPABASE-2026-10-24.md": {
-    "mtime": 1792877397.0640535,
-    "seen": 1792877471.8798954,
-    "ast_hash": "516000ea82be0dbca5b5f41d9976e741",
+    "mtime": 1792878537.1597118,
+    "seen": 1792878636.0602107,
+    "ast_hash": "2cb41c76ba0dd6a35a5253da3e9e4f7c",
+    "semantic_hash": ""
+  },
+  "e2e/demandas/laboratorio.spec.ts": {
+    "mtime": 1792878407.0006926,
+    "seen": 1792878635.8804898,
+    "ast_hash": "2b7ae2c2714942aeb843dc2394ebf1d7",
     "semantic_hash": ""
   }
 }

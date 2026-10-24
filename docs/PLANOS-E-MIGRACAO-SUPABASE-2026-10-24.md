@@ -1,5 +1,7 @@
 # Planos e migração no Supabase — 24/10/2026
 
+**Atualização posterior:** o default legado do veterinário foi corrigido para `none` pela migração `20261024200000_veterinario_plano_padrao_none`, sem alterar os planos existentes. O diagnóstico abaixo preserva o estado anterior à correção.
+
 Consulta e migração pelo MCP oficial autenticado com OAuth, limitado ao projeto `prezaxlfnpzirpbaodns`. O servidor `supabase` do Codex foi atualizado para esse destino por solicitação do usuário. A configuração anterior apontava a outro projeto.
 
 ## Como identificar o plano

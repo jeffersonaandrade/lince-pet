@@ -454,7 +454,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                 </section>
               )}
 
-              <SecaoExamesClinica clinicaId={id} className={styles.section} />
+              <SecaoExamesClinica clinicaId={id} className={styles.section} encaminhamentoId={encaminhamentoId} petId={petEncaminhadoId} />
 
               {/* Professionals */}
               <section className={styles.section}>
