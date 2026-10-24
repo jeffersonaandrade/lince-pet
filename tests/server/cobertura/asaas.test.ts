@@ -99,6 +99,12 @@ describe('AsaasService: configuração', () => {
     expect(configDoCreate().headers.access_token).toBe('$aact_chave_longa')
   })
 
+  it('normaliza múltiplas barras de escape antes do $ sem alterar o restante da chave', () => {
+    vi.stubEnv('ASAAS_API_KEY_SANDBOX', ` "${'\\'.repeat(2)}$aact_hmlg_chave_longa" `)
+    new AsaasService()
+    expect(configDoCreate().headers.access_token).toBe('$aact_hmlg_chave_longa')
+  })
+
   it('chave curta aparece mascarada como ***', () => {
     vi.stubEnv('ASAAS_API_KEY_SANDBOX', 'curta')
     new AsaasService()

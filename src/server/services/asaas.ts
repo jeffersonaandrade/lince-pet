@@ -53,9 +53,7 @@ function logarErroDoAsaas(contexto: string, error: unknown) {
 
 const normalize = (v?: string) => {
   if (!v) return undefined
-  let s = v.trim().replace(/^['"]|['"]$/g, '')
-  if (s.startsWith('\\$')) s = s.slice(1)
-  return s
+  return v.trim().replace(/^['"]|['"]$/g, '').replace(/^\\+(?=\$)/, '')
 }
 
 export class AsaasService {

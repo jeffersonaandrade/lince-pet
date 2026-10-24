@@ -790,6 +790,26 @@ entrega_nodes = [
 new_nodes += entrega_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in entrega_nodes]
 
+asaas_config_nodes = [
+    rule("rule_asaas_credencial_escape", "Asaas: normalizar escape inicial da chave sem expor segredo",
+         "Remover aspas e espacos externos e barras de escape antes do $ inicial; preservar o restante da chave. Escape duplicado no .env local causava 401, confirmado no sandbox em 24/10/2026. Nunca gravar a chave completa em logs ou no repositorio."),
+]
+new_nodes += asaas_config_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in asaas_config_nodes]
+for code_id in ["src_server_services_asaas", "tests_server_cobertura_asaas_test"]:
+    impl[code_id] = impl.get(code_id, []) + ["rule_asaas_credencial_escape"]
+
+asaas_findings = [
+    rule("finding_asaas_cancelamento_divergente", "Asaas: homologacao bloqueada por cancelamento local sem confirmacao remota",
+         "Homologacao sandbox de 24/10/2026 confirmou: Asaas recusou cancelamento com 401, site respondeu 200 com sucesso e gravou canceled, mas remoto continuou ACTIVE e deleted=false. Cancelamento normal, boleto, Pix, cartao, estorno e webhooks reais passaram; isso nao aprova producao. Pendem reconciliacao, cancelamento na interface e retomada de fatura pelo prestador. Evidencias em docs/HOMOLOGACAO-ASAAS-2026-10-24.md."),
+    rule("finding_asaas_credencial_log_erro", "Asaas: erro Axios bruto de cancelamento pode expor credencial nos logs",
+         "Injecao de falha sandbox em 24/10/2026 mostrou access_token e a chave deliberadamente invalida no log do erro Axios. Sanitizacao pendente; nunca compartilhar artefatos brutos. Nao foi usada chave de producao."),
+]
+new_nodes += asaas_findings
+new_edges += [edge("concept_regras_de_negocio", n["id"], "references") for n in asaas_findings]
+new_edges += [edge("src_server_services_assinaturas", n["id"], "references") for n in asaas_findings]
+new_edges += [edge("src_server_services_asaas_webhook", "finding_asaas_cancelamento_divergente", "references")]
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

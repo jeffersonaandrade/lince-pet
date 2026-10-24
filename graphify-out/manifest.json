@@ -1626,9 +1626,9 @@
     "semantic_hash": ""
   },
   "src/server/services/asaas.ts": {
-    "mtime": 1792704217.1258018,
-    "seen": 1792704567.9215531,
-    "ast_hash": "2f375f7008f2813cdd3a5371313d60f5",
+    "mtime": 1792867522.0638256,
+    "seen": 1792868718.8383825,
+    "ast_hash": "e6cbc4371986c7e0373629670b4bf288",
     "semantic_hash": ""
   },
   "src/server/services/clinicas.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792866567.365901,
-    "seen": 1792866749.6237214,
-    "ast_hash": "c83a4c59b61d6b674aadfbe32dd261af",
+    "mtime": 1792868686.1951332,
+    "seen": 1792868718.9107013,
+    "ast_hash": "2a3160549f9e293f4a096ea74f616af9",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2814,9 +2814,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/asaas.test.ts": {
-    "mtime": 1792534131.2748618,
-    "seen": 1792534368.579012,
-    "ast_hash": "c230f3ffd1977dfbde4f9c968fdbd4b6",
+    "mtime": 1792867522.0668218,
+    "seen": 1792868718.8650694,
+    "ast_hash": "da0ff57cda634689e8fc54cfb0228575",
     "semantic_hash": ""
   },
   "tests/server/cobertura/assinante.test.ts": {
@@ -3879,6 +3879,12 @@
     "mtime": 1792866751.341685,
     "seen": 1792867129.5079653,
     "ast_hash": "e62955ad46a8fc26adef166a7b9ae13c",
+    "semantic_hash": ""
+  },
+  "docs/HOMOLOGACAO-ASAAS-2026-10-24.md": {
+    "mtime": 1792868686.1936252,
+    "seen": 1792868718.9109507,
+    "ast_hash": "3dbfc68bbc75fc503279f74495d6a97d",
     "semantic_hash": ""
   }
 }
