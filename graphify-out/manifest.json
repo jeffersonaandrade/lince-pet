@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792876599.0437946,
-    "seen": 1792876719.96665,
-    "ast_hash": "4bd986a469c80d503a2f5da44a13adb9",
+    "mtime": 1792877427.6597068,
+    "seen": 1792877471.879341,
+    "ast_hash": "7882f8d48879243cb84babaef763ea20",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -3882,9 +3882,9 @@
     "semantic_hash": ""
   },
   "docs/HOMOLOGACAO-ASAAS-2026-10-24.md": {
-    "mtime": 1792868906.2746303,
-    "seen": 1792876719.9670599,
-    "ast_hash": "5e1640d91b5583867b179a13ea91465e",
+    "mtime": 1792876772.7492409,
+    "seen": 1792877471.879631,
+    "ast_hash": "4216c5e5ccb53362d61d657d53fe3141",
     "semantic_hash": ""
   },
   "src/app/api/cron/assinaturas/route.ts": {
@@ -3915,6 +3915,18 @@
     "mtime": 1792876443.1303895,
     "seen": 1792876719.8920643,
     "ast_hash": "becb17906f07a0df2ed1d4a64323bb2d",
+    "semantic_hash": ""
+  },
+  "docs/CORRECAO-CANCELAMENTO-ASAAS-2026-10-24.md": {
+    "mtime": 1792876875.4076688,
+    "seen": 1792877471.8793447,
+    "ast_hash": "05e48fbf05f5508b1c3f72c834ff195d",
+    "semantic_hash": ""
+  },
+  "docs/PLANOS-E-MIGRACAO-SUPABASE-2026-10-24.md": {
+    "mtime": 1792877397.0640535,
+    "seen": 1792877471.8798954,
+    "ast_hash": "516000ea82be0dbca5b5f41d9976e741",
     "semantic_hash": ""
   }
 }

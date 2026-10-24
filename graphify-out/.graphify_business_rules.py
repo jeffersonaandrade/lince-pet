@@ -811,6 +811,8 @@ new_edges += [edge("src_server_services_assinaturas", n["id"], "references") for
 new_edges += [edge("src_server_services_asaas_webhook", "finding_asaas_cancelamento_divergente", "references")]
 
 cancelamento_nodes = [
+    rule("concept_assinatura_banco_acesso_e_cobranca", "Assinatura: plano de acesso no banco nao comprova pagamento",
+         "subscription_plan_code em veterinarios/clinicas/prestadores governa acesso; subscriptions registra recorrencia e trial_end. Active pode ser teste; cortesias legadas nao tem subscriptions. Veterinario pro legado corresponde ao nivel Starter; vet_pro/pro_plus ao superior. Prestador pro usa outra categoria. MCP prezaxlfnpzirpbaodns em 24/10/2026 confirmou esses estados e aplicou 20261024180000_asaas_cancelamentos com historicos Prisma/Supabase e RLS verificados, sem alterar planos. Evidencias em docs/PLANOS-E-MIGRACAO-SUPABASE-2026-10-24.md. Default pro legado no banco nao deve ser confundido com nova contratacao paga."),
     rule("rule_asaas_cancelamento_reconciliacao", "Asaas: fila duravel de cancelamento com lease e backoff",
          "asaas_cancelamentos registra pedido antes de HTTP; lease 2min, ate tres jobs por execucao, backoff 1min a 1h. GET antes de DELETE reconcilia resposta perdida. Transacoes curtas sem HTTP, lock por assinante; webhook e worker concluem atomicamente. Cron existente lembretes-whatsapp drena fila; cron/assinaturas dedicado aceita mesmo CRON_SECRET. Cron operacional obrigatorio; falhas persistentes exigem intervencao."),
     rule("rule_asaas_cancelamento_troca", "Asaas: trocar plano preserva obrigacao de cancelar recorrencia anterior",
