@@ -10,8 +10,8 @@ export const PLANOS_POR_TIPO: Record<'veterinario' | 'clinica' | 'prestador', st
 
 export const planoServePara = (code: string, tipo: keyof typeof PLANOS_POR_TIPO) => PLANOS_POR_TIPO[tipo].includes(code)
 
-export type StatusAssinatura = 'active' | 'pending' | 'canceled' | 'past_due' | 'expired'
-export type StatusLabel = 'ativa' | 'pendente' | 'cancelada' | 'inadimplente'
+export type StatusAssinatura = 'active' | 'pending' | 'canceled' | 'past_due' | 'expired' | 'cancel_pending'
+export type StatusLabel = 'ativa' | 'pendente' | 'cancelada' | 'inadimplente' | 'cancelamento_pendente'
 
 const LABEL: Record<string, StatusLabel> = {
   active: 'ativa',
@@ -19,6 +19,7 @@ const LABEL: Record<string, StatusLabel> = {
   canceled: 'cancelada',
   expired: 'cancelada',
   past_due: 'inadimplente',
+  cancel_pending: 'cancelamento_pendente',
 }
 
 export const statusLabel = (status: string | null | undefined): StatusLabel | null =>

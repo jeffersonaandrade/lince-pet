@@ -1,5 +1,7 @@
 # Homologação Asaas — 24/10/2026
 
+**Atualização posterior:** o bloqueador de cancelamento, os logs e a interface foram corrigidos e passaram por nova regressão no sandbox. Consulte [correção e novas evidências](CORRECAO-CANCELAMENTO-ASAAS-2026-10-24.md). O relato abaixo preserva o diagnóstico original; configuração e validação no ambiente de destino continuam necessárias.
+
 **Veredito: NÃO RECOMENDADO para produção neste momento. O ciclo de pagamento funciona no sandbox, mas a falha de cancelamento remoto impede aprovar a cobrança recorrente.**
 
 ## Ambiente e método

@@ -43,12 +43,18 @@ type ErroHttp = { response?: { status?: number; data?: unknown } }
 
 const respostaDoErro = (error: unknown) => (error as ErroHttp | null | undefined)?.response
 
-/** Corpo da resposta de erro do Asaas, para log; sem resposta HTTP, o próprio erro. */
-export const respostaDoAsaas = (error: unknown) => respostaDoErro(error)?.data || error
+/** Somente metadados fechados: nunca serializar Axios, headers, corpo, mensagem ou credencial. */
+export function respostaDoAsaas(error: unknown) {
+  const status = respostaDoErro(error)?.status
+  if (typeof status === 'number' && Number.isInteger(status) && status >= 100 && status <= 599) {
+    return { codigo: `HTTP_${status}`, status }
+  }
+  const code = (error as { code?: unknown } | null)?.code
+  return { codigo: code === 'ECONNABORTED' || code === 'ETIMEDOUT' ? 'TIMEOUT' : 'ERRO_INTEGRACAO' }
+}
 
 function logarErroDoAsaas(contexto: string, error: unknown) {
-  const response = respostaDoErro(error)
-  if (response) console.error(`[AsaasService.${contexto}] Error:`, { status: response.status, data: response.data })
+  console.error(`[AsaasService.${contexto}] Error:`, respostaDoAsaas(error))
 }
 
 const normalize = (v?: string) => {
@@ -81,8 +87,7 @@ export class AsaasService {
       timeout: 15000,
     })
 
-    const masked = apiKey.length > 8 ? `${apiKey.slice(0, 4)}...${apiKey.slice(-4)}` : '***'
-    console.info(`[AsaasService] env=${mode} base=${this.baseUrl} key=${masked}`)
+    console.info(`[AsaasService] env=${mode}`)
   }
 
   private async upsertCustomer(

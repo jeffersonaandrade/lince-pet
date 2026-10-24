@@ -1,7 +1,7 @@
 import { prisma } from '@/server/db'
 import { ApiRequest, forbidden, ok, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
-import { AsaasService, getPendingInvoiceUrl } from '@/server/services/asaas'
+import { AsaasService, getPendingInvoiceUrl, respostaDoAsaas } from '@/server/services/asaas'
 import { assinanteDe, assinaturasDo } from '@/server/services/assinante'
 import { statusLabel } from '@/server/services/assinatura-regras'
 
@@ -10,10 +10,11 @@ export const GET = route(async (req) => {
   const assinante = assinanteDe(user)
   if (!assinante) return forbidden({ message: 'Apenas veterinários, clínicas e profissionais podem ver status' })
 
-  const [currentPlan, subs, pagasAntes] = await Promise.all([
+  const [currentPlan, subs, pagasAntes, cancelamento] = await Promise.all([
     prisma.subscriptionPlan.findUnique({ where: { code: assinante.planoAtual || assinante.planoPadrao } }),
     prisma.subscription.findMany({ where: assinaturasDo(assinante), orderBy: { createdAt: 'desc' }, take: 10 }),
     prisma.subscription.count({ where: { ...assinaturasDo(assinante), asaasSubscriptionId: { not: null } } }),
+    prisma.asaasCancelamento.findFirst({ where: { concluidoEm: null, subscription: assinaturasDo(assinante) }, orderBy: { motivo: 'desc' }, select: { motivo: true, solicitadoEm: true } }),
   ])
 
   const vigente = subs.find((s) => s.status === 'active' || s.status === 'past_due')
@@ -22,11 +23,11 @@ export const GET = route(async (req) => {
 
   const aPagar = pendente ?? (vigente?.status === 'past_due' ? vigente : null)
   let checkoutUrl: string | null = null
-  if (aPagar?.asaasSubscriptionId) {
+  if (aPagar?.asaasSubscriptionId && !cancelamento) {
     try {
       checkoutUrl = await getPendingInvoiceUrl(new AsaasService(), aPagar.asaasSubscriptionId)
     } catch (e) {
-      console.error('[Assinaturas.status] Falha ao buscar fatura em aberto:', e)
+      console.error('[Assinaturas.status] Falha ao buscar fatura em aberto:', respostaDoAsaas(e))
     }
   }
 
@@ -42,5 +43,7 @@ export const GET = route(async (req) => {
     trialEnd: emTeste ? vigente!.trialEnd : null,
     testeDisponivel: pagasAntes === 0,
     checkoutUrl,
+    cancelamentoPendente: Boolean(cancelamento),
+    cancelamentoSolicitado: cancelamento?.motivo === 'usuario',
   })
 })

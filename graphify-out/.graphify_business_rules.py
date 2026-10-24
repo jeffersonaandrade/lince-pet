@@ -440,12 +440,12 @@ assinatura_nodes = [
          "Dono sem nenhuma assinatura com asaasSubscriptionId: plano ativa na hora, primeira fatura vence no dia 14; sem pagamento vira inadimplente e perde o plano."),
     rule("rule_assinatura_plano_so_apos_pagamento", "Assinatura: plano so muda apos pagamento confirmado",
          "Fora do teste, contratar/trocar cria assinatura pending e devolve link da fatura; plano aplicado so em PAYMENT_CONFIRMED/PAYMENT_RECEIVED; ao ativar cancela as outras do mesmo dono; cancelada/expirada ignora pagamento."),
-    rule("rule_assinatura_status", "Assinatura: status ativa/pendente/cancelada/inadimplente",
-         "active=ativa, pending=pendente, past_due=inadimplente, canceled/expired=cancelada; GET /api/assinaturas/status devolve rotulo, fim do teste, troca pendente e link da fatura em aberto."),
+    rule("rule_assinatura_status", "Assinatura: status ativa/pendente/cancelada/inadimplente e cancelamento em confirmacao",
+         "active=ativa, pending=pendente, past_due=inadimplente, canceled/expired=cancelada, cancel_pending=cancelamento_pendente. GET status devolve rotulo, teste, troca, fatura e flags de cancelamento; pedido de usuario preserva estado atual ate confirmar, mas flag explicita pendencia e oculta fatura."),
     rule("rule_assinatura_inadimplencia", "Assinatura: atraso, estorno ou chargeback tiram o plano",
          "PAYMENT_OVERDUE/REFUNDED/CHARGEBACK_REQUESTED/RECEIVED_IN_CASH_UNDONE marcam past_due e voltam ao plano padrao, salvo outra assinatura ativa; pagar reativa."),
-    rule("rule_assinatura_cancelamento", "Assinatura: cancelar remove o plano na hora",
-         "DELETE /api/assinaturas/:id cancela no Asaas e local e volta ao padrao; SUBSCRIPTION_DELETED/INACTIVATED marcam canceled e rebaixam se nao houver outra ativa; trocar para none/gratis = cancelar."),
+    rule("rule_assinatura_cancelamento", "Assinatura: so confirmar cancelamento apos evidencia remota",
+         "Pedido persistido antes do HTTP; deleted=true da assinatura correta ou webhook autenticado de encerramento permite canceled e rebaixamento sem periodo restante/estorno automatico. Falha, timeout, 404 ou resposta incompleta mantem pendencia e plano, salvo inadimplencia. DELETE 202 pendente, 200 confirmado; outra ativa preserva plano novo. None/gratis solicita mesmo fluxo."),
     rule("rule_assinatura_limite_vets_clinica", "Assinatura: limite de vets da clinica pelo plano",
          "Convite e aceite contam vinculos aceito+pendente; acima de maxVeterinarios (5/15/ilimitado) ou clinica sem plano pago = 403; vinculos existentes nao sao desfeitos."),
     rule("rule_assinatura_webhook_token", "Assinatura: webhook Asaas autenticado e idempotente",
@@ -800,15 +800,41 @@ for code_id in ["src_server_services_asaas", "tests_server_cobertura_asaas_test"
     impl[code_id] = impl.get(code_id, []) + ["rule_asaas_credencial_escape"]
 
 asaas_findings = [
-    rule("finding_asaas_cancelamento_divergente", "Asaas: homologacao bloqueada por cancelamento local sem confirmacao remota",
-         "Homologacao sandbox de 24/10/2026 confirmou: Asaas recusou cancelamento com 401, site respondeu 200 com sucesso e gravou canceled, mas remoto continuou ACTIVE e deleted=false. Cancelamento normal, boleto, Pix, cartao, estorno e webhooks reais passaram; isso nao aprova producao. Pendem reconciliacao, cancelamento na interface e retomada de fatura pelo prestador. Evidencias em docs/HOMOLOGACAO-ASAAS-2026-10-24.md."),
-    rule("finding_asaas_credencial_log_erro", "Asaas: erro Axios bruto de cancelamento pode expor credencial nos logs",
-         "Injecao de falha sandbox em 24/10/2026 mostrou access_token e a chave deliberadamente invalida no log do erro Axios. Sanitizacao pendente; nunca compartilhar artefatos brutos. Nao foi usada chave de producao."),
+    rule("finding_asaas_cancelamento_divergente", "Asaas: defeito historico de cancelamento divergente corrigido no sandbox",
+         "Diagnostico 24/10/2026: Asaas 401, site 200/canceled mas remoto ACTIVE. Correcao posterior com fila duravel, HTTP 202 pendente, worker e interface passou regressao real de 401, recuperacao, upgrade e seis crons concorrentes. Evidencias em docs/CORRECAO-CANCELAMENTO-ASAAS-2026-10-24.md. Validar deploy e configuracao definitiva antes de producao."),
+    rule("finding_asaas_credencial_log_erro", "Asaas: vazamento historico de erro Axios corrigido com metadados controlados",
+         "Injecao sandbox em 24/10/2026 mostrou access_token e chave deliberadamente invalida no log bruto. Sanitizacao posterior passou teste real HTTP 401 sem chave/headers no log. Nao compartilhar artefatos brutos antigos. Nao foi usada chave de producao."),
 ]
 new_nodes += asaas_findings
 new_edges += [edge("concept_regras_de_negocio", n["id"], "references") for n in asaas_findings]
 new_edges += [edge("src_server_services_assinaturas", n["id"], "references") for n in asaas_findings]
 new_edges += [edge("src_server_services_asaas_webhook", "finding_asaas_cancelamento_divergente", "references")]
+
+cancelamento_nodes = [
+    rule("rule_asaas_cancelamento_reconciliacao", "Asaas: fila duravel de cancelamento com lease e backoff",
+         "asaas_cancelamentos registra pedido antes de HTTP; lease 2min, ate tres jobs por execucao, backoff 1min a 1h. GET antes de DELETE reconcilia resposta perdida. Transacoes curtas sem HTTP, lock por assinante; webhook e worker concluem atomicamente. Cron existente lembretes-whatsapp drena fila; cron/assinaturas dedicado aceita mesmo CRON_SECRET. Cron operacional obrigatorio; falhas persistentes exigem intervencao."),
+    rule("rule_asaas_cancelamento_troca", "Asaas: trocar plano preserva obrigacao de cancelar recorrencia anterior",
+         "Pagamento novo enfileira antigas como cancel_pending sem HTTP na transacao; acesso fica no novo plano. Recorrencia anterior so e considerada cancelada apos confirmacao remota e pode cobrar enquanto pendente. Contratar/trocar bloqueado 409 com fila pendente; pagamento tardio nao reativa assinatura em cancelamento, sem estorno automatico."),
+    rule("rule_asaas_logs_seguros", "Asaas: logs com metadados controlados sem credencial ou dados pessoais",
+         "Permitir somente codigo HTTP_nnn/TIMEOUT/ERRO_INTEGRACAO, status HTTP e id interno. Nunca erro Axios, corpo, headers, mensagem arbitraria, dados pessoais nem fragmentos de chave. Payload interno existente de webhook nao e impresso."),
+    rule("rule_assinatura_interface_cancelar_retomar", "Assinatura: cancelar e retomar fatura na interface dos tres perfis",
+         "Vet, clinica e prestador podem cancelar com confirmacao e reabrir a mesma fatura. Pendencia oculta fatura em encerramento, exibe aviso e consulta status a cada 10s; polling nao substitui cron. Nao anuncia cancelado antes da confirmacao remota."),
+]
+new_nodes += cancelamento_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in cancelamento_nodes]
+cancelamento_impl = {
+    "src_server_services_asaas_cancelamentos": ["rule_assinatura_cancelamento", "rule_asaas_cancelamento_reconciliacao", "rule_asaas_logs_seguros"],
+    "src_server_services_assinaturas": ["rule_assinatura_cancelamento", "rule_asaas_cancelamento_troca", "rule_asaas_logs_seguros"],
+    "src_server_services_asaas_webhook": ["rule_asaas_cancelamento_troca", "rule_assinatura_cancelamento"],
+    "src_server_services_asaas": ["rule_asaas_logs_seguros"],
+    "src_app_api_cron_assinaturas_route": ["rule_asaas_cancelamento_reconciliacao"],
+    "src_app_api_cron_lembretes_whatsapp_route": ["rule_asaas_cancelamento_reconciliacao"],
+    "src_components_assinatura_gerenciarassinatura": ["rule_assinatura_interface_cancelar_retomar"],
+    "src_components_prestador_cardplano": ["rule_assinatura_interface_cancelar_retomar"],
+    "src_components_assinatura_alterarplano": ["rule_assinatura_interface_cancelar_retomar"],
+}
+for code_id, rs in cancelamento_impl.items():
+    impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]

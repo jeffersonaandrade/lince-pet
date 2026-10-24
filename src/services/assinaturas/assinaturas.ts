@@ -1,6 +1,6 @@
 import { api } from "@/hook/api";
 
-export type StatusLabel = "ativa" | "pendente" | "cancelada" | "inadimplente";
+export type StatusLabel = "ativa" | "pendente" | "cancelada" | "inadimplente" | "cancelamento_pendente";
 
 export type RespostaContratacao = {
   subscription: { id: string } | null;
@@ -20,6 +20,8 @@ export type StatusAssinatura = {
   testeDisponivel: boolean;
   pendingPlanId: string | null;
   checkoutUrl: string | null;
+  cancelamentoPendente: boolean;
+  cancelamentoSolicitado: boolean;
 };
 
 export type PlanoBackend = { id: string; code: string; name: string; priceCents: number; trialDays: number | null };
@@ -42,7 +44,7 @@ export function AssinaturasService() {
       const { data } = await api.patch(`/assinaturas/${id}/upgrade`, params);
       return data;
     },
-    async cancelarAssinatura(id: string) {
+    async cancelarAssinatura(id: string): Promise<{ cancelamentoPendente: boolean; message: string }> {
       const { data } = await api.delete(`/assinaturas/${id}`);
       return data;
     },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { urlDeLogin } from "@/lib/destino-login";
 import Image from "next/image";
@@ -9,7 +9,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { handleApiError, type ErrorState } from "@/utils/errorHandler";
 import { cartaoDePlano, DIAS_TESTE_GRATIS, type PlanoMetadata } from "@/config/planos";
 import { AssinaturasService, type StatusAssinatura } from "@/services/assinaturas/assinaturas";
-import { StatusAssinaturaAviso } from "./StatusAssinaturaAviso";
+import { GerenciarAssinatura } from "./GerenciarAssinatura";
 import styles from "./alterar-plano.module.css";
 
 type Props = {
@@ -37,6 +37,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
   const [error, setError] = useState<ErrorState | null>(null);
   const [sucesso, setSucesso] = useState<string | null>(null);
   const [abertoEm] = useState(() => Date.now());
+  const atualizar = useCallback(async () => { setStatus(await AssinaturasService().obterStatus()); }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -117,7 +118,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
             </p>
           )}
 
-          {status ? <StatusAssinaturaAviso status={status} /> : null}
+          {status ? <GerenciarAssinatura status={status} atualizar={atualizar} /> : null}
 
           <div className={styles.plansStepHeader}>
             <h2 className={styles.plansStepTitle}>{titulo}</h2>
@@ -200,7 +201,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
               <button
                 type="submit"
                 className={styles.continueButton}
-                disabled={!selecionado || enviando || ehAtual(selecionado)}
+                disabled={!selecionado || enviando || ehAtual(selecionado) || status?.cancelamentoPendente}
               >
                 {enviando ? "Processando..." : testeNaContratacao ? "Começar teste grátis" : "Ir para o pagamento"}
               </button>

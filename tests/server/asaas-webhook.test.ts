@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const prismaMock = vi.hoisted(() => {
   const m = {
+    $executeRaw: vi.fn(),
+    asaasCancelamento: { findUnique: vi.fn(), upsert: vi.fn(), updateMany: vi.fn() },
     webhookEvent: { findUnique: vi.fn(), create: vi.fn() },
     subscription: { findFirst: vi.fn(), findMany: vi.fn(), update: vi.fn(), count: vi.fn() },
     subscriptionPlan: { findUnique: vi.fn() },
@@ -95,6 +97,7 @@ const statusGravado = () => prismaMock.subscription.update.mock.calls.map((c) =>
 
 beforeEach(() => {
   vi.clearAllMocks()
+  prismaMock.asaasCancelamento.findUnique.mockResolvedValue(null)
   prismaMock.webhookEvent.findUnique.mockResolvedValue(null)
   prismaMock.subscription.findMany.mockResolvedValue([])
   prismaMock.subscription.count.mockResolvedValue(0)
@@ -114,12 +117,13 @@ describe('webhook Asaas: pagamento confirmado', () => {
     expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('vet_pro')
   })
 
-  it('cancela no Asaas e localmente a assinatura antiga ao confirmar a troca', async () => {
+  it('persiste cancelamento da antiga sem HTTP dentro da transação', async () => {
     prismaMock.subscription.findFirst.mockResolvedValue(subVet())
     prismaMock.subscription.findMany.mockResolvedValue([subVet({ id: 'sub-velha', asaasSubscriptionId: 'sub_velha', status: 'active' })])
     await handleAsaasEvent(pagamento('PAYMENT_RECEIVED'))
-    expect(asaasFake.cancelSubscription).toHaveBeenCalledWith('sub_velha')
-    expect(statusGravado()).toEqual(['active', 'canceled'])
+    expect(prismaMock.asaasCancelamento.upsert).toHaveBeenCalledWith(expect.objectContaining({ create: { subscriptionId: 'sub-velha', motivo: 'troca' } }))
+    expect(asaasFake.cancelSubscription).not.toHaveBeenCalled()
+    expect(statusGravado()).toEqual(['active', 'cancel_pending'])
   })
 
   it('reativa assinatura inadimplente quando a dívida é paga', async () => {
@@ -181,12 +185,12 @@ describe('webhook Asaas: pagamento confirmado', () => {
     expect(data).not.toHaveProperty('currentPeriodStart')
   })
 
-  it('falha ao cancelar a antiga no Asaas ainda cancela localmente', async () => {
+  it('disponibilidade do Asaas não bloqueia ativação e pedido durável de cancelamento', async () => {
     prismaMock.subscription.findFirst.mockResolvedValue(subVet())
     prismaMock.subscription.findMany.mockResolvedValue([subVet({ id: 'sub-velha', asaasSubscriptionId: 'sub_velha', status: 'active' })])
     asaasFake.cancelSubscription.mockRejectedValueOnce(new Error('500'))
     await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
-    expect(statusGravado()).toEqual(['active', 'canceled'])
+    expect(statusGravado()).toEqual(['active', 'cancel_pending'])
     expect(prismaMock.veterinario.update).toHaveBeenCalled()
   })
 
@@ -297,7 +301,7 @@ describe('webhook Asaas: assinatura encerrada', () => {
     )
     prismaMock.subscription.count.mockResolvedValue(1)
     await handleAsaasEvent(evento('SUBSCRIPTION_DELETED', { subscription: { id: 'sub_asaas_1' } }))
-    expect(prismaMock.subscription.update).not.toHaveBeenCalled()
+    expect(prismaMock.asaasCancelamento.updateMany).toHaveBeenCalled()
     expect(prismaMock.clinica.update).not.toHaveBeenCalled()
   })
 
@@ -388,22 +392,25 @@ describe('webhook Asaas: detalhes da ativação', () => {
     expect(AsaasService).not.toHaveBeenCalled()
   })
 
-  it('antiga sem id no Asaas é cancelada só localmente', async () => {
+  it('antiga sem id no Asaas também é enfileirada', async () => {
     prismaMock.subscription.findFirst.mockResolvedValue(subVet())
     prismaMock.subscription.findMany.mockResolvedValue([subVet({ id: 'sub-velha', asaasSubscriptionId: null, status: 'pending' })])
     await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
     expect(asaasFake.cancelSubscription).not.toHaveBeenCalled()
     expect(prismaMock.subscription.update.mock.calls[1][0].where).toEqual({ id: 'sub-velha' })
-    expect(prismaMock.subscription.update.mock.calls[1][0].data.canceledAt).toBeInstanceOf(Date)
+    expect(prismaMock.subscription.update.mock.calls[1][0].data).toMatchObject({ status: 'cancel_pending' })
+    expect(prismaMock.subscription.update.mock.calls[1][0].data).not.toHaveProperty('canceledAt')
   })
 
-  it('loga a falha ao cancelar a antiga no Asaas', async () => {
+  it('não chama HTTP nem loga erro cru durante o webhook', async () => {
     const erro = vi.spyOn(console, 'error').mockImplementation(() => {})
     prismaMock.subscription.findFirst.mockResolvedValue(subVet())
     prismaMock.subscription.findMany.mockResolvedValue([subVet({ id: 'sub-velha', asaasSubscriptionId: 'sub_velha' })])
     asaasFake.cancelSubscription.mockRejectedValueOnce(new Error('500'))
     await handleAsaasEvent(pagamento('PAYMENT_CONFIRMED'))
-    expect(erro).toHaveBeenCalledWith(expect.stringContaining('sub_velha'), expect.any(Error))
+    expect(erro).not.toHaveBeenCalled()
+    expect(asaasFake.cancelSubscription).not.toHaveBeenCalled()
+    expect(prismaMock.asaasCancelamento.upsert).toHaveBeenCalled()
     erro.mockRestore()
   })
 

@@ -1015,9 +1015,26 @@ model Subscription {
   clinica     Clinica?         @relation(fields: [clinicaId], references: [id], onDelete: Cascade)
   prestador   Prestador?       @relation(fields: [prestadorId], references: [id], onDelete: Cascade)
   plan        SubscriptionPlan @relation(fields: [planId], references: [id])
+  cancelamento AsaasCancelamento?
 
   @@index([prestadorId])
   @@map("subscriptions")
+}
+
+/// Outbox de cancelamentos: só conclui após evidência do Asaas ou webhook de encerramento.
+model AsaasCancelamento {
+  subscriptionId String @id @map("subscription_id") @db.Char(36)
+  motivo String @db.VarChar(20)
+  tentativas Int @default(0)
+  solicitadoEm DateTime @default(now()) @map("solicitado_em") @db.Timestamp(3)
+  proximaTentativaEm DateTime @default(now()) @map("proxima_tentativa_em") @db.Timestamp(3)
+  bloqueadoAte DateTime? @map("bloqueado_ate") @db.Timestamp(3)
+  ultimoErro String? @map("ultimo_erro") @db.VarChar(40)
+  concluidoEm DateTime? @map("concluido_em") @db.Timestamp(3)
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([concluidoEm, proximaTentativaEm])
+  @@map("asaas_cancelamentos")
 }
 
 /// JWT encerrado no logout antes de expirar (só o `jti` daquela sessão). Linha vencida pode ser apagada.

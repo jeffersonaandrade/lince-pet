@@ -38,17 +38,17 @@ afterEach(() => {
 const configDoCreate = () => (createMock.mock.calls.at(-1) as unknown as [{ baseURL: string; headers: Record<string, string> }])[0]
 
 describe('respostaDoAsaas (o que vai para o log)', () => {
-  it('erro HTTP com corpo: devolve o corpo', () => {
-    expect(respostaDoAsaas({ response: { status: 400, data: { errors: ['cpf'] } } })).toEqual({ errors: ['cpf'] })
+  it('permite somente status HTTP e código controlado, descartando credenciais e dados pessoais', () => {
+    const secret = 'CANARY-SEGREDO-CPF-CARTAO-TOKEN'
+    const error = Object.assign(new Error(secret), { response: { status: 401, data: { errors: [secret] }, headers: { authorization: secret } }, config: { headers: { access_token: secret } }, request: { _header: secret }, code: secret })
+    expect(respostaDoAsaas(error)).toEqual({ codigo: 'HTTP_401', status: 401 })
+    expect(JSON.stringify(respostaDoAsaas(error))).not.toContain(secret)
   })
-
-  it('sem corpo ou sem resposta: devolve o próprio erro', () => {
-    const semCorpo = { response: { status: 500, data: '' } }
-    const rede = new Error('ECONNRESET')
-    expect(respostaDoAsaas(semCorpo)).toBe(semCorpo)
-    expect(respostaDoAsaas(rede)).toBe(rede)
-    expect(respostaDoAsaas('falhou')).toBe('falhou')
-    expect(respostaDoAsaas(null)).toBeNull()
+  it('erro de rede, string ou nulo nunca são serializados', () => {
+    for (const error of [new Error('segredo'), 'segredo', null, { response: { status: 'segredo' } }]) {
+      expect(respostaDoAsaas(error)).toEqual({ codigo: 'ERRO_INTEGRACAO' })
+    }
+    expect(respostaDoAsaas({ code: 'ECONNABORTED', config: { token: 'segredo' } })).toEqual({ codigo: 'TIMEOUT' })
   })
 })
 
@@ -60,7 +60,7 @@ describe('AsaasService: configuração', () => {
       headers: { 'Content-Type': 'application/json', access_token: 'sand-key-123456' },
       timeout: 15000,
     })
-    expect(console.info).toHaveBeenCalledWith(expect.stringContaining('key=sand...3456'))
+    expect(console.info).toHaveBeenCalledWith('[AsaasService] env=sandbox')
     expect(console.info).not.toHaveBeenCalledWith(expect.stringContaining('sand-key-123456'))
   })
 
@@ -105,10 +105,10 @@ describe('AsaasService: configuração', () => {
     expect(configDoCreate().headers.access_token).toBe('$aact_hmlg_chave_longa')
   })
 
-  it('chave curta aparece mascarada como ***', () => {
+  it('chave curta também não aparece nos logs', () => {
     vi.stubEnv('ASAAS_API_KEY_SANDBOX', 'curta')
     new AsaasService()
-    expect(console.info).toHaveBeenCalledWith(expect.stringContaining('key=***'))
+    expect(console.info).toHaveBeenCalledWith('[AsaasService] env=sandbox')
   })
 
   it('sem chave lança erro de configuração', () => {
@@ -217,8 +217,7 @@ describe('AsaasService: clientes', () => {
     http.post.mockRejectedValueOnce(erro)
     await expect(new AsaasService().ensureCustomerForVeterinario(USER, { id: 'v1', cpf: 'x', cnpj: null })).rejects.toBe(erro)
     expect(console.error).toHaveBeenCalledWith('[AsaasService.ensureCustomerForVeterinario] Error:', {
-      status: 400,
-      data: { errors: ['cpf'] },
+      status: 400, codigo: 'HTTP_400',
     })
   })
 
@@ -229,11 +228,11 @@ describe('AsaasService: clientes', () => {
     expect(console.error).not.toHaveBeenCalled()
   })
 
-  it('veterinário: erro sem response (rede) não loga, mas propaga', async () => {
+  it('veterinário: erro sem response (rede) loga metadado seguro e propaga', async () => {
     http.get.mockResolvedValueOnce(lista()).mockResolvedValueOnce(lista())
     http.post.mockRejectedValueOnce(new Error('ECONNRESET'))
     await expect(new AsaasService().ensureCustomerForVeterinario(USER, { id: 'v1', cpf: null, cnpj: null })).rejects.toThrow('ECONNRESET')
-    expect(console.error).not.toHaveBeenCalled()
+    expect(console.error).toHaveBeenCalledWith(expect.any(String), { codigo: 'ERRO_INTEGRACAO' })
   })
 
   const CLINICA = { id: 'c1', razaoSocial: 'Pet LTDA', nomeClinica: 'Pet Clin', cnpj: '123', whatsapp: '81911112222', telefone: '8133334444' }
@@ -277,7 +276,7 @@ describe('AsaasService: clientes', () => {
     http.get.mockResolvedValueOnce(lista()).mockResolvedValueOnce(lista())
     http.post.mockRejectedValueOnce(Object.assign(new Error('400'), { response: { status: 400, data: 'cnpj' } }))
     await expect(new AsaasService().ensureCustomerForClinica(USER, CLINICA)).rejects.toThrow('400')
-    expect(console.error).toHaveBeenCalledWith('[AsaasService.ensureCustomerForClinica] Error:', { status: 400, data: 'cnpj' })
+    expect(console.error).toHaveBeenCalledWith('[AsaasService.ensureCustomerForClinica] Error:', { status: 400, codigo: 'HTTP_400' })
   })
 
   it('clínica: erro com cliente existente não loga', async () => {

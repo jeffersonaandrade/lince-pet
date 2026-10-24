@@ -402,9 +402,9 @@
     "semantic_hash": ""
   },
   "src/services/assinaturas/assinaturas.ts": {
-    "mtime": 1792096165.2600348,
-    "seen": 1792096543.0005674,
-    "ast_hash": "c8d8afd2d418cfbbcc22be91347f93a7",
+    "mtime": 1792876425.284514,
+    "seen": 1792876719.877053,
+    "ast_hash": "5c869e5b86c1e1ce29321a21abf12b49",
     "semantic_hash": ""
   },
   "src/services/auth/auth.ts": {
@@ -1524,9 +1524,9 @@
     "semantic_hash": ""
   },
   "src/app/api/assinaturas/status/route.ts": {
-    "mtime": 1791566336.442315,
-    "seen": 1791566381.3660264,
-    "ast_hash": "a1e107f2b795b3117e7794c7b3a83ac6",
+    "mtime": 1792875956.2705817,
+    "seen": 1792876719.7396262,
+    "ast_hash": "fc19b609dfb6ef946db1a8e1e98bcefd",
     "semantic_hash": ""
   },
   "src/app/api/clinicas/[id]/route.ts": {
@@ -1626,9 +1626,9 @@
     "semantic_hash": ""
   },
   "src/server/services/asaas.ts": {
-    "mtime": 1792867522.0638256,
-    "seen": 1792868718.8383825,
-    "ast_hash": "e6cbc4371986c7e0373629670b4bf288",
+    "mtime": 1792875786.143506,
+    "seen": 1792876719.8560605,
+    "ast_hash": "27e21b908c482811f8d276cd02263a32",
     "semantic_hash": ""
   },
   "src/server/services/clinicas.ts": {
@@ -1650,9 +1650,9 @@
     "semantic_hash": ""
   },
   "src/app/api/assinaturas/[id]/route.ts": {
-    "mtime": 1791566336.4339058,
-    "seen": 1791566381.3657641,
-    "ast_hash": "f139a1b375f217fdfd542cd1a2523a02",
+    "mtime": 1792875870.6522195,
+    "seen": 1792876719.7384408,
+    "ast_hash": "647856bc635e6c8d131222ef036b47a8",
     "semantic_hash": ""
   },
   "src/app/api/assinaturas/[id]/upgrade/route.ts": {
@@ -1716,9 +1716,9 @@
     "semantic_hash": ""
   },
   "src/app/api/webhooks/asaas/route.ts": {
-    "mtime": 1792545551.5987961,
-    "seen": 1792545819.2921278,
-    "ast_hash": "1f816dba255460a1e6bf5b4d9dc9c2f5",
+    "mtime": 1792875956.2695792,
+    "seen": 1792876719.7906282,
+    "ast_hash": "abbf61026caf1c0e60fe910647d3d900",
     "semantic_hash": ""
   },
   "src/server/auth/google.ts": {
@@ -1740,9 +1740,9 @@
     "semantic_hash": ""
   },
   "src/server/services/asaas-webhook.ts": {
-    "mtime": 1792704217.1258018,
-    "seen": 1792704567.921551,
-    "ast_hash": "022de8ff8471d2b7196579d7a8a7a3eb",
+    "mtime": 1792876030.6394625,
+    "seen": 1792876719.8560553,
+    "ast_hash": "fb81ec9a89c618d28f601dcba059132b",
     "semantic_hash": ""
   },
   "src/server/services/auth.ts": {
@@ -1776,9 +1776,9 @@
     "semantic_hash": ""
   },
   "tests/server/asaas-webhook.test.ts": {
-    "mtime": 1792704217.1522303,
-    "seen": 1792704567.93624,
-    "ast_hash": "46c561b8397a8c241021d3d26413e04d",
+    "mtime": 1792876352.415911,
+    "seen": 1792876719.8920612,
+    "ast_hash": "d57876f72c48f634fd8e535db1b470c8",
     "semantic_hash": ""
   },
   "src/server/emails/appointment_cancellation.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792868686.1951332,
-    "seen": 1792868718.9107013,
-    "ast_hash": "2a3160549f9e293f4a096ea74f616af9",
+    "mtime": 1792876599.0437946,
+    "seen": 1792876719.96665,
+    "ast_hash": "4bd986a469c80d503a2f5da44a13adb9",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2178,9 +2178,9 @@
     "semantic_hash": ""
   },
   "src/app/api/cron/lembretes-whatsapp/route.ts": {
-    "mtime": 1792758928.604392,
-    "seen": 1792759600.7663798,
-    "ast_hash": "18e403dcdc8cae54b777c3c67c187ca1",
+    "mtime": 1792875956.2715826,
+    "seen": 1792876719.753995,
+    "ast_hash": "6ffe65060d02a405d41f1ede2ca14897",
     "semantic_hash": ""
   },
   "src/server/services/whatsapp-lembretes.ts": {
@@ -2520,9 +2520,9 @@
     "semantic_hash": ""
   },
   "src/components/Prestador/CardPlano.tsx": {
-    "mtime": 1791566336.4786804,
-    "seen": 1791566381.407036,
-    "ast_hash": "d28c6871979f75864173e868dca71a97",
+    "mtime": 1792876401.1196592,
+    "seen": 1792876719.825846,
+    "ast_hash": "349927937ade0263d79e8fd831fe530d",
     "semantic_hash": ""
   },
   "src/components/Prestador/FormsPrestador.tsx": {
@@ -2574,9 +2574,9 @@
     "semantic_hash": ""
   },
   "src/server/services/assinante.ts": {
-    "mtime": 1792782151.6862855,
-    "seen": 1792866749.5264676,
-    "ast_hash": "39610ab509636979c5b29d3a8f933f5c",
+    "mtime": 1792875870.6492121,
+    "seen": 1792876719.856065,
+    "ast_hash": "77527b4d18708ef160df6e07dec26f98",
     "semantic_hash": ""
   },
   "src/server/services/pedidos-prestador.ts": {
@@ -2742,27 +2742,27 @@
     "semantic_hash": ""
   },
   "src/components/Assinatura/AlterarPlano.tsx": {
-    "mtime": 1792762554.1583931,
-    "seen": 1792762695.4384778,
-    "ast_hash": "b0df88ad1b1d6fcb6b96cb59f285caff",
+    "mtime": 1792876030.638461,
+    "seen": 1792876719.8123376,
+    "ast_hash": "7cf8bf8e25f4998218cfa02ca787bebf",
     "semantic_hash": ""
   },
   "src/components/Assinatura/StatusAssinaturaAviso.tsx": {
-    "mtime": 1791566336.474674,
-    "seen": 1791566381.4019287,
-    "ast_hash": "7364c28ad701503c534289fc55799666",
+    "mtime": 1792876401.1176581,
+    "seen": 1792876719.8123477,
+    "ast_hash": "ede529455e3b3e5d6964100b03df8968",
     "semantic_hash": ""
   },
   "src/server/services/assinatura-regras.ts": {
-    "mtime": 1792765684.5919218,
-    "seen": 1792768246.7336957,
-    "ast_hash": "81dc35469ae7fe4a06fdb0c94816977a",
+    "mtime": 1792875956.2715826,
+    "seen": 1792876719.8560688,
+    "ast_hash": "f348206b36f7ae22cc6298d047b20226",
     "semantic_hash": ""
   },
   "src/server/services/assinaturas.ts": {
-    "mtime": 1792534130.9667375,
-    "seen": 1792534368.4493337,
-    "ast_hash": "ad267971af7051ae8497506979cfc481",
+    "mtime": 1792876443.129393,
+    "seen": 1792876719.8560727,
+    "ast_hash": "2d4ec2b335e6fccc192d2be3cb74fab8",
     "semantic_hash": ""
   },
   "tests/server/assinatura-regras.test.ts": {
@@ -2772,9 +2772,9 @@
     "semantic_hash": ""
   },
   "tests/server/assinaturas.test.ts": {
-    "mtime": 1792534131.2064147,
-    "seen": 1792534368.5633104,
-    "ast_hash": "0fd453825426b0a5dfc074fa51f9000f",
+    "mtime": 1792876425.283003,
+    "seen": 1792876719.8926144,
+    "ast_hash": "d27ea08d9de34a6a6782f5c39b2ea1da",
     "semantic_hash": ""
   },
   "src/components/Home/SearchBar/OrdenacaoLista.tsx": {
@@ -2796,9 +2796,9 @@
     "semantic_hash": ""
   },
   "tests/server/assinatura-rotas.test.ts": {
-    "mtime": 1792534131.1853404,
-    "seen": 1792534368.563296,
-    "ast_hash": "ae408d54f8f2e5628f6699b318b88072",
+    "mtime": 1792876425.285524,
+    "seen": 1792876719.8926108,
+    "ast_hash": "e34eba07eb8cfc48751c550ee385cef5",
     "semantic_hash": ""
   },
   "tests/server/cobertura/agendamentos.test.ts": {
@@ -2814,9 +2814,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/asaas.test.ts": {
-    "mtime": 1792867522.0668218,
-    "seen": 1792868718.8650694,
-    "ast_hash": "da0ff57cda634689e8fc54cfb0228575",
+    "mtime": 1792876311.687296,
+    "seen": 1792876719.8963253,
+    "ast_hash": "42ca2eaedad7c20bc02afbf8677d100a",
     "semantic_hash": ""
   },
   "tests/server/cobertura/assinante.test.ts": {
@@ -2826,9 +2826,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/assinaturas.test.ts": {
-    "mtime": 1792782151.7037308,
-    "seen": 1792866749.5656013,
-    "ast_hash": "9b9f615030296d439a39e7c736009531",
+    "mtime": 1792876311.683287,
+    "seen": 1792876719.8967025,
+    "ast_hash": "0184019deb3e7f872f784932ecaef954",
     "semantic_hash": ""
   },
   "tests/server/cobertura/auth.test.ts": {
@@ -3882,9 +3882,39 @@
     "semantic_hash": ""
   },
   "docs/HOMOLOGACAO-ASAAS-2026-10-24.md": {
-    "mtime": 1792868686.1936252,
-    "seen": 1792868718.9109507,
-    "ast_hash": "3dbfc68bbc75fc503279f74495d6a97d",
+    "mtime": 1792868906.2746303,
+    "seen": 1792876719.9670599,
+    "ast_hash": "5e1640d91b5583867b179a13ea91465e",
+    "semantic_hash": ""
+  },
+  "src/app/api/cron/assinaturas/route.ts": {
+    "mtime": 1792875956.2725823,
+    "seen": 1792876719.7539895,
+    "ast_hash": "bf606bcc0f577db3886c04cbc076a793",
+    "semantic_hash": ""
+  },
+  "src/components/Assinatura/GerenciarAssinatura.tsx": {
+    "mtime": 1792876265.9743698,
+    "seen": 1792876719.8123431,
+    "ast_hash": "a4315c4ad1a1078cfa2f2c5b614d6b9e",
+    "semantic_hash": ""
+  },
+  "src/server/services/asaas-cancelamentos.ts": {
+    "mtime": 1792876265.9749076,
+    "seen": 1792876719.856049,
+    "ast_hash": "463db30f6e85ce1f190787751d117e64",
+    "semantic_hash": ""
+  },
+  "tests/server/asaas-cancelamentos.test.ts": {
+    "mtime": 1792876352.416921,
+    "seen": 1792876719.8920553,
+    "ast_hash": "fb1b217a33819dacc1d83df97ff28b0f",
+    "semantic_hash": ""
+  },
+  "tests/server/assinatura-cancelar-rota.test.ts": {
+    "mtime": 1792876443.1303895,
+    "seen": 1792876719.8920643,
+    "ast_hash": "becb17906f07a0df2ed1d4a64323bb2d",
     "semantic_hash": ""
   }
 }

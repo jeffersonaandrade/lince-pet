@@ -1,23 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Crown } from "lucide-react";
-import { AssinaturasService } from "@/services/assinaturas/assinaturas";
+import { AssinaturasService, type StatusAssinatura } from "@/services/assinaturas/assinaturas";
+import { GerenciarAssinatura } from "@/components/Assinatura/GerenciarAssinatura";
 import { handleApiError } from "@/utils/errorHandler";
 import { Alerta, botaoPrimario } from "./ui";
-
-type Status = {
-  plan: { code: string; name: string; priceCents: number } | null;
-  usage: { used: number; limit: number | null };
-  subscription: { id: string; status: string; asaasSubscriptionId: string | null } | null;
-};
 
 const PLANO_PAGO = "pro";
 
 export function CardPlano() {
-  const [status, setStatus] = useState<Status | null>(null);
+  const [status, setStatus] = useState<StatusAssinatura | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const atualizar = useCallback(async () => { setStatus(await AssinaturasService().obterStatus()); }, []);
 
   useEffect(() => {
     AssinaturasService()
@@ -29,7 +25,7 @@ export function CardPlano() {
   if (!status?.plan) return null;
   const { plan, usage, subscription } = status;
   const gratuito = plan.priceCents === 0;
-  const pendente = subscription?.status === "pending";
+  const pendente = subscription?.status === "pending" || subscription?.status === "past_due" || status.cancelamentoPendente;
 
   const assinar = async () => {
     setEnviando(true);
@@ -54,6 +50,7 @@ export function CardPlano() {
         <Crown size={18} className="text-orange-500" />
         <h2 className="text-lg font-bold text-slate-800">Plano {plan.name}</h2>
       </div>
+      <GerenciarAssinatura status={status} atualizar={atualizar} />
       {usage.limit !== null ? (
         <div className="flex flex-col gap-1.5">
           <span className="text-sm text-slate-600">
@@ -72,7 +69,7 @@ export function CardPlano() {
 
       {gratuito ? (
         pendente ? (
-          <Alerta tipo="info">Pagamento em processamento. O plano muda assim que for confirmado.</Alerta>
+          !status.cancelamentoPendente ? <Alerta tipo="info">Há uma fatura em aberto. Retome o pagamento pelo link acima para ativar o plano.</Alerta> : null
         ) : (
           <>
             <p className="text-sm text-slate-500">

@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const prismaMock = vi.hoisted(() => {
   const m = {
+    $executeRaw: vi.fn(),
+    asaasCancelamento: { findFirst: vi.fn(), count: vi.fn(), upsert: vi.fn() },
     subscriptionPlan: { findUnique: vi.fn() },
     subscription: {
       findFirst: vi.fn(),
@@ -18,6 +20,10 @@ const prismaMock = vi.hoisted(() => {
   return Object.assign(m, { $transaction: vi.fn(async (fn: (tx: unknown) => unknown) => fn(m)) })
 })
 vi.mock('@/server/db', () => ({ prisma: prismaMock }))
+const conciliacao = vi.hoisted(() => ({ conciliarCancelamentos: vi.fn() }))
+vi.mock('@/server/services/asaas-cancelamentos', async importOriginal => ({
+  ...await importOriginal<typeof import('@/server/services/asaas-cancelamentos')>(), ...conciliacao,
+}))
 
 import { contratarPlano, trocarPlano } from '@/server/services/assinaturas'
 
@@ -47,6 +53,9 @@ const atual = { id: 'sub-1', veterinarioId: 'vet-1', clinicaId: null, prestadorI
 
 beforeEach(() => {
   vi.clearAllMocks()
+  prismaMock.asaasCancelamento.findFirst.mockResolvedValue(null)
+  prismaMock.asaasCancelamento.count.mockResolvedValue(0)
+  conciliacao.conciliarCancelamentos.mockResolvedValue({ confirmados: 1, pendentes: 0 })
   vi.spyOn(console, 'error').mockImplementation(() => {})
   prismaMock.subscriptionPlan.findUnique.mockResolvedValue(PLANO_VET)
   prismaMock.subscription.findFirst.mockResolvedValue(null)
@@ -65,7 +74,7 @@ describe('erros do Asaas com detalhes da resposta', () => {
     const erro = { response: { data: { errors: [{ description: 'CPF inválido' }] } } }
     asaas.ensureCustomerForVeterinario.mockRejectedValueOnce(erro)
     await expect(contratarPlano(vet(), 'vet_starter', fabrica)).rejects.toMatchObject({ status: 400 })
-    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('cliente'), erro.response.data)
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('cliente'), { codigo: 'ERRO_INTEGRACAO' })
   })
 
   it('assinatura recusada: loga response.data do Asaas e devolve 400 sem gravar', async () => {
@@ -75,7 +84,7 @@ describe('erros do Asaas com detalhes da resposta', () => {
       status: 400,
       body: { message: expect.stringContaining('recusou a criação') },
     })
-    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('assinatura'), erro.response.data)
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('assinatura'), { codigo: 'ERRO_INTEGRACAO' })
     expect(prismaMock.subscription.create).not.toHaveBeenCalled()
   })
 })
@@ -96,33 +105,22 @@ describe('trocarPlano: casos extras', () => {
     expect(r).toMatchObject({ emTeste: true, checkoutUrl: null, message: 'Plano ativado no período de teste.' })
   })
 
-  it('plano gratuito que não é o padrão do dono também vira cancelamento', async () => {
+  it('plano gratuito que não é o padrão do dono também solicita cancelamento', async () => {
     prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce({ ...PLANO_VET, priceCents: 0 })
     prismaMock.subscription.findMany.mockResolvedValueOnce([{ ...atual, asaasSubscriptionId: 'sub_a' }])
     const r = await trocarPlano(vet('vet_pro'), 'sub-1', 'vet_starter', fabrica)
-    expect(r).toEqual({ message: 'Assinatura cancelada.', subscription: null, checkoutUrl: null, emTeste: false, primeiraFatura: null })
-    expect(asaas.cancelSubscription).toHaveBeenCalledWith('sub_a')
+    expect(r).toMatchObject({ cancelamentoPendente: false, subscription: null })
+    expect(prismaMock.asaasCancelamento.upsert).toHaveBeenCalled()
     expect(asaas.createSubscription).not.toHaveBeenCalled()
-    expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('none')
   })
 
-  it('falha ao cancelar a troca pendente no Asaas não impede o cancelamento local nem a nova assinatura', async () => {
-    prismaMock.subscription.findMany.mockResolvedValueOnce([
-      { id: 'pend-1', status: 'pending', asaasSubscriptionId: 'sub_p1' },
-      { id: 'pend-2', status: 'pending', asaasSubscriptionId: null },
-    ])
-    asaas.cancelSubscription.mockRejectedValueOnce(new Error('500'))
-
-    const r = await trocarPlano(vet('vet_pro'), 'sub-1', 'vet_starter', fabrica)
-
-    expect(asaas.cancelSubscription).toHaveBeenCalledTimes(1)
-    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('cancelar pendente'), expect.any(Error))
-    expect(prismaMock.subscription.updateMany.mock.calls[0][0]).toMatchObject({
-      where: { id: { in: ['pend-1', 'pend-2'] } },
-      data: { status: 'canceled', canceledAt: expect.any(Date) },
-    })
-    expect(asaas.createSubscription).toHaveBeenCalled()
-    expect(r.message).toMatch(/Conclua o pagamento/)
+  it('cancelamento anterior não confirmado impede nova cobrança e preserva plano', async () => {
+    prismaMock.subscription.findMany.mockResolvedValueOnce([{ id: 'pend-1', status: 'pending', asaasSubscriptionId: 'sub_p1' }])
+    prismaMock.asaasCancelamento.findFirst.mockResolvedValueOnce(null).mockResolvedValueOnce({ subscriptionId: 'pend-1' })
+    await expect(trocarPlano(vet('vet_pro'), 'sub-1', 'vet_starter', fabrica)).rejects.toMatchObject({ status: 409 })
+    expect(prismaMock.asaasCancelamento.upsert).toHaveBeenCalled()
+    expect(asaas.createSubscription).not.toHaveBeenCalled()
+    expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
   })
 
   it('tutor não troca plano: 403', async () => {

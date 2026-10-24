@@ -5,12 +5,13 @@ const SELO: Record<StatusLabel, { texto: string; classe: string }> = {
   pendente: { texto: "Pagamento pendente", classe: "bg-amber-100 text-amber-800" },
   inadimplente: { texto: "Inadimplente", classe: "bg-red-100 text-red-800" },
   cancelada: { texto: "Cancelada", classe: "bg-slate-200 text-slate-700" },
+  cancelamento_pendente: { texto: "Cancelamento em confirmação", classe: "bg-amber-100 text-amber-800" },
 };
 
 /** Selo do status da assinatura (reflexo do Asaas) e atalho para pagar a fatura em aberto. */
 export function StatusAssinaturaAviso({ status }: { status: StatusAssinatura }) {
-  if (!status.statusLabel) return null;
-  const selo = SELO[status.statusLabel];
+  if (!status.statusLabel && !status.cancelamentoPendente) return null;
+  const selo = SELO[status.cancelamentoPendente ? "cancelamento_pendente" : status.statusLabel!];
   const fimTeste = status.emTeste && status.trialEnd ? new Date(status.trialEnd).toLocaleDateString("pt-BR") : null;
 
   return (
@@ -23,11 +24,14 @@ export function StatusAssinaturaAviso({ status }: { status: StatusAssinatura }) 
         {fimTeste ? (
           <p className="text-sm text-slate-600">Teste grátis até {fimTeste}. A 1a fatura vence nessa data.</p>
         ) : null}
-        {status.statusLabel === "inadimplente" ? (
+        {!status.cancelamentoPendente && status.statusLabel === "inadimplente" ? (
           <p className="text-sm text-red-700">A fatura venceu e os recursos do plano foram suspensos. Pague para reativar.</p>
         ) : null}
-        {status.pendingPlanId ? (
+        {!status.cancelamentoPendente && status.pendingPlanId ? (
           <p className="text-sm text-amber-700">Há uma troca de plano aguardando pagamento.</p>
+        ) : null}
+        {status.cancelamentoPendente ? (
+          <p role="status" className="text-sm text-amber-800">Há um cancelamento aguardando confirmação. A assinatura solicitada ainda pode estar ativa; tentaremos novamente automaticamente.</p>
         ) : null}
       </div>
       {status.checkoutUrl ? (

@@ -1,7 +1,7 @@
 import 'server-only'
 import { prisma } from '../db'
 import { HttpError } from '../http'
-import { creating, updating } from '../lucid'
+import { creating } from '../lucid'
 import type { CurrentUser } from '../auth/session'
 import { getPendingInvoiceUrl, respostaDoAsaas, type AsaasService, type AsaasSubscription } from './asaas'
 import {
@@ -13,8 +13,10 @@ import {
   donoDaAssinatura,
   garantirClienteAsaas,
   referenciaExterna,
+  bloquearAssinante,
 } from './assinante'
 import { dataLocal, planoServePara, somarDias, temDireitoAoTeste } from './assinatura-regras'
+import { conciliarCancelamentos, solicitarCancelamento } from './asaas-cancelamentos'
 
 /** Fábrica do cliente Asaas (as rotas passam `() => new AsaasService()`; os testes, um fake). */
 export type AsaasFactory = () => AsaasService
@@ -36,11 +38,16 @@ async function planoContratavel(planCode: unknown, a: Assinante) {
 
 type Plano = Awaited<ReturnType<typeof planoContratavel>>
 
+async function exigirSemCancelamento(a: Assinante) {
+  const pendente = await prisma.asaasCancelamento.findFirst({ where: { concluidoEm: null, subscription: assinaturasDo(a) }, select: { subscriptionId: true } })
+  if (pendente) throw erro(409, 'Aguarde a confirmação do cancelamento antes de contratar outro plano.')
+}
+
 async function faturaEmAberto(service: AsaasService, asaasSubId: string) {
   try {
     return await getPendingInvoiceUrl(service, asaasSubId)
   } catch (e) {
-    console.error('[Assinaturas] Falha ao buscar fatura do Asaas:', e)
+    console.error('[Assinaturas] Falha ao buscar fatura do Asaas:', respostaDoAsaas(e))
     return null
   }
 }
@@ -106,6 +113,7 @@ async function assinarNoAsaas(user: CurrentUser, a: Assinante, plan: Plano, asaa
 /** POST /api/assinaturas */
 export async function contratarPlano(user: CurrentUser, planCode: unknown, asaas: AsaasFactory) {
   const a = exigirAssinante(user)
+  await exigirSemCancelamento(a)
   const plan = await planoContratavel(planCode, a)
 
   const existente = await prisma.subscription.findFirst({
@@ -127,30 +135,18 @@ export async function contratarPlano(user: CurrentUser, planCode: unknown, asaas
   return assinarNoAsaas(user, a, plan, asaas)
 }
 
-/** Cancela no Asaas e localmente tudo que não estiver encerrado; o dono volta ao plano padrão. */
+/** Persiste o pedido e tenta conciliá-lo; só a confirmação permite encerrar e rebaixar. */
 export async function cancelarAssinaturas(a: Assinante, asaas: AsaasFactory) {
-  const abertas = await prisma.subscription.findMany({
-    where: { ...assinaturasDo(a), status: { notIn: ['canceled', 'expired'] } },
+  const ids = await prisma.$transaction(async tx => {
+    await bloquearAssinante(tx, a)
+    const abertas = await tx.subscription.findMany({ where: { ...assinaturasDo(a), status: { notIn: ['canceled', 'expired'] } } })
+    if (abertas.length === 0) throw erro(400, 'Nenhuma assinatura ativa encontrada.')
+    for (const sub of abertas) await solicitarCancelamento(tx, sub, 'usuario')
+    return abertas.map(sub => sub.id)
   })
-  if (abertas.length === 0) throw erro(400, 'Nenhuma assinatura ativa encontrada.')
-
-  const service = abertas.some((s) => s.asaasSubscriptionId) ? asaas() : null
-  for (const s of abertas) {
-    if (s.asaasSubscriptionId && service) {
-      try {
-        await service.cancelSubscription(s.asaasSubscriptionId)
-      } catch (e) {
-        console.error('[Assinaturas] Falha ao cancelar no Asaas:', e)
-      }
-    }
-  }
-  await prisma.$transaction(async (tx) => {
-    await tx.subscription.updateMany({
-      where: { id: { in: abertas.map((s) => s.id) } },
-      data: updating({ status: 'canceled', canceledAt: new Date() }),
-    })
-    if (a.planoAtual !== a.planoPadrao) await definirPlano(tx, a, a.planoPadrao, false)
-  })
+  await conciliarCancelamentos(asaas, ids)
+  const pendente = await prisma.asaasCancelamento.count({ where: { subscriptionId: { in: ids }, concluidoEm: null } })
+  return { cancelamentoPendente: pendente > 0, message: pendente > 0 ? 'Cancelamento solicitado. A assinatura ainda aguarda confirmação do Asaas; tentaremos novamente automaticamente.' : 'Assinatura cancelada com sucesso.' }
 }
 
 /**
@@ -166,33 +162,25 @@ export async function trocarPlano(user: CurrentUser, subId: string, planCode: un
   if (!atual || dono?.tipo !== a.tipo || dono.id !== a.id) throw erro(404, 'Assinatura não encontrada')
 
   if (planCode === 'none' || planCode === a.planoPadrao) {
-    await cancelarAssinaturas(a, asaas)
-    return { message: 'Assinatura cancelada.', subscription: null, checkoutUrl: null, emTeste: false, primeiraFatura: null }
+    const resultado = await cancelarAssinaturas(a, asaas)
+    return { ...resultado, subscription: null, checkoutUrl: null, emTeste: false, primeiraFatura: null }
   }
 
   const plan = await planoContratavel(planCode, a)
   if (plan.priceCents === 0) {
-    await cancelarAssinaturas(a, asaas)
-    return { message: 'Assinatura cancelada.', subscription: null, checkoutUrl: null, emTeste: false, primeiraFatura: null }
+    const resultado = await cancelarAssinaturas(a, asaas)
+    return { ...resultado, subscription: null, checkoutUrl: null, emTeste: false, primeiraFatura: null }
   }
+  await exigirSemCancelamento(a)
   if (plan.code === a.planoAtual && atual.status === 'active') throw erro(400, 'Este já é o seu plano atual.')
 
   const pendentes = await prisma.subscription.findMany({ where: { ...assinaturasDo(a), status: 'pending' } })
   if (pendentes.length > 0) {
-    const service = asaas()
-    for (const p of pendentes) {
-      if (p.asaasSubscriptionId) {
-        try {
-          await service.cancelSubscription(p.asaasSubscriptionId)
-        } catch (e) {
-          console.error('[Assinaturas] Falha ao cancelar pendente no Asaas:', e)
-        }
-      }
-    }
-    await prisma.subscription.updateMany({
-      where: { id: { in: pendentes.map((p) => p.id) } },
-      data: updating({ status: 'canceled', canceledAt: new Date() }),
+    await prisma.$transaction(async tx => {
+      for (const p of pendentes) await solicitarCancelamento(tx, p, 'troca')
     })
+    await conciliarCancelamentos(asaas, pendentes.map(p => p.id))
+    await exigirSemCancelamento(a)
   }
 
   const r = await assinarNoAsaas(user, a, plan, asaas, atual.asaasCustomerId)

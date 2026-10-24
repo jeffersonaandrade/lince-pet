@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { NextRequest } from 'next/server'
 
+vi.mock('next/server', async importOriginal => ({ ...await importOriginal<typeof import('next/server')>(), after: vi.fn() }))
+
 const prismaMock = vi.hoisted(() => ({
+  asaasCancelamento: { findFirst: vi.fn() },
   subscriptionPlan: { findUnique: vi.fn() },
   subscription: { findMany: vi.fn(), count: vi.fn() },
 }))
@@ -46,6 +49,7 @@ async function status() {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  prismaMock.asaasCancelamento.findFirst.mockResolvedValue(null)
   sessao.user = {
     id: 'u-1',
     userType: 'veterinario',
@@ -60,6 +64,12 @@ beforeEach(() => {
 })
 
 describe('GET /api/assinaturas/status', () => {
+  it('cancelamento pendente não oferece fatura que está sendo encerrada', async () => {
+    prismaMock.asaasCancelamento.findFirst.mockResolvedValue({ motivo: 'usuario' })
+    prismaMock.subscription.findMany.mockResolvedValue([sub({ status: 'pending' })])
+    expect(await status()).toMatchObject({ cancelamentoPendente: true, cancelamentoSolicitado: true, checkoutUrl: null })
+    expect(asaasFake.getSubscriptionPayments).not.toHaveBeenCalled()
+  })
   it('conta nova: sem assinatura, teste disponível e sem chamar o Asaas', async () => {
     prismaMock.subscriptionPlan.findUnique.mockResolvedValue(null)
     sessao.user = { id: 'u-1', userType: 'veterinario', veterinario: { id: 'vet-1', subscriptionPlanCode: 'none' } }

@@ -2,9 +2,9 @@ import 'server-only'
 import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { updating } from '../lucid'
-import { AsaasService } from './asaas'
-import { PLANO_PADRAO, assinanteDaAssinatura, assinaturasDo, definirPlano, planoAtualDe } from './assinante'
+import { PLANO_PADRAO, assinanteDaAssinatura, assinaturasDo, bloquearAssinante, definirPlano, planoAtualDe } from './assinante'
 import { fimDoPeriodo } from './assinatura-regras'
+import { confirmarCancelamento, solicitarCancelamento } from './asaas-cancelamentos'
 
 type Tx = Prisma.TransactionClient
 
@@ -113,34 +113,30 @@ async function rebaixar(tx: Tx, sub: SubLocal, motivo: string) {
 }
 
 async function ativarPorPagamento(tx: Tx, sub: SubLocal, payment: NonNullable<AsaasEvento['payment']>) {
-  if (sub.status === 'canceled' || sub.status === 'expired') {
+  if (sub.status === 'canceled' || sub.status === 'expired' || sub.status === 'cancel_pending') {
     console.warn(`[Webhook Asaas] Pagamento ${payment.id} de assinatura encerrada ${sub.id}; nada a ativar.`)
     return
   }
+  const cancelamento = await tx.asaasCancelamento.findUnique({ where: { subscriptionId: sub.id } })
+  if (cancelamento && !cancelamento.concluidoEm) return
+  const dono = assinanteDaAssinatura(sub)
+  if (dono) await bloquearAssinante(tx, dono)
   const periodo = payment.dueDate
     ? { currentPeriodStart: new Date(`${payment.dueDate}T00:00:00Z`), currentPeriodEnd: fimDoPeriodo(payment.dueDate) }
     : {}
   await tx.subscription.update({ where: { id: sub.id }, data: updating({ status: 'active', ...periodo }) })
 
-  const dono = assinanteDaAssinatura(sub)
   if (!dono) return
 
   const antigas = await tx.subscription.findMany({
     where: { id: { not: sub.id }, ...assinaturasDo(dono), status: { in: ['active', 'pending', 'past_due'] } },
   })
   if (antigas.length > 0) {
-    const service = new AsaasService()
     for (const antiga of antigas) {
-      if (antiga.asaasSubscriptionId) {
-        try {
-          await service.cancelSubscription(antiga.asaasSubscriptionId)
-        } catch (e) {
-          console.error(`[Webhook Asaas] Falha ao cancelar ${antiga.asaasSubscriptionId} no Asaas:`, e)
-        }
-      }
+      await solicitarCancelamento(tx, antiga, 'troca')
       await tx.subscription.update({
         where: { id: antiga.id },
-        data: updating({ status: 'canceled', canceledAt: new Date() }),
+        data: updating({ status: 'cancel_pending' }),
       })
     }
   }
@@ -157,6 +153,10 @@ async function ativarPorPagamento(tx: Tx, sub: SubLocal, payment: NonNullable<As
 async function processEvent(tx: Tx, evento: AsaasEvento, eventType: string) {
   const asaasSubId = evento.payment?.subscription || evento.subscription?.id
   if (!asaasSubId) return
+  const initial = await tx.subscription.findFirst({ where: { asaasSubscriptionId: asaasSubId } })
+  if (!initial) return
+  const dono = assinanteDaAssinatura(initial)
+  if (dono) await bloquearAssinante(tx, dono)
   const sub = await tx.subscription.findFirst({ where: { asaasSubscriptionId: asaasSubId } })
   if (!sub) return
 
@@ -166,19 +166,13 @@ async function processEvent(tx: Tx, evento: AsaasEvento, eventType: string) {
   }
 
   if (evento.payment && EVENTOS_INADIMPLENTE.includes(eventType)) {
-    if (sub.status === 'canceled' || sub.status === 'expired') return
+    if (sub.status === 'canceled' || sub.status === 'expired' || sub.status === 'cancel_pending') return
     await tx.subscription.update({ where: { id: sub.id }, data: updating({ status: 'past_due' }) })
     await rebaixar(tx, sub, eventType)
     return
   }
 
   if (EVENTOS_ENCERRADA.includes(eventType)) {
-    if (sub.status !== 'canceled') {
-      await tx.subscription.update({
-        where: { id: sub.id },
-        data: updating({ status: 'canceled', canceledAt: sub.canceledAt ?? new Date() }),
-      })
-    }
-    await rebaixar(tx, sub, eventType)
+    await confirmarCancelamento(tx, sub)
   }
 }

@@ -6,6 +6,11 @@ import type { AsaasService } from './asaas'
 
 type Db = Prisma.TransactionClient
 
+/** Serializa aplicação de plano e encerramentos concorrentes do mesmo dono. */
+export async function bloquearAssinante(db: Db, a: Pick<Assinante, 'tipo' | 'id'>) {
+  await db.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`assinatura:${a.tipo}:${a.id}`}, 0))`
+}
+
 export type TipoAssinante = 'veterinario' | 'clinica' | 'prestador'
 
 /** Quem paga a assinatura: veterinário, clínica ou prestador, com o plano de volta em caso de cancelamento. */
