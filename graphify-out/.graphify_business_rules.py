@@ -758,6 +758,8 @@ new_nodes += [n for n in exames_nodes if n["id"] not in {x["id"] for x in new_no
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in exames_nodes]
 new_edges += [edge("rule_exames_avisos_lembretes", "rule_avisos_lembretes_tutor", "references")]
 exames_impl = {
+    "src_app_signup_page": ["rule_exames_modulo_da_clinica", "rule_prestador_conta_generica"],
+    "src_app_signup_clinica_page": ["rule_exames_modulo_da_clinica"],
     "src_server_auth_session": ["rule_admin_is_admin"],
     "src_app_admin_aprovacoes_page": ["rule_admin_is_admin", "rule_admin_aprova_crmv_rt"],
     "src_server_services_aprovacoes": ["rule_admin_aprova_crmv_rt"],

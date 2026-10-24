@@ -1,10 +1,9 @@
 import styles from "./page.module.css";
 import Link from "next/link";
 import Image from "next/image";
-import { PawPrint } from "lucide-react";
 
 const FeatureIcon = () => (
-  <svg className={styles.featureIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+  <svg aria-hidden="true" className={styles.featureIcon} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="20 6 9 17 4 12" />
   </svg>
 );
@@ -33,7 +32,7 @@ export default function CadastroPage() {
                 alt="Tutor"
                 fill
                 priority
-                sizes="(max-width: 768px) 100vw, 33vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             </div>
             <div className={styles.cardContent}>
@@ -50,10 +49,10 @@ export default function CadastroPage() {
                 <li className={styles.featureItem}><FeatureIcon /> Favoritar clínicas e veterinários</li>
               </ul>
 
-              <button className={styles.ctaButton}>
+              <span className={styles.ctaButton}>
                 Criar perfil
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </button>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              </span>
             </div>
           </div>
         </Link>
@@ -68,7 +67,7 @@ export default function CadastroPage() {
                 alt="Veterinário"
                 fill
                 priority
-                sizes="(max-width: 768px) 100vw, 33vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             </div>
             <div className={styles.cardContent}>
@@ -85,10 +84,10 @@ export default function CadastroPage() {
                 <li className={styles.featureItem}><FeatureIcon /> Agenda inteligente presencial e online</li>
               </ul>
 
-              <button className={styles.ctaButton}>
+              <span className={styles.ctaButton}>
                 Criar perfil
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </button>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              </span>
             </div>
           </div>
         </Link>
@@ -103,27 +102,31 @@ export default function CadastroPage() {
                 alt="Clínica"
                 fill
                 priority
-                sizes="(max-width: 768px) 100vw, 33vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
               />
             </div>
             <div className={styles.cardContent}>
               <span className={styles.cardTag}>Gestão Empresarial</span>
-              <h2 className={styles.cardTitle}>Clínica</h2>
+              <h2 className={styles.cardTitle}>Clínica e laboratório</h2>
               <p className={styles.cardDescription}>
-                Soluções completas para gestão de clínica e corpo clínico.
+                Para clínicas veterinárias, clínicas de exames e laboratórios.
               </p>
 
               <ul className={styles.featureList}>
                 <li className={styles.featureItem}><FeatureIcon /> Gestão centralizada de veterinários</li>
-                <li className={styles.featureItem}><FeatureIcon /> Cadastro de infraestrutura e serviços</li>
+                <li className={styles.featureItem}><FeatureIcon /> Exames e combos com pagamento na clínica</li>
                 <li className={styles.featureItem}><FeatureIcon /> Disponibilidade por salas e horários</li>
                 <li className={styles.featureItem}><FeatureIcon /> Perfil institucional para busca regional</li>
               </ul>
 
-              <button className={styles.ctaButton}>
+              <p className={styles.cardDescription}>
+                Exames exigem plano pago e responsável técnico aprovado. Laboratórios podem usar o módulo sem veterinários vinculados.
+              </p>
+
+              <span className={styles.ctaButton}>
                 Criar perfil
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </button>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              </span>
             </div>
           </div>
         </Link>
@@ -132,8 +135,13 @@ export default function CadastroPage() {
         <Link href="/signup/prestador" className="no-underline">
           <div className={styles.card}>
             <div className={styles.accent}></div>
-            <div className={`${styles.imageContainer} flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100`}>
-              <PawPrint className="h-20 w-20 text-orange-400" aria-hidden />
+            <div className={styles.imageContainer}>
+              <Image
+                src="/ProfissionalPet.webp"
+                alt="Profissional de banho e tosa escovando um cachorro"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              />
             </div>
             <div className={styles.cardContent}>
               <span className={styles.cardTag}>Serviços para pets</span>
@@ -146,13 +154,13 @@ export default function CadastroPage() {
                 <li className={styles.featureItem}><FeatureIcon /> Perfil público com serviços e preços</li>
                 <li className={styles.featureItem}><FeatureIcon /> Pedidos com data, horário ou hospedagem</li>
                 <li className={styles.featureItem}><FeatureIcon /> Aceite, recuse e organize sua agenda</li>
-                <li className={styles.featureItem}><FeatureIcon /> Avisos por e-mail, WhatsApp e Google Agenda</li>
+                <li className={styles.featureItem}><FeatureIcon /> Avisos por e-mail e conexão com Google Agenda</li>
               </ul>
 
-              <button className={styles.ctaButton}>
+              <span className={styles.ctaButton}>
                 Criar perfil
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-              </button>
+                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+              </span>
             </div>
           </div>
         </Link>

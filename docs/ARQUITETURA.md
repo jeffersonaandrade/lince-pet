@@ -220,6 +220,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 ### Clínica de exames
 
 - **Conta:** módulo da própria conta de clínica (`clinicas.exames_ativo`); laboratório = clínica sem vets com o módulo ligado. Sem tipo de usuário novo.
+- **Entrada no cadastro:** o card "Clínica e laboratório" em `/signup` leva ao mesmo `/signup/clinica` para clínica veterinária, clínica de exames e laboratório. O menu e a introdução do formulário informam que exames exigem plano pago e RT aprovado; laboratório não precisa de veterinários vinculados.
 - **Plano:** só planos pagos de clínica ligam o módulo, com limite de exames agendados por mês (`LIMITE_EXAMES_MES` em `assinatura-regras.ts`: `starter` 100, `clinic` 300, `clinic_pro` ilimitado; feature `exames` no catálogo de planos). Sem plano, ligar responde 403. Inadimplência ou cancelamento (volta ao plano padrão) mantém os exames marcados e bloqueia novos (403). Limite do mês atingido: 403.
 - **Visível ao público** só com módulo ligado, RT aprovado e plano com exames: aba "Exames" em `/explorar` (filtro por nome e cidade) e seção "Exames" no perfil público da clínica, sempre com "pagamento na clínica".
 - **Catálogo:** `exames_oferecidos` (nome, descrição, preparo, preço, `duracao_min`, `capacidade` simultânea, ativo); preço, duração e capacidade maiores que zero. Exame com agendamento futuro só é desativado, não apagado. Combos (`combos_exame` + `combo_exame_itens`) com nome e preço próprios e pelo menos 2 exames ativos da mesma clínica; combo com exame desativado sai do ar.

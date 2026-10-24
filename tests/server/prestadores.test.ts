@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 
 const prismaMock = vi.hoisted(() => {
   const m = {
+    $executeRaw: vi.fn().mockResolvedValue(1),
     tipoServico: { findFirst: vi.fn() },
     user: { findUnique: vi.fn(), findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
     prestador: { findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },

@@ -230,7 +230,7 @@ function ClinicaSignup() {
                     className={`${styles.leftTitle} ${styles.fadeText}`}
                 >
                     {currentStep === 1
-                        ? "Conte-nos sobre sua clínica"
+                        ? "Conte-nos sobre sua clínica ou laboratório"
                         : currentStep === 2
                             ? "Onde sua clínica está localizada?"
                             : "Finalize seu cadastro"}
@@ -240,7 +240,7 @@ function ClinicaSignup() {
                     className={`${styles.leftDescription} ${styles.fadeText}`}
                 >
                     {currentStep === 1
-                        ? "Conecte sua clínica com tutores que procuram atendimento veterinário de qualidade. Receba novos pacientes e gerencie sua equipe em um só lugar."
+                        ? "Cadastre sua clínica veterinária, clínica de exames ou laboratório. Exames usam esta mesma conta, exigem plano pago e responsável técnico aprovado e não precisam de veterinários vinculados."
                         : currentStep === 2
                             ? "Torne fácil para tutores encontrarem e agendarem com sua clínica online. Apareça nos resultados de busca e simplifique o processo de marcação."
                             : "Economize tempo coletando informações essenciais dos tutores. Receba documentos dos pets e formulários antes mesmo da consulta."}
