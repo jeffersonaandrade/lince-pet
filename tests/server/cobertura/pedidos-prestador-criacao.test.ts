@@ -9,6 +9,7 @@ const prismaMock = vi.hoisted(() => {
     bloqueioAgenda: { findMany: vi.fn() },
     agendamento: { findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
     $executeRaw: vi.fn(),
+    $queryRaw: vi.fn().mockResolvedValue([{ id: 'p1' }]),
   }
   return Object.assign(m, { $transaction: vi.fn() })
 })
@@ -22,6 +23,8 @@ vi.mock('next/server', async (importOriginal) => ({
 
 const sub = vi.hoisted(() => ({ canCreateAppointment: vi.fn(), incrementUsage: vi.fn(), decrementUsage: vi.fn() }))
 vi.mock('@/server/services/subscription', () => sub)
+const cotas = vi.hoisted(() => ({ conferirPendentes: vi.fn(), consumirCota: vi.fn(), liberarCota: vi.fn() }))
+vi.mock('@/server/services/cotas-prestador', () => cotas)
 
 const enc = vi.hoisted(() => ({ conferirEncaminhamento: vi.fn(), vincularAgendamento: vi.fn() }))
 vi.mock('@/server/services/encaminhamentos', () => enc)
@@ -256,14 +259,14 @@ describe('bloqueiosDoPrestador', () => {
 /* ---------------------------------- criação -------------------------------- */
 
 describe('criarPedido', () => {
-  it('pedido nasce pendente, com código de 6 dígitos, cota consumida e aviso de novo pedido agendado', async () => {
+  it('pedido nasce pendente, com código de 6 dígitos, sem consumir cota e com aviso agendado', async () => {
     const pedido = await criarPedido(TUTOR, 'pr-1', corpo({ observacoes: '  Cão bravo  ' }))
 
     expect(prismaMock.prestador.findFirst).toHaveBeenCalledWith({
       where: { id: 'pr-1', onboardingComplete: 1, user: { ativo: 1 }, tipoServico: { ativo: 1 } },
       include: { user: true, tipoServico: true },
     })
-    expect(prismaMock.pet.findFirst).toHaveBeenCalledWith({ where: { id: 'p1', tutorId: 't1' } })
+    expect(prismaMock.pet.findFirst).toHaveBeenCalledWith({ where: { id: 'p1', tutorId: 't1', arquivadoEm: null } })
     expect(prismaMock.servicoOferecido.findFirst).toHaveBeenCalledWith({ where: { id: 's1', prestadorId: 'pr-1', ativo: 1 } })
 
     const data = prismaMock.agendamento.create.mock.calls[0][0].data
@@ -288,8 +291,8 @@ describe('criarPedido', () => {
     expect(data.startCodeExpiresAt.toISOString()).toBe('2026-10-21T02:59:59.000Z')
     expect(data.id).toBeTruthy()
 
-    expect(sub.canCreateAppointment).toHaveBeenCalledWith(expect.objectContaining({ id: 'pr-1' }), 'prestador')
-    expect(sub.incrementUsage).toHaveBeenCalledWith(expect.objectContaining({ id: 'pr-1' }), 'prestador')
+    expect(cotas.conferirPendentes).toHaveBeenCalledWith(prismaMock, 'pr-1', 't1')
+    expect(sub.incrementUsage).not.toHaveBeenCalled()
     expect(enc.conferirEncaminhamento).not.toHaveBeenCalled()
     expect(enc.vincularAgendamento).not.toHaveBeenCalled()
     expect(afterMock).toHaveBeenCalledTimes(1)
@@ -410,11 +413,11 @@ describe('criarPedido', () => {
     expect(sub.incrementUsage).not.toHaveBeenCalled()
   })
 
-  it('limite do plano free atingido responde 403 sem gravar', async () => {
+  it('três pendentes do mesmo tutor bloqueiam outro pedido sem consumir o plano', async () => {
     sub.canCreateAppointment.mockResolvedValueOnce({ allowed: false, limit: 10, used: 10 })
+    cotas.conferirPendentes.mockRejectedValueOnce(new HttpError(409, { message: 'Você já tem 3 pedidos pendentes' }))
     const e = await erroDe(criarPedido(TUTOR, 'pr-1', corpo()))
-    expect(e!.status).toBe(403)
-    expect(e!.message).toMatch(/limite de pedidos do mês/)
+    expect(e!.status).toBe(409)
     expect(prismaMock.agendamento.create).not.toHaveBeenCalled()
   })
 

@@ -48,6 +48,7 @@ describe('petDaApi', () => {
       porte: 'pequeno',
       foto_url: 'https://x/p.png',
       created_at: '2026-01-01',
+      arquivado_em: null,
     })
   })
 

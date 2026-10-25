@@ -6,7 +6,6 @@ import { HttpError } from '../http'
 import { creating, updating } from '../lucid'
 import { hashPassword } from '../auth/password'
 import { nomeCompleto } from './agendamentos'
-import { canCreateAppointment } from './subscription'
 
 /**
  * Prestador de serviço pet (tosador, passeador, adestrador, pet sitter...). Tipo de conta único
@@ -312,8 +311,8 @@ export async function obterPrestadorPublico(id: string) {
     include: includePublico,
   })
   if (!p) throw new HttpError(404, { message: 'Profissional não encontrado' })
-  const limite = await canCreateAppointment(p, 'prestador')
-  return { ...serializePrestadorPublico(p), limite_atingido: !limite.allowed }
+  // O limite impede novos aceites, não o envio de pedidos pendentes.
+  return { ...serializePrestadorPublico(p), limite_atingido: false }
 }
 
 /* --------------------------------- painel ---------------------------------- */

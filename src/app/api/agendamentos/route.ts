@@ -16,6 +16,7 @@ import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/servi
 import { descreverPeriodo } from '@/server/services/pedidos-prestador'
 import { APROVADO, MENSAGEM_CRMV_EM_ANALISE } from '@/server/services/aprovacoes'
 import { bloquearAgenda, horarioCanonico } from '@/server/services/agenda-lock'
+import { conferirPetAtivo } from '@/server/services/pets'
 import {
   consumeDataConsulta,
   jaPassou,
@@ -77,7 +78,7 @@ export const POST = route(async (req) => {
 
     if (!horarioCanonico(horario_consulta)) return badRequest({ message: 'Horário inválido. Use HH:mm.' })
 
-    const pet = await prisma.pet.findFirst({ where: { id: pet_id, tutorId: tutor.id } })
+    const pet = await prisma.pet.findFirst({ where: { id: pet_id, tutorId: tutor.id, arquivadoEm: null } })
     if (!pet) {
       return badRequest({ message: 'Pet inválido para este tutor' })
     }
@@ -188,6 +189,7 @@ export const POST = route(async (req) => {
     }
 
     let agendamento = await prisma.$transaction(async (tx) => {
+      await conferirPetAtivo(tx, pet.id)
       await bloquearAgenda(tx, 'veterinario', veterinario_id)
       const ocupado = await tx.agendamento.findFirst({
         where: {

@@ -21,8 +21,17 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
       return badRequest({ message: 'Não é possível concluir um agendamento cancelado' })
     }
 
+    if (statusNormalizado(agendamento.status) === 'realizado') return ok({ message: 'Agendamento já concluído', status: 'realizado' })
+    if (agendamento.status.toLowerCase() !== 'em andamento' || !agendamento.startedAt || !agendamento.startCodeUsedAt) {
+      return badRequest({ message: 'Inicie a consulta com o código do tutor antes de concluir.' })
+    }
+
     const status = 'realizado'
-    await prisma.agendamento.update({ where: { id: agendamento.id }, data: updating({ status }) })
+    const concluido = await prisma.agendamento.updateMany({
+      where: { id: agendamento.id, status: agendamento.status, startedAt: { not: null }, startCodeUsedAt: { not: null } },
+      data: updating({ status, endedAt: new Date() }),
+    })
+    if (concluido.count !== 1) return badRequest({ message: 'Agendamento alterado. Atualize a página.' })
 
     try {
       await inAppNotifications.notifyAppointmentCompletedToTutor({

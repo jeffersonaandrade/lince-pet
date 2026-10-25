@@ -45,6 +45,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`inicio:${id}`}, 0))`
       const agendamento = await tx.agendamento.findFirst({ where: { id, tutorId: tutor.id } })
 
       if (!agendamento) {

@@ -37,6 +37,6 @@ export const DELETE = route<{ id: string }>(async (req, { id }) => {
   const user = await requireUser(await ApiRequest.from(req), ['tutor'])
   const tutor = await requireTutorOf(user.id)
   const pet = await requireTutorPet(tutor.id, id)
-  await prisma.pet.delete({ where: { id: pet.id } })
-  return ok({ message: 'Pet removido com sucesso' })
+  await prisma.pet.update({ where: { id: pet.id }, data: updating({ arquivadoEm: new Date() }) })
+  return ok({ message: 'Pet arquivado. O histórico foi preservado; pedidos de eliminação definitiva dependem de análise manual.' })
 })

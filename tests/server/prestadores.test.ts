@@ -4,14 +4,15 @@ import { DateTime } from 'luxon'
 const prismaMock = vi.hoisted(() => {
   const m = {
     $executeRaw: vi.fn().mockResolvedValue(1),
+    $queryRaw: vi.fn().mockResolvedValue([{ id: 'p1' }]),
     tipoServico: { findFirst: vi.fn() },
     user: { findUnique: vi.fn(), findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
-    prestador: { findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
+    prestador: { findFirst: vi.fn(), findMany: vi.fn(), findUnique: vi.fn(), findUniqueOrThrow: vi.fn(), create: vi.fn(), update: vi.fn() },
     pet: { findFirst: vi.fn(), findUnique: vi.fn() },
     tutor: { findUnique: vi.fn() },
     servicoOferecido: { findFirst: vi.fn(), findUnique: vi.fn() },
     bloqueioAgenda: { findMany: vi.fn() },
-    agendamento: { findFirst: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn() },
+    agendamento: { findFirst: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn(), count: vi.fn() },
     subscriptionPlan: { findUnique: vi.fn() },
     whatsappEnvio: { create: vi.fn(), update: vi.fn() },
     agendamentoGoogleEvento: { findUnique: vi.fn(), upsert: vi.fn(), delete: vi.fn() },
@@ -100,6 +101,8 @@ beforeEach(() => {
   prismaMock.pet.findFirst.mockResolvedValue({ id: 'p1', nome: 'Rex', especie: 'Cão', raca: null })
   prismaMock.bloqueioAgenda.findMany.mockResolvedValue([])
   prismaMock.agendamento.findFirst.mockResolvedValue(null)
+  prismaMock.agendamento.count.mockResolvedValue(0)
+  prismaMock.prestador.findUniqueOrThrow.mockResolvedValue({ id: 'pr-tosador', subscriptionPlanCode: 'free' })
   prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ code: 'free', monthlyAppointmentLimit: 10, features: [] })
   prismaMock.prestador.update.mockResolvedValue({})
   prismaMock.agendamento.create.mockImplementation(({ data }: { data: Record<string, unknown> }) => ({
@@ -200,7 +203,7 @@ describe('critério de pronto: os 4 tipos recebem pedido sem virar veterinário'
       expect(minutos).toBe(3 * 24 * 60)
       expect(Number(data.precoConsulta)).toBe(150)
     }
-    expect(prismaMock.prestador.update).toHaveBeenCalled()
+    expect(prismaMock.prestador.update).not.toHaveBeenCalled()
     expect(profissionalDe({ prestador: p as never }).rotulo).toBe(tipo.nome)
   })
 })
@@ -222,10 +225,11 @@ describe('agenda do prestador', () => {
     expect(prismaMock.agendamento.create).not.toHaveBeenCalled()
   })
 
-  it('limite do plano atingido bloqueia o pedido (403)', async () => {
+  it('limite do plano não bloqueia o envio pendente; só o aceite consome', async () => {
     prismaMock.prestador.findFirst.mockResolvedValue({ ...prestador(tipo), monthlyAppointmentsUsed: 10 })
-    const erro = await criarPedido(TUTOR, 'pr-tosador', corpo).catch((e) => e)
-    expect(erro.status).toBe(403)
+    const pedido = await criarPedido(TUTOR, 'pr-tosador', corpo)
+    expect(pedido.status).toBe('pendente')
+    expect(prismaMock.prestador.update).not.toHaveBeenCalled()
   })
 
   it('local não atendido é recusado', async () => {

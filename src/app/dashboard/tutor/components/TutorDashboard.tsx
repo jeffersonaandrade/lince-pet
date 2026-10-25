@@ -119,6 +119,11 @@ export function TutorDashboard() {
                 {!pets.erroLista && pets.pets.length === 0 ? (
                   <p className={styles.muted}>Nenhum pet cadastrado ainda.</p>
                 ) : null}
+                {pets.arquivados.length > 0 ? <details className="mb-4">
+                  <summary>Pets arquivados ({pets.arquivados.length})</summary>
+                  <p>Histórico preservado. Para solicitar eliminação definitiva, solicite análise ao suporte.</p>
+                  {pets.arquivados.map(p => <button key={p.id} type="button" className={styles.actionButtonGhost} onClick={() => setProntuarioPet({ id: p.id, nome: p.nome })}>Prontuário de {p.nome}</button>)}
+                </details> : null}
                 {pets.pets.map((p) => (
                   <div key={p.id} className={styles.petItem}>
                     {p.foto_url ? (

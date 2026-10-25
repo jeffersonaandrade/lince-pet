@@ -1,6 +1,13 @@
 import 'server-only'
 import { prisma } from '../db'
 import { HttpError, type ApiRequest, type UploadedFile } from '../http'
+import type { Prisma } from '@/generated/prisma/client'
+
+/** Rechecagem transacional serializa arquivamento com criação/remarcação. */
+export async function conferirPetAtivo(db: Prisma.TransactionClient, petId: string) {
+  const pets = await db.$queryRaw<{ id: string }[]>`SELECT id FROM pets WHERE id=${petId} AND arquivado_em IS NULL FOR UPDATE`
+  if (pets.length !== 1) throw new HttpError(409, { message: 'Pet arquivado ou indisponível para novos agendamentos.' })
+}
 
 export async function requireTutorOf(userId: string) {
   const tutor = await prisma.tutor.findFirst({ where: { userId } })
@@ -9,7 +16,7 @@ export async function requireTutorOf(userId: string) {
 }
 
 export async function requireTutorPet(tutorId: string, petId: string) {
-  const pet = await prisma.pet.findFirst({ where: { id: petId, tutorId } })
+  const pet = await prisma.pet.findFirst({ where: { id: petId, tutorId, arquivadoEm: null } })
   if (!pet) throw new HttpError(404, { message: 'Pet não encontrado' })
   return pet
 }

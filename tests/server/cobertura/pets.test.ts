@@ -37,7 +37,7 @@ describe('requireTutorPet', () => {
   it('só encontra o pet do próprio tutor', async () => {
     prismaMock.pet.findFirst.mockResolvedValueOnce({ id: 'pet-1', tutorId: 'tutor-1' })
     await expect(requireTutorPet('tutor-1', 'pet-1')).resolves.toMatchObject({ id: 'pet-1' })
-    expect(prismaMock.pet.findFirst).toHaveBeenCalledWith({ where: { id: 'pet-1', tutorId: 'tutor-1' } })
+    expect(prismaMock.pet.findFirst).toHaveBeenCalledWith({ where: { id: 'pet-1', tutorId: 'tutor-1', arquivadoEm: null } })
   })
 
   it('pet de outro tutor ou inexistente: 404', async () => {

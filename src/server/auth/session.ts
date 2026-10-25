@@ -65,6 +65,7 @@ async function sessaoDoToken(token: string) {
   if (!decoded) return { erro: 'Token inválido' as const }
   const [user, revogada] = await Promise.all([loadUser(String(decoded.userId)), sessaoRevogada(decoded.jti)])
   if (!user) return { erro: 'Usuário não encontrado' as const }
+  if (user.redefinicaoSenhaObrigatoria) return { erro: 'Redefina a senha da conta recuperada antes de acessar.' as const }
   if (revogada || (decoded.tv ?? 0) !== (user.tokenVersion ?? 0)) return { erro: 'Sessão encerrada' as const }
   return { user, decoded }
 }

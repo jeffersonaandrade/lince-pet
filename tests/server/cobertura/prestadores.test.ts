@@ -481,14 +481,14 @@ describe('obterPrestadorPublico', () => {
     expect(canCreateAppointment).not.toHaveBeenCalled()
   })
 
-  it('informa se o profissional atingiu o limite de pedidos do plano', async () => {
+  it('limite mensal não impede enviar pedidos pendentes', async () => {
     prismaMock.prestador.findFirst.mockResolvedValue(publico())
     canCreateAppointment.mockResolvedValueOnce({ allowed: true }).mockResolvedValueOnce({ allowed: false })
     expect((await obterPrestadorPublico('pr-1')).limite_atingido).toBe(false)
     const r = await obterPrestadorPublico('pr-1')
-    expect(r.limite_atingido).toBe(true)
+    expect(r.limite_atingido).toBe(false)
     expect(r.nome).toBe('Bia Souza')
-    expect(canCreateAppointment).toHaveBeenCalledWith(expect.objectContaining({ id: 'pr-1' }), 'prestador')
+    expect(canCreateAppointment).not.toHaveBeenCalled()
   })
 })
 

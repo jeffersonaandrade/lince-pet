@@ -59,5 +59,6 @@ export function petDaApi(valor: unknown): PetRecord {
     porte,
     foto_url: texto(p.foto_url) ?? texto(p.fotoUrl),
     created_at: typeof p.created_at === "string" ? p.created_at : undefined,
+    arquivado_em: texto(p.arquivado_em) ?? texto(p.arquivadoEm),
   };
 }

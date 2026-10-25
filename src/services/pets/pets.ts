@@ -11,6 +11,7 @@ export interface PetRecord {
   foto_url?: string | null;
   porte?: 'pequeno' | 'medio' | 'grande' | null;
   created_at?: string;
+  arquivado_em?: string | null;
 }
 
 export type PortePet = NonNullable<PetRecord["porte"]>;
@@ -25,8 +26,8 @@ type DadosPet = {
 };
 
 export class PetsService {
-  static async listarPets(): Promise<PetRecord[]> {
-    const res = await api.get("/pets");
+  static async listarPets(incluirArquivados = false): Promise<PetRecord[]> {
+    const res = await api.get(incluirArquivados ? "/pets?arquivados=1" : "/pets");
     const pets: unknown = res.data.pets;
     return Array.isArray(pets) ? pets.map(petDaApi) : [];
   }

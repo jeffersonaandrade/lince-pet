@@ -77,6 +77,7 @@ model User {
   notificarWhatsapp        Int       @default(1) @map("notificar_whatsapp") @db.SmallInt
   /// Sobe a cada redefinição de senha; JWT com versão menor deixa de valer (derruba todas as sessões).
   tokenVersion             Int       @default(0) @map("token_version")
+  redefinicaoSenhaObrigatoria Boolean @default(false) @map("redefinicao_senha_obrigatoria")
   /// Admin da Lince (aprova CRMV de vets e RT de clínicas). Promovido só direto no banco.
   isAdmin                  Int       @default(0) @map("is_admin") @db.SmallInt
 
@@ -485,6 +486,7 @@ model Pet {
   createdAt DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
   porte     Porte?
+  arquivadoEm DateTime? @map("arquivado_em") @db.Timestamp(0)
 
   tutor           Tutor?            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
   agendamentos    Agendamento[]
@@ -520,6 +522,8 @@ model Agendamento {
   startCodeAttempts  Int       @default(0) @map("start_code_attempts")
   startedAt          DateTime? @map("started_at") @db.Timestamp(0)
   endedAt            DateTime? @map("ended_at") @db.Timestamp(0)
+  cotaConsumidaEm    DateTime? @map("cota_consumida_em") @db.Timestamp(0)
+  cotaLiberadaEm     DateTime? @map("cota_liberada_em") @db.Timestamp(0)
   paymentStatus      String    @default("unpaid") @map("payment_status") @db.VarChar(255)
   providerPaymentId  String?   @map("provider_payment_id") @db.VarChar(255)
   localNome          String?   @map("local_nome") @db.VarChar(255)
@@ -767,6 +771,31 @@ model RegistroClinico {
 
   @@index([petId])
   @@map("registros_clinicos")
+}
+
+/// Fluxo administrativo de recuperação. Evidência é uma referência privada à diligência manual.
+model RecuperacaoCnpj {
+  id String @id @db.Char(36)
+  clinicaId String @map("clinica_id") @db.Char(36)
+  userId String @map("user_id") @db.Char(36)
+  cnpj String @db.VarChar(14)
+  emailOriginal String @map("email_original") @db.VarChar(255)
+  versaoOriginal Int @map("versao_original")
+  emailNovo String @map("email_novo") @db.VarChar(255)
+  representante String @db.VarChar(255)
+  relato String @db.Text
+  status String @default("aguardando_email") @db.VarChar(30)
+  tokenHash String? @unique @map("token_hash") @db.VarChar(64)
+  tokenExpiraEm DateTime @map("token_expira_em") @db.Timestamp(0)
+  emailConfirmadoEm DateTime? @map("email_confirmado_em") @db.Timestamp(0)
+  evidencia String? @db.Text
+  faturamentoConferido Boolean @default(false) @map("faturamento_conferido")
+  justificativa String? @db.Text
+  administradorId String? @map("administrador_id") @db.Char(36)
+  decididoEm DateTime? @map("decidido_em") @db.Timestamp(0)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  @@index([status, createdAt])
+  @@map("recuperacoes_cnpj")
 }
 
 /// Encaminhamento do pet, a partir de uma consulta, para outra clínica, veterinário ou prestador.

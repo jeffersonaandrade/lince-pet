@@ -859,6 +859,31 @@ laboratorio_impl = {
 for code_id, rs in laboratorio_impl.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
+protecoes_nodes = [
+    rule("rule_prestador_cota_aceite", "Prestador: cota consumida no aceite e liberada antes do inicio",
+         "Dono decidiu em 24/10/2026: maximo 3 pendentes por tutor/prestador; pendente nao consome; aceite consome no mes de Brasilia; recusa/cancelamento anterior ao inicio libera sem reduzir outro mes. Remarcacao libera e exige novo aceite. Concorrencia serializada por prestador."),
+    rule("rule_consulta_conclusao_exige_codigo", "Consulta: concluir exige inicio com codigo do tutor",
+         "Dono exige inicio com codigo em todas as consultas agendadas; status em andamento e marcas de inicio/uso obrigatorios. Repeticao nao duplica efeitos."),
+    rule("rule_cnpj_recuperacao_manual", "CNPJ: recuperacao exige administrador e comprovacao registrada",
+         "Dono escolheu analise manual com prova de representacao e justificativa registrada; contato Asaas deve ser conferido/atualizado manualmente e confirmado antes da aprovacao. Recupera conta original preservando historico/plano, muda email, revoga sessoes/credenciais e exige reset inclusive antes de Google. Confirmar email nao prova representacao. Mascara nao muda identidade do CNPJ."),
+    rule("rule_pet_arquivamento_preserva_historico", "Pet: arquivar preserva prontuario e permissoes",
+         "Dono escolheu arquivamento, nunca cascade de historico pela interface. Arquivado nao recebe novos agendamentos; leitura historica preserva permissoes. Eliminacao definitiva por analise manual, sem presumir prazo juridico."),
+    rule("rule_exames_cota_transacional", "Exames: limite mensal rechecado atomicamente na clinica",
+         "Preserva 100/300/ilimitado por plano e mes da criacao em Brasilia. Sob a mesma trava da capacidade, reconsulta plano e uso antes de gravar. Duas reservas de tutores diferentes nao ultrapassam a ultima unidade; cancelamento libera a unidade daquele mes."),
+]
+new_nodes += protecoes_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in protecoes_nodes]
+for code_id, rules in {
+    "src_server_services_pedidos_prestador": ["rule_prestador_cota_aceite"],
+    "src_server_services_cotas_prestador": ["rule_prestador_cota_aceite"],
+    "src_server_services_pets": ["rule_pet_arquivamento_preserva_historico"],
+    "src_app_api_pets_id_route": ["rule_pet_arquivamento_preserva_historico"],
+    "src_server_services_exames": ["rule_exames_cota_transacional", "rule_pet_arquivamento_preserva_historico"],
+    "src_server_services_recuperacao_cnpj": ["rule_cnpj_recuperacao_manual"],
+    "src_app_api_veterinarios_agendamentos_id_concluir_route": ["rule_consulta_conclusao_exige_codigo"],
+}.items():
+    impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rules))
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

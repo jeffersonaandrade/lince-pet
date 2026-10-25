@@ -248,6 +248,7 @@ function ClinicaSignup() {
             </div>
             <div className={styles.rightSection}>
                 <div className={styles.formWrapper}>
+                    <p className="my-3 text-sm"><Link href="/recuperar-clinica">CNPJ já cadastrado? Solicite análise para recuperar o acesso.</Link></p>
                     {error && (
                         <div className={styles.errorContainer}>
                             <p className={styles.errorMessage}>{error.message}</p>

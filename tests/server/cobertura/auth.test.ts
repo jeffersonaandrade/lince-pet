@@ -62,6 +62,18 @@ const baseUser = {
 beforeEach(() => vi.clearAllMocks())
 afterEach(() => vi.unstubAllEnvs())
 
+it('conta recuperada não recebe JWT antes da redefinição obrigatória', async () => {
+  await expect(tokenFor({ id: 'u1', nome: 'Clínica', sobrenome: null, userType: 'clinica', redefinicaoSenhaObrigatoria: true })).rejects.toMatchObject({ status: 403 })
+  expect(mocks.generateToken).not.toHaveBeenCalled()
+})
+
+it('Google não dispensa a redefinição de senha de uma conta recuperada', async () => {
+  prisma.$transaction.mockImplementationOnce(async (fn: (db: typeof prisma) => unknown) => fn(prisma))
+  prisma.user.findFirst.mockResolvedValueOnce({ ...baseUser, redefinicaoSenhaObrigatoria: true })
+  await expect(userForVerifiedGoogleEmail(baseUser.email)).rejects.toMatchObject({ status: 403 })
+  expect(prisma.user.updateMany).not.toHaveBeenCalled()
+})
+
 describe('findEntityId', () => {
   it.each([
     ['tutor', 'tutor'],
@@ -354,7 +366,7 @@ describe('resetPassword', () => {
     expect(prisma.passwordResetToken.findUnique).toHaveBeenCalledWith({ where: { token: 'tok' } })
     expect(prisma.user.update).toHaveBeenCalledWith({
       where: { id: 'user-1' },
-      data: { password: 'hash(NovaSenha@1)', isEmailVerified: 1, tokenVersion: { increment: 1 }, updatedAt: expect.any(Date) },
+      data: { password: 'hash(NovaSenha@1)', isEmailVerified: 1, tokenVersion: { increment: 1 }, redefinicaoSenhaObrigatoria: false, updatedAt: expect.any(Date) },
     })
     expect(prisma.passwordResetToken.deleteMany).toHaveBeenCalledWith({ where: { id: 'rt-1', expiresAt: { gt: expect.any(Date) } } })
   })

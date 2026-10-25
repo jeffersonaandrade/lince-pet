@@ -252,7 +252,7 @@ describe('registerClinica', () => {
 
   it('campos opcionais ausentes viram string vazia / null e endereço vazio', async () => {
     prisma.clinica.create.mockImplementationOnce(async ({ data }: { data: object }) => data)
-    await registerClinica({ nomeFantasia: 'X', cnpj: '1', email: 'a@b.c', senha: 's' })
+    await registerClinica({ nomeFantasia: 'X', cnpj: '12345678000199', email: 'a@b.c', senha: 's' })
     const userData = prisma.user.create.mock.calls[0][0].data
     expect(userData).toMatchObject({ celular: undefined, cep: '', rua: '', numero: '', bairro: '', cidade: '', estado: '' })
     const clinicaData = prisma.clinica.create.mock.calls[0][0].data

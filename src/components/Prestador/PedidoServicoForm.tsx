@@ -121,6 +121,7 @@ export default function PedidoServicoForm({
 
   return (
     <form onSubmit={enviar} className="flex flex-col gap-5">
+      <p className="text-sm text-slate-600">Você pode manter até 3 pedidos pendentes para este profissional. O atendimento depende do aceite dele.</p>
       {erro ? <Alerta>{erro}</Alerta> : null}
 
       <fieldset className="flex flex-col gap-2">

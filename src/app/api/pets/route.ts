@@ -9,7 +9,8 @@ import { createPetValidator } from '@/server/validators/pet'
 export const GET = route(async (req) => {
   const user = await requireUser(await ApiRequest.from(req), ['tutor'])
   const tutor = await requireTutorOf(user.id)
-  const pets = await prisma.pet.findMany({ where: { tutorId: tutor.id }, orderBy: { createdAt: 'desc' } })
+  const arquivados = new URL(req.url).searchParams.get('arquivados') === '1'
+  const pets = await prisma.pet.findMany({ where: { tutorId: tutor.id, ...(arquivados ? {} : { arquivadoEm: null }) }, orderBy: { createdAt: 'desc' } })
   return ok({ pets })
 })
 

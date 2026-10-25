@@ -13,6 +13,7 @@ import { nomeCompleto, podeSerCancelado, prepareDataConsulta } from '@/server/se
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import { ehPedidoDePrestador, remarcarPedido } from '@/server/services/pedidos-prestador'
 import { ehAgendamentoDeExame, remarcarExame } from '@/server/services/exames'
+import { conferirPetAtivo } from '@/server/services/pets'
 import { bloquearAgenda, horarioCanonico } from '@/server/services/agenda-lock'
 
 /** PATCH /agendamentos/:id/reagendar */
@@ -59,12 +60,14 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
 
   try {
     const result = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtextextended(${`inicio:${id}`}, 0))`
       const agendamento = await tx.agendamento.findFirst({ where: { id, tutorId: tutor.id } })
 
       if (!agendamento) {
         return notFound({ message: 'Agendamento não encontrado' })
       }
 
+      if (agendamento.petId) await conferirPetAtivo(tx, agendamento.petId)
       if (agendamento.veterinarioId) await bloquearAgenda(tx, 'veterinario', agendamento.veterinarioId)
       // O estado pode ter mudado enquanto aguardávamos o lock.
       const atual = await tx.agendamento.findUnique({ where: { id: agendamento.id } })

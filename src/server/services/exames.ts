@@ -25,6 +25,7 @@ import {
 } from './exames-regras'
 import { avisarExame } from './exames-avisos'
 import { MOTIVO_PADRAO_TUTOR } from '@/lib/motivos-cancelamento'
+import { conferirPetAtivo } from './pets'
 
 /**
  * Clínica de exames: catálogo (exames e combos), agenda por horário com capacidade por exame,
@@ -482,7 +483,7 @@ export async function agendarExame(tutor: { id: string }, clinicaId: string, bod
   const d = await agendarExameValidator.validate(body)
   const [clinica, pet] = await Promise.all([
     clinicaVisivel(clinicaId),
-    prisma.pet.findFirst({ where: { id: d.pet_id, tutorId: tutor.id } }),
+    prisma.pet.findFirst({ where: { id: d.pet_id, tutorId: tutor.id, arquivadoEm: null } }),
   ])
   if (!pet) throw erro('Pet não encontrado', 404)
   const { exames, combo, duracaoMin, preco } = escolhaDoPedido(clinica, d)
@@ -496,7 +497,11 @@ export async function agendarExame(tutor: { id: string }, clinicaId: string, bod
   }
 
   const agendamento = await prisma.$transaction(async (tx) => {
+    await conferirPetAtivo(tx, pet.id)
     await garantirVaga(tx, clinica.id, exames, periodo)
+    const planoAtual = await tx.clinica.findUnique({ where: { id: clinica.id } })
+    const limiteAtual = podeAgendarExame(planoAtual?.subscriptionPlanCode, await examesAgendadosNoMes(clinica.id, tx))
+    if (!limiteAtual.ok) throw erro(limiteAtual.motivo, 403)
     return tx.agendamento.create({
       data: {
         ...creating({
@@ -570,7 +575,7 @@ async function exameRemarcavel(tutorId: string, id: string) {
   ])
   const exames = itens.flatMap((i) => (i.exame ? [i.exame] : []))
   if (exames.length !== itens.length) throw erro('Um dos exames não é mais oferecido. Cancele e agende de novo.')
-  return { clinica, exames, duracaoMin: itens.reduce((s, i) => s + i.duracaoMin, 0) }
+  return { clinica, exames, petId: a.petId, duracaoMin: itens.reduce((s, i) => s + i.duracaoMin, 0) }
 }
 
 export async function disponibilidadeParaRemarcar(tutorId: string, id: string, data: string) {
@@ -580,10 +585,11 @@ export async function disponibilidadeParaRemarcar(tutorId: string, id: string, d
 
 export async function remarcarExame(tutorId: string, id: string, body: unknown) {
   const d = await remarcarExameValidator.validate(body)
-  const { clinica, exames, duracaoMin } = await exameRemarcavel(tutorId, id)
+  const { clinica, exames, duracaoMin, petId } = await exameRemarcavel(tutorId, id)
   const periodo = periodoDoPedido(d.data, d.horario, duracaoMin)
   await validarHorario(clinica, exames, periodo, duracaoMin, id)
   const atualizado = await prisma.$transaction(async (tx) => {
+    if (petId) await conferirPetAtivo(tx, petId)
     await garantirVaga(tx, clinica.id, exames, periodo, id)
     return tx.agendamento.update({ where: { id }, data: updating(camposDoPeriodo(periodo)), include: includeAgendamento })
   })

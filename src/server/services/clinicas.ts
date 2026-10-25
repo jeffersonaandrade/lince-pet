@@ -176,6 +176,8 @@ const statusError = (message: string, status: number) => Object.assign(new Error
 
 /** Equivalente ao ClinicaService.register. Devolve o `user` como o Lucid serializava após create + load('clinica'). */
 export async function registerClinica(data: ClinicaRegistrationData) {
+  const { normalizarCnpj } = await import('./cnpj')
+  const cnpj = normalizarCnpj(data.cnpj)
   try {
     const password = await hashPassword(String(data.senha))
     const userData = creating({
@@ -202,7 +204,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
           razaoSocial: str(data.razaoSocial),
           tipoClinica: TipoClinica.multipla,
           quantidadeVets: '0',
-          cnpj: String(data.cnpj),
+          cnpj,
           telefone: str(data.telefone),
           endereco: data.rua ? `${data.rua}, ${data.numero} - ${data.bairro}` : '',
           cep: str(data.cep) || '',
@@ -221,7 +223,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
     const user = { ...attrs, ativo: true, clinica: serializeClinica(clinica) }
     return { user, clinica }
   } catch (error) {
-    console.error(error)
+    console.error('[cadastro-clinica] operação recusada', { code: (error as { code?: string }).code || 'INTERNAL' })
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
       const target = `${JSON.stringify(error.meta?.target ?? '')} ${error.message}`
       if (target.includes('email')) throw statusError('Email já está em uso', 422)

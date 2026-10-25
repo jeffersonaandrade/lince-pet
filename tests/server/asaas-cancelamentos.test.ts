@@ -1,4 +1,5 @@
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
+import axios from 'axios'
 
 const db = vi.hoisted(() => {
   const m = {
@@ -33,6 +34,17 @@ beforeEach(() => {
 afterEach(() => vi.restoreAllMocks())
 
 describe('cancelamento confirmado pelo provedor', () => {
+  it('cron sem factory injetada usa o cliente configurado e confirma o DELETE; HTTP permanece simulado', async () => {
+    vi.stubEnv('ASAAS_ENV', 'sandbox')
+    vi.stubEnv('ASAAS_API_KEY_SANDBOX', 'chave-ficticia-unitaria')
+    const http = { get: vi.fn().mockResolvedValue({ data: { id: 'sub_1', deleted: false } }), delete: vi.fn().mockResolvedValue({ data: { id: 'sub_1', deleted: true } }) }
+    vi.spyOn(axios, 'create').mockReturnValue(http as never)
+    try {
+      expect(await conciliarCancelamentos()).toEqual({ confirmados: 1, pendentes: 0 })
+      expect(http.get).toHaveBeenCalledWith('/subscriptions/sub_1')
+      expect(http.delete).toHaveBeenCalledWith('/subscriptions/sub_1')
+    } finally { vi.unstubAllEnvs() }
+  })
   it('confirma antes de alterar status e encerra a fila atomicamente', async () => {
     expect(await conciliarCancelamentos(factory)).toEqual({ confirmados: 1, pendentes: 0 })
     expect(remote.cancelSubscription).toHaveBeenCalledWith('sub_1')

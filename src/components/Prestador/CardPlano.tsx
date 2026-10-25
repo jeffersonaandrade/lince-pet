@@ -54,7 +54,7 @@ export function CardPlano() {
       {usage.limit !== null ? (
         <div className="flex flex-col gap-1.5">
           <span className="text-sm text-slate-600">
-            {usage.used} de {usage.limit} pedidos neste mês
+            {usage.used} de {usage.limit} aceites neste mês
           </span>
           <div className="h-2 overflow-hidden rounded-full bg-slate-100">
             <div
@@ -64,8 +64,9 @@ export function CardPlano() {
           </div>
         </div>
       ) : (
-        <span className="text-sm text-slate-600">Pedidos ilimitados.</span>
+        <span className="text-sm text-slate-600">Aceites sem limite mensal.</span>
       )}
+      <p className="text-sm text-slate-500">O aceite conta no mês de Brasília. Cancelar antes do início libera a unidade daquele mês; remarcar exige novo aceite. Pedidos pendentes não consomem o plano.</p>
 
       {gratuito ? (
         pendente ? (
@@ -73,7 +74,7 @@ export function CardPlano() {
         ) : (
           <>
             <p className="text-sm text-slate-500">
-              No plano Pro você recebe pedidos sem limite mensal. Pague com Pix, boleto ou cartão na fatura do Asaas.
+              No plano Pro você aceita pedidos sem limite mensal. Pague com Pix, boleto ou cartão na fatura do Asaas.
             </p>
             <button className={botaoPrimario} disabled={enviando} onClick={assinar}>
               {enviando ? "Abrindo pagamento..." : "Assinar Pro"}

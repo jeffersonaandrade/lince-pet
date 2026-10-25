@@ -122,9 +122,10 @@ export function PetModal({ pets }: Props) {
           </button>
           {editando ? (
             <button type="button" className={styles.dangerButton} onClick={pets.excluir} disabled={salvando}>
-              Excluir
+              Arquivar pet
             </button>
           ) : null}
+          {editando ? <p className="text-sm text-slate-600">Arquivar retira o pet da lista ativa e preserva seu histórico. Eliminação definitiva depende de análise manual.</p> : null}
           <button type="button" className={styles.primaryButton} onClick={pets.salvar} disabled={salvando}>
             {salvando ? "Salvando..." : "Salvar Pet"}
           </button>

@@ -12,6 +12,7 @@ const liberarUrl = (url: string | null) => {
 /** Pets do tutor: lista, modal de cadastro/edição, recorte da foto e exclusão. */
 export function usePetsTutor(ativo: boolean) {
   const [pets, setPets] = useState<PetRecord[]>([]);
+  const [arquivados, setArquivados] = useState<PetRecord[]>([]);
   const [erroLista, setErroLista] = useState<string | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
   const [editandoId, setEditandoId] = useState<string | null>(null);
@@ -25,9 +26,10 @@ export function usePetsTutor(ativo: boolean) {
 
   useEffect(() => {
     if (!ativo) return;
-    PetsService.listarPets()
+    PetsService.listarPets(true)
       .then((lista) => {
-        setPets(lista);
+        setPets(lista.filter(p => !p.arquivado_em));
+        setArquivados(lista.filter(p => p.arquivado_em));
         setErroLista(null);
       })
       .catch((error: unknown) => setErroLista(mensagemDeErro(error, "Não foi possível carregar seus pets.")));
@@ -119,15 +121,17 @@ export function usePetsTutor(ativo: boolean) {
   };
 
   const excluir = async () => {
-    if (!editandoId || !confirm("Tem certeza que deseja excluir este pet?")) return;
+    if (!editandoId || !confirm("Arquivar este pet? O histórico será preservado e continuará disponível para consulta.")) return;
     setSalvando(true);
     try {
       await PetsService.excluirPet(editandoId);
+      const pet = pets.find(p => p.id === editandoId);
+      if (pet) setArquivados(lista => [...lista, { ...pet, arquivado_em: new Date().toISOString() }]);
       setPets((lista) => lista.filter((p) => p.id !== editandoId));
       limparFormulario();
       setModalAberto(false);
     } catch (error) {
-      alert(mensagemDeErro(error, "Erro ao excluir pet"));
+      alert(mensagemDeErro(error, "Erro ao arquivar pet"));
     } finally {
       setSalvando(false);
     }
@@ -135,6 +139,7 @@ export function usePetsTutor(ativo: boolean) {
 
   return {
     pets,
+    arquivados,
     erroLista,
     modalAberto,
     editando: editandoId !== null,

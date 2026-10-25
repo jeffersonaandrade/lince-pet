@@ -2,6 +2,8 @@
 
 **Veredito: VIÁVEL COM RISCOS. A auditoria terminou; a remediação integral ainda não.**
 
+**Atualização de 24/10/2026:** o dono escolheu as regras de consumo no aceite, início obrigatório por código, recuperação administrativa de CNPJ e arquivamento de pets. Foram implementadas e homologadas na [rodada de regras de negócio](HOMOLOGACAO-REGRAS-DE-NEGOCIO-2026-10-24.md), cobrindo os caminhos de NV-06, NV-10 e NV-14 e a exclusão de pet pela aplicação relacionada a NV-09. Arquivamento preserva o histórico; política/prazo de retenção e eliminação definitiva continuam exigindo validação dos responsáveis. A tabela abaixo preserva o registro histórico de 23/10, não o estado final dessas quatro áreas. As outras pendências não foram declaradas resolvidas nesta rodada.
+
 Base: relatório externo `C:/Users/jeffe/security-audit-skill/lince-pet/run-1/REPORT.md`, sobre o commit `7dc801d`. A auditoria registrou 23 pistas `needs_validation` e nenhum finding confirmado. Este documento registra alterações no código e bloqueios restantes; não promove automaticamente as pistas a vulnerabilidades confirmadas nem declara produção segura.
 
 As alterações de favoritos e redirecionamento já estavam no diretório de trabalho e foram preservadas e revisadas. Não houve acesso a valores de `.env`, banco de produção, Render, Asaas ou Supabase. Não foram executadas migrations nem alterados dados existentes.

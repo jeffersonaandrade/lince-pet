@@ -34,7 +34,9 @@ export async function tokenFor(user: {
   sobrenome: string | null
   userType: string
   tokenVersion?: number
+  redefinicaoSenhaObrigatoria?: boolean
 }) {
+  if (user.redefinicaoSenhaObrigatoria) throw new HttpError(403, { message: 'Redefina sua senha pelo novo e-mail antes de acessar a conta recuperada.' })
   return generateToken({
     id: user.id,
     nome: user.nome,
@@ -67,6 +69,7 @@ export async function userForVerifiedGoogleEmail(email: string) {
   return prisma.$transaction(async (tx) => {
     const user = mesmoEmail(await tx.user.findFirst({ where: filtroEmail(email) }), email)
     if (!user) return null
+    if (user.redefinicaoSenhaObrigatoria) throw new HttpError(403, { message: 'Redefina sua senha antes de entrar com Google na conta recuperada.' })
     const changed = await tx.user.updateMany({
       where: { id: user.id, isEmailVerified: 0 },
       data: updating({ password, isEmailVerified: 1, tokenVersion: { increment: 1 } }),
@@ -229,7 +232,7 @@ export async function resetPassword(token: string, newPassword: string) {
     if (consumed.count !== 1) throw new Error(INVALID_RESET_TOKEN)
     await tx.user.update({
       where: { id: user.id },
-      data: updating({ password, isEmailVerified: 1, tokenVersion: { increment: 1 } }),
+      data: updating({ password, isEmailVerified: 1, tokenVersion: { increment: 1 }, redefinicaoSenhaObrigatoria: false }),
     })
     await tx.passwordResetToken.deleteMany({ where: { userId: user.id } })
   })

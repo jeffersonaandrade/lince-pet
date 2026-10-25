@@ -4,6 +4,7 @@ import { requireUser } from '@/server/auth/session'
 import { AsaasService, getPendingInvoiceUrl, respostaDoAsaas } from '@/server/services/asaas'
 import { assinanteDe, assinaturasDo } from '@/server/services/assinante'
 import { statusLabel } from '@/server/services/assinatura-regras'
+import { usoMensalPrestador } from '@/server/services/cotas-prestador'
 
 export const GET = route(async (req) => {
   const user = await requireUser(await ApiRequest.from(req), ['veterinario', 'clinica', 'prestador'])
@@ -35,7 +36,7 @@ export const GET = route(async (req) => {
 
   return ok({
     plan: currentPlan,
-    usage: { used: assinante.usado, limit: currentPlan?.monthlyAppointmentLimit ?? null },
+    usage: { used: assinante.tipo === 'prestador' ? await usoMensalPrestador(prisma, assinante.id) : assinante.usado, limit: currentPlan?.monthlyAppointmentLimit ?? null },
     subscription,
     statusLabel: statusLabel(subscription?.status),
     pendingPlanId: pendente && vigente ? pendente.planId : null,

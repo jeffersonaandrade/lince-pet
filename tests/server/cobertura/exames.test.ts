@@ -16,6 +16,7 @@ const prismaMock = vi.hoisted(() => {
     bloqueioAgenda: { findMany: vi.fn() },
     pet: { findFirst: vi.fn() },
     $executeRaw: vi.fn(),
+    $queryRaw: vi.fn().mockResolvedValue([{ id: 'p1' }]),
     $transaction: vi.fn(),
   }
   m.$transaction.mockImplementation(async (fn: (tx: unknown) => unknown) => fn(m))

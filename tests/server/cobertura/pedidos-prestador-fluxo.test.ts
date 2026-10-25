@@ -14,8 +14,8 @@ vi.mock('next/server', async (importOriginal) => ({
   after: afterMock,
 }))
 
-const sub = vi.hoisted(() => ({ canCreateAppointment: vi.fn(), incrementUsage: vi.fn(), decrementUsage: vi.fn() }))
-vi.mock('@/server/services/subscription', () => sub)
+const cotas = vi.hoisted(() => ({ conferirPendentes: vi.fn(), consumirCota: vi.fn(), liberarCota: vi.fn() }))
+vi.mock('@/server/services/cotas-prestador', () => cotas)
 vi.mock('@/server/services/encaminhamentos', () => ({ conferirEncaminhamento: vi.fn(), vincularAgendamento: vi.fn() }))
 
 const avisos = vi.hoisted(() => ({
@@ -68,6 +68,7 @@ const PRESTADOR = {
 
 const pedido = (over: Record<string, unknown> = {}) => ({
   id: 'ped-1',
+  prestadorId: 'pr-1',
   status: 'pendente',
   inicioEm: new Date('2026-10-20T13:00:00Z'),
   fimEm: new Date('2026-10-20T14:00:00Z'),
@@ -102,6 +103,7 @@ beforeEach(() => {
   vi.setSystemTime(AGORA)
   prismaMock.agendamento.update.mockImplementation(({ data }: { data: Record<string, unknown> }) => ({ ...pedido(), ...data }))
   prismaMock.agendamento.findMany.mockResolvedValue([])
+  prismaMock.agendamento.findFirst.mockResolvedValue(pedido())
   prismaMock.agendamento.findUnique.mockResolvedValue(null)
   avisos.podeEnviarEmail.mockReturnValue(true)
 })
@@ -251,7 +253,7 @@ describe('recusarPedido', () => {
     expect(data.status).toBe('cancelado')
     expect(data.motivoCancelamento).toBe(`${MOTIVO_RECUSA}: agenda cheia`)
     expect(typeof data.canceladoEm).toBe('string')
-    expect(sub.decrementUsage).toHaveBeenCalledWith(PRESTADOR, 'prestador')
+    expect(cotas.liberarCota).toHaveBeenCalledWith(prismaMock, 'pr-1', 'ped-1')
     expect(r.status).toBe('cancelado')
 
     prismaMock.agendamento.findUnique.mockResolvedValueOnce(pedido({ status: 'cancelado' }))
@@ -267,11 +269,11 @@ describe('recusarPedido', () => {
     expect(prismaMock.agendamento.update.mock.calls[0][0].data.motivoCancelamento).toBe(MOTIVO_RECUSA)
   })
 
-  it('motivo longo é cortado em 255 caracteres e sem prestador não mexe na cota', async () => {
+  it('motivo longo é cortado em 255 caracteres e liberação usa o dono persistido, mesmo sem preload', async () => {
     prismaMock.agendamento.findFirst.mockResolvedValueOnce(pedido({ prestador: null }))
     await recusarPedido('pr-1', 'ped-1', 'x'.repeat(400))
     expect(prismaMock.agendamento.update.mock.calls[0][0].data.motivoCancelamento).toHaveLength(255)
-    expect(sub.decrementUsage).not.toHaveBeenCalled()
+    expect(cotas.liberarCota).toHaveBeenCalledWith(prismaMock, 'pr-1', 'ped-1')
   })
 
   it.each(['em andamento', 'realizado', 'cancelado'])('pedido %s não pode mais ser recusado', async (status) => {
@@ -395,18 +397,18 @@ describe('lado tutor', () => {
     await cancelarPedidoPeloTutor('t1', 'ped-1')
     const { data } = prismaMock.agendamento.update.mock.calls[0][0]
     expect(data).toMatchObject({ status: 'cancelado', motivoCancelamento: 'Cancelado pelo tutor' })
-    expect(sub.decrementUsage).toHaveBeenCalledWith(PRESTADOR, 'prestador')
+    expect(cotas.liberarCota).toHaveBeenCalledWith(prismaMock, 'pr-1', 'ped-1')
 
     prismaMock.agendamento.findUnique.mockResolvedValueOnce(pedido({ status: 'cancelado' }))
     await rodarAfter()
     expect(avisos.notificarAgendamento).toHaveBeenCalledWith('cancelamento', 'ped-1', ['profissional'], { motivo: null })
   })
 
-  it('cancelar com motivo usa o texto informado (até 255) e sem prestador não devolve cota', async () => {
+  it('cancelar com motivo usa o texto informado e libera pelo dono persistido', async () => {
     prismaMock.agendamento.findFirst.mockResolvedValueOnce(pedido({ prestador: null }))
     await cancelarPedidoPeloTutor('t1', 'ped-1', 'y'.repeat(300))
     expect(prismaMock.agendamento.update.mock.calls[0][0].data.motivoCancelamento).toBe('y'.repeat(255))
-    expect(sub.decrementUsage).not.toHaveBeenCalled()
+    expect(cotas.liberarCota).toHaveBeenCalledWith(prismaMock, 'pr-1', 'ped-1')
   })
 
   it('pedido em andamento não pode ser cancelado pelo tutor', async () => {

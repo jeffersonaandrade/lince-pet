@@ -142,7 +142,7 @@ describe('autenticação e posse', () => {
     prismaMock.pet.findFirst.mockResolvedValue(null)
     const res = await fotoPet(multipart({ photo: png }), ctx({ id: PET_ID }))
     expect(res.status).toBe(404)
-    expect(prismaMock.pet.findFirst.mock.calls[0][0].where).toEqual({ id: PET_ID, tutorId: TUTOR_ID })
+    expect(prismaMock.pet.findFirst.mock.calls[0][0].where).toEqual({ id: PET_ID, tutorId: TUTOR_ID, arquivadoEm: null })
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
