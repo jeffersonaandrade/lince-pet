@@ -167,15 +167,13 @@ function Fila({
     <section
       id={id}
       aria-labelledby={tituloId}
-      className={`scroll-mt-32 flex flex-col gap-3 rounded-2xl p-4 ${pendente ? "border-2 border-orange-400 bg-orange-50/70" : "border border-slate-200 bg-white"}`}
+      className="scroll-mt-32 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4"
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 id={tituloId} className="text-pretty text-lg font-bold text-slate-800">{titulo}</h2>
-        {pendente ? (
-          <p className="rounded-full bg-orange-600 px-3 py-1 text-xs font-bold text-white">{pedidos.length.toLocaleString("pt-BR")} aguardando</p>
-        ) : (
-          <p className="text-sm text-slate-500">Nenhum item</p>
-        )}
+        <p className="text-sm text-slate-500">
+          {pendente ? `${pedidos.length.toLocaleString("pt-BR")} aguardando` : "Nenhum item"}
+        </p>
       </div>
       {pendente ? (
         <ul className="flex flex-col gap-3">
@@ -195,10 +193,10 @@ function Atalho({ href, rotulo, total }: { href: string; rotulo: string; total: 
   return (
     <a
       href={href}
-      className={`rounded-xl border p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 ${pendente ? "border-orange-400 bg-orange-50 hover:bg-orange-100" : "border-slate-200 bg-white hover:border-slate-300"}`}
+      className="rounded-xl border border-slate-200 bg-white p-4 hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
     >
-      <p className={`text-3xl font-bold tabular-nums ${pendente ? "text-orange-700" : "text-slate-400"}`}>{total.toLocaleString("pt-BR")}</p>
-      <p className={`mt-1 text-sm font-semibold ${pendente ? "text-orange-900" : "text-slate-500"}`}>{rotulo}</p>
+      <p className={`text-3xl font-bold tabular-nums ${pendente ? "text-slate-900" : "text-slate-400"}`}>{total.toLocaleString("pt-BR")}</p>
+      <p className="mt-1 text-sm font-semibold text-slate-600">{rotulo}</p>
     </a>
   );
 }
@@ -280,7 +278,7 @@ export default function AprovacoesAdminPage() {
   }
 
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-6 px-4 pb-16 pt-28">
+    <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 pb-16 pt-28">
       <AdminNav />
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-3">
