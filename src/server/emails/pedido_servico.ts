@@ -1,5 +1,6 @@
 import 'server-only'
 import { e } from './edge'
+import { emailLince } from './layout'
 
 /** E-mail genérico dos pedidos de prestador (tosa, passeio, adestramento, hospedagem). Sem termos de consulta. */
 export type PedidoServicoEmailData = {
@@ -8,9 +9,55 @@ export type PedidoServicoEmailData = {
   paragrafos: string[]
   detalhes: [string, string | null | undefined][]
   logoHtml?: string
+  /** Confirmação do aceite: o mesmo layout do e-mail de redefinição de senha. */
+  layout?: 'lince'
+  /** Código de início, só no e-mail do tutor. */
+  codigo?: string | null
+  botao?: { rotulo: string; url: string }
+}
+
+function linhasDeDetalhe(detalhes: PedidoServicoEmailData['detalhes']) {
+  return detalhes
+    .filter(([, valor]) => valor)
+    .map(
+      ([rotulo, valor]) =>
+        `<div class="detail-item"><div class="detail-label">${e(rotulo)}</div><div class="detail-value">${e(valor)}</div></div>`
+    )
+    .join('')
+}
+
+function confirmacaoPedido(d: PedidoServicoEmailData) {
+  const detalhes = linhasDeDetalhe(d.detalhes)
+  return emailLince({
+    titulo: d.titulo,
+    preheader: d.paragrafos[0] || d.titulo,
+    logoHtml: d.logoHtml,
+    conteudo: `<h1>${e(d.titulo)}</h1>
+        <p>${e(d.saudacao)}</p>
+        ${d.paragrafos.map((p) => `<p>${e(p)}</p>`).join('')}
+        ${detalhes ? `<div class="details-card">${detalhes}</div>` : ''}
+        ${
+          d.codigo
+            ? `<div class="code-section">
+          <div class="code-label">Código de início</div>
+          <div class="code-value">${e(d.codigo)}</div>
+          <div class="code-hint">Informe este código ao profissional quando o atendimento começar.</div>
+        </div>`
+            : ''
+        }
+        ${
+          d.botao
+            ? `<div class="button-container">
+          <a href="${e(d.botao.url)}" class="button">${e(d.botao.rotulo)}</a>
+        </div>`
+            : ''
+        }`,
+  })
 }
 
 export function pedidoServicoEmail(d: PedidoServicoEmailData) {
+  if (d.layout === 'lince') return confirmacaoPedido(d)
+
   const detalhes = d.detalhes
     .filter(([, valor]) => valor)
     .map(

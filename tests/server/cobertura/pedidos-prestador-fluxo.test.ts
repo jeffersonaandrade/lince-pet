@@ -600,9 +600,16 @@ describe('avisarPedido', () => {
       saudacao: 'Olá, Bia!',
       paragrafos: [mensagem],
       detalhes: detalhes.map(([rotulo, valor]) => [rotulo, rotulo === 'Local' ? 'Domicílio do tutor - Rua A, 10' : valor]),
+      layout: 'lince',
+      botao: { rotulo: 'Ver minha agenda', url: 'https://www.lincepet.com.br/dashboard/prestador' },
+      codigo: null,
     })
     expect(mensagem).not.toContain('123456')
-    expect(avisos.sendPedidoServico).toHaveBeenNthCalledWith(2, 'ana@x.com', 'Pedido aceito', expect.anything())
+    expect(avisos.sendPedidoServico).toHaveBeenNthCalledWith(2, 'ana@x.com', 'Pedido aceito', expect.objectContaining({
+      layout: 'lince',
+      codigo: '123456',
+      botao: { rotulo: 'Ver meus agendamentos', url: 'https://www.lincepet.com.br/dashboard/tutor#consultas' },
+    }))
   })
 
   it('recusado: inclui o motivo; sem motivo a mensagem não fica com espaço sobrando', async () => {
