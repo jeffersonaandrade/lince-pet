@@ -786,6 +786,8 @@ for code_id, rs in exames_impl.items():
 entrega_nodes = [
     rule("rule_entrega_commit_push_main", "Entrega: commit e push direto na main autorizados",
          "Autorizacao do usuario em 23/10/2026, enquanto nao revogada: ao concluir trabalho autorizado neste projeto, executar verificacoes pertinentes, commitar e fazer push direto na main sem pedir nova confirmacao. Atualizar remoto e integrar alteracoes existentes preservando historico e trabalho de terceiros, sem force-push. Relatar commit e resultados ou pendencias; push nao confirma termino do deploy. Regra operacional tambem registrada em .cursor/rules/graphify.mdc."),
+    rule("rule_deploy_status_github", "Deploy: status no GitHub depois dos testes",
+         "Decisao do dono em 26/10/2026: push na main roda lint e testes e so entao dispara o Render. O resultado aparece nos checks e em Deployments production. Auto-Deploy do Render fica desligado. RENDER_API_KEY e RENDER_SERVICE_ID so nos secrets do GitHub."),
 ]
 new_nodes += entrega_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in entrega_nodes]
