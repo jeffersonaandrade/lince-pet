@@ -146,13 +146,13 @@ function ItemPedido({ pedido, onAtualizado }: { pedido: Pedido; onAtualizado: (p
     <li className="rounded-2xl border border-slate-200 p-4">
       <div className="flex gap-3">
         {quando ? (
-          <div className="flex w-16 shrink-0 flex-col items-center justify-center rounded-xl bg-orange-50 px-1 py-2 text-center text-orange-800">
+          <div className="flex w-32 shrink-0 flex-col items-center justify-center rounded-xl bg-orange-50 px-2 py-2 text-center text-orange-800">
             <span className="text-xs font-semibold capitalize">{quando.semana}</span>
             <span className="text-lg font-bold leading-none">{quando.dia}</span>
             <span className="text-xs capitalize">{quando.mes}</span>
-            <span className="mt-1 text-xs leading-tight">{quando.inicio}</span>
-            <span className="text-xs leading-none text-orange-600">às</span>
-            <span className="text-xs leading-tight">{quando.fim}</span>
+            <span className="mt-1 whitespace-nowrap text-xs leading-tight">
+              {quando.inicio} às {quando.fim}
+            </span>
           </div>
         ) : null}
         <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-2">
