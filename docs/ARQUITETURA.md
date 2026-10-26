@@ -81,6 +81,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 ### Entrega e versionamento
 
 - **Commit e push direto na main autorizados:** autorização do usuário registrada em 23/10/2026, válida para os trabalhos autorizados deste projeto enquanto não for revogada. Ao finalizar, executar as verificações pertinentes, commitar as alterações e fazer push diretamente em `main`, sem pedir nova confirmação para essas ações. Atualizar as referências do remoto e integrar alterações existentes antes do push, preservando o histórico e o trabalho de outras pessoas; não usar force-push. Informar o commit enviado e os resultados ou pendências da validação. A autorização de versionamento não amplia o escopo da tarefa nem equivale a confirmar que o deploy em produção terminou.
+- **Status do deploy no GitHub:** a cada push na `main`, o workflow `.github/workflows/ci.yml` roda lint e testes e, se passarem, dispara o deploy no Render e espera o fim. O resultado aparece nos checks do commit e em Deployments → production. O Auto-Deploy do serviço no Render fica desligado, para não haver dois deploys do mesmo commit. Os secrets `RENDER_API_KEY` e `RENDER_SERVICE_ID` ficam só no GitHub (Settings → Secrets and variables → Actions), nunca no repositório. Decisão do dono em 26/10/2026.
 
 ### Bloqueio pontual de agenda
 

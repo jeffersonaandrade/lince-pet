@@ -220,6 +220,8 @@ npm run test:e2e       # sobe o Next na 3000, roda o seed e a suíte
 
 `npm start` lê `.env.production`, aplica as migrations nesse banco e só então sobe o Next. O cron de lembretes está em `vercel.json` (`*/15 * * * *`). Há também `netlify/functions/lembretes-whatsapp.mts` para o mesmo trabalho.
 
+O deploy sai pelo GitHub Actions (`.github/workflows/ci.yml`): a cada push na `main`, rodam o lint e os testes e, se tudo passar, o job Deploy dispara o Render e espera o fim. O resultado aparece nos checks do commit e em Deployments → production. Para isso, deixe o Auto-Deploy do serviço em Off no Render e crie os secrets `RENDER_API_KEY` e `RENDER_SERVICE_ID` no repositório.
+
 Contatos do site (e-mail, WhatsApp, redes) ficam em `src/config/site.ts`. Campo vazio não vira link.
 
 ## Onde ler mais
