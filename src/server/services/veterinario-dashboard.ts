@@ -1,6 +1,7 @@
 import 'server-only'
 import { DateTime } from 'luxon'
 import type { Prisma } from '@/generated/prisma/client'
+import { enderecoVisivelAoProfissional } from '@/lib/endereco-domicilio'
 import { prisma } from '../db'
 import type { UploadedFile } from '../http'
 
@@ -157,7 +158,14 @@ export async function listAgendamentos(veterinario: Veterinario, qs: Record<stri
         pet_porte: agendamento.pet?.porte || '',
         observacoes: agendamento.observacoes,
         local_nome: agendamento.localNome,
-        local_endereco: agendamento.localEndereco,
+        local_endereco: enderecoVisivelAoProfissional({
+          tipoConsulta: agendamento.tipoConsulta,
+          localNome: agendamento.localNome,
+          localEndereco: agendamento.localEndereco,
+          localBairro: agendamento.localBairro,
+          status: agendamento.status,
+          enderecoTutor: agendamento.tutor?.endereco,
+        }),
         preco_consulta:
           precoAgendamento && Number(precoAgendamento) > 0
             ? precoAgendamento

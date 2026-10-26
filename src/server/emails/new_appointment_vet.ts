@@ -236,7 +236,7 @@ ${
   d.localNome
     ? `            <div class="detail-item">
               <div class="detail-label">
-                Clínica:
+                Local:
               </div>
               <div class="detail-value">
                 ${e(d.localNome)}

@@ -18,6 +18,7 @@ import { APROVADO, MENSAGEM_CRMV_EM_ANALISE } from '@/server/services/aprovacoes
 import { bloquearAgenda, horarioCanonico } from '@/server/services/agenda-lock'
 import { conferirPetAtivo } from '@/server/services/pets'
 import { conferirConsultaVeterinaria, camposDaConsulta } from '@/server/services/agenda-profissional'
+import { textoDoBairro, textoLocal, ehDomicilioDoTutor } from '@/lib/endereco-domicilio'
 import {
   consumeDataConsulta,
   jaPassou,
@@ -101,6 +102,7 @@ export const POST = route(async (req) => {
     let finalPrice: Prisma.Decimal | number = veterinario.precoConsulta || 0
     let localNome: string | null = null
     let localEndereco: string | null = null
+    let localBairro: string | null = null
     let agendaEnderecoId = endereco_id
     if (tipo_consulta === 'presencial' && !endereco_id && !clinica_id) return badRequest({ message: 'Selecione um local de atendimento presencial.' })
 
@@ -116,6 +118,7 @@ export const POST = route(async (req) => {
       finalPrice = veterinario.precoConsultaDomicilio || finalPrice
       localNome = 'Domicílio do tutor'
       if (!user.rua || !user.numero || !user.cidade || !user.estado) return badRequest({ message: 'Complete seu endereço no perfil de tutor para receber atendimento a domicílio.' })
+      localBairro = user.bairro?.trim() || null
       localEndereco = [user.rua, user.numero, user.bairro, user.cidade, user.estado, user.cep].filter(Boolean).join(', ')
     } else if (tipo_consulta === 'online') {
       finalPrice = veterinario.precoConsultaOnline || finalPrice
@@ -229,6 +232,7 @@ export const POST = route(async (req) => {
           observacoes: observacoes || null,
           localNome,
           localEndereco,
+          localBairro,
           clinicaId: finalClinicaId,
           status: 'pendente',
           ...camposDaConsulta(periodo),
@@ -296,7 +300,7 @@ export const POST = route(async (req) => {
           data: dataFormatada,
           horario: agendamento.horarioConsulta,
           tipo: agendamento.tipoConsulta,
-          localNome: agendamento.localNome,
+          localNome: ehDomicilioDoTutor(agendamento) ? textoLocal(agendamento, 'profissional') : agendamento.localNome,
           observacoes: agendamento.observacoes,
           contatoTutor: { email: user.email, celular: user.celular },
         })
@@ -313,6 +317,7 @@ export const POST = route(async (req) => {
         dataConsulta: dataFormatada,
         horarioConsulta: agendamento.horarioConsulta!,
         agendamentoId: agendamento.id,
+        regiao: tipo_consulta === 'domicilio' ? textoDoBairro(localBairro) : null,
       })
       await inAppNotifications.notifyAppointmentScheduledToTutor({
         tutorUserId: user.id,

@@ -539,6 +539,8 @@ model Agendamento {
   providerPaymentId  String?   @map("provider_payment_id") @db.VarChar(255)
   localNome          String?   @map("local_nome") @db.VarChar(255)
   localEndereco      String?   @map("local_endereco") @db.VarChar(255)
+  /// Bairro copiado na visita em domicílio. A rua fica em localEndereco e só aparece depois do aceite.
+  localBairro        String?   @map("local_bairro") @db.VarChar(100)
   clinicaId          String?   @map("clinica_id") @db.Char(36)
   /// Pedido de prestador: veterinarioId fica null e o período real está em inicioEm/fimEm.
   prestadorId        String?   @map("prestador_id") @db.Char(36)

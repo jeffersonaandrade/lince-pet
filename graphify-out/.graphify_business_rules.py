@@ -908,6 +908,8 @@ perfis_nodes = [
          "Decisao do dono: reservas de veterinario e prestador do mesmo usuario nao se sobrepoem, inclusive pendentes e remarcacoes. Trava transacional comum por user_id. Disponibilidade falha fechada e nao revela paciente do outro perfil."),
     rule("rule_tutor_endereco_proprio", "Tutor: endereco residencial separado do profissional",
          "Endereco de tutor isolado do endereco profissional; consulta domiciliar preserva copia no agendamento. Proibir reserva e avaliacao do proprio perfil profissional."),
+    rule("rule_domicilio_endereco_apos_aceite", "Domicilio: bairro no pedido e endereco completo apos o aceite",
+         "Decisao do dono em 26/10/2026: profissional ve so o bairro enquanto a visita domiciliar esta pendente. Rua, numero e CEP aparecem depois do aceite. Tutor continua vendo o endereco completo. Remarcar esconde de novo ate novo aceite. Painel, avisos e Google Agenda do profissional seguem a mesma regra."),
 ]
 new_nodes += perfis_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in perfis_nodes]
@@ -916,8 +918,15 @@ for code_id, rs in {
     "src_server_auth_session": ["rule_perfis_individuais_mesmo_login", "rule_tutor_endereco_proprio"],
     "src_server_services_agenda_profissional": ["rule_domicilio_duracao_deslocamento", "rule_agenda_profissional_mesma_pessoa"],
     "src_server_services_agenda_lock": ["rule_agenda_profissional_mesma_pessoa"],
-    "src_server_services_pedidos_prestador": ["rule_agenda_profissional_mesma_pessoa", "rule_tutor_endereco_proprio"],
-    "src_app_api_agendamentos_route": ["rule_domicilio_duracao_deslocamento", "rule_tutor_endereco_proprio"],
+    "src_server_services_pedidos_prestador": ["rule_agenda_profissional_mesma_pessoa", "rule_tutor_endereco_proprio", "rule_domicilio_endereco_apos_aceite"],
+    "src_app_api_agendamentos_route": ["rule_domicilio_duracao_deslocamento", "rule_tutor_endereco_proprio", "rule_domicilio_endereco_apos_aceite"],
+    "src_server_services_veterinario_dashboard": ["rule_domicilio_endereco_apos_aceite"],
+    "src_server_services_consulta_domicilio": ["rule_domicilio_endereco_apos_aceite"],
+    "src_lib_endereco_domicilio": ["rule_domicilio_endereco_apos_aceite"],
+    "src_server_services_google_calendar": ["rule_domicilio_endereco_apos_aceite"],
+    "src_server_services_whatsapp_notificacoes": ["rule_domicilio_endereco_apos_aceite"],
+    "src_app_api_veterinarios_agendamentos_id_aceitar_route": ["rule_domicilio_endereco_apos_aceite"],
+    "src_app_dashboard_veterinario_components_aceitardomicilio": ["rule_domicilio_endereco_apos_aceite", "rule_visual_padrao_site"],
     "src_components_agendaconfig_agendaconfig": ["rule_domicilio_duracao_deslocamento", "rule_visual_padrao_site"],
     "src_app_perfis_page": ["rule_perfis_individuais_mesmo_login", "rule_visual_padrao_site"],
 }.items():

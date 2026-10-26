@@ -20,6 +20,7 @@ import Link from "next/link";
 import ShareProfileButton from "@/components/ShareProfileButton/ShareProfileButton";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
 import TutorContact from "@/components/TutorContact/TutorContact";
+import { AceitarDomicilio } from "./components/AceitarDomicilio";
 import BloqueiosLista from "@/components/BloqueioAgenda/BloqueiosLista";
 import AnotacaoPrivada from "@/components/AnotacaoPrivada/AnotacaoPrivada";
 import HistoricoAnotacoes from "@/components/AnotacaoPrivada/HistoricoAnotacoes";
@@ -311,6 +312,16 @@ export default function VeterinarioDashboard() {
       setIsLoadingConsultas(false);
     }
   }, []);
+
+  const aoAceitarDomicilio = useCallback((id: string | number, endereco: string) => {
+    setSelectedEvent((prev) =>
+      prev?.resource && String(prev.id) === String(id)
+        ? { ...prev, resource: { ...prev.resource, status: "confirmado", localEndereco: endereco } }
+        : prev
+    );
+    void carregarConsultasPorData(selectedDate);
+    void carregarEventosCalendario(currentDate);
+  }, [carregarConsultasPorData, carregarEventosCalendario, selectedDate, currentDate]);
 
   // Carrega dados iniciais
   const carregarDadosIniciais = useCallback(async () => {
@@ -960,6 +971,12 @@ export default function VeterinarioDashboard() {
                         <p className={styles.appointmentAddress}>
                           {consulta.localEndereco}
                         </p>
+                        <AceitarDomicilio
+                          id={consulta.id}
+                          tipo={consulta.tipo}
+                          status={consulta.status}
+                          onAceito={aoAceitarDomicilio}
+                        />
 
 
 
@@ -1264,6 +1281,12 @@ export default function VeterinarioDashboard() {
                     <span className={styles.infoCardValue}>
                       {selectedEvent.resource?.localNome} - {selectedEvent.resource?.localEndereco}
                     </span>
+                    <AceitarDomicilio
+                      id={selectedEvent.id}
+                      tipo={selectedEvent.resource?.tipo}
+                      status={selectedEvent.resource?.status}
+                      onAceito={aoAceitarDomicilio}
+                    />
                   </div>
                 </div>
               </div>
@@ -1485,6 +1508,12 @@ export default function VeterinarioDashboard() {
                     <span className={styles.infoCardValue}>
                       {selectedEvent.resource?.localNome} - {selectedEvent.resource?.localEndereco}
                     </span>
+                    <AceitarDomicilio
+                      id={selectedEvent.id}
+                      tipo={selectedEvent.resource?.tipo}
+                      status={selectedEvent.resource?.status}
+                      onAceito={aoAceitarDomicilio}
+                    />
                   </div>
                 </div>
               </div>

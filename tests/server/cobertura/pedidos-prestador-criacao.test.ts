@@ -281,6 +281,7 @@ describe('criarPedido', () => {
       observacoes: 'Cão bravo',
       localNome: 'Domicílio do tutor',
       localEndereco: 'Rua A, 10 - Centro - Recife - PE',
+      localBairro: 'Centro',
       startCodeAttempts: 0,
       dataConsulta: '2026-10-20',
       horarioConsulta: '10:00',

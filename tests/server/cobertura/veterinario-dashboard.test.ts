@@ -228,6 +228,20 @@ describe('listAgendamentos: formatação', () => {
     expect(itens.map((i) => i.preco_consulta)).toEqual([90, 90, 150, 150])
   })
 
+  it('consulta domiciliar pendente expõe só o bairro', async () => {
+    prismaMock.agendamento.findMany.mockResolvedValueOnce([
+      agendamento({
+        tipoConsulta: 'domicilio',
+        status: 'pendente',
+        localNome: 'Domicílio do tutor',
+        localBairro: 'Aldeota',
+        localEndereco: 'Rua Secreta, 9',
+      }),
+    ])
+    const [item] = await listAgendamentos(vet, {})
+    expect(item).toMatchObject({ local_endereco: 'Bairro Aldeota' })
+  })
+
   it('veterinário sem preços cadastrados cai para 0', async () => {
     prismaMock.agendamento.findMany.mockResolvedValueOnce([
       agendamento({ id: 'a', tipoConsulta: 'virtual' }),
