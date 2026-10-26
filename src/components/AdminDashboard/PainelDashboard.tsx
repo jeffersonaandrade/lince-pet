@@ -147,8 +147,8 @@ export default function PainelDashboard() {
               {filasPendentes > 0 ? `${numero(filasPendentes)} itens aguardando na fila.` : "Nenhum item na fila."}
             </p>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
-              <Fila href="/admin/aprovacoes" rotulo="CRMV em análise" valor={dados.filas.crmv} />
-              <Fila href="/admin/aprovacoes" rotulo="Responsável técnico" valor={dados.filas.responsavelTecnico} />
+              <Fila href="/admin/aprovacoes#crmv" rotulo="CRMV em análise" valor={dados.filas.crmv} />
+              <Fila href="/admin/aprovacoes#rt" rotulo="Responsável técnico" valor={dados.filas.responsavelTecnico} />
               <Fila href="/admin/recuperacoes" rotulo="Recuperação de CNPJ" valor={dados.filas.recuperacoesCnpj} />
             </div>
           </Cartao>
