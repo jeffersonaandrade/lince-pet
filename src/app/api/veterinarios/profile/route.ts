@@ -1,4 +1,4 @@
-import { ApiRequest, badRequest, notFound, ok, route, serverError } from '@/server/http'
+import { ApiRequest, badRequest, HttpError, notFound, ok, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { prisma } from '@/server/db'
 import { updating } from '@/server/lucid'
@@ -97,6 +97,7 @@ export const PUT = route(async (req) => {
 
     return ok({ message: 'Perfil atualizado com sucesso' })
   } catch (error) {
+    if (error instanceof HttpError) throw error
     console.error('❌ [Update Profile] Erro:', error)
     return serverError({ message: 'Erro ao atualizar perfil' })
   }

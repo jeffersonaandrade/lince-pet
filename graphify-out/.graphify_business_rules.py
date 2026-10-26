@@ -884,6 +884,21 @@ for code_id, rules in {
 }.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rules))
 
+especialidades_nodes = [
+    rule("rule_especialidades_crud_admin", "Especialidades: CRUD restrito com inativacao e preservacao de vinculos",
+         "Admin lista, cria, edita, inativa e reativa. Sem exclusao fisica. Inativas saem da selecao publica e nao recebem novos vinculos, mas vinculos historicos permanecem. Espacos normalizados e nomes sem duplicacao por caixa, inclusive inativos; trava transacional e revisao do estado completo impedem concorrencia e sobrescrita."),
+    rule("rule_visual_padrao_site", "Visual: manter cores e padroes existentes do site",
+         "Orientacao explicita do dono em 26/10/2026: sempre manter padrao do site, cores e componentes existentes. Usar tokens de marca e validar desktop/celular antes de subir."),
+]
+new_nodes += especialidades_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in especialidades_nodes]
+for code_id, rs in {
+    "src_server_services_admin_especialidades": ["rule_especialidades_crud_admin"],
+    "src_server_services_especialidades": ["rule_especialidades_crud_admin"],
+    "src_components_adminespecialidades_adminespecialidades": ["rule_especialidades_crud_admin", "rule_visual_padrao_site"],
+}.items():
+    impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

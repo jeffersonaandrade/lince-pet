@@ -3,6 +3,7 @@ import { Prisma } from '@/generated/prisma/client'
 
 const mocks = vi.hoisted(() => {
   const prisma = {
+    $queryRaw: vi.fn(async (_sql: unknown, ids: string[]) => ids.map(id => ({ id }))),
     user: { create: vi.fn(), update: vi.fn() },
     clinica: { create: vi.fn(), update: vi.fn() },
     especialidadeRelacionamento: { findMany: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn() },

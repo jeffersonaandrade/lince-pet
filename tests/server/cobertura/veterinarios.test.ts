@@ -4,6 +4,7 @@ import { DateTime } from 'luxon'
 
 const prismaMock = vi.hoisted(() => {
   const tx = {
+    $queryRaw: vi.fn(async (_sql: unknown, ids: string[]) => ids.map(id => ({ id }))),
     $executeRaw: vi.fn(),
     user: { create: vi.fn() },
     veterinario: { create: vi.fn() },

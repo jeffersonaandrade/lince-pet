@@ -6,6 +6,7 @@ import { serializeUser } from '../auth/session'
 import { hashPassword } from '../auth/password'
 import { creating, updating } from '../lucid'
 import { PLANO_PADRAO } from './assinante'
+import { conferirNovasEspecialidades } from './especialidades'
 
 /** Colunas que existem no banco mas não no model Lucid (não eram serializadas). */
 export function serializeClinica<T extends Partial<Clinica>>(clinica: T) {
@@ -130,6 +131,8 @@ export async function syncEspecialidadesClinica(clinicaId: string, ids: unknown[
       where: { entidadeId: clinicaId, entidadeTipo: 'clinica' },
     })
     const current = new Set(existing.map((r) => r.especialidadeId))
+    const novas = wanted.filter((id) => !current.has(id))
+    await conferirNovasEspecialidades(tx, novas)
     const remove = [...current].filter((id) => !wanted.includes(id))
     if (remove.length) {
       await tx.especialidadeRelacionamento.deleteMany({

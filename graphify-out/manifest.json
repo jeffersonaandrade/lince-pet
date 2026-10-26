@@ -372,10 +372,10 @@
     "semantic_hash": "20d48440f1da185eec571531c879534c"
   },
   "src/data/especialidades.ts": {
-    "mtime": 1791505313.67979,
-    "seen": 1791506113.179286,
-    "ast_hash": "9543b277e1c09a32ae44a135bf6971c9",
-    "semantic_hash": "9543b277e1c09a32ae44a135bf6971c9"
+    "mtime": 1793036113.788084,
+    "seen": 1793037050.8599038,
+    "ast_hash": "c2281a30d43f3e883c816296fb6d247b",
+    "semantic_hash": ""
   },
   "src/hook/api.tsx": {
     "mtime": 1791508560.8388648,
@@ -1632,9 +1632,9 @@
     "semantic_hash": ""
   },
   "src/server/services/clinicas.ts": {
-    "mtime": 1792893880.0982976,
-    "seen": 1792896178.9279823,
-    "ast_hash": "70f3c4d2bdf1fa39c51929f91abf7e16",
+    "mtime": 1793036601.6118238,
+    "seen": 1793037051.0799825,
+    "ast_hash": "795070c3d3e80acfe2b92cdabf168eb5",
     "semantic_hash": ""
   },
   "src/server/validators/clinica.ts": {
@@ -1818,9 +1818,9 @@
     "semantic_hash": ""
   },
   "src/server/services/veterinarios.ts": {
-    "mtime": 1792782151.6947234,
-    "seen": 1792866749.542031,
-    "ast_hash": "f2dd411934e8c6a4f4fdd15cf59fc554",
+    "mtime": 1793036601.6059785,
+    "seen": 1793037051.1648052,
+    "ast_hash": "1b59eb6d76b5d2622ddcef6fd2389d72",
     "semantic_hash": ""
   },
   "tests/server/auth-flow.test.ts": {
@@ -1944,9 +1944,9 @@
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/profile/route.ts": {
-    "mtime": 1792539514.6385067,
-    "seen": 1792544735.0499597,
-    "ast_hash": "0a57bb54001a85ebd8c6833258a0e348",
+    "mtime": 1793036943.068133,
+    "seen": 1793037050.4285905,
+    "ast_hash": "25aa9b7d3774b2e664dc86fe01645093",
     "semantic_hash": ""
   },
   "src/app/api/veterinarios/route.ts": {
@@ -2010,9 +2010,9 @@
     "semantic_hash": ""
   },
   "docs/ARQUITETURA.md": {
-    "mtime": 1792896015.647351,
-    "seen": 1792896179.039441,
-    "ast_hash": "2aa49cd9099f832aaac23442e23a5cc8",
+    "mtime": 1793036756.6266074,
+    "seen": 1793037051.7623403,
+    "ast_hash": "f3c9758cb9ef1882a55acc048413ab89",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -2862,9 +2862,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/clinicas.test.ts": {
-    "mtime": 1792894326.0602844,
-    "seen": 1792896178.9705362,
-    "ast_hash": "8d482f1c4351ad230e2d807d872a9619",
+    "mtime": 1793036601.6266797,
+    "seen": 1793037051.367641,
+    "ast_hash": "ebb3047c942009ebbe9ed7abd74dd058",
     "semantic_hash": ""
   },
   "tests/server/cobertura/encaminhamentos.test.ts": {
@@ -2964,9 +2964,9 @@
     "semantic_hash": ""
   },
   "tests/server/cobertura/veterinarios.test.ts": {
-    "mtime": 1792782151.712853,
-    "seen": 1792866749.5760815,
-    "ast_hash": "4dff5191e9eb15cc33514270ad28bcea",
+    "mtime": 1793036601.6191092,
+    "seen": 1793037051.422587,
+    "ast_hash": "d6fee4b4dfef93aaf271047f06f6711e",
     "semantic_hash": ""
   },
   "tests/server/cobertura/vinculos.test.ts": {
@@ -3804,9 +3804,9 @@
     "semantic_hash": ""
   },
   "src/components/AdminNav/AdminNav.tsx": {
-    "mtime": 1792893931.0701988,
-    "seen": 1792896178.870096,
-    "ast_hash": "ba6c3253929ff6ed4370ea28e3b8bfe3",
+    "mtime": 1793036448.407813,
+    "seen": 1793037050.5831604,
+    "ast_hash": "94dbc7c3d38fd01ba2e396cc4cf007d8",
     "semantic_hash": ""
   },
   "src/lib/capacidade.ts": {
@@ -4032,9 +4032,69 @@
     "semantic_hash": ""
   },
   "docs/HOMOLOGACAO-REGRAS-DE-NEGOCIO-2026-10-24.md": {
-    "mtime": 1792896145.4479809,
-    "seen": 1792896179.0403774,
-    "ast_hash": "29c011ab566fdb6d05bedffa16515d28",
+    "mtime": 1792896244.6427593,
+    "seen": 1793037051.7703612,
+    "ast_hash": "8a1d61ce4db97305c9b37c843a315439",
+    "semantic_hash": ""
+  },
+  "e2e/admin-especialidades.spec.ts": {
+    "mtime": 1793037359.843972,
+    "seen": 1793037652.0840957,
+    "ast_hash": "2f650128b985d3b9cc380e9af87d706d",
+    "semantic_hash": ""
+  },
+  "src/app/admin/especialidades/page.tsx": {
+    "mtime": 1793037359.7993383,
+    "seen": 1793037652.2307699,
+    "ast_hash": "949630fbd21301b9ebbf4cfc1f351dbe",
+    "semantic_hash": ""
+  },
+  "src/app/api/admin/especialidades/[id]/route.ts": {
+    "mtime": 1793036448.397809,
+    "seen": 1793037050.0481243,
+    "ast_hash": "b5e14033b386e69ef4988b4aa523ffb7",
+    "semantic_hash": ""
+  },
+  "src/app/api/admin/especialidades/route.ts": {
+    "mtime": 1793036448.3908112,
+    "seen": 1793037050.0481405,
+    "ast_hash": "bc753636865ce4650aa90f8dfd5954b3",
+    "semantic_hash": ""
+  },
+  "src/components/AdminEspecialidades/AdminEspecialidades.tsx": {
+    "mtime": 1793037385.0322814,
+    "seen": 1793037652.7670686,
+    "ast_hash": "8ba90ede8d9ef496f4f521109469330f",
+    "semantic_hash": ""
+  },
+  "src/server/services/admin-especialidades.ts": {
+    "mtime": 1793036518.8462944,
+    "seen": 1793037051.0152268,
+    "ast_hash": "5bbb5643d2ba4390c89d07a2ca3e38a3",
+    "semantic_hash": ""
+  },
+  "src/server/services/especialidades.ts": {
+    "mtime": 1793036558.8569882,
+    "seen": 1793037051.0918307,
+    "ast_hash": "3211adcb9a302a79edc1175c0492ef8f",
+    "semantic_hash": ""
+  },
+  "tests/server/admin-especialidades-rotas.test.ts": {
+    "mtime": 1793036601.6599295,
+    "seen": 1793037051.3162737,
+    "ast_hash": "0b13f6943a0f8ef1e01c4f33d61c4271",
+    "semantic_hash": ""
+  },
+  "tests/server/admin-especialidades.test.ts": {
+    "mtime": 1793036601.6344128,
+    "seen": 1793037051.3162901,
+    "ast_hash": "db5f04290cf48d990dcc2e69c42e205f",
+    "semantic_hash": ""
+  },
+  "docs/especialidades-2026-10-26.md": {
+    "mtime": 1793037214.2940986,
+    "seen": 1793037654.860317,
+    "ast_hash": "99ba98d6e4aa72cb693c80f3d39e0459",
     "semantic_hash": ""
   }
 }

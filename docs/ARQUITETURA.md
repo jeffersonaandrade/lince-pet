@@ -60,6 +60,12 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 
 Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/rules/graphify.mdc`).
 
+### Administração de especialidades e padrão visual
+
+- **Catálogo central:** `/admin/especialidades` e `/api/admin/especialidades` exigem `requireAdmin`. Listar, criar, editar, inativar e reativar; nenhuma exclusão física pelo CRUD. Inativação preserva IDs e vínculos históricos, remove opções da seleção pública e bloqueia novos vínculos no backend, inclusive por requisição direta. Vínculos anteriores podem ser mantidos ao editar o perfil.
+- **Integridade:** normalizar espaços e recusar nomes duplicados sem diferenciar caixa, inclusive entre inativas. Alterações administrativas usam trava transacional e revisão do estado completo para evitar duplicação concorrente e sobrescrita de edição antiga. `/servicos` é revalidado após gravações.
+- **Visual obrigatório:** orientação do dono em 26/10/2026: sempre manter cores, componentes e padrões existentes do site. Usar os tokens de marca de `globals.css` e os padrões da área correspondente; validar desktop e celular antes da entrega.
+
 ### Entrega e versionamento
 
 - **Commit e push direto na main autorizados:** autorização do usuário registrada em 23/10/2026, válida para os trabalhos autorizados deste projeto enquanto não for revogada. Ao finalizar, executar as verificações pertinentes, commitar as alterações e fazer push diretamente em `main`, sem pedir nova confirmação para essas ações. Atualizar as referências do remoto e integrar alterações existentes antes do push, preservando o histórico e o trabalho de outras pessoas; não usar force-push. Informar o commit enviado e os resultados ou pendências da validação. A autorização de versionamento não amplia o escopo da tarefa nem equivale a confirmar que o deploy em produção terminou.

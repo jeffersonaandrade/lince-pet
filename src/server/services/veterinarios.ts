@@ -15,6 +15,7 @@ import { serializeUser, type PublicUser } from '../auth/session'
 import { hashPassword } from '../auth/password'
 import { creating, updating } from '../lucid'
 import { canCreateAppointment } from './subscription'
+import { conferirNovasEspecialidades } from './especialidades'
 import { PLANO_PADRAO } from './assinante'
 import { APROVADO } from './aprovacoes'
 import { HttpError } from '../http'
@@ -172,6 +173,8 @@ export async function syncEspecialidadesVeterinario(veterinarioId: string, ids: 
       where: { entidadeId: veterinarioId, entidadeTipo: 'veterinario' },
     })
     const current = new Set(existing.map((r) => r.especialidadeId))
+    const novas = wanted.filter((id) => !current.has(id))
+    await conferirNovasEspecialidades(tx, novas)
     const remove = [...current].filter((id) => !wanted.includes(id))
     if (remove.length) {
       await tx.especialidadeRelacionamento.deleteMany({
