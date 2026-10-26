@@ -1,6 +1,6 @@
 import 'server-only'
 import { e } from './edge'
-import { emailLince } from './layout'
+import { botaoEmail, emailLince } from './layout'
 import { URL_CONSULTAS_TUTOR } from '@/lib/agenda-tutor'
 
 export type AppointmentConfirmationData = {
@@ -43,9 +43,7 @@ export function appointmentConfirmation(d: AppointmentConfirmationData) {
           <div class="code-value">${e(d.verificationCode)}</div>
           <div class="code-hint">Informe este código ao veterinário quando começar o atendimento.</div>
         </div>
-        <div class="button-container">
-          <a href="${URL_CONSULTAS_TUTOR}" class="button">Ver meus agendamentos</a>
-        </div>
+        ${botaoEmail('Ver meus agendamentos', URL_CONSULTAS_TUTOR)}
         <div class="notice">
           <p>Precisa reagendar ou cancelar? Você pode fazer isso pelo painel em até 24h antes do horário marcado.</p>
         </div>`,

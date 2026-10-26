@@ -1,6 +1,6 @@
 import 'server-only'
 import { e } from './edge'
-import { emailLince } from './layout'
+import { botaoEmail, emailLince } from './layout'
 
 export function forgotPasswordEmail({ url, nome, logoHtml }: { url: string; nome: string; logoHtml?: string }) {
   const link = e(url)
@@ -11,9 +11,7 @@ export function forgotPasswordEmail({ url, nome, logoHtml }: { url: string; nome
     conteudo: `<h1>Redefinir sua senha</h1>
         <p>Olá, <strong>${e(nome)}</strong></p>
         <p>Recebemos uma solicitação para redefinir a senha da sua conta no Lince Pet. Clique no botão abaixo para escolher uma nova senha.</p>
-        <div class="button-container">
-          <a href="${link}" class="button">Redefinir minha senha</a>
-        </div>
+        ${botaoEmail('Redefinir minha senha', url)}
         <div class="link-card">
           <p>Se o botão não abrir, copie e cole este endereço no navegador:</p>
           <a href="${link}">${link}</a>

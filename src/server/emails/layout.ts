@@ -3,6 +3,13 @@ import { e } from './edge'
 
 const LOGO_STYLE = 'height:90px; width:auto; display:block; margin:0 auto;'
 
+/** Botão laranja com cor no próprio elemento, para o cliente de e-mail não depender do CSS. */
+export function botaoEmail(rotulo: string, url: string) {
+  return `<div class="button-container" style="text-align: center; margin: 8px 0 28px;">
+          <a href="${e(url)}" class="button" style="background-color: #e67e22; color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; font-size: 16px;">${e(rotulo)}</a>
+        </div>`
+}
+
 /** Mesma marca do e-mail de redefinição de senha: logo enviado, URL pública ou o nome em texto. */
 export function marcaDoEmail(logoHtml?: string) {
   if (logoHtml) return logoHtml
@@ -216,7 +223,7 @@ export function emailLince({
       }
     </style>
   </head>
-  <body>
+  <body style="margin: 0; padding: 0; background-color: #fbfbfb; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
     ${
       preheader
         ? `<div style="display: none; max-height: 0; overflow: hidden;">
@@ -224,14 +231,14 @@ export function emailLince({
     </div>`
         : ''
     }
-    <div class="container">
-      <div class="header">
+    <div class="container" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden;">
+      <div class="header" style="background-color: #e67e22; padding: 32px 30px; text-align: center;">
         ${marcaDoEmail(logoHtml)}
       </div>
       <div class="content">
         ${conteudo}
       </div>
-      <div class="footer">
+      <div class="footer" style="text-align: center; padding: 30px; font-size: 13px; color: #9ca3af; background-color: #f1f5f9;">
         <p>© ${new Date().getFullYear()} Lince Pet. Todos os direitos reservados.</p>
         <p>Este é um e-mail automático, por favor não responda.</p>
         <div class="footer-links">

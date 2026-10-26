@@ -314,21 +314,21 @@ describe('sendPedidoServico', () => {
     expect(r).toEqual({ success: true })
     expect(ultimoEnvio()).toMatchObject({ to: 'pre@x.com', subject: 'Novo pedido de Banho e tosa - Lince Pet' })
     expect(ultimoEnvio().html).toContain('Banho completo')
+    expect(ultimoEnvio().html).toContain('background-color: #e67e22')
+    expect(ultimoEnvio().html).toContain('https://www.instagram.com/lincepet')
   })
 
-  it('confirmação do pedido usa o layout do e-mail de senha e só mostra o código quando ele vem', async () => {
+  it('confirmação do pedido mostra o código só quando ele vem', async () => {
     await notifications.sendPedidoServico('ana@x.com', 'Pedido aceito', {
       titulo: 'Pedido aceito',
       saudacao: 'Olá, Ana!',
       paragrafos: ['Bia aceitou o serviço.'],
       detalhes: [['Local', 'Rua A, 10']],
-      layout: 'lince',
       codigo: '654321',
       botao: { rotulo: 'Ver meus agendamentos', url: 'https://www.lincepet.com.br/dashboard/tutor#consultas' },
     })
     const tutor = ultimoEnvio().html
     expect(tutor).toContain('background-color: #e67e22')
-    expect(tutor).toContain('https://www.instagram.com/lincepet')
     expect(tutor).toContain('654321')
     expect(tutor).toContain('Rua A, 10')
 
@@ -337,8 +337,6 @@ describe('sendPedidoServico', () => {
       saudacao: 'Olá, Bia!',
       paragrafos: ['Você confirmou o serviço.'],
       detalhes: [['Local', 'Rua A, 10']],
-      layout: 'lince',
-      codigo: null,
       botao: { rotulo: 'Ver minha agenda', url: 'https://www.lincepet.com.br/dashboard/prestador' },
     })
     expect(ultimoEnvio().html).not.toContain('654321')

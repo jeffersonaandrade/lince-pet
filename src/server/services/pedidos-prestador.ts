@@ -716,15 +716,13 @@ async function avisarUsuario(
       actionData: { agendamentoId: a.id, pedido: true },
     })
     if (podeEnviarEmail(user)) {
-      const confirmacao = evento === 'aceito'
       await notifications.sendPedidoServico(user.email, texto.titulo, {
         titulo: texto.titulo,
         saudacao: `Olá, ${user.nome}!`,
         paragrafos: [texto.mensagem],
         detalhes,
-        ...(confirmacao
-          ? { layout: 'lince' as const, botao: PAINEL[papel], codigo: papel === 'tutor' ? a.startCode : null }
-          : {}),
+        botao: PAINEL[papel],
+        ...(evento === 'aceito' && papel === 'tutor' ? { codigo: a.startCode } : {}),
       })
     }
   } catch (error) {
