@@ -640,6 +640,10 @@ const AVISOS: Record<
     whatsapp: ['novo_agendamento', ['profissional']],
   },
   aceito: {
+    profissional: (c) => ({
+      titulo: 'Pedido confirmado',
+      mensagem: `Você confirmou "${c.servico}" de ${c.tutor} para ${c.pet} (${c.quando}). No dia, peça ao tutor o código de início para começar o atendimento.`,
+    }),
     tutor: (c) => ({
       titulo: 'Pedido aceito',
       mensagem: `${c.prof} aceitou "${c.servico}" para ${c.pet} (${c.quando}). Código de início: ${c.codigo}.`,
