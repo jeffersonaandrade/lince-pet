@@ -323,6 +323,22 @@ export class VeterinarioDashboardService {
   }
 
   /**
+   * Aceita a consulta em domicílio e libera o endereço completo.
+   */
+  static async aceitarDomicilio(
+    agendamentoId: string | number
+  ): Promise<{ ok: boolean; localEndereco?: string; error?: string }> {
+    try {
+      const response = await api.patch<{ local_endereco?: string | null }>(
+        `/veterinarios/agendamentos/${agendamentoId}/aceitar`
+      );
+      return { ok: true, localEndereco: response.data.local_endereco ?? "" };
+    } catch (error) {
+      return { ok: false, error: mensagemDaApi(error) || "Não foi possível aceitar o atendimento" };
+    }
+  }
+
+  /**
    * Inicia um agendamento validando o código informado
    */
   static async iniciarAgendamento(

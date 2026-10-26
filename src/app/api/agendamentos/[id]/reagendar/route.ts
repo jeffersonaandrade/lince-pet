@@ -9,6 +9,7 @@ import { notifications } from '@/server/services/notifications'
 import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
 import { podeEnviarEmail } from '@/server/services/canais-notificacao'
 import { googleCalendar } from '@/server/services/google-calendar'
+import { textoDoBairro, textoLocal, ehDomicilioDoTutor } from '@/lib/endereco-domicilio'
 import { nomeCompleto, podeSerCancelado, prepareDataConsulta } from '@/server/services/agendamentos'
 import { horarioEstaBloqueado, MENSAGEM_HORARIO_BLOQUEADO } from '@/server/services/bloqueios'
 import { ehPedidoDePrestador, remarcarPedido } from '@/server/services/pedidos-prestador'
@@ -151,7 +152,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
           data,
           horario: agendamento.horarioConsulta,
           tipo: agendamento.tipoConsulta,
-          localNome: agendamento.localNome,
+          localNome: ehDomicilioDoTutor(agendamento) ? textoLocal(agendamento, 'profissional') : agendamento.localNome,
         })
       }
 
@@ -161,6 +162,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         dataConsulta: data,
         horarioConsulta: agendamento.horarioConsulta!,
         agendamentoId: agendamento.id,
+        regiao: agendamento.tipoConsulta === 'domicilio' ? textoDoBairro(agendamento.localBairro) : null,
       })
       await inAppNotifications.notifyAppointmentRescheduledToTutor({
         tutorUserId: user.id,

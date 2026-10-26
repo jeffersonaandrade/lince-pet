@@ -13,6 +13,7 @@ import type {
   User,
   Veterinario,
 } from '@/generated/prisma/client'
+import { enderecoVisivelAoProfissional } from '@/lib/endereco-domicilio'
 import { prisma } from '../db'
 import { env, requiredEnv } from '../env'
 import { creating, updating } from '../lucid'
@@ -199,7 +200,8 @@ function montarEventoServico(ctx: EventContext, role: Papel) {
   const servico = ctx.servico?.nome || ctx.tipoServico?.nome || 'Serviço pet'
   const tutorNome = `${ctx.tutorUser?.nome || 'Tutor'} ${ctx.tutorUser?.sobrenome || ''}`.trim()
   const profNome = `${ctx.prestadorUser?.nome || 'Profissional'} ${ctx.prestadorUser?.sobrenome || ''}`.trim()
-  const local = `${agendamento.localNome || 'A combinar'}${agendamento.localEndereco ? ` - ${agendamento.localEndereco}` : ''}`
+  const endereco = role === 'tutor' ? agendamento.localEndereco : enderecoVisivelAoProfissional(agendamento)
+  const local = `${agendamento.localNome || 'A combinar'}${endereco ? ` - ${endereco}` : ''}`
 
   const linhas = [
     `🛎️ Serviço: ${servico}`,
@@ -270,6 +272,7 @@ function montarEvento(ctx: EventContext, role: Papel) {
   const tutorNome = `${ctx.tutorUser?.nome || 'Tutor'} ${ctx.tutorUser?.sobrenome || ''}`.trim()
   const vetNome = `Dr(a). ${ctx.vetUser?.nome || ''} ${ctx.vetUser?.sobrenome || ''}`.trim()
   const preco = (Number(agendamento.precoConsulta) || 0).toFixed(2)
+  const endereco = role === 'tutor' ? agendamento.localEndereco : enderecoVisivelAoProfissional(agendamento)
 
   let summary = ''
   let description = ''
@@ -283,7 +286,7 @@ Olá! Este é o lembrete da sua consulta veterinária marcada no Lince Pet.
 👨‍⚕️ Veterinário: ${vetNome}
 📅 Data: ${startDateTime.toFormat('dd/MM/yyyy')} às ${agendamento.horarioConsulta}
 📍 Local: ${agendamento.localNome || 'Teleconsulta'}
-🏠 Endereço: ${agendamento.localEndereco || 'Atendimento Online'}
+🏠 Endereço: ${endereco || 'Atendimento Online'}
 💰 Valor: R$ ${preco}
 🔍 Código de Início da Consulta: ${agendamento.startCode || 'Não gerado'}
 
@@ -299,7 +302,7 @@ Olá, ${vetNome}! Você tem uma consulta agendada pelo Lince Pet.
 📞 Contato do Tutor: ${ctx.tutorUser?.celular || 'Não cadastrado'}
 📅 Data: ${startDateTime.toFormat('dd/MM/yyyy')} às ${agendamento.horarioConsulta}
 📍 Local: ${agendamento.localNome || 'Teleconsulta'}
-🏠 Endereço: ${agendamento.localEndereco || 'Atendimento Online'}
+🏠 Endereço: ${endereco || 'Atendimento Online'}
 💰 Valor: R$ ${preco}
 
 Insira o código fornecido pelo tutor no painel para dar início oficial ao atendimento.
@@ -308,7 +311,7 @@ Insira o código fornecido pelo tutor no painel para dar início oficial ao aten
 
   return {
     summary,
-    location: `${agendamento.localNome || 'Atendimento Online'} - ${agendamento.localEndereco || 'Teleconsulta'}`,
+    location: `${agendamento.localNome || 'Atendimento Online'} - ${endereco || 'Teleconsulta'}`,
     description,
     status: 'confirmed',
     start: { dateTime: startDateTime.toISO(), timeZone: 'America/Sao_Paulo' },

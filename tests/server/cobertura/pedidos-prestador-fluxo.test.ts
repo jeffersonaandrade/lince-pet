@@ -78,6 +78,7 @@ const pedido = (over: Record<string, unknown> = {}) => ({
   observacoes: null,
   localNome: 'Domicílio do tutor',
   localEndereco: 'Rua A, 10',
+  localBairro: 'Centro',
   motivoCancelamento: null,
   startedAt: null,
   endedAt: null,
@@ -154,9 +155,11 @@ describe('serializarPedido', () => {
   it('visão do prestador: nunca mostra o código; celular do tutor só com pedido ativo', () => {
     const pend = serializarPedido(pedido() as never, 'prestador')
     expect(pend).not.toHaveProperty('start_code')
-    expect(pend).toMatchObject({ tutor: { nome: 'Ana Lima', celular: null } })
+    expect(pend).toMatchObject({ tutor: { nome: 'Ana Lima', celular: null }, local_endereco: 'Bairro Centro' })
+    expect(pend.local_endereco).not.toContain('Rua A')
     const conf = serializarPedido(pedido({ status: 'confirmado' }) as never, 'prestador')
-    expect(conf).toMatchObject({ tutor: { celular: '81999990000' } })
+    expect(conf).toMatchObject({ tutor: { celular: '81999990000' }, local_endereco: 'Rua A, 10' })
+    expect(serializarPedido(pedido() as never, 'tutor').local_endereco).toBe('Rua A, 10')
   })
 
   it('campos ausentes viram null', () => {
@@ -533,7 +536,7 @@ describe('avisarPedido', () => {
     ['Serviço', 'Banho completo'],
     ['Pet', 'Rex'],
     ['Quando', quando],
-    ['Local', 'Domicílio do tutor - Rua A, 10'],
+    ['Local', 'Domicílio do tutor - Bairro Centro'],
     ['Valor', 'R$ 50.00'],
   ]
 

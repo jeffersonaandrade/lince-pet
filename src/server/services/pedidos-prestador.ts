@@ -4,6 +4,7 @@ import { randomInt } from 'node:crypto'
 import { DateTime } from 'luxon'
 import vine from '@vinejs/vine'
 import type { BloqueioAgenda, Prisma, User } from '@/generated/prisma/client'
+import { enderecoVisivelAoProfissional } from '@/lib/endereco-domicilio'
 import { prisma } from '../db'
 import { HttpError } from '../http'
 import { creating, updating } from '../lucid'
@@ -261,6 +262,7 @@ export async function criarPedido(tutor: { id: string; user: Usuario }, prestado
         observacoes: d.observacoes || null,
         localNome: d.local === 'domicilio' ? 'Domicílio do tutor' : 'Local do profissional',
         localEndereco: enderecoDe(d.local === 'domicilio' ? tutor.user : prestador.user) || null,
+        localBairro: d.local === 'domicilio' ? tutor.user?.bairro?.trim() || null : null,
         startCode: randomInt(100000, 999999).toString(),
         startCodeAttempts: 0,
         ...camposDoPeriodo(periodo),
@@ -328,7 +330,16 @@ export function serializarPedido(a: Pedido, visao: 'tutor' | 'prestador') {
     preco: a.precoConsulta === null ? null : Number(a.precoConsulta),
     observacoes: a.observacoes,
     local_nome: a.localNome,
-    local_endereco: a.localEndereco,
+    local_endereco: visao === 'prestador'
+      ? enderecoVisivelAoProfissional({
+          tipoConsulta: a.tipoConsulta,
+          localNome: a.localNome,
+          localEndereco: a.localEndereco,
+          localBairro: a.localBairro,
+          status: a.status,
+          enderecoTutor: a.tutor?.endereco,
+        })
+      : a.localEndereco,
     motivo_cancelamento: a.motivoCancelamento,
     started_at: a.startedAt?.toISOString() ?? null,
     ended_at: a.endedAt?.toISOString() ?? null,
@@ -717,16 +728,28 @@ export async function avisarPedido(evento: EventoPedido, id: string, motivo?: st
       codigo: a.startCode || '',
       motivo: motivo ? `Motivo: ${motivo}` : '',
     }
-    const detalhes: [string, string | null][] = [
-      ['Serviço', ctx.servico],
-      ['Pet', a.pet?.nome ?? null],
-      ['Quando', ctx.quando],
-      ['Local', [a.localNome, a.localEndereco].filter(Boolean).join(' - ') || null],
-      ['Valor', a.precoConsulta === null ? null : `R$ ${Number(a.precoConsulta).toFixed(2)}`],
-    ]
+    const detalhesDe = (visao: 'tutor' | 'profissional'): [string, string | null][] => {
+      const endereco = visao === 'profissional'
+        ? enderecoVisivelAoProfissional({
+            tipoConsulta: a.tipoConsulta,
+            localNome: a.localNome,
+            localEndereco: a.localEndereco,
+            localBairro: a.localBairro,
+            status: a.status,
+            enderecoTutor: a.tutor?.endereco,
+          })
+        : a.localEndereco
+      return [
+        ['Serviço', ctx.servico],
+        ['Pet', a.pet?.nome ?? null],
+        ['Quando', ctx.quando],
+        ['Local', [a.localNome, endereco].filter(Boolean).join(' - ') || null],
+        ['Valor', a.precoConsulta === null ? null : `R$ ${Number(a.precoConsulta).toFixed(2)}`],
+      ]
+    }
 
-    if (regra.profissional) await avisarUsuario(profUser, evento, regra.profissional(ctx), a, detalhes)
-    if (regra.tutor && tutorUser) await avisarUsuario(tutorUser, evento, regra.tutor(ctx), a, detalhes)
+    if (regra.profissional) await avisarUsuario(profUser, evento, regra.profissional(ctx), a, detalhesDe('profissional'))
+    if (regra.tutor && tutorUser) await avisarUsuario(tutorUser, evento, regra.tutor(ctx), a, detalhesDe('tutor'))
     if (regra.whatsapp) await notificarAgendamento(regra.whatsapp[0], a.id, regra.whatsapp[1], { motivo: motivo || null })
     if (regra.agenda) await googleCalendar.sincronizarEvento(a.id, regra.agenda)
   } catch (error) {

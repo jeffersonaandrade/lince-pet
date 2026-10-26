@@ -2,6 +2,7 @@ import type { Prisma } from '@/generated/prisma/client'
 import { prisma } from '@/server/db'
 import { ApiRequest, ok, route, serverError, unauthorized } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
+import { enderecoVisivelAoProfissional } from '@/lib/endereco-domicilio'
 import { formatDataConsulta } from '@/server/services/clinicas'
 
 export const GET = route(async (req) => {
@@ -55,7 +56,14 @@ export const GET = route(async (req) => {
       tipo_consulta: a.tipoConsulta,
       status: a.status,
       local_nome: a.localNome,
-      local_endereco: a.localEndereco,
+      local_endereco: enderecoVisivelAoProfissional({
+        tipoConsulta: a.tipoConsulta,
+        localNome: a.localNome,
+        localEndereco: a.localEndereco,
+        localBairro: a.localBairro,
+        status: a.status,
+        enderecoTutor: a.tutor?.endereco,
+      }),
       valor_total: a.precoConsulta,
       observacoes: a.observacoes,
     }))

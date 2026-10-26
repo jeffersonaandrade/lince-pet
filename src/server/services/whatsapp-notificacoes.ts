@@ -2,6 +2,7 @@ import 'server-only'
 import { Prisma } from '@/generated/prisma/client'
 import { prisma } from '../db'
 import { creating, updating } from '../lucid'
+import { textoLocal } from '@/lib/endereco-domicilio'
 import { nomeCompleto } from './agendamentos'
 import { hasFeature } from './subscription'
 import { canaisDe } from './canais-notificacao'
@@ -58,7 +59,7 @@ export function examesDoAgendamento(a: Pick<AgendamentoWhatsapp, 'tipoConsulta' 
   return { nomes: a.exames.map((e) => e.nome).join(', '), preparo: preparo.length ? preparo.join(' | ') : null }
 }
 
-export function dadosDaMensagem(a: AgendamentoWhatsapp, motivo?: string | null) {
+export function dadosDaMensagem(a: AgendamentoWhatsapp, motivo?: string | null, para: 'tutor' | 'profissional' = 'tutor') {
   const exames = examesDoAgendamento(a)
   return {
     exames: exames?.nomes ?? null,
@@ -68,7 +69,14 @@ export function dadosDaMensagem(a: AgendamentoWhatsapp, motivo?: string | null) 
     profissional: profissionalDe(a).nome,
     data: formatarData(a.dataConsulta),
     hora: a.horarioConsulta || '',
-    local: a.localNome || a.localEndereco || a.tipoConsulta || 'a combinar',
+    local: textoLocal({
+      tipoConsulta: a.tipoConsulta,
+      localNome: a.localNome,
+      localEndereco: a.localEndereco,
+      localBairro: a.localBairro,
+      status: a.status,
+      enderecoTutor: a.tutor?.endereco,
+    }, para),
     motivo,
     servico: a.prestador ? a.servicoOferecido?.nome || a.prestador.tipoServico?.nome || 'Serviço' : null,
   }
@@ -102,7 +110,7 @@ async function enviarPara(
   planoOk: boolean,
   motivo?: string | null
 ): Promise<ResultadoEnvio> {
-  const texto = montarMensagem(evento, para, dadosDaMensagem(a, motivo))
+  const texto = montarMensagem(evento, para, dadosDaMensagem(a, motivo, para))
   if (!texto) return 'nao_aplicavel'
   return despachar(a, evento, para, referenciaDaConsulta(a), texto, planoOk)
 }

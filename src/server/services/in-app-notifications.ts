@@ -22,6 +22,8 @@ type AppointmentParams = {
   dataConsulta: string
   horarioConsulta: string
   agendamentoId: string
+  /** Bairro da visita em domicílio, enquanto o endereço completo ainda não foi liberado. */
+  regiao?: string | null
 }
 
 type TutorAppointmentParams = {
@@ -35,7 +37,7 @@ type TutorAppointmentParams = {
 export const inAppNotifications = {
   notifyNewAppointmentToVet: (p: AppointmentParams) =>
     create(p.veterinarioUserId, 'NOVO_AGENDAMENTO', 'Nova consulta agendada!',
-      `${p.tutorNome} agendou uma consulta para ${p.dataConsulta} às ${p.horarioConsulta}.`,
+      `${p.tutorNome} agendou uma consulta para ${p.dataConsulta} às ${p.horarioConsulta}.${p.regiao ? ` ${p.regiao}.` : ''}`,
       { agendamentoId: p.agendamentoId }),
 
   notifyAppointmentCancelledToVet: (p: AppointmentParams) =>
@@ -45,7 +47,7 @@ export const inAppNotifications = {
 
   notifyAppointmentRescheduledToVet: (p: AppointmentParams) =>
     create(p.veterinarioUserId, 'AGENDAMENTO_REAGENDADO', 'Consulta reagendada',
-      `${p.tutorNome} reagendou a consulta para ${p.dataConsulta} às ${p.horarioConsulta}.`,
+      `${p.tutorNome} reagendou a consulta para ${p.dataConsulta} às ${p.horarioConsulta}.${p.regiao ? ` ${p.regiao}. Aceite de novo para ver o endereço.` : ''}`,
       { agendamentoId: p.agendamentoId }),
 
   notifyAppointmentConfirmedToTutor: (p: {

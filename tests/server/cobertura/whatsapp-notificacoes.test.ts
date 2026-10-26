@@ -198,6 +198,21 @@ describe('notificarAgendamento: destinatário e dados', () => {
     expect(texto).toContain('📅 Data: \n')
   })
 
+  it('consulta em domicílio pendente mostra o bairro ao veterinário e o endereço completo ao tutor', async () => {
+    const domicilio = {
+      tipoConsulta: 'domicilio',
+      localNome: 'Domicílio do tutor',
+      localBairro: 'Centro',
+      localEndereco: 'Rua A, 10, Centro, Recife, PE',
+    }
+    await notificarAgendamento('novo_agendamento', consulta({ ...domicilio, status: 'pendente' }), ['profissional'])
+    expect(enviarMock.mock.calls[0][1]).toContain('Bairro Centro')
+    expect(enviarMock.mock.calls[0][1]).not.toContain('Rua A')
+
+    await notificarAgendamento('confirmacao', consulta({ ...domicilio, status: 'confirmado' }), ['tutor'])
+    expect(enviarMock.mock.calls[1][1]).toContain('Rua A, 10')
+  })
+
   it('cancelamento por bloqueio leva o motivo ao tutor', async () => {
     await notificarAgendamento('cancelamento', consulta(), ['tutor'], { motivo: 'Cirurgia de emergência' })
     expect(enviarMock.mock.calls[0][1]).toContain('Motivo: Cirurgia de emergência')

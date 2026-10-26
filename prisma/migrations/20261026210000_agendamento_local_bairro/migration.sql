@@ -1,0 +1,1 @@
+ALTER TABLE agendamentos ADD COLUMN IF NOT EXISTS local_bairro VARCHAR(100);

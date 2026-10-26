@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Dog, MapPin, MessageSquare } from "lucide-react";
+import { useState, type ReactNode } from "react";
 import { PrestadoresService, type Pedido } from "@/services/prestadores/prestadores";
 import { handleApiError } from "@/utils/errorHandler";
-import { Alerta, SeloStatus, botaoPrimario, botaoSecundario, formatarPeriodo, formatarPreco, inputClass } from "./ui";
+import { Alerta, SeloStatus, botaoPrimario, botaoSecundario, formatarPreco, inputClass } from "./ui";
 
 const ABAS = [
   { id: "pendentes", rotulo: "Novos pedidos", status: ["pendente"] },
@@ -44,7 +43,7 @@ export function PainelPedidos({ pedidos, onAtualizado }: { pedidos: Pedido[]; on
       {lista.length === 0 ? (
         <p className="py-8 text-center text-sm text-slate-500">Nada por aqui.</p>
       ) : (
-        <ul className="flex flex-col gap-4">
+        <ul className="flex list-none flex-col gap-4 p-0">
           {lista.map((p) => (
             <ItemPedido key={p.id} pedido={p} onAtualizado={onAtualizado} />
           ))}
@@ -54,10 +53,73 @@ export function PainelPedidos({ pedidos, onAtualizado }: { pedidos: Pedido[]; on
   );
 }
 
+const FUSO = "America/Sao_Paulo";
+
+function partesDoPeriodo(inicio: string | null, fim: string | null) {
+  if (!inicio) return null;
+  const i = new Date(inicio);
+  const f = fim ? new Date(fim) : i;
+  const opcoes = { timeZone: FUSO } as const;
+  const semana = (d: Date) => d.toLocaleDateString("pt-BR", { ...opcoes, weekday: "short" }).replace(".", "");
+  const hora = (d: Date) => d.toLocaleTimeString("pt-BR", { ...opcoes, hour: "2-digit", minute: "2-digit" });
+  const dia = (d: Date) => d.toLocaleDateString("pt-BR", { ...opcoes, day: "2-digit" });
+  const mes = (d: Date) => d.toLocaleDateString("pt-BR", { ...opcoes, month: "short" }).replace(".", "");
+  const mesmoDia = dia(i) === dia(f) && mes(i) === mes(f);
+  return {
+    semana: semana(i),
+    dia: dia(i),
+    mes: mesmoDia ? mes(i) : `${mes(i)}–${mes(f)}`,
+    inicio: hora(i),
+    fim: hora(f),
+  };
+}
+
+function nomeDoLocal(nome: string | null) {
+  if (nome === "Domicílio do tutor") return "Na casa do tutor";
+  if (nome === "Local do profissional") return "No seu espaço";
+  return nome || "Local não informado";
+}
+
+function soBairro(endereco: string | null) {
+  return Boolean(endereco?.startsWith("Bairro"));
+}
+
+function Fato({ rotulo, children }: { rotulo: string; children: ReactNode }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">{rotulo}</dt>
+      <dd className="mt-0.5 text-sm text-slate-800">{children}</dd>
+    </div>
+  );
+}
+
+function Onde({ pedido }: { pedido: Pedido }) {
+  const endereco = pedido.local_endereco;
+  const restrito = pedido.local_nome === "Domicílio do tutor" && soBairro(endereco);
+  const mapa = endereco && !soBairro(endereco) ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}` : null;
+
+  return (
+    <Fato rotulo="Onde">
+      <span className="block font-medium">{nomeDoLocal(pedido.local_nome)}</span>
+      {endereco ? <span className="mt-0.5 block text-slate-600">{endereco}</span> : null}
+      {restrito ? (
+        <span className="mt-1 block text-slate-500">A rua aparece depois que você aceitar.</span>
+      ) : null}
+      {mapa ? (
+        <a href={mapa} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex font-semibold text-orange-600 hover:underline">
+          Abrir no mapa
+        </a>
+      ) : null}
+    </Fato>
+  );
+}
+
 function ItemPedido({ pedido, onAtualizado }: { pedido: Pedido; onAtualizado: (p: Pedido) => void }) {
   const [codigo, setCodigo] = useState("");
   const [ocupado, setOcupado] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const quando = partesDoPeriodo(pedido.inicio_em, pedido.fim_em);
+  const pet = [pedido.pet?.nome || "Pet", pedido.pet?.especie, pedido.pet?.raca].filter(Boolean).join(" · ");
 
   const executar = async (acao: () => Promise<Pedido>) => {
     setOcupado(true);
@@ -82,93 +144,135 @@ function ItemPedido({ pedido, onAtualizado }: { pedido: Pedido; onAtualizado: (p
 
   return (
     <li className="rounded-2xl border border-slate-200 p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <span className="text-base font-semibold text-slate-800">{pedido.servico?.nome || "Serviço"}</span>
-          <span className="text-sm text-slate-600">{formatarPeriodo(pedido.inicio_em, pedido.fim_em)}</span>
-        </div>
-        <SeloStatus status={pedido.status} />
-      </div>
-
-      <div className="mt-3 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
-        <span className="flex items-center gap-2">
-          <Dog size={16} className="text-orange-500" />
-          {pedido.pet?.nome || "Pet"}
-          {pedido.pet?.especie ? <span className="text-slate-400">({pedido.pet.especie})</span> : null}
-          {pedido.tutor?.nome ? <span className="text-slate-400">· {pedido.tutor.nome}</span> : null}
-        </span>
-        <span className="flex items-center gap-2">
-          <MapPin size={16} className="text-orange-500" />
-          {pedido.local_nome || "Local não informado"}
-          {pedido.local_endereco ? <span className="text-slate-400">· {pedido.local_endereco}</span> : null}
-        </span>
-        {pedido.observacoes ? (
-          <span className="flex items-start gap-2 sm:col-span-2">
-            <MessageSquare size={16} className="mt-0.5 shrink-0 text-orange-500" />
-            {pedido.observacoes}
-          </span>
+      <div className="flex gap-3">
+        {quando ? (
+          <div className="flex w-32 shrink-0 flex-col items-center justify-center rounded-xl bg-orange-50 px-2 py-2 text-center text-orange-800">
+            <span className="text-xs font-semibold capitalize">{quando.semana}</span>
+            <span className="text-lg font-bold leading-none">{quando.dia}</span>
+            <span className="text-xs capitalize">{quando.mes}</span>
+            <span className="mt-1 whitespace-nowrap text-xs leading-tight">
+              {quando.inicio} às {quando.fim}
+            </span>
+          </div>
         ) : null}
-        {pedido.motivo_cancelamento ? (
-          <span className="text-red-600 sm:col-span-2">Motivo: {pedido.motivo_cancelamento}</span>
-        ) : null}
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <span className="text-base font-bold text-slate-800">{formatarPreco(pedido.preco)}</span>
-        <div className="flex flex-wrap items-center gap-2">
-          {pedido.status === "pendente" ? (
-            <>
-              <button className={botaoSecundario} disabled={ocupado} onClick={recusar}>
-                Recusar
-              </button>
-              <button
-                className={botaoPrimario}
-                disabled={ocupado}
-                onClick={() => executar(() => PrestadoresService.aceitar(pedido.id))}
-              >
-                Aceitar
-              </button>
-            </>
-          ) : null}
-          {pedido.status === "confirmado" ? (
-            <>
-              <button className={botaoSecundario} disabled={ocupado} onClick={recusar}>
-                Cancelar
-              </button>
-              <input
-                aria-label="Código de início informado pelo tutor"
-                placeholder="Código do tutor"
-                inputMode="numeric"
-                maxLength={6}
-                value={codigo}
-                onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
-                className={`${inputClass} w-40 py-2.5 font-mono tracking-widest`}
-              />
-              <button
-                className={botaoPrimario}
-                disabled={ocupado || codigo.length !== 6}
-                onClick={() => executar(() => PrestadoresService.iniciar(pedido.id, codigo))}
-              >
-                Iniciar
-              </button>
-            </>
-          ) : null}
-          {pedido.status === "em andamento" ? (
-            <button
-              className={botaoPrimario}
-              disabled={ocupado}
-              onClick={() => executar(() => PrestadoresService.concluir(pedido.id))}
-            >
-              Concluir
-            </button>
-          ) : null}
+        <div className="flex min-w-0 flex-1 flex-wrap items-start justify-between gap-2">
+          <div className="min-w-0">
+            <h3 className="text-base font-semibold text-slate-800">{pedido.servico?.nome || "Serviço"}</h3>
+            <p className="text-sm font-semibold text-slate-700">{formatarPreco(pedido.preco)}</p>
+          </div>
+          <SeloStatus status={pedido.status} />
         </div>
       </div>
+
+      <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+        <Fato rotulo="Pet">{pet}</Fato>
+        <Fato rotulo="Tutor">
+          <span className="block">{pedido.tutor?.nome || "Tutor não informado"}</span>
+          {pedido.tutor?.celular ? (
+            <a href={`tel:${pedido.tutor.celular}`} className="mt-0.5 inline-flex font-semibold text-orange-600 hover:underline">
+              {pedido.tutor.celular}
+            </a>
+          ) : null}
+        </Fato>
+        <div className="sm:col-span-2">
+          <Onde pedido={pedido} />
+        </div>
+      </dl>
+
+      {pedido.observacoes ? (
+        <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
+          <span className="mb-0.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Observação</span>
+          {pedido.observacoes}
+        </p>
+      ) : null}
+      {pedido.motivo_cancelamento ? (
+        <p className="mt-3 text-sm text-red-700">Motivo: {pedido.motivo_cancelamento}</p>
+      ) : null}
+
+      <AcoesPedido
+        pedido={pedido}
+        ocupado={ocupado}
+        codigo={codigo}
+        onCodigo={setCodigo}
+        onRecusar={recusar}
+        onAceitar={() => executar(() => PrestadoresService.aceitar(pedido.id))}
+        onIniciar={() => executar(() => PrestadoresService.iniciar(pedido.id, codigo))}
+        onConcluir={() => executar(() => PrestadoresService.concluir(pedido.id))}
+      />
       {erro ? (
         <div className="mt-3">
           <Alerta>{erro}</Alerta>
         </div>
       ) : null}
     </li>
+  );
+}
+
+function AcoesPedido({
+  pedido,
+  ocupado,
+  codigo,
+  onCodigo,
+  onRecusar,
+  onAceitar,
+  onIniciar,
+  onConcluir,
+}: {
+  pedido: Pedido;
+  ocupado: boolean;
+  codigo: string;
+  onCodigo: (codigo: string) => void;
+  onRecusar: () => void;
+  onAceitar: () => void;
+  onIniciar: () => void;
+  onConcluir: () => void;
+}) {
+  if (pedido.status !== "pendente" && pedido.status !== "confirmado" && pedido.status !== "em andamento") return null;
+
+  return (
+    <div className="mt-4 flex flex-col gap-3 border-t border-slate-100 pt-4">
+      {pedido.status === "confirmado" ? (
+        <label className="flex max-w-xs flex-col gap-1.5 text-sm font-semibold text-slate-700">
+          Código do tutor
+          <span className="font-normal text-slate-500">Peça os 6 dígitos ao tutor para começar.</span>
+          <input
+            aria-label="Código de início informado pelo tutor"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            maxLength={6}
+            value={codigo}
+            onChange={(e) => onCodigo(e.target.value.replace(/\D/g, ""))}
+            className={`${inputClass} py-2.5 text-center font-mono text-base tracking-[0.3em]`}
+          />
+        </label>
+      ) : null}
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        {pedido.status === "pendente" ? (
+          <>
+            <button className={botaoSecundario} disabled={ocupado} onClick={onRecusar}>
+              Recusar
+            </button>
+            <button className={botaoPrimario} disabled={ocupado} onClick={onAceitar}>
+              Aceitar pedido
+            </button>
+          </>
+        ) : null}
+        {pedido.status === "confirmado" ? (
+          <>
+            <button className={botaoSecundario} disabled={ocupado} onClick={onRecusar}>
+              Cancelar
+            </button>
+            <button className={botaoPrimario} disabled={ocupado || codigo.length !== 6} onClick={onIniciar}>
+              Iniciar atendimento
+            </button>
+          </>
+        ) : null}
+        {pedido.status === "em andamento" ? (
+          <button className={botaoPrimario} disabled={ocupado} onClick={onConcluir}>
+            Concluir atendimento
+          </button>
+        ) : null}
+      </div>
+    </div>
   );
 }
