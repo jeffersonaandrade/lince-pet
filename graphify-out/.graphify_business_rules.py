@@ -734,7 +734,9 @@ for code_id, rs in login_impl.items():
 
 exames_nodes = [
     rule("rule_admin_is_admin", "Admin da Lince = users.is_admin (promovido so por UPDATE confirmado)",
-         "requireAdmin: sem login 401, nao admin 403. Menu Admin e /admin/aprovacoes so para admin. Nao ha cadastro de admin pela tela."),
+         "requireAdmin: sem login 401, nao admin 403. Menu Admin abre /admin/dashboard e so aparece para admin. Nao ha cadastro de admin pela tela."),
+    rule("rule_admin_dashboard", "Painel admin mostra contagens em numeros e graficos",
+         "Decisao do dono em 26/10/2026: /admin/dashboard e GET /api/admin/dashboard, com requireAdmin. Filas (CRMV com numero, RT pendente, CNPJ pendente), contas ativas por tipo, consultas e pedidos do mes civil de Brasilia, assinaturas active por codigo de plano. Os mesmos numeros aparecem em grafico de barras. Fila com pelo menos um item fica em destaque. O cartao de CRMV abre /admin/aprovacoes#crmv e o de responsavel tecnico abre /admin/aprovacoes#rt. Sem dados pessoais e sem faturamento. Uso de banco e Storage continua em /admin/uso."),
     rule("rule_admin_aprova_crmv_rt", "Admin aprova CRMV do vet e RT da clinica; reprovar exige motivo",
          "Status pendente/aprovado/reprovado. Vets ativos na migracao entraram aprovados. Vet novo ou troca de CRMV/RT volta a pendente. Decisao avisa no sino, navegador e e-mail."),
     rule("rule_admin_trava_nao_aprovado", "Vet nao aprovado fora da busca e sem agendamento; RT nao aprovado esconde exames",
@@ -761,6 +763,10 @@ exames_impl = {
     "src_app_signup_page": ["rule_exames_modulo_da_clinica", "rule_prestador_conta_generica"],
     "src_app_signup_clinica_page": ["rule_exames_modulo_da_clinica"],
     "src_server_auth_session": ["rule_admin_is_admin"],
+    "src_app_admin_dashboard_page": ["rule_admin_is_admin", "rule_admin_dashboard"],
+    "src_app_api_admin_dashboard_route": ["rule_admin_dashboard"],
+    "src_server_services_admin_dashboard": ["rule_admin_dashboard"],
+    "src_components_admindashboard_paineldashboard": ["rule_admin_dashboard", "rule_visual_padrao_site"],
     "src_app_admin_aprovacoes_page": ["rule_admin_is_admin", "rule_admin_aprova_crmv_rt"],
     "src_server_services_aprovacoes": ["rule_admin_aprova_crmv_rt"],
     "src_server_services_aviso_usuario": ["rule_admin_aprova_crmv_rt"],

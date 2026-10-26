@@ -247,7 +247,7 @@ export default function Header() {
                     </Link>
                     {user.userType !== 'clinica' && <Link href="/perfis" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}><ChevronsUpDown size={16} /><span>Trocar ou adicionar perfil</span></Link>}
                     {user.isAdmin && (
-                      <Link href="/admin/aprovacoes">
+                      <Link href="/admin/dashboard">
                         <button
                           className={styles.dropdownItem}
                           onClick={() => setIsDropdownOpen(false)}
@@ -387,7 +387,7 @@ export default function Header() {
                   {user.userType !== 'clinica' && <Link href="/perfis" className={styles.mobileMenuLink} onClick={() => setIsMobileMenuOpen(false)}><span className={styles.menuIcon}><ChevronsUpDown size={18} /></span>Trocar ou adicionar perfil</Link>}
                   {user.isAdmin && (
                     <Link
-                      href="/admin/aprovacoes"
+                      href="/admin/dashboard"
                       className={styles.mobileMenuLink}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >

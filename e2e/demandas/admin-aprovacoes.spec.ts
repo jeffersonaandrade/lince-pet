@@ -72,6 +72,8 @@ test.describe('painel admin de aprovações', () => {
       await admin.page.goto('/dashboard/tutor')
       await abrirMenuDaConta(admin.page)
       await admin.page.getByRole('link', { name: 'Admin' }).first().click()
+      await expect(admin.page).toHaveURL('/admin/dashboard')
+      await admin.page.getByRole('link', { name: 'Aprovações' }).click()
       await expect(admin.page).toHaveURL('/admin/aprovacoes')
       await expect(admin.page.getByRole('heading', { name: 'Aprovações', level: 1 })).toBeVisible()
       await expect(filaCrmv(admin.page)).toBeVisible()
