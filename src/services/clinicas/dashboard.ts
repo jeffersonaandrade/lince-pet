@@ -5,6 +5,7 @@ import { formatEventTitle, formatDateToISO } from "@/utils/formatters";
 
 
 export interface AgendamentoDashboard {
+  duracaoMin?: number;
   id: number | string;
   cliente: string;
   clienteSobrenome?: string;
@@ -71,6 +72,7 @@ export interface EventoCalendario {
 
 /** Item de `GET /clinicas/agendamentos`. */
 interface AgendamentoClinicaApi {
+  duracao_min?: number;
   id: string;
   tutor_nome: string;
   tutor_sobrenome?: string;
@@ -187,7 +189,7 @@ export class ClinicaDashboardService {
         const [hora, minuto] = agendamento.horario_consulta.split(":");
 
         const start = new Date(year, month - 1, day, parseInt(hora), parseInt(minuto));
-        const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hour duration
+        const end = new Date(start.getTime() + (agendamento.duracao_min ?? 30) * 60 * 1000);
 
         return {
           id: agendamento.id,
@@ -215,6 +217,7 @@ export class ClinicaDashboardService {
             observacoes: agendamento.observacoes,
             valor: agendamento.valor_total,
             horario: agendamento.horario_consulta,
+            duracaoMin: agendamento.duracao_min ?? 30,
           },
         };
       });
@@ -268,6 +271,7 @@ export class ClinicaDashboardService {
         veterinario: agendamento.veterinario_nome,
         veterinarioSobrenome: agendamento.veterinario_sobrenome,
         horario: agendamento.horario_consulta,
+        duracaoMin: agendamento.duracao_min ?? 30,
         tipo: agendamento.tipo_consulta,
         data_consulta: agendamento.data_consulta,
         status: agendamento.status,

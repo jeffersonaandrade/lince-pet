@@ -17,6 +17,7 @@ import { descreverPeriodo } from '@/server/services/pedidos-prestador'
 import { APROVADO, MENSAGEM_CRMV_EM_ANALISE } from '@/server/services/aprovacoes'
 import { bloquearAgenda, horarioCanonico } from '@/server/services/agenda-lock'
 import { conferirPetAtivo } from '@/server/services/pets'
+import { conferirConsultaVeterinaria, camposDaConsulta } from '@/server/services/agenda-profissional'
 import {
   consumeDataConsulta,
   jaPassou,
@@ -29,6 +30,7 @@ import {
 export const POST = route(async (req) => {
   const apiReq = await ApiRequest.from(req)
   const user = await requireUser(apiReq)
+  if (user.userType !== 'tutor') throw new HttpError(403, { message: 'Troque para o perfil de tutor para agendar.' })
   try {
     console.log('🎯 [Agendamento] Iniciando criação de agendamento...')
     console.log('👤 [Agendamento] Usuário:', user ? user.id : 'não autenticado')
@@ -91,6 +93,7 @@ export const POST = route(async (req) => {
     if (!veterinario) {
       return notFound({ message: 'Veterinário não encontrado' })
     }
+    if (veterinario.userId === user.id) return badRequest({ message: 'Não é possível agendar com seu próprio perfil profissional.' })
     if (veterinario.crmvStatus !== APROVADO) {
       return badRequest({ message: MENSAGEM_CRMV_EM_ANALISE })
     }
@@ -98,14 +101,22 @@ export const POST = route(async (req) => {
     let finalPrice: Prisma.Decimal | number = veterinario.precoConsulta || 0
     let localNome: string | null = null
     let localEndereco: string | null = null
+    let agendaEnderecoId = endereco_id
+    if (tipo_consulta === 'presencial' && !endereco_id && !clinica_id) return badRequest({ message: 'Selecione um local de atendimento presencial.' })
 
     if (tipo_consulta === 'presencial' && endereco_id) {
       const selectedAddress = veterinario.enderecos.find((e) => e.id === endereco_id)
+      if (selectedAddress && clinica_id && selectedAddress.clinicaId !== clinica_id) return badRequest({ message: 'O endereço selecionado não pertence à clínica informada.' })
       if (selectedAddress) {
         finalPrice = selectedAddress.precoConsulta || finalPrice
         localNome = selectedAddress.nomeClinica || 'Clínica'
         localEndereco = `${selectedAddress.rua}, ${selectedAddress.numero}${selectedAddress.bairro ? ` - ${selectedAddress.bairro}` : ''}, ${selectedAddress.cidade}`
       }
+    } else if (tipo_consulta === 'domicilio') {
+      finalPrice = veterinario.precoConsultaDomicilio || finalPrice
+      localNome = 'Domicílio do tutor'
+      if (!user.rua || !user.numero || !user.cidade || !user.estado) return badRequest({ message: 'Complete seu endereço no perfil de tutor para receber atendimento a domicílio.' })
+      localEndereco = [user.rua, user.numero, user.bairro, user.cidade, user.estado, user.cep].filter(Boolean).join(', ')
     } else if (tipo_consulta === 'online') {
       finalPrice = veterinario.precoConsultaOnline || finalPrice
       localNome = 'Teleconsulta'
@@ -113,6 +124,7 @@ export const POST = route(async (req) => {
     }
 
     let finalClinicaId: string | null = clinica_id || null
+    if (tipo_consulta !== 'presencial' && (clinica_id || endereco_id)) return badRequest({ message: 'Clínica e endereço profissional só se aplicam a consulta presencial.' })
     const vinculoAceito = (clinicaId: string) =>
       prisma.veterinarioClinica.findFirst({
         where: { veterinarioId: veterinario.id, clinicaId, status: 'aceito' },
@@ -129,7 +141,9 @@ export const POST = route(async (req) => {
         localEndereco = clinica.endereco
 
         const enderecoClinica = veterinario.enderecos.find((e) => e.clinicaId === clinica_id)
+        if (!enderecoClinica) return badRequest({ message: 'Clínica sem endereço ativo de atendimento para este veterinário.' })
         if (enderecoClinica) {
+          agendaEnderecoId = enderecoClinica.id
           finalPrice = enderecoClinica.precoConsulta
         }
       }
@@ -191,6 +205,9 @@ export const POST = route(async (req) => {
     let agendamento = await prisma.$transaction(async (tx) => {
       await conferirPetAtivo(tx, pet.id)
       await bloquearAgenda(tx, 'veterinario', veterinario_id)
+      const configuracaoAtual = await tx.veterinario.findUnique({ where: { id: veterinario_id } })
+      if (!configuracaoAtual) throw new HttpError(404, { message: 'Veterinário não encontrado' })
+      const periodo = await conferirConsultaVeterinaria(tx, configuracaoAtual, dataConsulta.toISODate()!, horario_consulta, tipo_consulta, agendaEnderecoId)
       const ocupado = await tx.agendamento.findFirst({
         where: {
           veterinarioId: veterinario_id,
@@ -214,6 +231,7 @@ export const POST = route(async (req) => {
           localEndereco,
           clinicaId: finalClinicaId,
           status: 'pendente',
+          ...camposDaConsulta(periodo),
         }),
       })
 
@@ -359,7 +377,7 @@ export const POST = route(async (req) => {
 /** GET /agendamentos */
 export const GET = route(async (req) => {
   const apiReq = await ApiRequest.from(req)
-  const user = await requireUser(apiReq)
+  const user = await requireUser(apiReq, ['tutor'])
   try {
     if (!user) {
       return unauthorized({ message: 'Usuário não autenticado' })

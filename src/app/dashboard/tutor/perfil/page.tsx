@@ -7,6 +7,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { TutorService } from "@/services/tutor/tutor";
 import { PreferenciasNotificacao, ConexaoGoogleAgenda } from "@/components/PreferenciasNotificacao/PreferenciasNotificacao";
 import styles from "./perfil.module.css";
+import EnderecoTutor from "@/components/EnderecoTutor/EnderecoTutor";
 
 function Toast({
     message,
@@ -123,6 +124,7 @@ export default function PerfilTutor() {
                 </div>
 
                 <div className={styles.section}>
+                    <EnderecoTutor />
                     <PreferenciasNotificacao onAviso={showToast}>
                         <ConexaoGoogleAgenda
                             conectado={Boolean(user?.googleCalendarAuthorized)}

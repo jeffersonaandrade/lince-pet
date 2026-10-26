@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { urlDePerfis } from "@/lib/destino-login";
 import { useAuth } from "@/contexts/AuthContext";
 import MinhaAgendaDoDia from "@/components/Encaminhamento/MinhaAgendaDoDia";
 import { PetsService, type PetRecord } from "@/services/pets/pets";
@@ -80,7 +81,7 @@ export default function PedidoServicoForm({
       </Alerta>
     );
   }
-  if (!ehTutor) return <Alerta tipo="info">Só contas de tutor podem pedir serviços.</Alerta>;
+  if (!ehTutor) return <Alerta tipo="info"><Link href={urlDePerfis()} className="font-semibold underline">Trocar para o perfil de tutor</Link> para pedir este serviço.</Alerta>;
   if (prestador.limite_atingido) {
     return <Alerta tipo="info">Este profissional não está recebendo novos pedidos neste mês.</Alerta>;
   }

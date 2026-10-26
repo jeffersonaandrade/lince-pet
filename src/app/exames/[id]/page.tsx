@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { CalendarCheck, FlaskConical, MapPin } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { urlDeLogin } from "@/lib/destino-login";
+import { urlDeLogin, urlDePerfis } from "@/lib/destino-login";
 import { mensagemDeErro } from "@/lib/erros";
 import { ANCORA_CONSULTAS } from "@/lib/agenda-tutor";
 import { PetsService, type PetRecord } from "@/services/pets/pets";
@@ -261,7 +261,7 @@ function AgendarExame() {
             Entrar para agendar
           </Link>
         ) : !ehTutor ? (
-          <p className="text-sm text-slate-600">Só contas de tutor podem agendar exames.</p>
+          <Link href={urlDePerfis()} className={botaoPrimario}>Trocar para o perfil de tutor</Link>
         ) : (
           <div className="flex flex-col gap-3">
             <label className="flex flex-col gap-1 text-sm font-medium text-slate-700 sm:w-72">

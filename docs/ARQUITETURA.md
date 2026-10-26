@@ -58,6 +58,17 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 
 ## Regras de negócio
 
+### Perfis individuais e deslocamento (decisões de 26/10/2026)
+
+- Um login pode ter tutor, veterinário e prestador. A troca é explícita e validada no servidor pela propriedade do perfil; o cadastro principal e os IDs existentes são preservados. Clínica/laboratório mantém login separado. Não há fusão automática de contas com outros e-mails.
+- Tutor continua gratuito; cada perfil profissional mantém plano, cobrança e aprovação próprios. Ativar outro perfil não concede plano nem aprovação do perfil anterior. Veterinário novo inicia sem plano e com CRMV pendente; prestador inicia no plano gratuito.
+- Endereço residencial fica no perfil de tutor, separado do endereço profissional. Consultas domiciliares guardam uma cópia do endereço do tutor no agendamento. Não é permitido reservar nem avaliar o próprio perfil profissional.
+- Veterinário configura duração por modalidade: presencial e online começam em 30 minutos; domicílio em 60. Deslocamento começa em 40 minutos e é configurável de 0 a 240 minutos, antes e depois da visita domiciliar. Entre reservas consecutivas exige-se o maior deslocamento das duas, sem somá-los.
+- A grade cadastrada é mantida. Uma consulta domiciliar das 15h às 16h com 40 minutos de deslocamento libera a partir de 16h40; numa grade de meia hora, o próximo início é 17h. Toda a duração precisa caber na grade; atendimento e deslocamento respeitam bloqueios manuais.
+- **Primeira visita:** confirmação explícita do dono: a grade é de atendimento, não de saída. Grade começando às 9h permite consulta às 9h e deslocamento às 8h20. Deslocamento pode ficar fora da grade, mas continua sujeito a bloqueios manuais e reservas de ambos os perfis profissionais.
+- Veterinário e prestador do mesmo usuário compartilham disponibilidade e trava transacional no banco. Reservas pendentes também impedem sobreposição. Validação ocorre na criação e remarcação; a consulta pública de disponibilidade não revela dados dos pacientes do outro perfil.
+- Duração e deslocamento são gravados no agendamento. Alterar configuração não cancela nem modifica reservas existentes; registros históricos preservam a duração de 30 minutos usada pela integração com Google e não ganham deslocamento retroativo. Remarcação mantém a duração reservada e aplica o deslocamento vigente. Falha na consulta de disponibilidade deve bloquear a seleção e mostrar erro.
+
 Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/rules/graphify.mdc`).
 
 ### Administração de especialidades e padrão visual

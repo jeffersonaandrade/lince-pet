@@ -142,6 +142,8 @@ export async function listAgendamentos(veterinario: Veterinario, qs: Record<stri
         id: agendamento.id,
         data_consulta: formatDataConsulta(agendamento.dataConsulta),
         horario_consulta: agendamento.horarioConsulta,
+        duracao_min: agendamento.duracaoMin ?? 30,
+        deslocamento_min: agendamento.deslocamentoMin ?? 0,
         tipo_consulta: agendamento.tipoConsulta,
         status: agendamento.status,
         tutor_nome: agendamento.tutor?.user?.nome || 'Tutor não identificado',

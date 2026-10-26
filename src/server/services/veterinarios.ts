@@ -475,6 +475,12 @@ function formatVeterinarioData(vet: VeterinarioLoaded) {
     creditos: vet.creditos || 0,
     locations: locations,
     atendeOnline: !!vet.atendeOnline,
+    atendeDomicilio: !!vet.atendeDomicilio,
+    precoConsultaDomicilio: Number(vet.precoConsultaDomicilio || 0),
+    horariosDomicilio: parseJsonSafe(vet.horariosDomicilio),
+    duracaoPresencialMin: vet.duracaoPresencialMin ?? 30,
+    duracaoOnlineMin: vet.duracaoOnlineMin ?? 30,
+    duracaoDomicilioMin: vet.duracaoDomicilioMin ?? 60,
     precoConsultaOnline: Number(vet.precoConsultaOnline || 0),
     horariosOnline: parseJsonSafe(vet.horariosOnline),
     planos:

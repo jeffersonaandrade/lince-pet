@@ -12,6 +12,7 @@ import { PreferenciasNotificacao, ConexaoGoogleAgenda } from "@/components/Prefe
 import styles from "./perfil.module.css";
 import { useFeatureGate } from "@/hook/useFeatureGate";
 import PremiumGateModal from "@/components/PremiumGateModal/PremiumGateModal";
+import AgendaConfig from "@/components/AgendaConfig/AgendaConfig";
 
 interface Especialidade {
   id: string | number;
@@ -723,6 +724,9 @@ export default function PerfilVeterinario() {
         </div>
 
         {/* Locations Section with Accordion */}
+        <div className={styles.section}>
+          <AgendaConfig />
+        </div>
         <div className={styles.section}>
           <h2 className={styles.sectionTitle}>Locais de Atendimento</h2>
           <p className={styles.sectionDescription}>

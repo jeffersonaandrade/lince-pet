@@ -251,6 +251,9 @@ export interface VeterinarioPublicoApi {
     fotoUrl?: string | null;
   }[];
   atendeOnline: boolean;
+  atendeDomicilio?: boolean;
+  precoConsultaDomicilio?: number;
+  horariosDomicilio?: unknown;
   precoConsultaOnline: number;
   horariosOnline: unknown;
   experiencias: { cargo: string; local: string; dataInicio: string; dataFim?: string | null; descricao?: string | null }[];

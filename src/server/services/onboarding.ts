@@ -45,7 +45,7 @@ export function validatePreviousSteps(veterinario: Veterinario, currentStep: num
   }
 
   if (currentStep >= 5) {
-    if (!veterinario.atendePresencial && !veterinario.atendeOnline) {
+    if (!veterinario.atendePresencial && !veterinario.atendeOnline && !veterinario.atendeDomicilio) {
       errors.push('Selecione pelo menos um tipo de visita')
     }
   }
@@ -122,8 +122,8 @@ export async function processStep4(user: CurrentUser, payload: Infer<typeof step
   const { visitTypes, locations, precoConsultaOnline } = payload
   const validationErrors: string[] = []
 
-  if (!visitTypes.presencial && !visitTypes.online) {
-    validationErrors.push('Selecione pelo menos um tipo de visita (presencial ou online)')
+  if (!visitTypes.presencial && !visitTypes.online && !veterinario.atendeDomicilio) {
+    validationErrors.push('Selecione pelo menos um tipo de visita (presencial, online ou domiciliar)')
   }
 
   if (visitTypes.presencial && (!locations || locations.length === 0)) {

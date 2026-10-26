@@ -16,7 +16,7 @@ function statusNormalizado(status: string | null) {
 
 export const POST = route<{ id: string }>(async (req, { id }) => {
   const request = await ApiRequest.from(req)
-  const user = await requireUser(request)
+  const user = await requireUser(request, ['tutor'])
   const payload = await createAvaliacaoValidator.validate(request.all())
   try {
     const tutor = await prisma.tutor.findFirst({ where: { userId: user.id } })
@@ -24,6 +24,10 @@ export const POST = route<{ id: string }>(async (req, { id }) => {
 
     const agendamento = await prisma.agendamento.findFirst({ where: { id, tutorId: tutor.id } })
     if (!agendamento) return notFound({ message: 'Agendamento não encontrado' })
+    if (agendamento.veterinarioId) {
+      const profissional = await prisma.veterinario.findUnique({ where: { id: agendamento.veterinarioId }, select: { userId: true } })
+      if (profissional?.userId === user.id) return badRequest({ message: 'Não é permitido avaliar o próprio perfil profissional.' })
+    }
 
     if (statusNormalizado(agendamento.status) !== 'realizado') {
       return badRequest({ message: 'Só é possível avaliar atendimentos concluídos' })

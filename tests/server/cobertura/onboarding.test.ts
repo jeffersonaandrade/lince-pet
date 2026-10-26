@@ -177,7 +177,7 @@ describe('processStep4 (tipos de visita e locais)', () => {
 
   it('sem nenhum tipo de visita: erro', async () => {
     const res = await processStep4(userCom(vetCompleto()), { visitTypes: { presencial: false, online: false } } as never)
-    expect(res).toEqual({ success: false, errors: ['Selecione pelo menos um tipo de visita (presencial ou online)'] })
+    expect(res).toEqual({ success: false, errors: ['Selecione pelo menos um tipo de visita (presencial, online ou domiciliar)'] })
     expect(prisma.$transaction).not.toHaveBeenCalled()
   })
 

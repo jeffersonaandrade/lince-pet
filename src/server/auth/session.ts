@@ -5,6 +5,7 @@ import { prisma } from '../db'
 import { HttpError, type ApiRequest } from '../http'
 import { isProduction } from '../env'
 import { AUTH_COOKIE, TOKEN_MAX_AGE_SECONDS, verifyToken, type UserType } from './jwt'
+import { enderecoDoTutor } from '@/lib/endereco-tutor'
 
 export type PublicUser = Omit<User, 'password' | 'googleAccessToken' | 'googleRefreshToken' | 'googleTokenExpiresAt'>
 
@@ -42,10 +43,13 @@ export function extractToken(req: ApiRequest) {
 }
 
 /** Carrega o usuário com o perfil do seu tipo (equivalente ao preload do Lucid). */
-export async function loadUser(userId: string): Promise<CurrentUser | null> {
+export async function loadUser(userId: string, perfil?: UserType): Promise<CurrentUser | null> {
   const user = await prisma.user.findUnique({ where: { id: userId } })
   if (!user) return null
-  const userType = user.userType as UserType
+  const userType = perfil ?? user.userType as UserType
+  if (!['tutor', 'veterinario', 'prestador', 'clinica'].includes(userType)) return null
+  // Clínica é uma conta organizacional separada, mesmo se houver dados legados inconsistentes.
+  if ((user.userType === 'clinica' || userType === 'clinica') && userType !== user.userType) return null
   const where = { userId: user.id }
   const [tutor, veterinario, clinica, prestador] = await Promise.all([
     userType === 'tutor' ? prisma.tutor.findFirst({ where }) : null,
@@ -53,7 +57,8 @@ export async function loadUser(userId: string): Promise<CurrentUser | null> {
     userType === 'clinica' ? prisma.clinica.findFirst({ where }) : null,
     userType === 'prestador' ? prisma.prestador.findFirst({ where, include: { tipoServico: true } }) : null,
   ])
-  return { ...user, userType, tutor, veterinario, clinica, prestador }
+  if (userType !== user.userType && !({ tutor, veterinario, clinica, prestador }[userType])) return null
+  return { ...user, ...(tutor ? enderecoDoTutor(tutor.endereco) : {}), userType, tutor, veterinario, clinica, prestador }
 }
 
 const sessaoRevogada = async (jti: string | undefined) =>
@@ -63,7 +68,7 @@ const sessaoRevogada = async (jti: string | undefined) =>
 async function sessaoDoToken(token: string) {
   const decoded = await verifyToken(token)
   if (!decoded) return { erro: 'Token inválido' as const }
-  const [user, revogada] = await Promise.all([loadUser(String(decoded.userId)), sessaoRevogada(decoded.jti)])
+  const [user, revogada] = await Promise.all([loadUser(String(decoded.userId), decoded.userType), sessaoRevogada(decoded.jti)])
   if (!user) return { erro: 'Usuário não encontrado' as const }
   if (user.redefinicaoSenhaObrigatoria) return { erro: 'Redefina a senha da conta recuperada antes de acessar.' as const }
   if (revogada || (decoded.tv ?? 0) !== (user.tokenVersion ?? 0)) return { erro: 'Sessão encerrada' as const }

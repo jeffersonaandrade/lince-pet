@@ -104,6 +104,7 @@ model Tutor {
   id        String    @id @db.Char(36)
   userId    String?   @map("user_id") @db.Char(36)
   cpf       String?   @unique @db.VarChar(14)
+  endereco  Json?
   genero    Genero?
   createdAt DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
@@ -131,6 +132,12 @@ model Veterinario {
   atendePresencial           Int?      @default(0) @map("atende_presencial") @db.SmallInt
   atendeOnline               Int?      @default(0) @map("atende_online") @db.SmallInt
   atendeDomicilio            Int?      @default(0) @map("atende_domicilio") @db.SmallInt
+  duracaoPresencialMin       Int       @default(30) @map("duracao_presencial_min")
+  duracaoOnlineMin           Int       @default(30) @map("duracao_online_min")
+  duracaoDomicilioMin        Int       @default(60) @map("duracao_domicilio_min")
+  deslocamentoMin           Int       @default(40) @map("deslocamento_min")
+  horariosDomicilio          Json?     @map("horarios_domicilio")
+  precoConsultaDomicilio     Decimal?  @map("preco_consulta_domicilio") @db.Decimal(10, 2)
   precoConsulta              Decimal?  @map("preco_consulta") @db.Decimal(10, 2)
   onboardingComplete         Int?      @default(0) @map("onboarding_complete") @db.SmallInt
   onboardingStep             Int?      @default(1) @map("onboarding_step")
@@ -165,6 +172,7 @@ model Veterinario {
   encaminhamentosRecebidos Encaminhamento[]         @relation("EncaminhamentoDestinoVet")
 
   @@index([crmvStatus])
+  @@index([userId], map: "veterinarios_user_id_agenda_idx")
   @@map("veterinarios")
 }
 
@@ -505,6 +513,9 @@ model Agendamento {
   // TODO(verify): coluna VARCHAR na migration, mas o Lucid trata como column.date.
   dataConsulta       String?   @map("data_consulta") @db.VarChar(255)
   horarioConsulta    String?   @map("horario_consulta") @db.VarChar(255)
+  veterinarioEnderecoId String? @map("veterinario_endereco_id") @db.Char(36)
+  duracaoMin         Int       @default(30) @map("duracao_min")
+  deslocamentoMin    Int       @default(0) @map("deslocamento_min")
   status             String    @db.VarChar(255)
   tipoConsulta       String?   @map("tipo_consulta") @db.VarChar(255)
   precoConsulta      Decimal?  @map("preco_consulta") @db.Decimal(8, 2)
@@ -554,6 +565,7 @@ model Agendamento {
 
   @@index([prestadorId, inicioEm])
   @@index([clinicaId, inicioEm])
+  @@index([veterinarioId, dataConsulta], map: "agendamentos_vet_data_agenda_idx")
   @@map("agendamentos")
 }
 

@@ -21,6 +21,8 @@ import { conferirEncaminhamento, vincularAgendamento } from './encaminhamentos'
 import { MOTIVO_PADRAO_TUTOR } from '@/lib/motivos-cancelamento'
 import { bloquearAgenda } from './agenda-lock'
 import { conferirPetAtivo } from './pets'
+import { conferirAgendaDaPessoa, ocupacoesDaPessoa, intervaloDaReserva } from './agenda-profissional'
+import { intervalosConflitam } from '@/domain/agenda'
 
 /**
  * Pedido de serviço a um prestador. Reaproveita `agendamentos` (prestadorId no lugar de veterinarioId)
@@ -220,6 +222,7 @@ export async function criarPedido(tutor: { id: string; user: Usuario }, prestado
     prisma.pet.findFirst({ where: { id: d.pet_id, tutorId: tutor.id, arquivadoEm: null } }),
   ])
   if (!prestador) throw erro('Profissional não encontrado', 404)
+  if (prestador.userId && prestador.userId === tutor.user?.id) throw erro('Não é possível reservar com seu próprio perfil profissional.')
   if (!pet) throw erro('Pet não encontrado', 404)
 
   const servico = await prisma.servicoOferecido.findFirst({ where: { id: d.servico_id, prestadorId, ativo: 1 } })
@@ -240,6 +243,7 @@ export async function criarPedido(tutor: { id: string; user: Usuario }, prestado
   const pedido = await prisma.$transaction(async (tx) => {
     await conferirPetAtivo(tx, pet.id)
     await bloquearAgenda(tx, 'prestador', prestador.id)
+    await conferirAgendaDaPessoa(tx, { id: prestador.id, userId: prestador.userId, tipo: 'prestador' }, periodo.inicio, periodo.fim)
     await conferirPendentes(tx, prestador.id, tutor.id)
     const ocupado = await tx.agendamento.findFirst({
       where: ocupaWhere(prestador.id, periodo.inicio.toJSDate(), periodo.fim.toJSDate()),
@@ -286,12 +290,13 @@ export async function disponibilidade(prestadorId: string, servicoId: string, da
   const duracao = modalidade === 'duracao' ? servico.duracaoMin || PASSO_SLOTS_MIN : PASSO_SLOTS_MIN
   const abre = naZona(data, faixa[0])
   const fecha = naZona(data, faixa[1])
-  const [bloqueios, ocupados] = await Promise.all([
+  const [bloqueios, ocupados, outrasReservas] = await Promise.all([
     bloqueiosDoPrestador(prestador.id, data),
     prisma.agendamento.findMany({
       where: ocupaWhere(prestador.id, abre.toJSDate(), fecha.toJSDate()),
       select: { inicioEm: true, fimEm: true },
     }),
+    ocupacoesDaPessoa(prisma, { id: prestador.id, userId: prestador.userId, tipo: 'prestador' }, abre, fecha),
   ])
 
   const agora = DateTime.now()
@@ -301,6 +306,7 @@ export async function disponibilidade(prestadorId: string, servicoId: string, da
     if (s <= agora || bloqueioAtinge(bloqueios, slot)) continue
     const janela = { inicio: slot.inicio.toJSDate(), fim: slot.fim.toJSDate() }
     if (ocupados.some((o) => o.inicioEm && o.fimEm && sobrepoe(janela, { inicio: o.inicioEm, fim: o.fimEm }))) continue
+    if (outrasReservas.some(r => { const p = intervaloDaReserva(r); return p && intervalosConflitam({ inicio: janela.inicio.getTime(), fim: janela.fim.getTime(), deslocamentoMin: 0 }, p) })) continue
     horarios.push(hhmm(s))
   }
   return { data, modalidade, faixa, horarios }
@@ -505,6 +511,7 @@ export async function remarcarPedido(tutorId: string, id: string, body: unknown)
     if (pedido.petId) await conferirPetAtivo(tx, pedido.petId)
     await bloquearAgenda(tx, 'prestador', prestador.id)
     const atual = await tx.agendamento.findUnique({ where: { id } })
+    await conferirAgendaDaPessoa(tx, { id: prestador.id, userId: prestador.userId, tipo: 'prestador' }, periodo.inicio, periodo.fim, 0, id)
     if (!atual || !podeSerCancelado(atual.status)) throw erro('Este pedido não pode mais ser alterado', 409)
     await conferirPendentes(tx, prestador.id, tutorId, id)
     await liberarCota(tx, prestador.id, id)

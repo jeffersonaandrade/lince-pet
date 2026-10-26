@@ -264,7 +264,7 @@ function montarEvento(ctx: EventContext, role: Papel) {
     consumeDataConsulta(agendamento.dataConsulta)!,
     agendamento.horarioConsulta!
   )
-  const endDateTime = startDateTime.plus({ minutes: 30 })
+  const endDateTime = startDateTime.plus({ minutes: agendamento.duracaoMin ?? 30 })
 
   const petNome = pet?.nome || 'Pet'
   const tutorNome = `${ctx.tutorUser?.nome || 'Tutor'} ${ctx.tutorUser?.sobrenome || ''}`.trim()

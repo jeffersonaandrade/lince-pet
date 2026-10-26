@@ -30,6 +30,7 @@ import Tooltip from "@/components/ui/Tooltip/Tooltip";
 import styles from "./onboarding.module.css";
 import { uploadOnboardingPhoto } from "@/services/veterinarios/veterinarios";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
+import AgendaConfig from "@/components/AgendaConfig/AgendaConfig";
 
 interface OnboardingStep {
   title: string;
@@ -127,6 +128,7 @@ export default function OnboardingPage() {
   const [isLoadingInitial, setIsLoadingInitial] = useState(true); // Loading state for initial form load
   const [isLoadingEspecialidades, setIsLoadingEspecialidades] = useState(true);
   const [especialidades, setEspecialidades] = useState<Especialidade[]>([]);
+  const [domicilioAtivo, setDomicilioAtivo] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [editingLocationIndex, setEditingLocationIndex] = useState<
     number | null
@@ -1008,7 +1010,7 @@ export default function OnboardingPage() {
         return formData.especialidades.length > 0;
       case 4:
         const hasValidVisitType =
-          formData.visitTypes.presencial || formData.visitTypes.online;
+          formData.visitTypes.presencial || formData.visitTypes.online || domicilioAtivo;
         // If presencial is selected, at least one location is required
         const hasRequiredLocations =
           !formData.visitTypes.presencial || formData.locations.length > 0;
@@ -1338,6 +1340,7 @@ export default function OnboardingPage() {
 
           {currentStep === 4 && (
             <div className={styles.form}>
+              <AgendaConfig onDomicilioAlterado={setDomicilioAtivo} />
               <div className={styles.visitTypesContainer}>
                 <div
                   className={`${styles.visitTypeOption} ${formData.visitTypes.presencial ? styles.selected : ""

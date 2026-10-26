@@ -17,6 +17,8 @@ export interface AgendamentoDashboard {
   petRaca?: string;
   petPorte?: string;
   horario: string;
+  duracaoMin?: number;
+  deslocamentoMin?: number;
   tipo: string;
   data_consulta: string;
   status: string;
@@ -63,6 +65,8 @@ export interface EventoCalendario {
 
 /** Item de `GET /veterinarios/agendamentos` (`data_consulta` em dd/MM/yyyy). */
 interface AgendamentoVeterinarioApi {
+  duracao_min?: number;
+  deslocamento_min?: number;
   id: number;
   data_consulta: string;
   horario_consulta: string;
@@ -177,8 +181,7 @@ export class VeterinarioDashboardService {
           parseInt(minuto)
         );
 
-        // Assume 1 hora de duração
-        const end = new Date(start.getTime() + 60 * 60 * 1000);
+        const end = new Date(start.getTime() + (agendamento.duracao_min ?? 30) * 60 * 1000);
 
         return {
           id: agendamento.id,
@@ -207,6 +210,8 @@ export class VeterinarioDashboardService {
             valor: agendamento.preco_consulta ? Number(agendamento.preco_consulta) : 0,
 
             horario: agendamento.horario_consulta,
+            duracaoMin: agendamento.duracao_min ?? 30,
+            deslocamentoMin: agendamento.deslocamento_min ?? 0,
           },
         };
       });
@@ -273,6 +278,8 @@ export class VeterinarioDashboardService {
         petRaca: agendamento.pet_raca,
         petPorte: agendamento.pet_porte,
         horario: agendamento.horario_consulta,
+        duracaoMin: agendamento.duracao_min ?? 30,
+        deslocamentoMin: agendamento.deslocamento_min ?? 0,
         tipo: agendamento.tipo_consulta,
         data_consulta: agendamento.data_consulta,
         status: agendamento.status,

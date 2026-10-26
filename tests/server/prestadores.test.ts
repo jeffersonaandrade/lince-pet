@@ -12,7 +12,7 @@ const prismaMock = vi.hoisted(() => {
     tutor: { findUnique: vi.fn() },
     servicoOferecido: { findFirst: vi.fn(), findUnique: vi.fn() },
     bloqueioAgenda: { findMany: vi.fn() },
-    agendamento: { findFirst: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn(), count: vi.fn() },
+    agendamento: { findMany: vi.fn().mockResolvedValue([]), findFirst: vi.fn(), findUnique: vi.fn(), create: vi.fn(), update: vi.fn(), count: vi.fn() },
     subscriptionPlan: { findUnique: vi.fn() },
     whatsappEnvio: { create: vi.fn(), update: vi.fn() },
     agendamentoGoogleEvento: { findUnique: vi.fn(), upsert: vi.fn(), delete: vi.fn() },

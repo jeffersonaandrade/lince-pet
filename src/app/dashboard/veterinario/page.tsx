@@ -84,6 +84,7 @@ interface CalendarEvent {
 
 
 interface ProximaConsulta {
+  duracaoMin?: number;
   id: number;
   observacoes?: string;
   cliente: string;
@@ -882,7 +883,7 @@ export default function VeterinarioDashboard() {
                             second: 0,
                           })
                           .toDate();
-                        const end = moment(start).add(1, "hour").toDate();
+                        const end = moment(start).add(consulta.duracaoMin ?? 30, "minutes").toDate();
                         const ev: CalendarEvent = {
                           id: consulta.id,
                           title: `${consulta.cliente}${consulta.pet ? " • " + consulta.pet : ""

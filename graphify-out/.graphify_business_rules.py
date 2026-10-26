@@ -899,6 +899,30 @@ for code_id, rs in {
 }.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
+perfis_nodes = [
+    rule("rule_perfis_individuais_mesmo_login", "Perfis: tutor, veterinario e prestador no mesmo login",
+         "Decisao explicita do dono em 26/10/2026: troca explicita e propriedade verificada no servidor; clinica/laboratorio mantem login separado. Preservar IDs e dados; sem fusao automatica por email. Plano e aprovacao por perfil profissional; tutor gratuito."),
+    rule("rule_domicilio_duracao_deslocamento", "Domicilio: duracao por modalidade e intervalo antes/depois",
+         "Dono escolheu duracao configuravel por modalidade, domicilio inicial 60 min; deslocamento configuravel antes e depois, inicial 40 min. Entre consultas exigir maior intervalo sem somar. Manter grade cadastrada: fim 16h com 40 min oferece 17h na grade de meia hora. Primeira consulta pode ser no inicio da grade com deslocamento anterior fora da grade, respeitando bloqueios e reservas. Snapshot preserva reservas existentes."),
+    rule("rule_agenda_profissional_mesma_pessoa", "Agenda: impedir simultaneidade entre perfis da mesma pessoa",
+         "Decisao do dono: reservas de veterinario e prestador do mesmo usuario nao se sobrepoem, inclusive pendentes e remarcacoes. Trava transacional comum por user_id. Disponibilidade falha fechada e nao revela paciente do outro perfil."),
+    rule("rule_tutor_endereco_proprio", "Tutor: endereco residencial separado do profissional",
+         "Endereco de tutor isolado do endereco profissional; consulta domiciliar preserva copia no agendamento. Proibir reserva e avaliacao do proprio perfil profissional."),
+]
+new_nodes += perfis_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in perfis_nodes]
+for code_id, rs in {
+    "src_server_services_perfis": ["rule_perfis_individuais_mesmo_login"],
+    "src_server_auth_session": ["rule_perfis_individuais_mesmo_login", "rule_tutor_endereco_proprio"],
+    "src_server_services_agenda_profissional": ["rule_domicilio_duracao_deslocamento", "rule_agenda_profissional_mesma_pessoa"],
+    "src_server_services_agenda_lock": ["rule_agenda_profissional_mesma_pessoa"],
+    "src_server_services_pedidos_prestador": ["rule_agenda_profissional_mesma_pessoa", "rule_tutor_endereco_proprio"],
+    "src_app_api_agendamentos_route": ["rule_domicilio_duracao_deslocamento", "rule_tutor_endereco_proprio"],
+    "src_components_agendaconfig_agendaconfig": ["rule_domicilio_duracao_deslocamento", "rule_visual_padrao_site"],
+    "src_app_perfis_page": ["rule_perfis_individuais_mesmo_login", "rule_visual_padrao_site"],
+}.items():
+    impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

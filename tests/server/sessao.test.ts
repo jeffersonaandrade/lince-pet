@@ -5,6 +5,9 @@ import { SignJWT } from 'jose'
 const prismaMock = vi.hoisted(() => ({
   user: { findUnique: vi.fn() },
   tutor: { findFirst: vi.fn() },
+  veterinario: { findFirst: vi.fn() },
+  prestador: { findFirst: vi.fn() },
+  clinica: { findFirst: vi.fn() },
   sessaoRevogada: { findUnique: vi.fn(), deleteMany: vi.fn(), upsert: vi.fn() },
   $transaction: vi.fn(async (ops: unknown[]) => ops),
 }))
@@ -37,9 +40,30 @@ beforeEach(() => {
   vi.clearAllMocks()
   prismaMock.tutor.findFirst.mockResolvedValue({ id: 1 })
   prismaMock.sessaoRevogada.findUnique.mockResolvedValue(null)
+  prismaMock.veterinario.findFirst.mockResolvedValue(null)
+  prismaMock.prestador.findFirst.mockResolvedValue(null)
+  prismaMock.clinica.findFirst.mockResolvedValue(null)
 })
 
 describe('Sessão revogável', () => {
+  it('permite atuar como tutor sem carregar o perfil profissional da mesma conta', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ ...usuario(0), userType: 'veterinario' })
+    const token = await generateToken(dadosToken(0))
+    const user = await authenticate(await comToken(token))
+    expect(user.userType).toBe('tutor')
+    expect(user.tutor).toBeTruthy()
+    expect(user.veterinario).toBeNull()
+  })
+  it('recusa token que seleciona perfil não pertencente à conta', async () => {
+    prismaMock.user.findUnique.mockResolvedValue(usuario(0))
+    const token = await generateToken({ ...dadosToken(0), userType: 'veterinario' })
+    await expect(authenticate(await comToken(token))).rejects.toMatchObject({ status: 401 })
+  })
+  it('clínica não alterna para um perfil individual, mesmo com vínculo legado', async () => {
+    prismaMock.user.findUnique.mockResolvedValue({ ...usuario(0), userType: 'clinica' })
+    const token = await generateToken(dadosToken(0))
+    await expect(authenticate(await comToken(token))).rejects.toMatchObject({ status: 401 })
+  })
   it('token novo dura 7 dias e carrega jti e versão', async () => {
     const token = await generateToken(dadosToken(2))
     const decoded = (await verifyToken(token))!

@@ -51,6 +51,7 @@ export const GET = route(async (req) => {
       veterinario_sobrenome: a.veterinario?.user?.sobrenome || '',
       data_consulta: formatDataConsulta(a.dataConsulta),
       horario_consulta: a.horarioConsulta,
+        duracao_min: a.duracaoMin ?? 30,
       tipo_consulta: a.tipoConsulta,
       status: a.status,
       local_nome: a.localNome,

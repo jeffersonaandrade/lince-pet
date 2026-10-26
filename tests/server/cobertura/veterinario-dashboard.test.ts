@@ -193,6 +193,8 @@ describe('listAgendamentos: formatação', () => {
     const [item] = await listAgendamentos(vet, {})
     expect(item).toEqual({
       id: 'ag-1',
+      duracao_min: 30,
+      deslocamento_min: 0,
       data_consulta: '07/10/2026',
       horario_consulta: '14:00',
       tipo_consulta: 'presencial',

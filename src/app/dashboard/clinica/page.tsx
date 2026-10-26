@@ -918,7 +918,7 @@ export default function ClinicaDashboard() {
                               second: 0,
                             })
                             .toDate();
-                          const end = moment(start).add(1, "hour").toDate();
+                          const end = moment(start).add(consulta.duracaoMin ?? 30, "minutes").toDate();
                           const ev: CalendarEvent = {
                             id: consulta.id,
                             title: `${consulta.cliente}${consulta.pet ? " • " + consulta.pet : ""}`,

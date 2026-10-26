@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { urlDeLogin } from "@/lib/destino-login";
+import { urlDeLogin, urlDePerfis } from "@/lib/destino-login";
 import Image from "next/image";
 import Header from "@/components/Header/Header";
 import { useAuth } from "@/contexts/AuthContext";
@@ -68,6 +68,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [diaBloqueado, setDiaBloqueado] = useState(false);
   const [carregandoDisponibilidade, setCarregandoDisponibilidade] = useState(false);
+  const [erroDisponibilidade, setErroDisponibilidade] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showAllSlots, setShowAllSlots] = useState(false);
 
@@ -209,13 +210,16 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
 
       try {
         setCarregandoDisponibilidade(true);
+        setErroDisponibilidade('');
         const resp = await AgendamentosService.verificarDisponibilidade(providerId, dataStr);
         setHorariosOcupados(resp.horarios_ocupados || []);
         setDiaBloqueado(Boolean(resp.dia_bloqueado));
       } catch (e) {
         console.error("Erro ao carregar disponibilidade:", e);
         setHorariosOcupados([]);
-        setDiaBloqueado(false);
+        setDiaBloqueado(true);
+        setSelectedTimeSlot(null);
+        setErroDisponibilidade('Não foi possível consultar a agenda. Entre na sua conta ou tente novamente.');
       } finally {
         setCarregandoDisponibilidade(false);
       }
@@ -240,8 +244,9 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
   }, [user, showAgendamentoModal, petEncaminhadoId]);
 
   const handleAgendar = () => {
+    if (user && user.userType !== "tutor") { router.push(urlDePerfis()); return; }
     if (!user) {
-      router.push(urlDeLogin());
+      router.push(user ? urlDePerfis() : urlDeLogin());
       return;
     }
     setShowAgendamentoModal(true);
@@ -309,7 +314,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
 
   const handleToggleFavorite = async () => {
     if (!user || user.userType !== 'tutor') {
-      router.push(urlDeLogin());
+      router.push(user ? urlDePerfis() : urlDeLogin());
       return;
     }
     if (!clinic) return;
@@ -713,7 +718,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                       </div>
 
                       <div className={styles.timeSlots}>
-                        {carregandoDisponibilidade ? (
+                        {erroDisponibilidade ? <p role="alert">{erroDisponibilidade}</p> : carregandoDisponibilidade ? (
                           <div className={styles.noAvailability}><p>Carregando...</p></div>
                         ) : diaBloqueado ? (
                           <p className={styles.noAvailability}>Agenda do profissional indisponível nesta data</p>

@@ -20,3 +20,9 @@ export function urlDeLogin(destino?: string): string {
   const seguro = destinoSeguro(atual);
   return seguro === "/" ? "/login" : `/login?next=${encodeURIComponent(seguro)}`;
 }
+
+/** Troca explícita de contexto, preservando a página pública de origem. */
+export function urlDePerfis(): string {
+  const atual = typeof window === 'undefined' ? '/' : `${window.location.pathname}${window.location.search}`;
+  return `/perfis?voltar=${encodeURIComponent(destinoSeguro(atual))}`;
+}

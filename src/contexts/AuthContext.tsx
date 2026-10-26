@@ -16,7 +16,12 @@ interface User {
   email: string;
   userType: string;
   nome: string;
+  sobrenome?: string | null;
   celular?: string;
+  cep?: string | null;
+  rua?: string | null;
+  numero?: string | null;
+  bairro?: string | null;
   cidade?: string;
   estado?: string;
   createdAt?: string;
@@ -102,6 +107,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('auth_token');
     checkAuth();
   }, [checkAuth]);
+
+  useEffect(() => {
+    const sincronizar = (e: StorageEvent) => {
+      if (e.key === 'lincepet-perfil-alterado') window.location.reload();
+    };
+    window.addEventListener('storage', sincronizar);
+    return () => window.removeEventListener('storage', sincronizar);
+  }, []);
 
   return (
     <AuthContext.Provider

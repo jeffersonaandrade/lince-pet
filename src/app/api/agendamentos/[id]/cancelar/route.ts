@@ -22,7 +22,7 @@ import {
 /** PATCH /agendamentos/:id/cancelar */
 export const PATCH = route<{ id: string }>(async (req, { id }) => {
   const apiReq = await ApiRequest.from(req)
-  const user = await requireUser(apiReq)
+  const user = await requireUser(apiReq, ['tutor'])
   if (!user) {
     return unauthorized({ message: 'Usuário não autenticado' })
   }

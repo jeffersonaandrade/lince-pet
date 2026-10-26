@@ -1,7 +1,7 @@
 import { after } from 'next/server'
 import { DateTime } from 'luxon'
 import { prisma } from '@/server/db'
-import { ApiRequest, badRequest, notFound, ok, route, serverError, unauthorized } from '@/server/http'
+import { ApiRequest, badRequest, HttpError, json, notFound, ok, route, serverError, unauthorized } from '@/server/http'
 import { updating } from '@/server/lucid'
 import { requireUser } from '@/server/auth/session'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
@@ -15,11 +15,13 @@ import { ehPedidoDePrestador, remarcarPedido } from '@/server/services/pedidos-p
 import { ehAgendamentoDeExame, remarcarExame } from '@/server/services/exames'
 import { conferirPetAtivo } from '@/server/services/pets'
 import { bloquearAgenda, horarioCanonico } from '@/server/services/agenda-lock'
+import { conferirConsultaVeterinaria, camposDaConsulta } from '@/server/services/agenda-profissional'
 
 /** PATCH /agendamentos/:id/reagendar */
 export const PATCH = route<{ id: string }>(async (req, { id }) => {
   const apiReq = await ApiRequest.from(req)
   const user = await requireUser(apiReq)
+  if (user.userType !== 'tutor') throw new HttpError(403, { message: 'Troque para o perfil de tutor para remarcar.' })
   if (!user) {
     return unauthorized({ message: 'Usuário não autenticado' })
   }
@@ -72,6 +74,18 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
       // O estado pode ter mudado enquanto aguardávamos o lock.
       const atual = await tx.agendamento.findUnique({ where: { id: agendamento.id } })
       if (!atual || !podeSerCancelado(atual.status)) return badRequest({ message: 'Este agendamento não pode ser reagendado' })
+      const vet = await tx.veterinario.findUnique({ where: { id: agendamento.veterinarioId! } })
+      if (!vet) return notFound({ message: 'Veterinário não encontrado' })
+      let enderecoId = atual.veterinarioEnderecoId
+      if (atual.tipoConsulta === 'presencial' && !enderecoId) {
+        const endereco = await tx.veterinarioEndereco.findFirst({ where: {
+          veterinarioId: vet.id, ativo: 1,
+          ...(atual.clinicaId ? { clinicaId: atual.clinicaId } : { nomeClinica: atual.localNome }),
+        } })
+        if (!endereco) return badRequest({ message: 'O endereço original não está disponível para remarcação.' })
+        enderecoId = endereco.id
+      }
+      const periodo = await conferirConsultaVeterinaria(tx, vet, dataConsultaObj.toISODate()!, horario, atual.tipoConsulta, enderecoId ? String(enderecoId) : null, id, atual.duracaoMin)
 
       const agendamentoExistente = await tx.agendamento.findFirst({
         where: {
@@ -100,6 +114,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
           dataConsulta: prepareDataConsulta(dataConsultaObj),
           horarioConsulta: horario,
           status: 'pendente',
+          ...camposDaConsulta(periodo),
         }),
       })
     })
@@ -168,6 +183,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
       },
     })
   } catch (error) {
+    if (error instanceof HttpError) return json(error.body, error.status)
     console.error('Erro ao reagendar agendamento:', error)
     return serverError({ message: 'Erro interno do servidor ao reagendar agendamento' })
   }

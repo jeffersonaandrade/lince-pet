@@ -301,7 +301,8 @@ export class AgendamentosService {
    */
   static async verificarDisponibilidade(
     veterinarioId: string,
-    data: string
+    data: string,
+    opcoes: { tipo_consulta?: string; endereco_id?: string | number } = {}
   ): Promise<DisponibilidadeResponse> {
     try {
       console.log(
@@ -311,7 +312,7 @@ export class AgendamentosService {
       );
 
       const response = await api.get(
-        `/agendamentos/disponibilidade/${veterinarioId}?data=${data}`
+        `/agendamentos/disponibilidade/${veterinarioId}`, { params: { data, ...opcoes } }
       );
 
       console.log(
@@ -326,11 +327,7 @@ export class AgendamentosService {
         error
       );
 
-      // Em caso de erro, retorna array vazio (assume que todos os horários estão livres)
-      return {
-        data,
-        horarios_ocupados: [],
-      };
+      throw new Error('Não foi possível consultar a agenda. Tente novamente.');
     }
   }
 

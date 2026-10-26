@@ -8,6 +8,7 @@ import { hashPassword, verifyPassword } from '../auth/password'
 import type { CurrentUser } from '../auth/session'
 import { sendMail, defaultFrom } from './mail'
 import { forgotPasswordEmail } from '../emails/forgot_password'
+import { enderecoDoTutor } from '@/lib/endereco-tutor'
 
 const FORGOT_PASSWORD_MESSAGE =
   'Se esse e-mail estiver cadastrado, enviamos um link para redefinir a senha. Confira a caixa de entrada e o spam.'
@@ -127,7 +128,7 @@ export function getUserProfile(user: CurrentUser) {
   }
 
   if (user.userType === 'tutor' && user.tutor) {
-    return { ...baseProfile, cpf: user.tutor.cpf }
+    return { ...baseProfile, ...enderecoDoTutor(user.tutor.endereco), cpf: user.tutor.cpf }
   }
 
   if (user.userType === 'veterinario' && user.veterinario) {

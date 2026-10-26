@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { urlDeLogin } from "@/lib/destino-login";
+import { urlDeLogin, urlDePerfis } from "@/lib/destino-login";
 import Image from "next/image";
 import {
   Star,
@@ -29,6 +29,7 @@ import { getVeterinarioById } from "../../../services/veterinarios/veterinarios"
 import { AgendamentosService } from "@/services/agendamentos/agendamentos";
 import { AvaliacoesService } from "@/services/avaliacoes/avaliacoes";
 import { useAuth } from "@/contexts/AuthContext";
+import Link from 'next/link';
 import styles from "./veterinario.module.css";
 import SuccessScreen from "@/components/SuccessScreen/SuccessScreen";
 import ModalPortal from "@/components/ui/ModalPortal";
@@ -86,6 +87,9 @@ interface Veterinario {
     verified: boolean;
   }>;
   atendeOnline?: boolean;
+  atendeDomicilio?: boolean;
+  precoConsultaDomicilio?: number;
+  horariosDomicilio?: Record<string, string[]>;
   precoConsultaOnline?: number;
   horariosOnline?: {
     [key: string]: string[];
@@ -124,6 +128,7 @@ export default function VeterinarioProfile() {
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [diaBloqueado, setDiaBloqueado] = useState(false);
   const [carregandoDisponibilidade, setCarregandoDisponibilidade] = useState(false);
+  const [erroDisponibilidade, setErroDisponibilidade] = useState('');
   const [showAllSlots, setShowAllSlots] = useState(false);
 
   // Modal State
@@ -137,7 +142,7 @@ export default function VeterinarioProfile() {
   const [pets, setPets] = useState<PetRecord[]>([]);
   const [loadingPets, setLoadingPets] = useState(false);
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
-  const [selectedLocationId, setSelectedLocationId] = useState<string | -1 | null>(null);
+  const [selectedLocationId, setSelectedLocationId] = useState<string | -1 | -2 | null>(null);
 
   const locationOptions = useMemo(() => {
     if (!veterinario) return [];
@@ -145,6 +150,7 @@ export default function VeterinarioProfile() {
     if (veterinario.atendeOnline) {
       options.push({ value: "-1", label: "Teleconsulta" });
     }
+    if (veterinario.atendeDomicilio) options.push({ value: "-2", label: "Atendimento a domicílio" });
     veterinario.locations.forEach((loc) => {
       options.push({
         value: String(loc.id),
@@ -194,6 +200,9 @@ export default function VeterinarioProfile() {
           preco: vetData.preco,
           clinica: vetData.clinica ?? undefined,
           atendeOnline: vetData.atendeOnline,
+          atendeDomicilio: vetData.atendeDomicilio,
+          precoConsultaDomicilio: Number(vetData.precoConsultaDomicilio || 0),
+          horariosDomicilio: normalizarGrade(vetData.horariosDomicilio),
           precoConsultaOnline: Number(vetData.precoConsultaOnline || 0),
           // Grades salvas como "Segunda-feira" precisam bater com as chaves usadas no calendário ("segunda").
           horariosOnline: normalizarGrade(vetData.horariosOnline),
@@ -259,7 +268,7 @@ export default function VeterinarioProfile() {
 
   const handleToggleFavorite = async () => {
     if (!user || user.userType !== 'tutor') {
-      router.push(urlDeLogin());
+      router.push(user ? urlDePerfis() : urlDeLogin());
       return;
     }
     if (!veterinario) return;
@@ -285,6 +294,11 @@ export default function VeterinarioProfile() {
   // Active Location Helper
   const activeLocation = useMemo(() => {
     if (!veterinario) return null;
+    if (selectedLocationId === -2 && veterinario.atendeDomicilio) return {
+      id: 'domicilio', cidade: veterinario.cidade, estado: veterinario.estado, endereco: 'Domicílio do tutor',
+      fullAddress: 'Endereço cadastrado no seu perfil de tutor', preco: veterinario.precoConsultaDomicilio || 0,
+      availability: veterinario.horariosDomicilio || {}, isPrimary: false,
+    } as Location;
     if (selectedLocationId === -1 && veterinario.atendeOnline) {
       return {
         id: "online",
@@ -400,19 +414,25 @@ export default function VeterinarioProfile() {
       const data = formatLocalISODate(selectedDate);
       try {
         setCarregandoDisponibilidade(true);
-        const resp = await AgendamentosService.verificarDisponibilidade(vetId, data);
+        setErroDisponibilidade('');
+        const resp = await AgendamentosService.verificarDisponibilidade(vetId, data, {
+          tipo_consulta: selectedLocationId === -2 ? 'domicilio' : selectedLocationId === -1 ? 'online' : 'presencial',
+          endereco_id: selectedLocationId && selectedLocationId !== -1 && selectedLocationId !== -2 ? selectedLocationId : undefined,
+        });
         setHorariosOcupados(resp.horarios_ocupados || []);
         setDiaBloqueado(Boolean(resp.dia_bloqueado));
       } catch {
         setHorariosOcupados([]);
-        setDiaBloqueado(false);
+        setDiaBloqueado(true);
+        setSelectedTimeSlot(null);
+        setErroDisponibilidade('Não foi possível consultar a agenda. Entre na sua conta ou tente novamente.');
       } finally {
         setCarregandoDisponibilidade(false);
       }
     };
     fetchDisponibilidade();
     setShowAllSlots(false); // Reset expansion when day changes
-  }, [vetId, selectedDay]);
+  }, [vetId, selectedDay, selectedLocationId]);
 
   useEffect(() => {
     setSelectedTimeSlot((atual) => atual && (diaBloqueado || horariosOcupados.includes(atual)) ? null : atual);
@@ -425,9 +445,10 @@ export default function VeterinarioProfile() {
   };
 
   const handleAgendar = () => {
+    if (user && user.userType !== "tutor") { router.push(urlDePerfis()); return; }
     if (!user) {
       setErroAgendamento("Você precisa estar logado para agendar uma consulta");
-      router.push(urlDeLogin());
+      router.push(user ? urlDePerfis() : urlDeLogin());
       return;
     }
     if (!selectedTimeSlot) {
@@ -484,7 +505,7 @@ export default function VeterinarioProfile() {
         especialidade: especialidadeSelecionada,
         observacoes: observacoes || undefined,
         pet_id: selectedPetId,
-        endereco_id: selectedLocationId === -1 ? undefined : (selectedLocationId || undefined),
+        endereco_id: selectedLocationId === -1 || selectedLocationId === -2 ? undefined : (selectedLocationId || undefined),
         encaminhamento_id: encaminhamentoId || undefined,
       };
       await AgendamentosService.criarAgendamento(dadosAgendamento);
@@ -492,7 +513,7 @@ export default function VeterinarioProfile() {
       setShowAgendamentoModal(false);
       setShowSuccessModal(true);
       setObservacoes("");
-      setTipoConsulta("clinica");
+      setTipoConsulta(selectedLocationId === -2 ? 'domicilio' : selectedLocationId === -1 ? 'teleconsulta' : 'clinica');
       setEspecialidadeSelecionada("");
       setSelectedPetId(null);
       setHorariosOcupados((prev) => selectedTimeSlot ? Array.from(new Set([...prev, selectedTimeSlot])) : prev);
@@ -786,8 +807,9 @@ export default function VeterinarioProfile() {
                       options={locationOptions}
                       value={selectedLocationId ? String(selectedLocationId) : null}
                       onChange={(val) => {
-                        setSelectedLocationId(val === "-1" ? -1 : val);
-                        setTipoConsulta(val === "-1" ? "teleconsulta" : "clinica");
+                        setSelectedTimeSlot(null);
+                        setSelectedLocationId(val === "-1" ? -1 : val === "-2" ? -2 : val);
+                        setTipoConsulta(val === "-1" ? "teleconsulta" : val === "-2" ? "domicilio" : "clinica");
                       }}
                       placeholder="Escolha um local"
                     />
@@ -865,7 +887,7 @@ export default function VeterinarioProfile() {
                           </div>
 
                           <div className={styles.timeSlots}>
-                            {carregandoDisponibilidade ? (
+                            {erroDisponibilidade ? <p role="alert">{erroDisponibilidade} {!user && <Link href={urlDeLogin()}>Entrar</Link>}</p> : carregandoDisponibilidade ? (
                               <p>Carregando...</p>
                             ) : diaBloqueado ? (
                               <p className={styles.noAvailability}>Agenda indisponível nesta data</p>
