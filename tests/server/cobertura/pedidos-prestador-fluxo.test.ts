@@ -565,6 +565,7 @@ describe('avisarPedido', () => {
       saudacao: 'Olá, Bia!',
       paragrafos: [expect.stringContaining('Ana Lima pediu')],
       detalhes,
+      botao: { rotulo: 'Ver minha agenda', url: 'https://www.lincepet.com.br/dashboard/prestador' },
     })
     expect(avisos.notificarAgendamento).toHaveBeenCalledWith('novo_agendamento', 'ped-1', ['profissional'], { motivo: null })
     expect(avisos.sincronizarEvento).not.toHaveBeenCalled()
@@ -572,17 +573,41 @@ describe('avisarPedido', () => {
     expect(textos).not.toMatch(/consulta|Dr\(a\)/i)
   })
 
-  it('aceito: só o tutor recebe, com o código de início; cria evento na agenda', async () => {
+  it('aceito: tutor recebe o código de início; WhatsApp só do tutor; cria evento na agenda', async () => {
     prismaMock.agendamento.findUnique.mockResolvedValueOnce(pedido({ status: 'confirmado' }))
     await avisarPedido('aceito', 'ped-1')
-    expect(avisos.createGenericNotification).toHaveBeenCalledTimes(1)
-    expect(avisos.createGenericNotification.mock.calls[0][0]).toMatchObject({
+    expect(avisos.createGenericNotification).toHaveBeenCalledTimes(2)
+    expect(avisos.createGenericNotification.mock.calls[1][0]).toMatchObject({
       userId: 'u-tutor',
       type: 'PEDIDO_ACEITO',
       message: expect.stringContaining('Código de início: 123456.'),
     })
     expect(avisos.notificarAgendamento).toHaveBeenCalledWith('confirmacao', 'ped-1', ['tutor'], { motivo: null })
     expect(avisos.sincronizarEvento).toHaveBeenCalledWith('ped-1', 'criar')
+  })
+
+  it('aceito: o profissional recebe o e-mail de confirmação com o endereço completo e sem o código', async () => {
+    prismaMock.agendamento.findUnique.mockResolvedValueOnce(pedido({ status: 'confirmado' }))
+    await avisarPedido('aceito', 'ped-1')
+    const mensagem = `Você confirmou "Banho completo" de Ana Lima para Rex (${quando}). No dia, peça ao tutor o código de início para começar o atendimento.`
+    expect(avisos.createGenericNotification.mock.calls[0][0]).toMatchObject({
+      userId: 'u-prest',
+      type: 'PEDIDO_ACEITO',
+      title: 'Pedido confirmado',
+      message: mensagem,
+    })
+    expect(avisos.sendPedidoServico).toHaveBeenNthCalledWith(1, 'bia@x.com', 'Pedido confirmado', {
+      titulo: 'Pedido confirmado',
+      saudacao: 'Olá, Bia!',
+      paragrafos: [mensagem],
+      detalhes: detalhes.map(([rotulo, valor]) => [rotulo, rotulo === 'Local' ? 'Domicílio do tutor - Rua A, 10' : valor]),
+      botao: { rotulo: 'Ver minha agenda', url: 'https://www.lincepet.com.br/dashboard/prestador' },
+    })
+    expect(mensagem).not.toContain('123456')
+    expect(avisos.sendPedidoServico).toHaveBeenNthCalledWith(2, 'ana@x.com', 'Pedido aceito', expect.objectContaining({
+      codigo: '123456',
+      botao: { rotulo: 'Ver meus agendamentos', url: 'https://www.lincepet.com.br/dashboard/tutor#consultas' },
+    }))
   })
 
   it('recusado: inclui o motivo; sem motivo a mensagem não fica com espaço sobrando', async () => {
@@ -650,7 +675,7 @@ describe('avisarPedido', () => {
   it('aceito sem código gravado não quebra a mensagem', async () => {
     prismaMock.agendamento.findUnique.mockResolvedValueOnce(pedido({ startCode: null }))
     await avisarPedido('aceito', 'ped-1')
-    expect(avisos.createGenericNotification.mock.calls[0][0].message).toContain('Código de início: .')
+    expect(avisos.createGenericNotification.mock.calls[1][0].message).toContain('Código de início: .')
   })
 
   it('respeita o opt-out de e-mail do usuário', async () => {

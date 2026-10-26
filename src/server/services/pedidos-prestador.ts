@@ -4,6 +4,7 @@ import { randomInt } from 'node:crypto'
 import { DateTime } from 'luxon'
 import vine from '@vinejs/vine'
 import type { BloqueioAgenda, Prisma, User } from '@/generated/prisma/client'
+import { URL_CONSULTAS_TUTOR } from '@/lib/agenda-tutor'
 import { enderecoVisivelAoProfissional } from '@/lib/endereco-domicilio'
 import { prisma } from '../db'
 import { HttpError } from '../http'
@@ -640,6 +641,10 @@ const AVISOS: Record<
     whatsapp: ['novo_agendamento', ['profissional']],
   },
   aceito: {
+    profissional: (c) => ({
+      titulo: 'Pedido confirmado',
+      mensagem: `Você confirmou "${c.servico}" de ${c.tutor} para ${c.pet} (${c.quando}). No dia, peça ao tutor o código de início para começar o atendimento.`,
+    }),
     tutor: (c) => ({
       titulo: 'Pedido aceito',
       mensagem: `${c.prof} aceitou "${c.servico}" para ${c.pet} (${c.quando}). Código de início: ${c.codigo}.`,
@@ -689,7 +694,19 @@ export function descreverPeriodo(a: Pick<Pedido, 'inicioEm' | 'fimEm'>) {
     : `${inicio.toFormat('dd/MM/yyyy HH:mm')} até ${fim.toFormat('dd/MM/yyyy HH:mm')}`
 }
 
-async function avisarUsuario(user: Usuario, evento: EventoPedido, texto: Texto, a: Pedido, detalhes: [string, string | null][]) {
+const PAINEL: Record<'tutor' | 'profissional', { rotulo: string; url: string }> = {
+  tutor: { rotulo: 'Ver meus agendamentos', url: URL_CONSULTAS_TUTOR },
+  profissional: { rotulo: 'Ver minha agenda', url: 'https://www.lincepet.com.br/dashboard/prestador' },
+}
+
+async function avisarUsuario(
+  user: Usuario,
+  evento: EventoPedido,
+  texto: Texto,
+  a: Pedido,
+  detalhes: [string, string | null][],
+  papel: 'tutor' | 'profissional',
+) {
   try {
     await inAppNotifications.createGenericNotification({
       userId: user.id,
@@ -704,6 +721,8 @@ async function avisarUsuario(user: Usuario, evento: EventoPedido, texto: Texto, 
         saudacao: `Olá, ${user.nome}!`,
         paragrafos: [texto.mensagem],
         detalhes,
+        botao: PAINEL[papel],
+        ...(evento === 'aceito' && papel === 'tutor' ? { codigo: a.startCode } : {}),
       })
     }
   } catch (error) {
@@ -748,8 +767,8 @@ export async function avisarPedido(evento: EventoPedido, id: string, motivo?: st
       ]
     }
 
-    if (regra.profissional) await avisarUsuario(profUser, evento, regra.profissional(ctx), a, detalhesDe('profissional'))
-    if (regra.tutor && tutorUser) await avisarUsuario(tutorUser, evento, regra.tutor(ctx), a, detalhesDe('tutor'))
+    if (regra.profissional) await avisarUsuario(profUser, evento, regra.profissional(ctx), a, detalhesDe('profissional'), 'profissional')
+    if (regra.tutor && tutorUser) await avisarUsuario(tutorUser, evento, regra.tutor(ctx), a, detalhesDe('tutor'), 'tutor')
     if (regra.whatsapp) await notificarAgendamento(regra.whatsapp[0], a.id, regra.whatsapp[1], { motivo: motivo || null })
     if (regra.agenda) await googleCalendar.sincronizarEvento(a.id, regra.agenda)
   } catch (error) {

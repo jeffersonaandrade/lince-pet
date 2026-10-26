@@ -910,6 +910,8 @@ perfis_nodes = [
          "Endereco de tutor isolado do endereco profissional; consulta domiciliar preserva copia no agendamento. Proibir reserva e avaliacao do proprio perfil profissional."),
     rule("rule_domicilio_endereco_apos_aceite", "Domicilio: bairro no pedido e endereco completo apos o aceite",
          "Decisao do dono em 26/10/2026: profissional ve so o bairro enquanto a visita domiciliar esta pendente. Rua, numero e CEP aparecem depois do aceite. Tutor continua vendo o endereco completo. Remarcar esconde de novo ate novo aceite. Painel, avisos e Google Agenda do profissional seguem a mesma regra."),
+    rule("rule_pedido_aceite_confirmacao_prestador", "Pedido: confirmacao do aceite tambem para o prestador",
+         "Decisao do dono em 26/10/2026: ao aceitar, o prestador recebe 'Pedido confirmado' no sino e por e-mail (respeita notificar_email) como lembrete, com servico, pet, horario, endereco completo e valor. Codigo de inicio fica so com o tutor. Sem WhatsApp extra. Os e-mails de pedido e a confirmacao da consulta usam o mesmo layout do esqueci a senha, com cabecalho laranja."),
 ]
 new_nodes += perfis_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in perfis_nodes]
@@ -918,7 +920,7 @@ for code_id, rs in {
     "src_server_auth_session": ["rule_perfis_individuais_mesmo_login", "rule_tutor_endereco_proprio"],
     "src_server_services_agenda_profissional": ["rule_domicilio_duracao_deslocamento", "rule_agenda_profissional_mesma_pessoa"],
     "src_server_services_agenda_lock": ["rule_agenda_profissional_mesma_pessoa"],
-    "src_server_services_pedidos_prestador": ["rule_agenda_profissional_mesma_pessoa", "rule_tutor_endereco_proprio", "rule_domicilio_endereco_apos_aceite"],
+    "src_server_services_pedidos_prestador": ["rule_agenda_profissional_mesma_pessoa", "rule_tutor_endereco_proprio", "rule_domicilio_endereco_apos_aceite", "rule_pedido_aceite_confirmacao_prestador"],
     "src_app_api_agendamentos_route": ["rule_domicilio_duracao_deslocamento", "rule_tutor_endereco_proprio", "rule_domicilio_endereco_apos_aceite"],
     "src_server_services_veterinario_dashboard": ["rule_domicilio_endereco_apos_aceite"],
     "src_server_services_consulta_domicilio": ["rule_domicilio_endereco_apos_aceite"],
