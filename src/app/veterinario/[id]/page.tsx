@@ -408,6 +408,8 @@ export default function VeterinarioProfile() {
   // Availability Check
   const vetId = veterinario?.id;
   useEffect(() => {
+    // Uma troca de data/local invalida a consulta anterior, mesmo se ela terminar depois.
+    let atual = true;
     const fetchDisponibilidade = async () => {
       if (!vetId) return;
       const today = new Date();
@@ -421,19 +423,22 @@ export default function VeterinarioProfile() {
           tipo_consulta: selectedLocationId === -2 ? 'domicilio' : selectedLocationId === -1 ? 'online' : 'presencial',
           endereco_id: selectedLocationId && selectedLocationId !== -1 && selectedLocationId !== -2 ? selectedLocationId : undefined,
         });
+        if (!atual) return;
         setHorariosOcupados(resp.horarios_ocupados || []);
         setDiaBloqueado(Boolean(resp.dia_bloqueado));
       } catch {
+        if (!atual) return;
         setHorariosOcupados([]);
         setDiaBloqueado(true);
         setSelectedTimeSlot(null);
         setErroDisponibilidade('Não foi possível consultar a agenda. Entre na sua conta ou tente novamente.');
       } finally {
-        setCarregandoDisponibilidade(false);
+        if (atual) setCarregandoDisponibilidade(false);
       }
     };
     fetchDisponibilidade();
     setShowAllSlots(false); // Reset expansion when day changes
+    return () => { atual = false; };
   }, [vetId, selectedDay, selectedLocationId]);
 
   useEffect(() => {
