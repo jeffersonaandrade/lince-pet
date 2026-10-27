@@ -1,6 +1,6 @@
 /** Contatos oficiais. Campo vazio = não exibido como link (mostra "em breve" ou some). */
 export const SITE = {
-  email: '',
+  email: 'contato@lincepet.com.br',
   /** Só dígitos com DDI, ex.: 5581999990000 */
   whatsapp: '',
   horarioAtendimento: 'Segunda a sexta, das 9h às 18h',

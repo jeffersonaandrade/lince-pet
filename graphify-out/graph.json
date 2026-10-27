@@ -49452,6 +49452,15 @@
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null,
       "contributor": "regras-de-negocio"
+    },
+    {
+      "id": "rule_contato_oficial_email",
+      "label": "Contato: e-mail oficial confirmado pelo dono",
+      "file_type": "rationale",
+      "rationale": "Decisao explicita de 27/10/2026: contato@lincepet.com.br e o e-mail de contato da LincePet. SITE.email alimenta o mailto da pagina /contato. Configurar o link nao cria a caixa, nao valida entrega e nao define responsavel pelo atendimento. WhatsApp de suporte continua sem numero confirmado.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
     }
   ],
   "links": [
@@ -195875,6 +195884,33 @@
     {
       "source": "src_app_ajuda_page",
       "target": "rule_whatsapp_fora_oferta_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_contato_oficial_email",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_config_site",
+      "target": "rule_contato_oficial_email",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_contato_page",
+      "target": "rule_contato_oficial_email",
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
