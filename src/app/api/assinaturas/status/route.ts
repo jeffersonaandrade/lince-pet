@@ -1,3 +1,5 @@
+import { codigoPlanoIndividual, limitePlanoIndividual } from '@/lib/freemium'
+import { usoAtualVeterinario } from '@/server/services/cotas-veterinario'
 import { prisma } from '@/server/db'
 import { ApiRequest, forbidden, ok, route } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
@@ -12,7 +14,7 @@ export const GET = route(async (req) => {
   if (!assinante) return forbidden({ message: 'Apenas veterinários, clínicas e profissionais podem ver status' })
 
   const [currentPlan, subs, pagasAntes, cancelamento] = await Promise.all([
-    prisma.subscriptionPlan.findUnique({ where: { code: assinante.planoAtual || assinante.planoPadrao } }),
+    prisma.subscriptionPlan.findUnique({ where: { code: assinante.tipo === 'clinica' ? assinante.planoAtual || assinante.planoPadrao : codigoPlanoIndividual(assinante.planoAtual) } }),
     prisma.subscription.findMany({ where: assinaturasDo(assinante), orderBy: { createdAt: 'desc' }, take: 10 }),
     prisma.subscription.count({ where: { ...assinaturasDo(assinante), asaasSubscriptionId: { not: null } } }),
     prisma.asaasCancelamento.findFirst({ where: { concluidoEm: null, subscription: assinaturasDo(assinante) }, orderBy: { motivo: 'desc' }, select: { motivo: true, solicitadoEm: true } }),
@@ -35,14 +37,15 @@ export const GET = route(async (req) => {
   const emTeste = Boolean(vigente?.status === 'active' && vigente.trialEnd && vigente.trialEnd > new Date())
 
   return ok({
-    plan: currentPlan,
-    usage: { used: assinante.tipo === 'prestador' ? await usoMensalPrestador(prisma, assinante.id) : assinante.usado, limit: currentPlan?.monthlyAppointmentLimit ?? null },
+    acessoCortesia: Boolean(currentPlan && currentPlan.priceCents > 0 && !subs.some(s => ['active', 'pending', 'past_due', 'cancel_pending'].includes(s.status))),
+    plan: currentPlan ? { ...currentPlan, monthlyAppointmentLimit: assinante.tipo === 'clinica' ? currentPlan.monthlyAppointmentLimit : limitePlanoIndividual(assinante.planoAtual, currentPlan.monthlyAppointmentLimit) } : null,
+    usage: { used: assinante.tipo === 'prestador' ? await usoMensalPrestador(prisma, assinante.id) : assinante.tipo === 'veterinario' ? await usoAtualVeterinario(assinante.id) : assinante.usado, limit: assinante.tipo === 'clinica' ? currentPlan?.monthlyAppointmentLimit ?? null : currentPlan ? limitePlanoIndividual(assinante.planoAtual, currentPlan.monthlyAppointmentLimit) : null },
     subscription,
     statusLabel: statusLabel(subscription?.status),
     pendingPlanId: pendente && vigente ? pendente.planId : null,
     emTeste,
     trialEnd: emTeste ? vigente!.trialEnd : null,
-    testeDisponivel: pagasAntes === 0,
+    testeDisponivel: assinante.tipo === 'clinica' && pagasAntes === 0,
     checkoutUrl,
     cancelamentoPendente: Boolean(cancelamento),
     cancelamentoSolicitado: cancelamento?.motivo === 'usuario',

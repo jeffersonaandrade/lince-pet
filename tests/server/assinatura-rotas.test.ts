@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 vi.mock('next/server', async importOriginal => ({ ...await importOriginal<typeof import('next/server')>(), after: vi.fn() }))
 
 const prismaMock = vi.hoisted(() => ({
+  agendamento: { count: vi.fn().mockResolvedValue(3) },
   asaasCancelamento: { findFirst: vi.fn() },
   subscriptionPlan: { findUnique: vi.fn() },
   subscription: { findMany: vi.fn(), count: vi.fn() },
@@ -70,11 +71,11 @@ describe('GET /api/assinaturas/status', () => {
     expect(await status()).toMatchObject({ cancelamentoPendente: true, cancelamentoSolicitado: true, checkoutUrl: null })
     expect(asaasFake.getSubscriptionPayments).not.toHaveBeenCalled()
   })
-  it('conta nova: sem assinatura, teste disponível e sem chamar o Asaas', async () => {
+  it('conta nova: gratuito sem teste de 14 dias e sem chamar o Asaas', async () => {
     prismaMock.subscriptionPlan.findUnique.mockResolvedValue(null)
     sessao.user = { id: 'u-1', userType: 'veterinario', veterinario: { id: 'vet-1', subscriptionPlanCode: 'none' } }
     const body = await status()
-    expect(body).toMatchObject({ subscription: null, statusLabel: null, testeDisponivel: true, emTeste: false, checkoutUrl: null })
+    expect(body).toMatchObject({ subscription: null, statusLabel: null, testeDisponivel: false, emTeste: false, checkoutUrl: null })
     expect(asaasFake.getSubscriptionPayments).not.toHaveBeenCalled()
   })
 
@@ -132,10 +133,11 @@ describe('GET /api/assinaturas/status', () => {
     expect(body).toMatchObject({ statusLabel: 'pendente', checkoutUrl: null })
   })
 
-  it('usa o limite mensal do plano atual', async () => {
+  it('usa cinco no plano gratuito, inclusive com código legado none', async () => {
+    sessao.user = { id: 'u-1', userType: 'veterinario', veterinario: { id: 'vet-1', subscriptionPlanCode: 'none' } }
     prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ code: 'free', monthlyAppointmentLimit: 10 })
     const body = await status()
-    expect(body.usage).toEqual({ used: 3, limit: 10 })
+    expect(body.usage).toEqual({ used: 3, limit: 5 })
   })
 
   it('clínica consulta as próprias assinaturas', async () => {

@@ -25,7 +25,7 @@ export type PlanoAssinaturaSeed = {
 
 /**
  * `free` e `pro` são os planos do prestador (target `veterinario` por legado).
- * Veterinário assina `vet_starter` ou `vet_pro`; `pro_plus` fica inativo.
+ * Veterinário escolhe `free` ou `vet_pro`; `vet_starter` e `pro_plus` ficam inativos.
  */
 export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
   {
@@ -35,7 +35,7 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     priceCents: 0,
     currency: 'brl',
     cycle: null,
-    monthlyAppointmentLimit: 10,
+    monthlyAppointmentLimit: 5,
     features: ['basic_profile', 'qr_code'],
     searchPriority: 0,
     trialDays: 0,
@@ -52,7 +52,7 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     monthlyAppointmentLimit: null,
     features: ['complete_profile', 'whatsapp_notifications', 'basic_dashboard'],
     searchPriority: 1,
-    trialDays: 14,
+    trialDays: 0,
     active: 1,
     maxVeterinarios: null,
   },
@@ -66,7 +66,7 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     monthlyAppointmentLimit: null,
     features: ['complete_profile', 'featured_search', 'whatsapp_notifications', 'complete_dashboard'],
     searchPriority: 2,
-    trialDays: 14,
+    trialDays: 0,
     active: 0,
     maxVeterinarios: null,
   },
@@ -80,8 +80,8 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     monthlyAppointmentLimit: null,
     features: ['complete_profile', 'whatsapp_notifications', 'basic_dashboard'],
     searchPriority: 1,
-    trialDays: 14,
-    active: 1,
+    trialDays: 0,
+    active: 0,
     maxVeterinarios: null,
   },
   {
@@ -92,9 +92,9 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     currency: 'brl',
     cycle: 'MONTHLY',
     monthlyAppointmentLimit: null,
-    features: ['complete_profile', 'featured_search', 'whatsapp_notifications', 'complete_dashboard', 'financial_module'],
+    features: ['complete_profile', 'featured_search', 'whatsapp_notifications', 'basic_dashboard'],
     searchPriority: 2,
-    trialDays: 14,
+    trialDays: 0,
     active: 1,
     maxVeterinarios: null,
   },

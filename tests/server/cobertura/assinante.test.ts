@@ -23,10 +23,10 @@ beforeEach(() => {
 })
 
 describe('assinanteDe', () => {
-  it('vet e clínica começam em none; prestador em free; contador vem do perfil', () => {
+  it('vet e prestador usam free; clínica usa none; contador vem do perfil', () => {
     expect(
       assinanteDe({ userType: 'veterinario', veterinario: { id: 'v', subscriptionPlanCode: 'vet_pro', monthlyAppointmentsUsed: 3 } } as never)
-    ).toEqual({ tipo: 'veterinario', id: 'v', planoAtual: 'vet_pro', planoPadrao: 'none', usado: 3 })
+    ).toEqual({ tipo: 'veterinario', id: 'v', planoAtual: 'vet_pro', planoPadrao: 'free', usado: 3 })
     expect(assinanteDe({ userType: 'clinica', clinica: { id: 'c', subscriptionPlanCode: null } } as never)).toEqual({
       tipo: 'clinica',
       id: 'c',

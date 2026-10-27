@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 const prismaMock = vi.hoisted(() => ({
   subscriptionPlan: { findUnique: vi.fn(), findMany: vi.fn() },
+  agendamento: { count: vi.fn() },
   veterinario: { update: vi.fn() },
   prestador: { update: vi.fn() },
 }))
@@ -28,6 +29,7 @@ const uso = (over: Partial<{ subscriptionPlanCode: string | null; monthlyAppoint
 
 beforeEach(() => {
   vi.clearAllMocks()
+  prismaMock.agendamento.count.mockResolvedValue(0)
   vi.useFakeTimers()
   vi.setSystemTime(AGORA)
   prismaMock.veterinario.update.mockResolvedValue({})
@@ -41,10 +43,18 @@ afterEach(() => {
 describe('listarPlanosAtivos', () => {
   const ordem = [{ searchPriority: 'asc' }, { priceCents: 'asc' }]
 
-  it('sem tipo, lista todos os ativos', async () => {
+  it('sem tipo, lista somente os códigos contratáveis ativos', async () => {
     prismaMock.subscriptionPlan.findMany.mockResolvedValue([{ code: 'free' }])
-    await expect(listarPlanosAtivos()).resolves.toEqual([{ code: 'free' }])
-    expect(prismaMock.subscriptionPlan.findMany).toHaveBeenCalledWith({ where: { active: 1 }, orderBy: ordem })
+    await expect(listarPlanosAtivos()).resolves.toEqual([{ code: 'free', trialDays: 0 }])
+    expect(prismaMock.subscriptionPlan.findMany).toHaveBeenCalledWith({ where: { active: 1, code: { in: ['free', 'vet_pro', 'starter', 'clinic', 'clinic_pro', 'pro'] } }, orderBy: ordem })
+  })
+
+  it('veterinário só recebe Gratuito e Pro, mesmo antes da migração do Starter', async () => {
+    prismaMock.subscriptionPlan.findMany.mockResolvedValue([])
+    await listarPlanosAtivos('veterinario')
+    expect(prismaMock.subscriptionPlan.findMany).toHaveBeenCalledWith({
+      where: { active: 1, code: { in: ['free', 'vet_pro'] } }, orderBy: ordem,
+    })
   })
 
   it('com tipo, filtra pelos planos que o tipo pode contratar', async () => {
@@ -90,49 +100,40 @@ describe('resetMonthlyCounterIfNeeded', () => {
 })
 
 describe('canCreateAppointment', () => {
-  it('plano inexistente bloqueia', async () => {
-    prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce(null)
-    expect(await canCreateAppointment(uso())).toEqual({ allowed: false, reason: 'Plano não encontrado' })
+  it('plano desconhecido continua bloqueado', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue(null)
+    expect(await canCreateAppointment(uso({ subscriptionPlanCode: 'inexistente' }))).toEqual({ allowed: false, reason: 'Plano não encontrado' })
   })
-
-  it('sem código de plano procura o free', async () => {
-    prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce({ monthlyAppointmentLimit: null })
-    await canCreateAppointment(uso({ subscriptionPlanCode: null }))
+  it.each([null, 'none', 'free'])('código %s resolve o gratuito e libera abaixo de cinco', async subscriptionPlanCode => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ monthlyAppointmentLimit: 10 })
+    prismaMock.agendamento.count.mockResolvedValue(4)
+    expect(await canCreateAppointment(uso({ subscriptionPlanCode, monthlyAppointmentsUsed: 99 }))).toEqual({ allowed: true })
     expect(prismaMock.subscriptionPlan.findUnique).toHaveBeenCalledWith({ where: { code: 'free' } })
-  })
-
-  it('plano ilimitado libera sem mexer no contador', async () => {
-    prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce({ monthlyAppointmentLimit: null })
-    expect(await canCreateAppointment(uso({ subscriptionPlanCode: 'pro', monthlyAppointmentsResetAt: null }))).toEqual({ allowed: true })
     expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
   })
-
-  it('prestador free: 10 pedidos/mês; no limite bloqueia com limite e uso', async () => {
-    prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce({ monthlyAppointmentLimit: 10 })
-    const r = await canCreateAppointment(uso({ monthlyAppointmentsUsed: 10 }), 'prestador')
-    expect(r).toEqual({ allowed: false, reason: 'Limite mensal atingido', limit: 10, used: 10 })
+  it.each(['veterinario', 'prestador'] as const)('%s: quinta usada bloqueia a sexta reserva', async tipo => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ monthlyAppointmentLimit: 10 })
+    prismaMock.agendamento.count.mockResolvedValue(5)
+    expect(await canCreateAppointment(uso(), tipo)).toEqual({ allowed: false, reason: 'Limite mensal atingido', limit: 5, used: 5 })
+    expect(prismaMock.agendamento.count).toHaveBeenCalledWith({ where: expect.objectContaining({ [tipo === 'veterinario' ? 'veterinarioId' : 'prestadorId']: 'vet-1', cotaLiberadaEm: null }) })
   })
-
-  it('abaixo do limite libera', async () => {
-    prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce({ monthlyAppointmentLimit: 10 })
-    expect(await canCreateAppointment(uso({ monthlyAppointmentsUsed: 9 }))).toEqual({ allowed: true })
+  it('plano pago ilimitado e cortesia não consultam nem zeram contador', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ monthlyAppointmentLimit: null })
+    expect(await canCreateAppointment(uso({ subscriptionPlanCode: 'vet_pro' }))).toEqual({ allowed: true })
+    expect(prismaMock.agendamento.count).not.toHaveBeenCalled()
+    expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
   })
-
-  it('contador nulo conta como zero', async () => {
-    prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce({ monthlyAppointmentLimit: 1 })
-    expect(await canCreateAppointment(uso({ monthlyAppointmentsUsed: null }))).toEqual({ allowed: true })
+  it('Starter inativo no catálogo preserva acesso ilimitado de assinante existente', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ active: 0, monthlyAppointmentLimit: null })
+    expect(await canCreateAppointment(uso({ subscriptionPlanCode: 'vet_starter' }))).toEqual({ allowed: true })
+    expect(prismaMock.agendamento.count).not.toHaveBeenCalled()
   })
-
-  it('limite zero com contador nulo bloqueia e informa uso 0', async () => {
-    prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce({ monthlyAppointmentLimit: 0 })
-    expect(await canCreateAppointment(uso({ monthlyAppointmentsUsed: null }))).toMatchObject({ allowed: false, used: 0, limit: 0 })
-  })
-
-  it('virada de mês zera antes de comparar: quem estourou no mês passado volta a poder', async () => {
-    prismaMock.subscriptionPlan.findUnique.mockResolvedValueOnce({ monthlyAppointmentLimit: 10 })
-    const v = uso({ monthlyAppointmentsUsed: 10, monthlyAppointmentsResetAt: new Date(2026, 8, 15) })
-    expect(await canCreateAppointment(v, 'prestador')).toEqual({ allowed: true })
-    expect(prismaMock.prestador.update).toHaveBeenCalledTimes(1)
+  it('virada mensal consulta novo período, preservando histórico e sem escrita em GET', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ monthlyAppointmentLimit: 5 })
+    vi.setSystemTime(new Date('2026-11-01T03:00:00Z'))
+    expect(await canCreateAppointment(uso({ monthlyAppointmentsUsed: 5 }))).toEqual({ allowed: true })
+    expect(prismaMock.agendamento.count).toHaveBeenCalledWith({ where: expect.objectContaining({ cotaConsumidaEm: { gte: new Date('2026-11-01T03:00:00Z'), lt: new Date('2026-12-01T03:00:00Z') } }) })
+    expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
   })
 })
 

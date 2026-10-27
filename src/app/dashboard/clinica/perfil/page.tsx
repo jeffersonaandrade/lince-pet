@@ -1,5 +1,8 @@
 "use client";
 
+import { incluirPlanosVinculados } from "@/lib/planos-saude";
+
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { urlDeLogin } from "@/lib/destino-login";
@@ -209,6 +212,7 @@ export default function PerfilClinica() {
                 // Planos
                 if (Array.isArray(clinica.planos)) {
                     setPlanosSelecionados(clinica.planos.map((p) => p.id));
+                    setPlanosDisponiveis(ativos => incluirPlanosVinculados(ativos, clinica.planos!));
                 }
             }
 

@@ -1,26 +1,31 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { ResumoContratacao, precoMensal } from "@/components/Assinatura/ResumoContratacao";
 import { Crown } from "lucide-react";
-import { AssinaturasService, type StatusAssinatura } from "@/services/assinaturas/assinaturas";
+import { AssinaturasService, type StatusAssinatura, type PlanoBackend } from "@/services/assinaturas/assinaturas";
 import { GerenciarAssinatura } from "@/components/Assinatura/GerenciarAssinatura";
 import { handleApiError } from "@/utils/errorHandler";
 import { Alerta, botaoPrimario } from "./ui";
 
 const PLANO_PAGO = "pro";
 
-export function CardPlano() {
+export function CardPlano({ revisao }: { revisao?: unknown }) {
   const [status, setStatus] = useState<StatusAssinatura | null>(null);
+  const [oferta, setOferta] = useState<PlanoBackend | null>(null);
+  const [confirmando, setConfirmando] = useState(false);
+  const [aceito, setAceito] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const atualizar = useCallback(async () => { setStatus(await AssinaturasService().obterStatus()); }, []);
 
   useEffect(() => {
+    AssinaturasService().listarPlanos("prestador").then(planos => setOferta(planos.find(p => p.code === PLANO_PAGO) ?? null)).catch(() => setOferta(null));
     AssinaturasService()
       .obterStatus()
       .then(setStatus)
       .catch(() => setStatus(null));
-  }, []);
+  }, [revisao]);
 
   if (!status?.plan) return null;
   const { plan, usage, subscription } = status;
@@ -28,15 +33,16 @@ export function CardPlano() {
   const pendente = subscription?.status === "pending" || subscription?.status === "past_due" || status.cancelamentoPendente;
 
   const assinar = async () => {
+    if (!oferta || !aceito || !confirmando) return;
     setEnviando(true);
     setErro(null);
     try {
       const servico = AssinaturasService();
       const resposta = subscription
-        ? await servico.upgrade(subscription.id, { planCode: PLANO_PAGO })
-        : await servico.criarAssinatura({ planCode: PLANO_PAGO });
-      if (resposta?.checkoutUrl) window.location.href = resposta.checkoutUrl;
-      else setStatus(await servico.obterStatus());
+        ? await servico.upgrade(subscription.id, { planCode: PLANO_PAGO, valorConfirmadoCentavos: oferta.priceCents, aceite: aceito })
+        : await servico.criarAssinatura({ planCode: PLANO_PAGO, valorConfirmadoCentavos: oferta.priceCents, aceite: aceito });
+      if (resposta?.checkoutUrl) window.location.assign(resposta.checkoutUrl);
+      else { setStatus(await servico.obterStatus()); setConfirmando(false); setAceito(false); }
     } catch (e) {
       setErro(handleApiError(e).message);
     } finally {
@@ -74,11 +80,14 @@ export function CardPlano() {
         ) : (
           <>
             <p className="text-sm text-slate-500">
-              No plano Pro você aceita pedidos sem limite mensal. Pague com Pix, boleto ou cartão na fatura do Asaas.
+              Você pode aceitar 5 agendamentos por mês gratuitamente. No plano Pro você aceita pedidos sem limite mensal. Pague com Pix, boleto ou cartão na fatura do Asaas.
             </p>
-            <button className={botaoPrimario} disabled={enviando} onClick={assinar}>
-              {enviando ? "Abrindo pagamento..." : "Assinar Pro"}
-            </button>
+            {oferta ? <p className="font-semibold text-slate-800">{oferta.name}: {precoMensal(oferta.priceCents)}/mês{status.testeDisponivel && !subscription && oferta.trialDays ? ` após ${oferta.trialDays} dias grátis` : ""}.</p> : <p role="status">Não foi possível carregar o preço do Pro. Atualize a página para contratar.</p>}
+            {confirmando && oferta ? <>
+              <ResumoContratacao plano={oferta} testeDisponivel={status.testeDisponivel && !subscription} aceito={aceito} onAceite={setAceito} disabled={enviando} />
+              <button className={botaoPrimario} disabled={enviando || !aceito} onClick={assinar}>{enviando ? "Processando..." : `Confirmar ${oferta.name} — ${precoMensal(oferta.priceCents)}/mês`}</button>
+              <button type="button" disabled={enviando} onClick={() => { setConfirmando(false); setAceito(false); }}>Voltar</button>
+            </> : <button type="button" className={botaoPrimario} disabled={!oferta || enviando} onClick={() => setConfirmando(true)}>Ver e contratar Pro</button>}
           </>
         )
       ) : null}

@@ -9,6 +9,8 @@ import { PrestadoresService, type TipoServico } from "@/services/prestadores/pre
 import { handleApiError, type ErrorState } from "@/utils/errorHandler";
 import { useAuth } from "@/contexts/AuthContext";
 import { Alerta, Campo, Entrada, botaoPrimario } from "@/components/Prestador/ui";
+import { EscolhaPlanoCadastro, ConfirmarPlanoCadastro } from "@/components/Assinatura/PlanoCadastro";
+import type { PlanoBackend } from "@/services/assinaturas/assinaturas";
 
 const VAZIO = { email: "", password: "", nome: "", sobrenome: "", celular: "", documento: "" };
 
@@ -17,6 +19,8 @@ export default function PrestadorSignup() {
   const { login } = useAuth();
   const [tipos, setTipos] = useState<TipoServico[]>([]);
   const [tipo, setTipo] = useState("");
+  const [plano, setPlano] = useState<PlanoBackend | null>(null);
+  const [contaCriada, setContaCriada] = useState(false);
   const [form, setForm] = useState(VAZIO);
   const [verSenha, setVerSenha] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -33,6 +37,7 @@ export default function PrestadorSignup() {
 
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!plano || contaCriada) return;
     if (!tipo) return setErro({ message: "Escolha o tipo de serviço que você oferece." });
     setEnviando(true);
     setErro(null);
@@ -49,7 +54,8 @@ export default function PrestadorSignup() {
       });
       const resposta = await authLogin({ email: form.email, password: form.password });
       login({ ...resposta.user, userType: "prestador" });
-      router.push("/onboarding/prestador");
+      if (plano.priceCents > 0) setContaCriada(true);
+      else router.push("/onboarding/prestador");
     } catch (err) {
       setErro(handleApiError(err));
     } finally {
@@ -69,10 +75,11 @@ export default function PrestadorSignup() {
           </p>
         </header>
 
-        <form onSubmit={enviar} className="flex flex-col gap-6 rounded-3xl bg-white p-6 shadow-sm sm:p-8">
+        {contaCriada && plano ? <ConfirmarPlanoCadastro plano={plano} onContinuar={() => router.push("/onboarding/prestador")} /> : <form onSubmit={enviar} className="flex flex-col gap-6 rounded-3xl bg-white p-6 shadow-sm sm:p-8">
           {erro ? <Alerta>{erro.message}</Alerta> : null}
+          <EscolhaPlanoCadastro tipo="prestador" selecionado={plano} onEscolha={setPlano} />
 
-          <fieldset className="flex flex-col gap-3">
+          <fieldset className="m-0 min-w-0 flex flex-col gap-3 border-0 p-0">
             <legend className="mb-2 text-sm font-semibold text-slate-700">Qual serviço você oferece?</legend>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {tipos.map((t) => (
@@ -159,13 +166,13 @@ export default function PrestadorSignup() {
                 invalido={!!campoErro("celular")}
               />
             </Campo>
-            <Campo label="CPF ou CNPJ (opcional)" erro={campoErro("cpf") || campoErro("cnpj")}>
-              <Entrada name="documento" value={form.documento} onChange={alterar} inputMode="numeric" />
+            <Campo label={plano?.priceCents ? "CPF ou CNPJ (necessário para assinar)" : "CPF ou CNPJ (opcional)"} erro={campoErro("cpf") || campoErro("cnpj")}>
+              <Entrada name="documento" value={form.documento} onChange={alterar} inputMode="numeric" required={!!plano?.priceCents} />
             </Campo>
           </div>
 
-          <button type="submit" className={botaoPrimario} disabled={enviando}>
-            {enviando ? "Criando conta..." : "Criar conta e montar perfil"}
+          <button type="submit" className={botaoPrimario} disabled={enviando || !plano}>
+            {enviando ? "Criando conta..." : plano?.priceCents ? "Criar conta e revisar Pro" : "Criar conta gratuita"}
           </button>
 
           <p className="text-center text-sm text-slate-500">
@@ -174,7 +181,7 @@ export default function PrestadorSignup() {
               Entrar
             </Link>
           </p>
-        </form>
+        </form>}
 
         <p className="text-center text-xs text-slate-400">
           Ao continuar, você concorda com os{" "}

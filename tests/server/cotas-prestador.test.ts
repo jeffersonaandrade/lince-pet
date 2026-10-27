@@ -6,7 +6,7 @@ import { conferirPendentes, consumirCota, liberarCota, mesDaCota } from '@/serve
 const banco = () => ({
   $executeRaw: vi.fn(),
   prestador: { findUniqueOrThrow: vi.fn().mockResolvedValue({ subscriptionPlanCode: 'free' }), update: vi.fn() },
-  subscriptionPlan: { findUnique: vi.fn().mockResolvedValue({ monthlyAppointmentLimit: 10 }) },
+  subscriptionPlan: { findUnique: vi.fn().mockResolvedValue({ monthlyAppointmentLimit: 5 }) },
   agendamento: { count: vi.fn().mockResolvedValue(0), update: vi.fn(), updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
 })
 let db = banco()
@@ -23,12 +23,13 @@ describe('mês da cota usa Brasília independentemente do fuso do servidor', () 
   })
 })
 it('plano cheio rejeita antes de gravar consumo ou contador', async () => {
-  db.agendamento.count.mockResolvedValue(10)
+  db.agendamento.count.mockResolvedValue(5)
   await expect(consumirCota(db as never, 'p', 'a')).rejects.toMatchObject({ status: 403 })
   expect(db.agendamento.update).not.toHaveBeenCalled()
   expect(db.prestador.update).not.toHaveBeenCalled()
 })
 it('ilimitado permite mais de dez aceites e mantém contagem real', async () => {
+  db.prestador.findUniqueOrThrow.mockResolvedValue({ subscriptionPlanCode: 'pro' })
   db.subscriptionPlan.findUnique.mockResolvedValue({ monthlyAppointmentLimit: null } as never)
   db.agendamento.count.mockResolvedValue(99)
   await consumirCota(db as never, 'p', 'a')

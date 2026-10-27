@@ -1,5 +1,7 @@
 "use client";
 
+import { incluirPlanosVinculados } from "@/lib/planos-saude";
+
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -184,7 +186,7 @@ export default function ClinicaOnboardingPage() {
           }
           if (clinica.descricao || clinica.sobre) setDescricao(clinica.descricao || clinica.sobre || "");
           if (clinica.fotoPerfil) setPhotoPreview(clinica.fotoPerfil);
-          if (clinica.planos) setSelectedPlans(clinica.planos.map((p: { id: string }) => p.id));
+          if (clinica.planos) { setSelectedPlans(clinica.planos.map((p: { id: string }) => p.id)); setAvailablePlans(ativos => incluirPlanosVinculados(ativos, clinica.planos)); }
         }
 
         setIsLoadingInitial(false);

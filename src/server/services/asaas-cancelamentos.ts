@@ -23,7 +23,8 @@ export async function confirmarCancelamento(db: Db, sub: Subscription) {
   if (dono) await bloquearAssinante(db, dono)
   await db.subscription.update({ where: { id: sub.id }, data: updating({ status: 'canceled', canceledAt: sub.canceledAt ?? new Date() }) })
   await db.asaasCancelamento.updateMany({ where: { subscriptionId: sub.id }, data: { concluidoEm: new Date(), bloqueadoAte: null, ultimoErro: null } })
-  if (!dono) return
+  // Uma repetição do webhook não pode revogar uma cortesia concedida depois do encerramento.
+  if (!dono || sub.status === 'canceled' || sub.status === 'expired') return
   const outraAtiva = await db.subscription.count({ where: { ...assinaturasDo(dono), status: 'active', id: { not: sub.id } } })
   if (outraAtiva === 0) await definirPlano(db, dono, PLANO_PADRAO[dono.tipo], false)
 }

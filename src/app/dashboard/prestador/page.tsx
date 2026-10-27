@@ -93,7 +93,7 @@ export default function DashboardPrestador() {
               <PainelRecebidos />
             </div>
             <div className="flex flex-col gap-6">
-              <CardPlano />
+              <CardPlano revisao={pedidos} />
               <PainelBloqueios bloqueios={bloqueios} onAlterado={setBloqueios} />
             </div>
           </div>

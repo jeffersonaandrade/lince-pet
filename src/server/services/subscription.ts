@@ -2,6 +2,9 @@
 import { prisma } from '../db'
 import { updating } from '../lucid'
 import { PLANOS_POR_TIPO } from './assinatura-regras'
+import { codigoPlanoIndividual, limitePlanoIndividual } from '@/lib/freemium'
+import { usoAtualVeterinario } from './cotas-veterinario'
+import { usoMensalPrestador } from './cotas-prestador'
 
 type VetUsage = {
   id: string
@@ -18,12 +21,13 @@ export type DonoDoLimite = 'veterinario' | 'prestador'
 const findPlan = (vet: ComPlano) =>
   prisma.subscriptionPlan.findUnique({ where: { code: vet.subscriptionPlanCode || 'free' } })
 
-/** Planos ativos que o tipo pode contratar. Sem tipo, devolve todos os ativos. */
-export function listarPlanosAtivos(tipo?: keyof typeof PLANOS_POR_TIPO) {
-  return prisma.subscriptionPlan.findMany({
-    where: { active: 1, ...(tipo ? { code: { in: PLANOS_POR_TIPO[tipo] } } : {}) },
+/** Catálogo contratável; códigos legados continuam válidos para acessos existentes. */
+export async function listarPlanosAtivos(tipo?: keyof typeof PLANOS_POR_TIPO) {
+  const planos = await prisma.subscriptionPlan.findMany({
+    where: { active: 1, code: { in: tipo ? PLANOS_POR_TIPO[tipo] : [...new Set(Object.values(PLANOS_POR_TIPO).flat())] } },
     orderBy: [{ searchPriority: 'asc' }, { priceCents: 'asc' }],
   })
+  return planos.map(plano => ['free', 'pro', 'pro_plus', 'vet_starter', 'vet_pro'].includes(plano.code) ? { ...plano, trialDays: 0 } : plano)
 }
 
 const saveUsage = (vet: VetUsage, data: Partial<VetUsage>, dono: DonoDoLimite = 'veterinario') => {
@@ -47,18 +51,18 @@ export async function canCreateAppointment(
   vet: VetUsage,
   dono: DonoDoLimite = 'veterinario'
 ): Promise<{ allowed: boolean; reason?: string; limit?: number; used?: number }> {
-  const plan = await findPlan(vet)
+  const codigo = codigoPlanoIndividual(vet.subscriptionPlanCode)
+  const plan = await prisma.subscriptionPlan.findUnique({ where: { code: codigo } })
   if (!plan) return { allowed: false, reason: 'Plano não encontrado' }
-  if (plan.monthlyAppointmentLimit === null) return { allowed: true }
-
-  await resetMonthlyCounterIfNeeded(vet, dono)
-
-  if ((vet.monthlyAppointmentsUsed ?? 0) >= plan.monthlyAppointmentLimit) {
+  const limit = limitePlanoIndividual(codigo, plan.monthlyAppointmentLimit)
+  if (limit === null) return { allowed: true }
+  const used = dono === 'veterinario' ? await usoAtualVeterinario(vet.id) : await usoMensalPrestador(prisma, vet.id)
+  if (used >= limit) {
     return {
       allowed: false,
       reason: 'Limite mensal atingido',
-      limit: plan.monthlyAppointmentLimit,
-      used: vet.monthlyAppointmentsUsed ?? 0,
+      limit,
+      used,
     }
   }
   return { allowed: true }

@@ -23,9 +23,9 @@ describe('perfis individuais', () => {
     mocks.db.tutor.findFirst.mockResolvedValue({ id: 'tutor-1' })
     expect(await listarPerfis('dono')).toEqual([{ tipo: 'tutor', ativo: true }, { tipo: 'veterinario', ativo: false }, { tipo: 'prestador', ativo: false }])
   })
-  it('ativa veterinário sem criar outro login nem conceder plano ou aprovação', async () => {
+  it('ativa veterinário sem criar outro login com plano gratuito e sem conceder aprovação', async () => {
     await ativarPerfil('dono', body)
-    expect(mocks.db.veterinario.create).toHaveBeenCalledWith({ data: expect.objectContaining({ userId: 'dono', subscriptionPlanCode: 'none', crmvStatus: 'pendente', onboardingComplete: 0 }) })
+    expect(mocks.db.veterinario.create).toHaveBeenCalledWith({ data: expect.objectContaining({ userId: 'dono', subscriptionPlanCode: 'free', crmvStatus: 'pendente', onboardingComplete: 0 }) })
     expect(mocks.db.user.update.mock.calls[0][0].data).not.toHaveProperty('userType')
   })
   it('não duplica nem zera plano de perfil já existente', async () => {

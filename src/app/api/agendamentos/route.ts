@@ -7,7 +7,7 @@ import { ApiRequest, badRequest, created, HttpError, json, notFound, ok, route, 
 import { conferirEncaminhamento, vincularAgendamento } from '@/server/services/encaminhamentos'
 import { creating, updating } from '@/server/lucid'
 import { requireUser } from '@/server/auth/session'
-import { canCreateAppointment } from '@/server/services/subscription'
+import { consumirCotaVeterinario } from '@/server/services/cotas-veterinario'
 import { inAppNotifications } from '@/server/services/in-app-notifications'
 import { notifications } from '@/server/services/notifications'
 import { notificarAgendamento } from '@/server/services/whatsapp-notificacoes'
@@ -186,11 +186,6 @@ export const POST = route(async (req) => {
       return badRequest({ message: MENSAGEM_HORARIO_BLOQUEADO })
     }
 
-    const checkLimit = await canCreateAppointment(veterinario)
-    if (!checkLimit.allowed) {
-      return badRequest({ message: checkLimit.reason || 'Limite mensal de agendamentos atingido.' })
-    }
-
     if (encaminhamento_id) {
       try {
         await conferirEncaminhamento(encaminhamento_id, {
@@ -239,13 +234,7 @@ export const POST = route(async (req) => {
         }),
       })
 
-      const vetForUpdate = await tx.veterinario.findFirst({ where: { id: veterinario_id } })
-      if (vetForUpdate) {
-        await tx.veterinario.update({
-          where: { id: vetForUpdate.id },
-          data: updating({ monthlyAppointmentsUsed: (vetForUpdate.monthlyAppointmentsUsed ?? 0) + 1 }),
-        })
-      }
+      await consumirCotaVeterinario(tx, veterinario_id, novo.id)
       return novo
     })
 

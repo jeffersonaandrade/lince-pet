@@ -17,34 +17,33 @@ export const DIAS_TESTE_GRATIS = 14
 
 export const PLANOS_VETERINARIO: PlanoMetadata[] = [
   {
-    code: 'vet_starter',
-    name: 'Vet Starter',
-    description: 'Plano inicial',
-    iconPath: '/iconPlans/Plan2.svg',
-    defaultPrice: 'R$ 39,90',
-    buttonText: 'Assinar plano',
-    benefits: [
-      'Agendamentos ilimitados',
-      'Bloqueio de horário personalizado',
-      'Dashboard de métricas nível básico',
-      'Busca prioritária no explorar',
-      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
-    ],
+    code: 'free', name: 'Gratuito', description: 'Comece sem mensalidade',
+    iconPath: '/iconPlans/Plan2.svg', defaultPrice: 'Grátis', buttonText: 'Começar grátis',
+    benefits: ['5 agendamentos por mês', 'Perfil na busca', 'Agenda e gestão dos atendimentos'],
   },
   {
     code: 'vet_pro',
     name: 'Vet Pro',
-    description: 'Com Módulo Financeiro',
+    description: 'Receba agendamentos sem limite mensal',
     iconPath: '/iconPlans/Plan3.svg',
     defaultPrice: 'R$ 59,90',
     buttonText: 'Assinar plano',
     benefits: [
-      'Todos os benefícios do Vet Starter',
-      'Módulo Financeiro',
-      'Topo da categoria de busca',
-      'Dashboard de métricas nível completo',
-      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
+      'Agendamentos ilimitados',
+      'Agenda e gestão dos atendimentos',
+      'Bloqueio de horário personalizado',
+      'Prioridade na busca',
+      'Notificações por WhatsApp',
     ],
+  },
+]
+
+export const PLANOS_PRESTADOR: PlanoMetadata[] = [
+  PLANOS_VETERINARIO[0],
+  {
+    code: 'pro', name: 'Pro', description: 'Receba agendamentos sem limite mensal',
+    iconPath: '/iconPlans/Plan3.svg', defaultPrice: 'R$ 59,00', buttonText: 'Assinar plano',
+    benefits: ['Agendamentos ilimitados', 'Perfil completo', 'Agenda e gestão dos atendimentos', 'Notificações por WhatsApp'],
   },
 ]
 
@@ -61,7 +60,6 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
       'Agenda de exames (até 100 por mês)',
       'Notificações por e-mail e WhatsApp',
       'QR Code / Link da clínica',
-      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
     ],
   },
   {
@@ -76,7 +74,6 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
       'Agenda de exames (até 300 por mês)',
       'Dashboard de métricas nível básico',
       'Busca prioritária no explorar',
-      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
     ],
   },
   {
@@ -91,7 +88,6 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
       'Agenda de exames ilimitada',
       'Topo da categoria de busca',
       'Dashboard de métricas nível completo',
-      `Teste grátis por ${DIAS_TESTE_GRATIS} dias`,
     ],
   },
 ]
@@ -106,7 +102,7 @@ export type PlanoAssinatura = {
 }
 
 const apresentacaoPorCodigo = new Map(
-  [...PLANOS_VETERINARIO, ...PLANOS_CLINICA].map((plano) => [plano.code, plano])
+  [...PLANOS_VETERINARIO, ...PLANOS_PRESTADOR, ...PLANOS_CLINICA].map((plano) => [plano.code, plano])
 )
 
 const ICONES = ['/iconPlans/Plan1.svg', '/iconPlans/Plan2.svg', '/iconPlans/Plan3.svg']
@@ -148,7 +144,7 @@ export function cartaoDePlano(plan: PlanoAssinatura): PlanoMetadata & { priceCen
     iconPath: apresentacao?.iconPath ?? ICONES[Math.min(Math.max(prioridade, 0), ICONES.length - 1)],
     defaultPrice: formatarPrecoPlano(plan.priceCents),
     buttonText: apresentacao?.buttonText ?? 'Assinar plano',
-    benefits: apresentacao?.benefits?.length ? apresentacao.benefits : beneficiosDasFeatures(plan.features),
+    benefits: [...(apresentacao?.benefits?.length ? apresentacao.benefits : beneficiosDasFeatures(plan.features)), ...((plan.trialDays ?? 0) > 0 ? [`Teste grátis por ${plan.trialDays} dias`] : [])],
     priceCents: plan.priceCents,
     trialDays: plan.trialDays ?? 0,
   }

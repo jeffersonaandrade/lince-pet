@@ -444,11 +444,11 @@ describe('serializePrestadorPublico', () => {
 })
 
 describe('buscarPrestadores', () => {
-  it('sem filtros: só onboarding concluído, conta ativa e tipo ativo', async () => {
+  it('sem filtros: só onboarding concluído, conta ativa, inclusive categorias inativas com vínculos existentes', async () => {
     prismaMock.prestador.findMany.mockResolvedValueOnce([publico()])
     const r = await buscarPrestadores({})
     const args = prismaMock.prestador.findMany.mock.calls[0][0]
-    expect(args.where).toEqual({ onboardingComplete: 1, user: { ativo: 1 }, tipoServico: { ativo: 1 } })
+    expect(args.where).toEqual({ onboardingComplete: 1, user: { ativo: 1 } })
     expect(args.orderBy).toEqual({ createdAt: 'desc' })
     expect(args.include).toMatchObject({ servicos: { where: { ativo: 1 }, orderBy: { preco: 'asc' } } })
     expect(r).toHaveLength(1)
@@ -461,7 +461,7 @@ describe('buscarPrestadores', () => {
     expect(prismaMock.prestador.findMany.mock.calls[0][0].where).toEqual({
       onboardingComplete: 1,
       user: { ativo: 1, cidade: { contains: 'reci', mode: 'insensitive' }, estado: 'PE' },
-      tipoServico: { ativo: 1, slug: 'passeador' },
+      tipoServico: { slug: 'passeador' },
       OR: [
         { bio: { contains: 'bia', mode: 'insensitive' } },
         { user: { nome: { contains: 'bia', mode: 'insensitive' } } },

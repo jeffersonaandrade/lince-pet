@@ -356,7 +356,7 @@ describe('registerVeterinario', () => {
     celular: '81999999999',
   }
 
-  it('cria usuário e veterinário sem plano (PLANO_PADRAO.veterinario = none)', async () => {
+  it('cria usuário e veterinário com plano gratuito', async () => {
     prismaMock.tx.user.create.mockResolvedValueOnce({ id: 'u-1' })
     prismaMock.tx.veterinario.create.mockResolvedValueOnce({ id: 'v-1' })
     expect(await registerVeterinario({ ...dados, cpf: '12345678900' })).toBe('v-1')
@@ -372,7 +372,7 @@ describe('registerVeterinario', () => {
       ativo: 1,
     })
     const vet = prismaMock.tx.veterinario.create.mock.calls[0][0].data
-    expect(PLANO_PADRAO.veterinario).toBe('none')
+    expect(PLANO_PADRAO.veterinario).toBe('free')
     expect(vet).toMatchObject({
       userId: 'u-1',
       cpf: '12345678900',
@@ -383,7 +383,7 @@ describe('registerVeterinario', () => {
       atendePresencial: 0,
       atendeOnline: 0,
       atendeDomicilio: 0,
-      subscriptionPlanCode: 'none',
+      subscriptionPlanCode: 'free',
     })
     // A foto do cadastro só entra pelo upload (rota), nunca por URL no corpo.
     expect(vet).not.toHaveProperty('fotoUrl')

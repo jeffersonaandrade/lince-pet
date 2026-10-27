@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AssinaturasService, type StatusAssinatura } from "@/services/assinaturas/assinaturas";
+import { precoMensal } from "./ResumoContratacao";
 import { StatusAssinaturaAviso } from "./StatusAssinaturaAviso";
 
 export function GerenciarAssinatura({ status, atualizar }: { status: StatusAssinatura; atualizar: () => Promise<void> }) {
@@ -34,7 +35,8 @@ export function GerenciarAssinatura({ status, atualizar }: { status: StatusAssin
 
   return (
     <section aria-label="Gerenciar assinatura" className="flex flex-col gap-3">
-      <StatusAssinaturaAviso status={status} />
+      {status.plan ? <p className="text-sm font-semibold text-slate-800">{status.plan.name} · {status.plan.priceCents > 0 ? `${precoMensal(status.plan.priceCents)}/mês (valor de catálogo)` : "Gratuito, sem mensalidade"}{status.acessoCortesia || (!status.subscription && status.plan.priceCents > 0) ? " · Acesso concedido sem assinatura de cobrança" : ""}</p> : null}
+      {status.acessoCortesia ? <p className="text-sm font-medium text-green-700">Acesso de cortesia, sem cobrança recorrente.</p> : <StatusAssinaturaAviso status={status} />}
       {mensagem ? <p role="status" className="text-sm text-slate-700">{mensagem}</p> : null}
       {erro ? <p role="alert" className="text-sm text-red-700">{erro}</p> : null}
       <div className="mb-4 flex flex-wrap gap-3">

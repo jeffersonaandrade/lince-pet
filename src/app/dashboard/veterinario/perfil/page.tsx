@@ -1,5 +1,7 @@
 "use client";
 
+import { incluirPlanosVinculados } from "@/lib/planos-saude";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import { urlDeLogin } from "@/lib/destino-login";
@@ -35,7 +37,7 @@ type VeterinarioProgresso = {
   bio?: string | null;
   especialidades?: { id?: string | number }[];
   experiencias?: Experience[];
-  planos?: { id: string }[];
+  planos?: { id: string; name?: string }[];
   atendeOnline?: boolean | number;
   precoConsultaOnline?: number | string | null;
   horariosOnline?: Record<string, string[]> | string | null;
@@ -191,6 +193,7 @@ export default function PerfilVeterinario() {
         // Load Plans
         if (vet.planos && Array.isArray(vet.planos)) {
           setPlanos(vet.planos.map((p) => p.id));
+          setAvailablePlans(ativos => incluirPlanosVinculados(ativos, vet.planos!));
         }
 
         // Load Teleconsulta Data

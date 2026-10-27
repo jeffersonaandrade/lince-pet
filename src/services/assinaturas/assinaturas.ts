@@ -22,6 +22,7 @@ export type StatusAssinatura = {
   checkoutUrl: string | null;
   cancelamentoPendente: boolean;
   cancelamentoSolicitado: boolean;
+  acessoCortesia?: boolean;
 };
 
 export type PlanoBackend = { id: string; code: string; name: string; priceCents: number; trialDays: number | null };
@@ -32,7 +33,7 @@ export function AssinaturasService() {
       const { data } = await api.get("/assinaturas/planos", { params: tipo ? { tipo } : {} });
       return data?.plans || [];
     },
-    async criarAssinatura(params: { planCode: string }): Promise<RespostaContratacao> {
+    async criarAssinatura(params: { planCode: string; valorConfirmadoCentavos: number; aceite: boolean }): Promise<RespostaContratacao> {
       const { data } = await api.post("/assinaturas", params);
       return data;
     },
@@ -40,7 +41,7 @@ export function AssinaturasService() {
       const { data } = await api.get("/assinaturas/status");
       return data;
     },
-    async upgrade(id: string, params: { planCode: string }): Promise<RespostaContratacao> {
+    async upgrade(id: string, params: { planCode: string; valorConfirmadoCentavos: number; aceite: boolean }): Promise<RespostaContratacao> {
       const { data } = await api.patch(`/assinaturas/${id}/upgrade`, params);
       return data;
     },

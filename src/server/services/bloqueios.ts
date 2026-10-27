@@ -1,3 +1,4 @@
+import { liberarCotasVeterinario } from './cotas-veterinario'
 import 'server-only'
 import { after } from 'next/server'
 import { DateTime } from 'luxon'
@@ -224,7 +225,7 @@ export async function criarBloqueio(
 
     if (conflitos.length) {
       await tx.agendamento.updateMany({
-        where: { id: { in: conflitos.map((c) => c.id) }, status: { in: STATUS_ATIVOS } },
+        where: { id: { in: conflitos.map((c) => c.id) }, status: { in: STATUS_ATIVOS }, startedAt: null },
         data: updating({
           status: 'cancelado',
           motivoCancelamento: MOTIVO_CANCELAMENTO_BLOQUEIO,
@@ -232,13 +233,7 @@ export async function criarBloqueio(
         }),
       })
 
-      const vet = await tx.veterinario.findUnique({ where: { id: veterinarioId } })
-      if (vet && (vet.monthlyAppointmentsUsed ?? 0) > 0) {
-        await tx.veterinario.update({
-          where: { id: vet.id },
-          data: updating({ monthlyAppointmentsUsed: Math.max((vet.monthlyAppointmentsUsed ?? 0) - conflitos.length, 0) }),
-        })
-      }
+      await liberarCotasVeterinario(tx, veterinarioId, conflitos.map(c => c.id))
     }
 
     return novo

@@ -1,5 +1,7 @@
 "use client";
 
+import { incluirPlanosVinculados } from "@/lib/planos-saude";
+
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
@@ -520,6 +522,7 @@ export default function OnboardingPage() {
         // Populate form data from backend if it exists
         const veterinarioData = response.data.veterinario;
         if (veterinarioData) {
+          setAvailablePlans(ativos => incluirPlanosVinculados(ativos, veterinarioData.planos || []));
           // Helper function to capitalize first letter to match dropdown options
           const capitalizeFirstLetter = (str: string) =>
             str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";

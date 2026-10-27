@@ -5,6 +5,7 @@ import { HttpError } from '../http'
 import { updating } from '../lucid'
 import { bloquearAssinante } from './assinante'
 import { FUSO_CONSULTA } from './agendamentos'
+import { codigoPlanoIndividual, limitePlanoIndividual } from '@/lib/freemium'
 
 export const MAX_PENDENTES_POR_TUTOR = 3
 export function mesDaCota(agora = new Date()) {
@@ -18,11 +19,13 @@ export async function usoMensalPrestador(db: { agendamento: Pick<Prisma.Transact
 export async function consumirCota(db: Prisma.TransactionClient, prestadorId: string, pedidoId: string) {
   await bloquearAssinante(db, { tipo: 'prestador', id: prestadorId })
   const prestador = await db.prestador.findUniqueOrThrow({ where: { id: prestadorId } })
-  const plano = await db.subscriptionPlan.findUnique({ where: { code: prestador.subscriptionPlanCode || 'free' } })
+  const codigo = codigoPlanoIndividual(prestador.subscriptionPlanCode)
+  const plano = await db.subscriptionPlan.findUnique({ where: { code: codigo } })
   if (!plano) throw new HttpError(403, { message: 'Plano não encontrado' })
   const agora = new Date(Math.floor(Date.now() / 1000) * 1000)
   const usados = await usoMensalPrestador(db, prestadorId, agora)
-  if (plano.monthlyAppointmentLimit !== null && usados >= plano.monthlyAppointmentLimit) {
+  const limite = limitePlanoIndividual(codigo, plano.monthlyAppointmentLimit)
+  if (limite !== null && usados >= limite) {
     throw new HttpError(403, { message: 'Limite mensal de aceites atingido. Cancele um pedido ainda não iniciado ou altere seu plano.' })
   }
   await db.agendamento.update({ where: { id: pedidoId }, data: { cotaConsumidaEm: agora, cotaLiberadaEm: null } })
@@ -32,7 +35,7 @@ export async function consumirCota(db: Prisma.TransactionClient, prestadorId: st
 export async function liberarCota(db: Prisma.TransactionClient, prestadorId: string, pedidoId: string) {
   await bloquearAssinante(db, { tipo: 'prestador', id: prestadorId })
   const agora = new Date()
-  await db.agendamento.updateMany({ where: { id: pedidoId, cotaConsumidaEm: { not: null }, cotaLiberadaEm: null }, data: { cotaLiberadaEm: agora } })
+  await db.agendamento.updateMany({ where: { id: pedidoId, prestadorId, startedAt: null, cotaConsumidaEm: { not: null }, cotaLiberadaEm: null }, data: { cotaLiberadaEm: agora } })
   const usados = await usoMensalPrestador(db, prestadorId, agora)
   await db.prestador.update({ where: { id: prestadorId }, data: updating({ monthlyAppointmentsUsed: usados, monthlyAppointmentsResetAt: agora }) })
 }

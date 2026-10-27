@@ -147,7 +147,7 @@ model Veterinario {
   creditos                   Int       @default(0)
   precoConsultaOnline        Decimal?  @map("preco_consulta_online") @db.Decimal(10, 2)
   horariosOnline             Json?     @map("horarios_online")
-  subscriptionPlanCode       String?   @default("none") @map("subscription_plan_code") @db.VarChar(50)
+  subscriptionPlanCode       String?   @default("free") @map("subscription_plan_code") @db.VarChar(50)
   monthlyAppointmentsUsed    Int?      @default(0) @map("monthly_appointments_used")
   monthlyAppointmentsResetAt DateTime? @map("monthly_appointments_reset_at") @db.Timestamp(0)
   /// Análise do CRMV pelo admin: pendente | aprovado | reprovado. Só aprovado aparece na busca e recebe agendamento.
@@ -446,6 +446,8 @@ model VeterinarioEndereco {
 model Plano {
   id        String    @id @db.Char(36)
   name      String    @db.VarChar(255)
+  ativo     Int       @default(1) @db.SmallInt
+  descricao String?   @db.VarChar(500)
   image     String?   @db.VarChar(255)
   createdAt DateTime? @map("created_at") @db.Timestamp(0)
   updatedAt DateTime? @map("updated_at") @db.Timestamp(0)

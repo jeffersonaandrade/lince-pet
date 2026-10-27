@@ -6,7 +6,6 @@ import {
   Users,
   Heart,
   Shield,
-  CreditCard,
   ArrowRight,
   Zap,
 } from "lucide-react";
@@ -53,11 +52,11 @@ export default function PlatformFeatures() {
       highlight: "Avaliações reais"
     },
     {
-      icon: <CreditCard />,
-      title: "Gestão Financeira",
+      icon: <Calendar />,
+      title: "Agenda Personalizada",
       description:
-        "Controle completo de pagamentos e finanças para profissionais",
-      highlight: "Pagamentos seguros"
+        "Organize seus horários, locais de atendimento e bloqueios na agenda",
+      highlight: "Horários flexíveis"
     },
   ];
 

@@ -39,7 +39,7 @@ export function StatusAssinaturaAviso({ status }: { status: StatusAssinatura }) 
           href={status.checkoutUrl}
           className="inline-flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
         >
-          Pagar fatura pendente
+          Escolher forma de pagamento
         </a>
       ) : null}
     </div>
