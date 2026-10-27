@@ -22,32 +22,28 @@ export const PLANOS_VETERINARIO: PlanoMetadata[] = [
     benefits: ['5 agendamentos por mês', 'Perfil na busca', 'Agenda e gestão dos atendimentos'],
   },
   {
-    code: 'vet_starter',
-    name: 'Vet Starter',
-    description: 'Plano inicial',
-    iconPath: '/iconPlans/Plan2.svg',
-    defaultPrice: 'R$ 39,90',
-    buttonText: 'Assinar plano',
-    benefits: [
-      'Agendamentos ilimitados',
-      'Bloqueio de horário personalizado',
-      'Dashboard de métricas nível básico',
-      'Busca prioritária no explorar',
-    ],
-  },
-  {
     code: 'vet_pro',
     name: 'Vet Pro',
-    description: 'Com Módulo Financeiro',
+    description: 'Receba agendamentos sem limite mensal',
     iconPath: '/iconPlans/Plan3.svg',
     defaultPrice: 'R$ 59,90',
     buttonText: 'Assinar plano',
     benefits: [
-      'Todos os benefícios do Vet Starter',
-      'Módulo Financeiro',
-      'Topo da categoria de busca',
-      'Dashboard de métricas nível completo',
+      'Agendamentos ilimitados',
+      'Agenda e gestão dos atendimentos',
+      'Bloqueio de horário personalizado',
+      'Prioridade na busca',
+      'Notificações por WhatsApp',
     ],
+  },
+]
+
+export const PLANOS_PRESTADOR: PlanoMetadata[] = [
+  PLANOS_VETERINARIO[0],
+  {
+    code: 'pro', name: 'Pro', description: 'Receba agendamentos sem limite mensal',
+    iconPath: '/iconPlans/Plan3.svg', defaultPrice: 'R$ 59,00', buttonText: 'Assinar plano',
+    benefits: ['Agendamentos ilimitados', 'Perfil completo', 'Agenda e gestão dos atendimentos', 'Notificações por WhatsApp'],
   },
 ]
 
@@ -106,7 +102,7 @@ export type PlanoAssinatura = {
 }
 
 const apresentacaoPorCodigo = new Map(
-  [...PLANOS_VETERINARIO, ...PLANOS_CLINICA].map((plano) => [plano.code, plano])
+  [...PLANOS_VETERINARIO, ...PLANOS_PRESTADOR, ...PLANOS_CLINICA].map((plano) => [plano.code, plano])
 )
 
 const ICONES = ['/iconPlans/Plan1.svg', '/iconPlans/Plan2.svg', '/iconPlans/Plan3.svg']

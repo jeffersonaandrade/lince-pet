@@ -3,7 +3,7 @@ import { timingSafeEqual } from 'node:crypto'
 
 /** Planos que cada tipo pode contratar (vet e prestador dividem target `veterinario` por legado). */
 export const PLANOS_POR_TIPO: Record<'veterinario' | 'clinica' | 'prestador', string[]> = {
-  veterinario: ['free', 'vet_starter', 'vet_pro'],
+  veterinario: ['free', 'vet_pro'],
   clinica: ['starter', 'clinic', 'clinic_pro'],
   prestador: ['free', 'pro'],
 }

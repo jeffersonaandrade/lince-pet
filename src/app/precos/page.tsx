@@ -44,9 +44,10 @@ function Planos({ planos }: { planos: Array<PlanoMetadata & { priceCents: number
 }
 
 export default async function PrecosPage() {
-  const [veterinarios, clinicas] = await Promise.all([
+  const [veterinarios, clinicas, prestadores] = await Promise.all([
     listarPlanosAtivos("veterinario"),
     listarPlanosAtivos("clinica"),
+    listarPlanosAtivos("prestador"),
   ]);
 
   return (
@@ -57,6 +58,10 @@ export default async function PrecosPage() {
       </Secao>
       <Secao titulo="Clínicas" id="clinica">
         <Planos planos={clinicas.map(cartaoDePlano)} />
+      </Secao>
+      <Secao titulo="Outros profissionais pet" id="prestador">
+        <Paragrafo>Comece com 5 agendamentos gratuitos por mês ou escolha Pro para receber agendamentos sem limite mensal.</Paragrafo>
+        <Planos planos={prestadores.map(cartaoDePlano)} />
       </Secao>
       <p className="m-0 text-center text-sm text-gray-500">Valores mensais de referência. O valor final aparece na assinatura, conforme ciclo e forma de pagamento.</p>
     </PaginaInstitucional>

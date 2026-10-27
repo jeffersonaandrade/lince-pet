@@ -12,12 +12,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import Tooltip from "@/components/ui/Tooltip/Tooltip";
 import styles from "../veterinario-signup.module.css";
 import Image from "next/image";
+import { EscolhaPlanoCadastro, ConfirmarPlanoCadastro } from "@/components/Assinatura/PlanoCadastro";
+import type { PlanoBackend } from "@/services/assinaturas/assinaturas";
 
 export default function VeterinarioSignup() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
+  const [plano, setPlano] = useState<PlanoBackend | null>(null);
+  const [contaCriada, setContaCriada] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
     sobrenome: "",
@@ -83,7 +87,7 @@ export default function VeterinarioSignup() {
       case 1:
         return formData.nome && formData.sobrenome && formData.celular;
       case 2:
-        return formData.email && formData.senha;
+        return formData.email && formData.senha && plano;
       default:
         return false;
     }
@@ -91,6 +95,7 @@ export default function VeterinarioSignup() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!plano || contaCriada) return;
     setIsLoading(true);
     setError(null);
 
@@ -115,7 +120,8 @@ export default function VeterinarioSignup() {
         userType: "veterinario",
       });
 
-      router.push("/onboarding");
+      if (plano.priceCents > 0) setContaCriada(true);
+      else router.push("/onboarding");
     } catch (err) {
       const errorState = handleApiError(err, {
         422: "E-mail já está em uso. Tente fazer login ou use outro e-mail.",
@@ -184,7 +190,7 @@ export default function VeterinarioSignup() {
 
           </div>
 
-          <form
+          {contaCriada && plano ? <ConfirmarPlanoCadastro plano={plano} onContinuar={() => router.push("/onboarding")} /> : <form
             key={`form-step-${currentStep}`}
             onSubmit={
               currentStep === 2
@@ -252,6 +258,7 @@ export default function VeterinarioSignup() {
 
             {currentStep === 2 && (
               <>
+                <EscolhaPlanoCadastro tipo="veterinario" selecionado={plano} onEscolha={setPlano} />
                 <div className={styles.inputGroup}>
                   <label htmlFor="cpf" className={styles.label}>
                     CPF
@@ -263,6 +270,7 @@ export default function VeterinarioSignup() {
                     value={formData.cpf}
                     onChange={handleInputChange}
                     placeholder="000.000.000-00"
+                    required={!!plano?.priceCents}
                     maxLength={14}
                     className={styles.input}
                   />
@@ -331,11 +339,11 @@ export default function VeterinarioSignup() {
                 {currentStep === 2
                   ? isLoading
                     ? "Criando conta..."
-                    : "Finalizar"
+                    : plano?.priceCents ? "Criar conta e revisar Pro" : "Criar conta gratuita"
                   : "Continuar"}
               </button>
             </div>
-          </form>
+          </form>}
 
           <p className={styles.loginLink}>
             Já tem uma conta? <Link href="/login">Entrar</Link>

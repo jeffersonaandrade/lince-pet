@@ -25,7 +25,7 @@ export type PlanoAssinaturaSeed = {
 
 /**
  * `free` e `pro` são os planos do prestador (target `veterinario` por legado).
- * Veterinário assina `vet_starter` ou `vet_pro`; `pro_plus` fica inativo.
+ * Veterinário escolhe `free` ou `vet_pro`; `vet_starter` e `pro_plus` ficam inativos.
  */
 export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
   {
@@ -81,7 +81,7 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     features: ['complete_profile', 'whatsapp_notifications', 'basic_dashboard'],
     searchPriority: 1,
     trialDays: 0,
-    active: 1,
+    active: 0,
     maxVeterinarios: null,
   },
   {
@@ -92,7 +92,7 @@ export const PLANOS_ASSINATURA: PlanoAssinaturaSeed[] = [
     currency: 'brl',
     cycle: 'MONTHLY',
     monthlyAppointmentLimit: null,
-    features: ['complete_profile', 'featured_search', 'whatsapp_notifications', 'complete_dashboard', 'financial_module'],
+    features: ['complete_profile', 'featured_search', 'whatsapp_notifications', 'basic_dashboard'],
     searchPriority: 2,
     trialDays: 0,
     active: 1,

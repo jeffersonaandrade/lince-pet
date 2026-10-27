@@ -28,6 +28,9 @@ describe('catálogo do prisma/seed', () => {
     expect(pro?.trialDays).toBe(0)
 
     expect(porCodigo.get('vet_starter')?.priceCents).toBe(3990)
+    expect(porCodigo.get('vet_starter')?.active).toBe(0)
+    expect(porCodigo.get('vet_pro')?.features).not.toContain('financial_module')
+    expect(porCodigo.get('vet_pro')?.features).not.toContain('complete_dashboard')
     expect(porCodigo.get('vet_pro')?.priceCents).toBe(5990)
     expect(porCodigo.get('pro_plus')?.active).toBe(0)
     expect(porCodigo.get('starter')).toMatchObject({ name: 'Pequena', priceCents: 9990, maxVeterinarios: 5 })

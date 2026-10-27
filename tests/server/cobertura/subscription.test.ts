@@ -43,10 +43,18 @@ afterEach(() => {
 describe('listarPlanosAtivos', () => {
   const ordem = [{ searchPriority: 'asc' }, { priceCents: 'asc' }]
 
-  it('sem tipo, lista todos os ativos', async () => {
+  it('sem tipo, lista somente os códigos contratáveis ativos', async () => {
     prismaMock.subscriptionPlan.findMany.mockResolvedValue([{ code: 'free' }])
     await expect(listarPlanosAtivos()).resolves.toEqual([{ code: 'free', trialDays: 0 }])
-    expect(prismaMock.subscriptionPlan.findMany).toHaveBeenCalledWith({ where: { active: 1 }, orderBy: ordem })
+    expect(prismaMock.subscriptionPlan.findMany).toHaveBeenCalledWith({ where: { active: 1, code: { in: ['free', 'vet_pro', 'starter', 'clinic', 'clinic_pro', 'pro'] } }, orderBy: ordem })
+  })
+
+  it('veterinário só recebe Gratuito e Pro, mesmo antes da migração do Starter', async () => {
+    prismaMock.subscriptionPlan.findMany.mockResolvedValue([])
+    await listarPlanosAtivos('veterinario')
+    expect(prismaMock.subscriptionPlan.findMany).toHaveBeenCalledWith({
+      where: { active: 1, code: { in: ['free', 'vet_pro'] } }, orderBy: ordem,
+    })
   })
 
   it('com tipo, filtra pelos planos que o tipo pode contratar', async () => {
@@ -114,6 +122,11 @@ describe('canCreateAppointment', () => {
     expect(await canCreateAppointment(uso({ subscriptionPlanCode: 'vet_pro' }))).toEqual({ allowed: true })
     expect(prismaMock.agendamento.count).not.toHaveBeenCalled()
     expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
+  })
+  it('Starter inativo no catálogo preserva acesso ilimitado de assinante existente', async () => {
+    prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ active: 0, monthlyAppointmentLimit: null })
+    expect(await canCreateAppointment(uso({ subscriptionPlanCode: 'vet_starter' }))).toEqual({ allowed: true })
+    expect(prismaMock.agendamento.count).not.toHaveBeenCalled()
   })
   it('virada mensal consulta novo período, preservando histórico e sem escrita em GET', async () => {
     prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ monthlyAppointmentLimit: 5 })

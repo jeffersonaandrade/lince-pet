@@ -230,7 +230,7 @@ seed_nodes = [
     rule("rule_seed_banco_vazio", "Seed Prisma popula catalogo de um banco vazio",
          "npx prisma db seed grava planos de assinatura, especialidades oficiais, planos de saude e diferenciais. Sem isso a listagem de planos e o cadastro de especialidades ficam vazios."),
     rule("rule_seed_planos_assinatura", "Planos de assinatura do seed vem de prisma/catalogo.ts",
-         "vet_starter, vet_pro, starter, clinic, clinic_pro, free, pro e pro_plus (inativo) com preco, limite, features, prioridade, trial e maxVeterinarios. Upsert por code sem trocar id. A tela le esses registros; src/config/planos.ts so guarda texto e icone."),
+         "vet_starter (inativo para novas adesoes), vet_pro, starter, clinic, clinic_pro, free, pro e pro_plus (inativo) com preco, limite, features, prioridade, trial e maxVeterinarios. Upsert por code sem trocar id. A tela le esses registros; src/config/planos.ts so guarda texto e icone."),
     rule("rule_seed_demonstracao", "Seed de demonstracao e idempotente e so usa e-mails mockup",
          "prisma db seed cria tutores, vets, clinicas, pets, consultas, avaliacoes, favoritos, prontuario e um bloqueio. Senha senha123 so nas contas novas com e-mail mockup; nao troca senha existente e nao duplica."),
 ]
@@ -433,7 +433,7 @@ impl.update({
 
 assinatura_nodes = [
     rule("rule_assinatura_catalogo", "Assinatura: catalogo e precos por tipo de conta",
-         "Vet: vet_starter R$ 39,90, vet_pro R$ 59,90 (diferenciacao comercial em definicao). Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e prestador comecam em free (5/mes); clinica sem plano = none. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json)."),
+         "Vet na v1: free 5 agendamentos/mes e vet_pro R$ 59,90/mes ilimitado. vet_starter inativo para novas adesoes, acessos existentes preservados. Financeiro e retorno do Starter ficam para v2, sem precos/beneficios futuros definidos. Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e prestador comecam em free (5/mes); clinica sem plano = none. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json)."),
     rule("rule_assinatura_fatura_asaas", "Assinatura: fatura Asaas UNDEFINED, sempre mensal",
          "billingType UNDEFINED (usuario escolhe Pix, boleto ou cartao na fatura do Asaas), ciclo MONTHLY; plataforma nao coleta cartao."),
     rule("rule_assinatura_trial_unico", "Assinatura: 14 dias apenas para clinicas; individuais usam freemium",
@@ -943,6 +943,10 @@ for code_id, rs in {
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
 freemium_nodes = [
+    rule("rule_oferta_individual_v1_v2", "Oferta individual: Gratuito e Pro na v1; Starter e financeiro na v2",
+         "Decisao explicita do dono em 27/10/2026: Starter fora da oferta inicial e de novas contratacoes via API. V1: free 5 agendamentos/mes e Pro ilimitado, veterinario R$59,90 e prestador R$59,00 mensais. Acessos, IDs, cortesias e assinaturas existentes preservados. Gestao financeira e retorno do Starter na v2; diferenciacao e precos futuros pendentes. Nao anunciar financeiro nem dashboard avancado agora. Clinicas/exames separados, inclusive codigo starter da Pequena e teste de 14 dias."),
+    rule("rule_cadastro_comparacao_gratuito_pro", "Cadastro: comparar Gratuito e Pro antes da escolha, com identidade visual do site",
+         "Decisao explicita do dono em 27/10/2026: cadastro vet e prestador exibe comparacao e preco do banco; Gratuito inicial. Selecionar Pro nao cobra. Conta criada antes do resumo e aceite mensal explicito; apenas confirmar chama assinatura e pagamento Asaas. Usuario pode seguir no Gratuito sem contratar. Falha de cobranca nao repete registro. Preservar estilo, fontes, cores e icones do site; verificar desktop e celular."),
     rule("rule_freemium_individual_cinco", "Freemium: 5 agendamentos mensais por perfil individual",
          "Decisao do dono em 27/10/2026: veterinarios e prestadores comecam em free (5/mes); clinicas e exames excluidos. Reserva vet consome ao criar; prestador no aceite. Mes calendario de Brasilia do evento, nao da consulta. Cota compartilhada entre locais/servicos, separada por perfil; nao limita nem rebaixa cortesias e planos pagos."),
     rule("rule_freemium_transacao_cancelamento", "Freemium: trava da cota e devolucao ao mes original",
@@ -952,11 +956,16 @@ freemium_nodes = [
     rule("rule_admin_planos_saude", "Admin: catalogo de planos de saude pet separado da assinatura",
          "Decisao do dono em 27/10/2026: criar/editar nome e descricao, ativar/inativar logicamente convenios pet. Somente admin, revisao contra edicao concorrente e nomes duplicados recusados. Inativo sai de novas selecoes; vinculos/historico de vets e clinicas preservados e visiveis na edicao. Backend verifica novas associacoes sob trava de leitura. Catalogo nao comprova cobertura nem credenciamento."),
     rule("rule_assinatura_preco_confirmado", "Contratacao: preco mensal e primeira fatura antes de confirmar",
-         "Mostrar nome, preco do catalogo, recorrencia, primeira fatura e condicoes antes de iniciar assinatura. Aceite explicito do valor; backend recusa preco desatualizado antes do Asaas; selecionar nao cria cobranca. Pro/Starter aguardam diferenciacao comercial; financeiro anunciado nao prova funcionalidade entregue."),
+         "Mostrar nome, preco do catalogo, recorrencia, primeira fatura e condicoes antes de iniciar assinatura. Aceite explicito do valor; backend recusa preco desatualizado antes do Asaas; selecionar nao cria cobranca. V1 oferece Gratuito e Pro; Starter e gestao financeira ficam para v2. Cadastro compara planos e preco antes da escolha; Pro exige confirmacao separada apos criar conta, sem cobrar ao selecionar."),
 ]
 new_nodes += freemium_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in freemium_nodes]
 for code_id, rs in {
+    "src_config_planos": ["rule_oferta_individual_v1_v2"],
+    "src_server_services_assinatura_regras": ["rule_oferta_individual_v1_v2"],
+    "src_components_assinatura_planocadastro": ["rule_cadastro_comparacao_gratuito_pro", "rule_assinatura_preco_confirmado", "rule_visual_padrao_site"],
+    "src_app_signup_veterinario_components_veterinariosignup": ["rule_cadastro_comparacao_gratuito_pro"],
+    "src_app_signup_prestador_page": ["rule_cadastro_comparacao_gratuito_pro"],
     "src_server_services_cotas_veterinario": ["rule_freemium_individual_cinco", "rule_freemium_transacao_cancelamento"],
     "src_server_services_cotas_prestador": ["rule_freemium_individual_cinco", "rule_freemium_transacao_cancelamento"],
     "src_server_services_subscription": ["rule_freemium_individual_cinco"],

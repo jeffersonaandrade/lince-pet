@@ -21,10 +21,10 @@ export type DonoDoLimite = 'veterinario' | 'prestador'
 const findPlan = (vet: ComPlano) =>
   prisma.subscriptionPlan.findUnique({ where: { code: vet.subscriptionPlanCode || 'free' } })
 
-/** Planos ativos que o tipo pode contratar. Sem tipo, devolve todos os ativos. */
+/** Catálogo contratável; códigos legados continuam válidos para acessos existentes. */
 export async function listarPlanosAtivos(tipo?: keyof typeof PLANOS_POR_TIPO) {
   const planos = await prisma.subscriptionPlan.findMany({
-    where: { active: 1, ...(tipo ? { code: { in: PLANOS_POR_TIPO[tipo] } } : {}) },
+    where: { active: 1, code: { in: tipo ? PLANOS_POR_TIPO[tipo] : [...new Set(Object.values(PLANOS_POR_TIPO).flat())] } },
     orderBy: [{ searchPriority: 'asc' }, { priceCents: 'asc' }],
   })
   return planos.map(plano => ['free', 'pro', 'pro_plus', 'vet_starter', 'vet_pro'].includes(plano.code) ? { ...plano, trialDays: 0 } : plano)

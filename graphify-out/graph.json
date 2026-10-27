@@ -48819,7 +48819,7 @@
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
       "norm_label": "planos de assinatura do seed vem de prisma/catalogo.ts",
-      "rationale": "vet_starter, vet_pro, starter, clinic, clinic_pro, free, pro e pro_plus (inativo) com preco, limite, features, prioridade, trial e maxVeterinarios. Upsert por code sem trocar id. A tela le esses registros; src/config/planos.ts so guarda texto e icone.",
+      "rationale": "vet_starter (inativo para novas adesoes), vet_pro, starter, clinic, clinic_pro, free, pro e pro_plus (inativo) com preco, limite, features, prioridade, trial e maxVeterinarios. Upsert por code sem trocar id. A tela le esses registros; src/config/planos.ts so guarda texto e icone.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -48831,7 +48831,7 @@
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
       "norm_label": "assinatura: catalogo e precos por tipo de conta",
-      "rationale": "Vet: vet_starter R$ 39,90, vet_pro R$ 59,90 (diferenciacao comercial em definicao). Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e prestador comecam em free (5/mes); clinica sem plano = none. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json).",
+      "rationale": "Vet na v1: free 5 agendamentos/mes e vet_pro R$ 59,90/mes ilimitado. vet_starter inativo para novas adesoes, acessos existentes preservados. Financeiro e retorno do Starter ficam para v2, sem precos/beneficios futuros definidos. Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e prestador comecam em free (5/mes); clinica sem plano = none. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json).",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -49358,7 +49358,7 @@
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
       "norm_label": "contratacao: preco mensal e primeira fatura antes de confirmar",
-      "rationale": "Mostrar nome, preco do catalogo, recorrencia, primeira fatura e condicoes antes de iniciar assinatura. Aceite explicito do valor; backend recusa preco desatualizado antes do Asaas; selecionar nao cria cobranca. Pro/Starter aguardam diferenciacao comercial; financeiro anunciado nao prova funcionalidade entregue.",
+      "rationale": "Mostrar nome, preco do catalogo, recorrencia, primeira fatura e condicoes antes de iniciar assinatura. Aceite explicito do valor; backend recusa preco desatualizado antes do Asaas; selecionar nao cria cobranca. V1 oferece Gratuito e Pro; Starter e gestao financeira ficam para v2. Cadastro compara planos e preco antes da escolha; Pro exige confirmacao separada apos criar conta, sem cobrar ao selecionar.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -49422,6 +49422,24 @@
       "label": "Admin: catalogo de planos de saude pet separado da assinatura",
       "file_type": "rationale",
       "rationale": "Decisao do dono em 27/10/2026: criar/editar nome e descricao, ativar/inativar logicamente convenios pet. Somente admin, revisao contra edicao concorrente e nomes duplicados recusados. Inativo sai de novas selecoes; vinculos/historico de vets e clinicas preservados e visiveis na edicao. Backend verifica novas associacoes sob trava de leitura. Catalogo nao comprova cobertura nem credenciamento.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
+    },
+    {
+      "id": "rule_oferta_individual_v1_v2",
+      "label": "Oferta individual: Gratuito e Pro na v1; Starter e financeiro na v2",
+      "file_type": "rationale",
+      "rationale": "Decisao explicita do dono em 27/10/2026: Starter fora da oferta inicial e de novas contratacoes via API. V1: free 5 agendamentos/mes e Pro ilimitado, veterinario R$59,90 e prestador R$59,00 mensais. Acessos, IDs, cortesias e assinaturas existentes preservados. Gestao financeira e retorno do Starter na v2; diferenciacao e precos futuros pendentes. Nao anunciar financeiro nem dashboard avancado agora. Clinicas/exames separados, inclusive codigo starter da Pequena e teste de 14 dias.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
+    },
+    {
+      "id": "rule_cadastro_comparacao_gratuito_pro",
+      "label": "Cadastro: comparar Gratuito e Pro antes da escolha, com identidade visual do site",
+      "file_type": "rationale",
+      "rationale": "Decisao explicita do dono em 27/10/2026: cadastro vet e prestador exibe comparacao e preco do banco; Gratuito inicial. Selecionar Pro nao cobra. Conta criada antes do resumo e aceite mensal explicito; apenas confirmar chama assinatura e pagamento Asaas. Usuario pode seguir no Gratuito sem contratar. Falha de cobranca nao repete registro. Preservar estilo, fontes, cores e icones do site; verificar desktop e celular.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null,
       "contributor": "regras-de-negocio"
@@ -195731,6 +195749,87 @@
     {
       "source": "src_components_assinatura_resumocontratacao",
       "target": "rule_assinatura_preco_confirmado",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_oferta_individual_v1_v2",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_cadastro_comparacao_gratuito_pro",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_config_planos",
+      "target": "rule_oferta_individual_v1_v2",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_signup_veterinario_components_veterinariosignup",
+      "target": "rule_cadastro_comparacao_gratuito_pro",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_assinatura_regras",
+      "target": "rule_oferta_individual_v1_v2",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_assinatura_planocadastro",
+      "target": "rule_cadastro_comparacao_gratuito_pro",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_assinatura_planocadastro",
+      "target": "rule_assinatura_preco_confirmado",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_assinatura_planocadastro",
+      "target": "rule_visual_padrao_site",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_signup_prestador_page",
+      "target": "rule_cadastro_comparacao_gratuito_pro",
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,

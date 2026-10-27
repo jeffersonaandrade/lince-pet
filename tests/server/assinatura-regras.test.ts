@@ -28,6 +28,8 @@ describe('regras de assinatura', () => {
 
   it('cada tipo só contrata os próprios planos', () => {
     expect(planoServePara('vet_pro', 'veterinario')).toBe(true)
+    expect(planoServePara('vet_starter', 'veterinario')).toBe(false)
+    expect(planoServePara('free', 'veterinario')).toBe(true)
     expect(planoServePara('pro', 'veterinario')).toBe(false)
     expect(planoServePara('starter', 'clinica')).toBe(true)
     expect(planoServePara('vet_starter', 'clinica')).toBe(false)
