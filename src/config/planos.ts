@@ -33,7 +33,6 @@ export const PLANOS_VETERINARIO: PlanoMetadata[] = [
       'Agenda e gestão dos atendimentos',
       'Bloqueio de horário personalizado',
       'Prioridade na busca',
-      'Notificações por WhatsApp',
     ],
   },
 ]
@@ -43,7 +42,7 @@ export const PLANOS_PRESTADOR: PlanoMetadata[] = [
   {
     code: 'pro', name: 'Pro', description: 'Receba agendamentos sem limite mensal',
     iconPath: '/iconPlans/Plan3.svg', defaultPrice: 'R$ 59,00', buttonText: 'Assinar plano',
-    benefits: ['Agendamentos ilimitados', 'Perfil completo', 'Agenda e gestão dos atendimentos', 'Notificações por WhatsApp'],
+    benefits: ['Agendamentos ilimitados', 'Perfil completo', 'Agenda e gestão dos atendimentos'],
   },
 ]
 
@@ -58,7 +57,7 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
     benefits: [
       'Até 5 veterinários na equipe',
       'Agenda de exames (até 100 por mês)',
-      'Notificações por e-mail e WhatsApp',
+      'Notificações por e-mail',
       'QR Code / Link da clínica',
     ],
   },
@@ -111,7 +110,6 @@ const ROTULOS_FEATURE: Record<string, string> = {
   basic_profile: 'Perfil básico',
   qr_code: 'QR Code',
   complete_profile: 'Perfil completo',
-  whatsapp_notifications: 'Notificações por WhatsApp',
   basic_dashboard: 'Dashboard de métricas básico',
   featured_search: 'Destaque na busca',
   complete_dashboard: 'Dashboard de métricas completo',
@@ -129,6 +127,8 @@ function beneficiosDasFeatures(features: unknown) {
   const lista = Array.isArray(features) ? features : []
   return lista.flatMap((item) => {
     if (typeof item !== 'string') return []
+    // WhatsApp adiado para depois da v1, inclusive em planos legados vindos do banco.
+    if (item === 'whatsapp_notifications') return []
     return [ROTULOS_FEATURE[item] ?? item]
   })
 }

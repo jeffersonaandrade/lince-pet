@@ -14,7 +14,7 @@ const FAQ = [
       ["Preciso pagar para usar a Lince Pet?", "Não. Para tutores, buscar profissionais e agendar consultas é gratuito. O valor da consulta é combinado com o profissional e aparece antes de confirmar."],
       ["Como cancelo ou remarco uma consulta?", "No seu painel, abra a consulta e escolha cancelar ou reagendar. O profissional é avisado automaticamente."],
       ["Onde vejo o histórico do meu pet?", "Em Meus Pets, clique em Prontuário para ver os registros de todas as consultas."],
-      ["Como deixo de receber avisos por WhatsApp?", "Em Perfil > Notificações, desmarque a opção de WhatsApp. O e-mail continua ativo."],
+      ["Como recebo os avisos dos agendamentos?", "Os avisos aparecem no site. Você pode configurar os avisos por e-mail em Perfil > Notificações."],
     ],
   },
   {

@@ -27,8 +27,8 @@ export default function PlatformFeatures() {
       icon: <Calendar />,
       title: "Agendamento Automatizado",
       description:
-        "Sistema integrado de agenda com confirmações automáticas via WhatsApp e email",
-      highlight: "WhatsApp integrado"
+        "Agenda integrada com avisos por e-mail e notificações dentro do site",
+      highlight: "Avisos no site"
     },
     {
       icon: <Users />,

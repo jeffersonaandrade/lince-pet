@@ -943,6 +943,8 @@ for code_id, rs in {
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
 freemium_nodes = [
+    rule("rule_whatsapp_fora_oferta_v1", "V1: WhatsApp adiado e fora da oferta comercial",
+         "Decisao explicita do dono em 27/10/2026: avisos automaticos por WhatsApp ficam para depois da v1. Retirar promessa dos planos, cadastro, home e ajuda, inclusive fallback de features legadas do banco. Preservar historico e configuracoes existentes; e-mail e avisos no site permanecem. Gestao financeira/Starter tambem ficam para v2. Pendencias atualizadas em docs/PENDENCIAS-V1-2026-10-27.md; publicar codigo nao comprova homologacao financeira, restauracao ou aceite juridico."),
     rule("rule_oferta_individual_v1_v2", "Oferta individual: Gratuito e Pro na v1; Starter e financeiro na v2",
          "Decisao explicita do dono em 27/10/2026: Starter fora da oferta inicial e de novas contratacoes via API. V1: free 5 agendamentos/mes e Pro ilimitado, veterinario R$59,90 e prestador R$59,00 mensais. Acessos, IDs, cortesias e assinaturas existentes preservados. Gestao financeira e retorno do Starter na v2; diferenciacao e precos futuros pendentes. Nao anunciar financeiro nem dashboard avancado agora. Clinicas/exames separados, inclusive codigo starter da Pequena e teste de 14 dias."),
     rule("rule_cadastro_comparacao_gratuito_pro", "Cadastro: comparar Gratuito e Pro antes da escolha, com identidade visual do site",
@@ -961,7 +963,9 @@ freemium_nodes = [
 new_nodes += freemium_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in freemium_nodes]
 for code_id, rs in {
-    "src_config_planos": ["rule_oferta_individual_v1_v2"],
+    "src_config_planos": ["rule_oferta_individual_v1_v2", "rule_whatsapp_fora_oferta_v1"],
+    "src_components_home_platformfeatures_platformfeatures": ["rule_whatsapp_fora_oferta_v1"],
+    "src_app_ajuda_page": ["rule_whatsapp_fora_oferta_v1"],
     "src_server_services_assinatura_regras": ["rule_oferta_individual_v1_v2"],
     "src_components_assinatura_planocadastro": ["rule_cadastro_comparacao_gratuito_pro", "rule_assinatura_preco_confirmado", "rule_visual_padrao_site"],
     "src_app_signup_veterinario_components_veterinariosignup": ["rule_cadastro_comparacao_gratuito_pro"],
