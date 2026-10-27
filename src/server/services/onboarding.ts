@@ -174,6 +174,7 @@ export async function processStep4(user: CurrentUser, payload: Infer<typeof step
         await tx.veterinarioEndereco.create({
           data: creating({
             veterinarioId: veterinario.id,
+            nomeClinica: location.nomeClinica || null,
             rua: location.rua,
             numero: location.numero,
             bairro: location.bairro || null,

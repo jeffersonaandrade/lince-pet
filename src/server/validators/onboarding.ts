@@ -40,6 +40,7 @@ export const step4Validator = vine.compile(
     locations: vine
       .array(
         vine.object({
+          nomeClinica: vine.string().trim().maxLength(255).optional(),
           rua: vine.string().trim().minLength(1),
           numero: vine.string().trim().minLength(1),
           bairro: vine.string().trim().minLength(1).optional(),

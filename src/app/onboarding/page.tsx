@@ -526,6 +526,7 @@ export default function OnboardingPage() {
 
           interface EnderecoData {
             id?: string;
+            nomeClinica?: string | null;
             rua: string;
             numero: string;
             bairro: string;
@@ -597,6 +598,7 @@ export default function OnboardingPage() {
               }
 
               return {
+                ...(endereco.nomeClinica ? { nomeClinica: endereco.nomeClinica } : {}),
                 rua: endereco.rua,
                 numero: endereco.numero,
                 bairro: endereco.bairro,

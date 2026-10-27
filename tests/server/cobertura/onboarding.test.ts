@@ -25,6 +25,7 @@ vi.mock('@/server/db', () => ({ prisma: mocks.prisma }))
 vi.mock('@/server/services/veterinarios', () => mocks.vets)
 
 import { HttpError } from '@/server/http'
+import { step4Validator } from '@/server/validators/onboarding'
 import {
   validatePreviousSteps,
   processStep1,
@@ -169,6 +170,17 @@ describe('processStep3 (especialidades)', () => {
 })
 
 describe('processStep4 (tipos de visita e locais)', () => {
+  it('preserva o nome da clínica da validação até a gravação do endereço', async () => {
+    const payload = await step4Validator.validate({
+      visitTypes: { presencial: true, online: false },
+      locations: [local({ nomeClinica: '  Clínica Boa Vista  ' })],
+    })
+    await processStep4(userCom(vetCompleto()), payload)
+    expect(prisma.veterinarioEndereco.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ nomeClinica: 'Clínica Boa Vista' }),
+    })
+  })
+
   it('exige os passos anteriores', async () => {
     const res = await processStep4(userCom({ id: 'vet-1' }), { visitTypes: { presencial: true, online: false } } as never)
     expect(res.success).toBe(false)
