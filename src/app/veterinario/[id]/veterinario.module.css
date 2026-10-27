@@ -1488,17 +1488,19 @@
 
 .mainGrid {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 2rem;
 }
 
 .leftColumn {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
 .sidebar {
+  min-width: 0;
   position: relative;
 }
 
@@ -1697,7 +1699,7 @@
   }
 
   .mainGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
