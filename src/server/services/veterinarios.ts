@@ -1,3 +1,4 @@
+import { conferirNovosPlanosSaude } from './planos-saude'
 import 'server-only'
 import { DateTime } from 'luxon'
 import {
@@ -196,9 +197,10 @@ export async function syncPlanosVeterinario(veterinarioId: string, ids: unknown[
   await prisma.$transaction(async (tx) => {
     const existing = await tx.veterinarioPlano.findMany({ where: { veterinarioId } })
     const current = new Set(existing.map((r) => r.planoId))
+    const add = wanted.filter((id) => !current.has(id))
+    await conferirNovosPlanosSaude(tx, add)
     const remove = [...current].filter((id) => !wanted.includes(id))
     if (remove.length) await tx.veterinarioPlano.deleteMany({ where: { veterinarioId, planoId: { in: remove } } })
-    const add = wanted.filter((id) => !current.has(id))
     if (add.length) await tx.veterinarioPlano.createMany({ data: add.map((planoId) => ({ veterinarioId, planoId })) })
   })
 }
@@ -396,7 +398,7 @@ export async function getVeterinarioById(id: string) {
 
     const data = formatVeterinarioData(veterinario)
     const limitCheck = await canCreateAppointment(veterinario)
-    return { ...data, limitReached: !limitCheck.allowed, crmvAprovado: veterinario.crmvStatus === APROVADO }
+    return { ...data, limitReached: !limitCheck.allowed, crmvAprovado: veterinario.crmvStatus === APROVADO, motivoBloqueioAgendamento: veterinario.crmvStatus !== APROVADO ? 'Este profissional está aguardando a aprovação do CRMV para receber agendamentos.' : !limitCheck.allowed ? (limitCheck.reason === 'Limite mensal atingido' ? 'Este profissional atingiu o limite de agendamentos deste mês. Novas reservas serão liberadas com a renovação mensal ou mudança de plano.' : 'Não foi possível liberar novos agendamentos para este profissional.') : null }
   } catch (error) {
     if ((error as { status?: number }).status === 404) throw error
     console.error('❌ [VeterinariosService] Erro inesperado ao buscar veterinário ID:', id, error)

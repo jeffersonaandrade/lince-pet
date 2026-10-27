@@ -7,6 +7,8 @@ const links = [
   { href: "/admin/dashboard", nome: "Painel" },
   { href: "/admin/aprovacoes", nome: "Aprovações" },
   { href: "/admin/especialidades", nome: "Especialidades" },
+  { href: "/admin/profissoes", nome: "Profissões" },
+  { href: "/admin/planos-saude", nome: "Planos de saúde pet" },
   { href: "/admin/uso", nome: "Uso de dados" },
   { href: "/admin/recuperacoes", nome: "Recuperação de CNPJ" },
 ];

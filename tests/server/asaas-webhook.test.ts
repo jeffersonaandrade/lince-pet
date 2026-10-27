@@ -102,7 +102,7 @@ beforeEach(() => {
   prismaMock.subscription.findMany.mockResolvedValue([])
   prismaMock.subscription.count.mockResolvedValue(0)
   prismaMock.subscriptionPlan.findUnique.mockResolvedValue({ id: 'plan-pro', code: 'vet_pro' })
-  prismaMock.veterinario.findUnique.mockResolvedValue({ subscriptionPlanCode: 'none' })
+  prismaMock.veterinario.findUnique.mockResolvedValue({ subscriptionPlanCode: 'free' })
 })
 
 describe('webhook Asaas: pagamento confirmado', () => {
@@ -228,13 +228,13 @@ describe('webhook Asaas: eventos ignorados', () => {
 
 describe('webhook Asaas: inadimplência', () => {
   it.each(['PAYMENT_OVERDUE', 'PAYMENT_REFUNDED', 'PAYMENT_CHARGEBACK_REQUESTED', 'PAYMENT_RECEIVED_IN_CASH_UNDONE'])(
-    '%s marca past_due e o vet fica sem plano',
+    '%s marca past_due e o vet volta ao gratuito',
     async (ev) => {
       prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'active' }))
       prismaMock.veterinario.findUnique.mockResolvedValue({ subscriptionPlanCode: 'vet_pro' })
       await handleAsaasEvent(pagamento(ev))
       expect(statusGravado()).toEqual(['past_due'])
-      expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('none')
+      expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('free')
     }
   )
 
@@ -245,12 +245,12 @@ describe('webhook Asaas: inadimplência', () => {
     expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
   })
 
-  it('fim do teste sem pagamento: vence e o vet perde o plano', async () => {
+  it('fim do teste sem pagamento: vence e o vet volta ao gratuito', async () => {
     prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'active', trialEnd: new Date() }))
     prismaMock.veterinario.findUnique.mockResolvedValue({ subscriptionPlanCode: 'vet_starter' })
     await handleAsaasEvent(pagamento('PAYMENT_OVERDUE'))
     expect(statusGravado()).toEqual(['past_due'])
-    expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('none')
+    expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('free')
   })
 
   it('troca pendente vencida não derruba o plano atual pago', async () => {
@@ -278,7 +278,7 @@ describe('webhook Asaas: inadimplência', () => {
 
   it('dono já sem plano não é atualizado de novo', async () => {
     prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'active' }))
-    prismaMock.veterinario.findUnique.mockResolvedValue({ subscriptionPlanCode: 'none' })
+    prismaMock.veterinario.findUnique.mockResolvedValue({ subscriptionPlanCode: 'free' })
     await handleAsaasEvent(pagamento('PAYMENT_OVERDUE'))
     expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
   })
@@ -473,4 +473,11 @@ describe('webhook Asaas: detalhes do rebaixamento', () => {
     await handleAsaasEvent(pagamento('PAYMENT_OVERDUE'))
     expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
   })
+})
+
+it('webhook repetido de assinatura encerrada não revoga cortesia posterior', async () => {
+  prismaMock.subscription.findFirst.mockResolvedValue(subVet({ status: 'canceled' }))
+  prismaMock.veterinario.findUnique.mockResolvedValue({ subscriptionPlanCode: 'vet_pro' })
+  await handleAsaasEvent({ event: 'SUBSCRIPTION_DELETED', subscription: { id: 'sub_asaas_1' } } as never)
+  expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
 })

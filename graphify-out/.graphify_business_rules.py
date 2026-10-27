@@ -305,7 +305,7 @@ prestador_nodes = [
     rule("rule_prestador_bloqueio_conflito_409", "Bloqueio do prestador com pedido ativo e recusado (409)",
          "Diferente do vet, nao cancela pedidos: devolve 409 com a lista de conflitos para o prestador recusar ou remarcar antes."),
     rule("rule_prestador_limite_plano", "Prestador: plano free com limite mensal e upgrade Asaas",
-         "Comeca no free (10 pedidos/mes); pro pelo mesmo fluxo /api/assinaturas (referencia prestador:<id>); recusa/cancelamento devolve a cota; cancelar ou atrasar volta para free."),
+         "Comeca no free (5 aceites/mes por perfil, no mes de Brasilia); pro pelo mesmo fluxo /api/assinaturas (referencia prestador:<id>); recusa/cancelamento devolve a cota; cancelar ou atrasar volta para free."),
     rule("rule_prestador_avisos_reaproveitados", "Pedido de servico: mesmos avisos com texto de servico",
          "In-app, e-mail, WhatsApp e Google Agenda reaproveitados via profissionalDe; textos sem Dr(a). nem consulta; WhatsApp depende do plano do prestador."),
 ]
@@ -433,11 +433,11 @@ impl.update({
 
 assinatura_nodes = [
     rule("rule_assinatura_catalogo", "Assinatura: catalogo e precos por tipo de conta",
-         "Vet: vet_starter R$ 39,90, vet_pro R$ 59,90 (modulo financeiro). Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e clinica sem plano = none, sem recursos pagos. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json)."),
+         "Vet: vet_starter R$ 39,90, vet_pro R$ 59,90 (diferenciacao comercial em definicao). Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e prestador comecam em free (5/mes); clinica sem plano = none. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json)."),
     rule("rule_assinatura_fatura_asaas", "Assinatura: fatura Asaas UNDEFINED, sempre mensal",
          "billingType UNDEFINED (usuario escolhe Pix, boleto ou cartao na fatura do Asaas), ciclo MONTHLY; plataforma nao coleta cartao."),
-    rule("rule_assinatura_trial_unico", "Assinatura: teste gratis de 14 dias so na primeira assinatura, sem cartao",
-         "Dono sem nenhuma assinatura com asaasSubscriptionId: plano ativa na hora, primeira fatura vence no dia 14; sem pagamento vira inadimplente e perde o plano."),
+    rule("rule_assinatura_trial_unico", "Assinatura: 14 dias apenas para clinicas; individuais usam freemium",
+         "Decisao confirmada em 27/10/2026: novas assinaturas individuais nao tem teste; so ativam apos pagamento. Clinicas mantem teste de 14 dias na primeira assinatura paga. Testes concedidos anteriormente sao preservados."),
     rule("rule_assinatura_plano_so_apos_pagamento", "Assinatura: plano so muda apos pagamento confirmado",
          "Fora do teste, contratar/trocar cria assinatura pending e devolve link da fatura; plano aplicado so em PAYMENT_CONFIRMED/PAYMENT_RECEIVED; ao ativar cancela as outras do mesmo dono; cancelada/expirada ignora pagamento."),
     rule("rule_assinatura_status", "Assinatura: status ativa/pendente/cancelada/inadimplente e cancelamento em confirmacao",
@@ -453,7 +453,7 @@ assinatura_nodes = [
     rule("rule_busca_sem_filtro_creditos", "Busca de veterinarios sem filtro de creditos",
          "Removido v.creditos > 0 da busca; ordenacao por plano: vet_pro antes de vet_starter."),
     rule("rule_assinatura_cortesia_legado", "Assinatura: contas anteriores ao Asaas mantem o plano como cortesia",
-         "Contas com plano pago antes do Asaas e sem assinatura (15/10/2026: 1 vet pro, 1 clinica clinic) mantem o plano; nao sao rebaixadas por script; perdem a cortesia so ao assinar/trocar pelo fluxo normal. Contas novas comecam em none."),
+         "Legados e cortesias autorizadas pelo dono mantem acesso pelo subscription_plan_code sem criar recorrencia. Se existe assinatura, encerrar no Asaas e confirmar antes de conceder cortesia; conservar historico local como canceled. Webhook repetido de assinatura encerrada nao pode revogar cortesia posterior. Novos individuais comecam em free (5/mes); clinicas em none."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in assinatura_nodes if n["id"] not in nodes_ids]
@@ -942,6 +942,33 @@ for code_id, rs in {
 }.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
+freemium_nodes = [
+    rule("rule_freemium_individual_cinco", "Freemium: 5 agendamentos mensais por perfil individual",
+         "Decisao do dono em 27/10/2026: veterinarios e prestadores comecam em free (5/mes); clinicas e exames excluidos. Reserva vet consome ao criar; prestador no aceite. Mes calendario de Brasilia do evento, nao da consulta. Cota compartilhada entre locais/servicos, separada por perfil; nao limita nem rebaixa cortesias e planos pagos."),
+    rule("rule_freemium_transacao_cancelamento", "Freemium: trava da cota e devolucao ao mes original",
+         "Sexto consumo recusado dentro da transacao sob trava por assinante. Cancelar antes de iniciar libera uma unica vez no mes original; nunca credita outro mes. Virada mensal sem reset destrutivo ou escrita em GET. Agenda/historico permanecem acessiveis mesmo sem cota."),
+    rule("rule_admin_profissoes", "Admin: profissões editaveis com inativacao e preservacao do historico",
+         "Somente admin cria/edita nome, descricao e ordem, ativa/inativa logicamente. Revisao impede sobrescrita concorrente, nomes/slug duplicados recusados. Slug imutavel; modalidade nao muda com prestadores vinculados. Inativas saem das novas adesoes; perfis e pedidos existentes preservados. Seed nao sobrescreve admin."),
+    rule("rule_admin_planos_saude", "Admin: catalogo de planos de saude pet separado da assinatura",
+         "Decisao do dono em 27/10/2026: criar/editar nome e descricao, ativar/inativar logicamente convenios pet. Somente admin, revisao contra edicao concorrente e nomes duplicados recusados. Inativo sai de novas selecoes; vinculos/historico de vets e clinicas preservados e visiveis na edicao. Backend verifica novas associacoes sob trava de leitura. Catalogo nao comprova cobertura nem credenciamento."),
+    rule("rule_assinatura_preco_confirmado", "Contratacao: preco mensal e primeira fatura antes de confirmar",
+         "Mostrar nome, preco do catalogo, recorrencia, primeira fatura e condicoes antes de iniciar assinatura. Aceite explicito do valor; backend recusa preco desatualizado antes do Asaas; selecionar nao cria cobranca. Pro/Starter aguardam diferenciacao comercial; financeiro anunciado nao prova funcionalidade entregue."),
+]
+new_nodes += freemium_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in freemium_nodes]
+for code_id, rs in {
+    "src_server_services_cotas_veterinario": ["rule_freemium_individual_cinco", "rule_freemium_transacao_cancelamento"],
+    "src_server_services_cotas_prestador": ["rule_freemium_individual_cinco", "rule_freemium_transacao_cancelamento"],
+    "src_server_services_subscription": ["rule_freemium_individual_cinco"],
+    "src_server_services_admin_profissoes": ["rule_admin_profissoes"],
+    "src_server_services_admin_planos_saude": ["rule_admin_planos_saude"],
+    "src_server_services_planos_saude": ["rule_admin_planos_saude"],
+    "src_components_adminplanossaude_adminplanossaude": ["rule_admin_planos_saude"],
+    "src_components_adminprofissoes_adminprofissoes": ["rule_admin_profissoes"],
+    "src_components_assinatura_resumocontratacao": ["rule_assinatura_preco_confirmado"],
+}.items():
+    impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 
@@ -956,5 +983,21 @@ print("cached files:", saved)
 
 G = build_merge([{"nodes": nodes, "edges": edges, "hyperedges": hyperedges}], graph_path=graph_path, root=".")
 G.graph["hyperedges"] = hyperedges
-to_json(G, {}, str(graph_path), force=True)
+# O merge recalcula/reordena comunidades. Esta extração só altera regras de negócio;
+# preserve a análise de código e a ordem anteriores para evitar ruído no diff.
+regras = {n["id"]: n for n in nodes}
+ids_anteriores = {n["id"] for n in g["nodes"]}
+g["nodes"] = [
+    {**n, **{k: v for k, v in regras[n["id"]].items() if k not in ("community", "community_name")}}
+    if n["id"] in regras else n for n in g["nodes"]
+]
+g["nodes"] += [{"id": id_, **attrs} for id_, attrs in G.nodes(data=True) if id_ not in ids_anteriores]
+def chave(e):
+    return tuple(sorted((str(e["source"]), str(e["target"])))) + (e.get("relation"),)
+chaves = {chave(e) for e in g["links"]}
+for e in edges:
+    if chave(e) not in chaves:
+        g["links"].append(e)
+        chaves.add(chave(e))
+graph_path.write_text(json.dumps(g, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 print("nodes:", G.number_of_nodes(), "edges:", G.number_of_edges())

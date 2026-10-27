@@ -74,6 +74,8 @@ async function seedEspecialidades() {
 }
 
 async function seedPlanosSaude() {
+  // Depois da carga inicial, o catálogo é administrado pelo painel.
+  if (await prisma.plano.count()) return
   const agoraCreate = agora()
   for (const name of PLANOS_SAUDE) {
     const existing = await prisma.plano.findFirst({ where: { name } })
@@ -116,7 +118,7 @@ async function seedTiposServico() {
     await prisma.tipoServico.upsert({
       where: { slug: tipo.slug },
       create: { id: randomUUID(), slug: tipo.slug, ativo: 1, ...dados, createdAt: quando, updatedAt: quando },
-      update: { ...dados, updatedAt: quando },
+      update: {}, // Catálogo existente pertence ao admin; seed não sobrescreve alterações.
     })
   }
 }

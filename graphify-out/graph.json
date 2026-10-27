@@ -7424,7 +7424,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 138,
-      "community_name": "Corre\u00e7\u00f5es da auditoria \u2014 23/10/2026",
+      "community_name": "Correções da auditoria — 23/10/2026",
       "file_type": "code",
       "norm_label": "sub()",
       "source_file": "tests/server/assinatura-rotas.test.ts",
@@ -24588,11 +24588,11 @@
       "source_location": "L3"
     },
     {
-      "id": "docs_homologacao_asaas_2026_10_24_ambiente_e_m\u00e9todo",
-      "label": "Ambiente e m\u00e9todo",
+      "id": "docs_homologacao_asaas_2026_10_24_ambiente_e_método",
+      "label": "Ambiente e método",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "ambiente e metodo",
@@ -24604,7 +24604,7 @@
       "label": "Bloqueador confirmado: cancelamento pode informar sucesso sem cancelar no Asaas",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "bloqueador confirmado: cancelamento pode informar sucesso sem cancelar no asaas",
@@ -24616,7 +24616,7 @@
       "label": "Defeito corrigido",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "defeito corrigido",
@@ -24628,7 +24628,7 @@
       "label": "Fluxos aprovados",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "fluxos aprovados",
@@ -24636,14 +24636,14 @@
       "source_location": "L23"
     },
     {
-      "id": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
-      "label": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "id": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
+      "label": "Homologação Asaas — 24/10/2026",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "homologacao asaas \u2014 24/10/2026",
+      "norm_label": "homologacao asaas — 24/10/2026",
       "source_file": "docs/HOMOLOGACAO-ASAAS-2026-10-24.md",
       "source_location": "L1"
     },
@@ -24652,7 +24652,7 @@
       "label": "Meios de pagamento e eventos posteriores",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "meios de pagamento e eventos posteriores",
@@ -24660,11 +24660,11 @@
       "source_location": "L45"
     },
     {
-      "id": "docs_homologacao_asaas_2026_10_24_outras_pend\u00eancias",
-      "label": "Outras pend\u00eancias",
+      "id": "docs_homologacao_asaas_2026_10_24_outras_pendências",
+      "label": "Outras pendências",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "outras pendencias",
@@ -24672,11 +24672,11 @@
       "source_location": "L79"
     },
     {
-      "id": "docs_homologacao_asaas_2026_10_24_pr\u00f3ximo_passo_recomendado",
-      "label": "Pr\u00f3ximo passo recomendado",
+      "id": "docs_homologacao_asaas_2026_10_24_próximo_passo_recomendado",
+      "label": "Próximo passo recomendado",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "proximo passo recomendado",
@@ -24684,11 +24684,11 @@
       "source_location": "L97"
     },
     {
-      "id": "docs_homologacao_asaas_2026_10_24_refer\u00eancias_oficiais_consultadas_pelo_mcp",
-      "label": "Refer\u00eancias oficiais consultadas pelo MCP",
+      "id": "docs_homologacao_asaas_2026_10_24_referências_oficiais_consultadas_pelo_mcp",
+      "label": "Referências oficiais consultadas pelo MCP",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "referencias oficiais consultadas pelo mcp",
@@ -24696,11 +24696,11 @@
       "source_location": "L101"
     },
     {
-      "id": "docs_homologacao_asaas_2026_10_24_verifica\u00e7\u00f5es_locais",
-      "label": "Verifica\u00e7\u00f5es locais",
+      "id": "docs_homologacao_asaas_2026_10_24_verificações_locais",
+      "label": "Verificações locais",
       "_origin": "ast",
       "community": 121,
-      "community_name": "Homologa\u00e7\u00e3o Asaas \u2014 24/10/2026",
+      "community_name": "Homologação Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "verificacoes locais",
@@ -26059,7 +26059,7 @@
       "label": "CORRECOES-AUDITORIA-SEGURANCA.md",
       "_origin": "ast",
       "community": 138,
-      "community_name": "Corre\u00e7\u00f5es da auditoria \u2014 23/10/2026",
+      "community_name": "Correções da auditoria — 23/10/2026",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "correcoes-auditoria-seguranca.md",
@@ -26071,7 +26071,7 @@
       "label": "Antes de liberar ao cliente",
       "_origin": "ast",
       "community": 138,
-      "community_name": "Corre\u00e7\u00f5es da auditoria \u2014 23/10/2026",
+      "community_name": "Correções da auditoria — 23/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "antes de liberar ao cliente",
@@ -26079,14 +26079,14 @@
       "source_location": "L53"
     },
     {
-      "id": "docs_correcoes_auditoria_seguranca_corre\u00e7\u00f5es_da_auditoria_23_10_2026",
-      "label": "Corre\u00e7\u00f5es da auditoria \u2014 23/10/2026",
+      "id": "docs_correcoes_auditoria_seguranca_correções_da_auditoria_23_10_2026",
+      "label": "Correções da auditoria — 23/10/2026",
       "_origin": "ast",
       "community": 138,
-      "community_name": "Corre\u00e7\u00f5es da auditoria \u2014 23/10/2026",
+      "community_name": "Correções da auditoria — 23/10/2026",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "correcoes da auditoria \u2014 23/10/2026",
+      "norm_label": "correcoes da auditoria — 23/10/2026",
       "source_file": "docs/CORRECOES-AUDITORIA-SEGURANCA.md",
       "source_location": "L1"
     },
@@ -26095,7 +26095,7 @@
       "label": "Rastreabilidade",
       "_origin": "ast",
       "community": 138,
-      "community_name": "Corre\u00e7\u00f5es da auditoria \u2014 23/10/2026",
+      "community_name": "Correções da auditoria — 23/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "rastreabilidade",
@@ -26103,11 +26103,11 @@
       "source_location": "L11"
     },
     {
-      "id": "docs_correcoes_auditoria_seguranca_valida\u00e7\u00e3o_e_limites",
-      "label": "Valida\u00e7\u00e3o e limites",
+      "id": "docs_correcoes_auditoria_seguranca_validação_e_limites",
+      "label": "Validação e limites",
       "_origin": "ast",
       "community": 138,
-      "community_name": "Corre\u00e7\u00f5es da auditoria \u2014 23/10/2026",
+      "community_name": "Correções da auditoria — 23/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "validacao e limites",
@@ -26119,7 +26119,7 @@
       "label": "HOMOLOGACAO-REGRAS-DE-NEGOCIO-2026-10-24.md",
       "_origin": "ast",
       "community": 138,
-      "community_name": "Corre\u00e7\u00f5es da auditoria \u2014 23/10/2026",
+      "community_name": "Correções da auditoria — 23/10/2026",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "homologacao-regras-de-negocio-2026-10-24.md",
@@ -26127,11 +26127,11 @@
       "source_location": "L1"
     },
     {
-      "id": "docs_homologacao_regras_de_negocio_2026_10_24_decis\u00f5es_do_dono",
-      "label": "Decis\u00f5es do dono",
+      "id": "docs_homologacao_regras_de_negocio_2026_10_24_decisões_do_dono",
+      "label": "Decisões do dono",
       "_origin": "ast",
       "community": 139,
-      "community_name": "Homologa\u00e7\u00e3o das regras de neg\u00f3cio \u2014 24/10/2026",
+      "community_name": "Homologação das regras de negócio — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "decisoes do dono",
@@ -26139,23 +26139,23 @@
       "source_location": "L5"
     },
     {
-      "id": "docs_homologacao_regras_de_negocio_2026_10_24_homologa\u00e7\u00e3o_das_regras_de_neg\u00f3cio_24_10_2026",
-      "label": "Homologa\u00e7\u00e3o das regras de neg\u00f3cio \u2014 24/10/2026",
+      "id": "docs_homologacao_regras_de_negocio_2026_10_24_homologação_das_regras_de_negócio_24_10_2026",
+      "label": "Homologação das regras de negócio — 24/10/2026",
       "_origin": "ast",
       "community": 139,
-      "community_name": "Homologa\u00e7\u00e3o das regras de neg\u00f3cio \u2014 24/10/2026",
+      "community_name": "Homologação das regras de negócio — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "homologacao das regras de negocio \u2014 24/10/2026",
+      "norm_label": "homologacao das regras de negocio — 24/10/2026",
       "source_file": "docs/HOMOLOGACAO-REGRAS-DE-NEGOCIO-2026-10-24.md",
       "source_location": "L1"
     },
     {
-      "id": "docs_homologacao_regras_de_negocio_2026_10_24_implementa\u00e7\u00e3o_e_testes_de_comportamento",
-      "label": "Implementa\u00e7\u00e3o e testes de comportamento",
+      "id": "docs_homologacao_regras_de_negocio_2026_10_24_implementação_e_testes_de_comportamento",
+      "label": "Implementação e testes de comportamento",
       "_origin": "ast",
       "community": 139,
-      "community_name": "Homologa\u00e7\u00e3o das regras de neg\u00f3cio \u2014 24/10/2026",
+      "community_name": "Homologação das regras de negócio — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "implementacao e testes de comportamento",
@@ -26163,11 +26163,11 @@
       "source_location": "L29"
     },
     {
-      "id": "docs_homologacao_regras_de_negocio_2026_10_24_migra\u00e7\u00f5es_pelo_mcp_do_supabase",
-      "label": "Migra\u00e7\u00f5es pelo MCP do Supabase",
+      "id": "docs_homologacao_regras_de_negocio_2026_10_24_migrações_pelo_mcp_do_supabase",
+      "label": "Migrações pelo MCP do Supabase",
       "_origin": "ast",
       "community": 139,
-      "community_name": "Homologa\u00e7\u00e3o das regras de neg\u00f3cio \u2014 24/10/2026",
+      "community_name": "Homologação das regras de negócio — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "migracoes pelo mcp do supabase",
@@ -26175,11 +26175,11 @@
       "source_location": "L52"
     },
     {
-      "id": "docs_homologacao_regras_de_negocio_2026_10_24_problemas_reproduzidos_antes_da_corre\u00e7\u00e3o",
-      "label": "Problemas reproduzidos antes da corre\u00e7\u00e3o",
+      "id": "docs_homologacao_regras_de_negocio_2026_10_24_problemas_reproduzidos_antes_da_correção",
+      "label": "Problemas reproduzidos antes da correção",
       "_origin": "ast",
       "community": 139,
-      "community_name": "Homologa\u00e7\u00e3o das regras de neg\u00f3cio \u2014 24/10/2026",
+      "community_name": "Homologação das regras de negócio — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "problemas reproduzidos antes da correcao",
@@ -26191,7 +26191,7 @@
       "label": "Uso operacional e limites",
       "_origin": "ast",
       "community": 139,
-      "community_name": "Homologa\u00e7\u00e3o das regras de neg\u00f3cio \u2014 24/10/2026",
+      "community_name": "Homologação das regras de negócio — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "uso operacional e limites",
@@ -26199,11 +26199,11 @@
       "source_location": "L74"
     },
     {
-      "id": "docs_homologacao_regras_de_negocio_2026_10_24_verifica\u00e7\u00f5es_e_evid\u00eancias",
-      "label": "Verifica\u00e7\u00f5es e evid\u00eancias",
+      "id": "docs_homologacao_regras_de_negocio_2026_10_24_verificações_e_evidências",
+      "label": "Verificações e evidências",
       "_origin": "ast",
       "community": 139,
-      "community_name": "Homologa\u00e7\u00e3o das regras de neg\u00f3cio \u2014 24/10/2026",
+      "community_name": "Homologação das regras de negócio — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "verificacoes e evidencias",
@@ -27353,7 +27353,7 @@
       "label": "especialidades-2026-10-26.md",
       "_origin": "ast",
       "community": 150,
-      "community_name": "Complementa\u00e7\u00e3o do cat\u00e1logo de especialidades",
+      "community_name": "Complementação do catálogo de especialidades",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "especialidades-2026-10-26.md",
@@ -27361,11 +27361,11 @@
       "source_location": "L1"
     },
     {
-      "id": "docs_especialidades_2026_10_26_administra\u00e7\u00e3o",
-      "label": "Administra\u00e7\u00e3o",
+      "id": "docs_especialidades_2026_10_26_administração",
+      "label": "Administração",
       "_origin": "ast",
       "community": 150,
-      "community_name": "Complementa\u00e7\u00e3o do cat\u00e1logo de especialidades",
+      "community_name": "Complementação do catálogo de especialidades",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "administracao",
@@ -27373,11 +27373,11 @@
       "source_location": "L50"
     },
     {
-      "id": "docs_especialidades_2026_10_26_aplica\u00e7\u00e3o_e_verifica\u00e7\u00e3o",
-      "label": "Aplica\u00e7\u00e3o e verifica\u00e7\u00e3o",
+      "id": "docs_especialidades_2026_10_26_aplicação_e_verificação",
+      "label": "Aplicação e verificação",
       "_origin": "ast",
       "community": 150,
-      "community_name": "Complementa\u00e7\u00e3o do cat\u00e1logo de especialidades",
+      "community_name": "Complementação do catálogo de especialidades",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "aplicacao e verificacao",
@@ -27385,11 +27385,11 @@
       "source_location": "L40"
     },
     {
-      "id": "docs_especialidades_2026_10_26_complementa\u00e7\u00e3o_do_cat\u00e1logo_de_especialidades",
-      "label": "Complementa\u00e7\u00e3o do cat\u00e1logo de especialidades",
+      "id": "docs_especialidades_2026_10_26_complementação_do_catálogo_de_especialidades",
+      "label": "Complementação do catálogo de especialidades",
       "_origin": "ast",
       "community": 150,
-      "community_name": "Complementa\u00e7\u00e3o do cat\u00e1logo de especialidades",
+      "community_name": "Complementação do catálogo de especialidades",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "complementacao do catalogo de especialidades",
@@ -27397,11 +27397,11 @@
       "source_location": "L1"
     },
     {
-      "id": "docs_especialidades_2026_10_26_nomes_solicitados_j\u00e1_cobertos_pelo_cat\u00e1logo",
-      "label": "Nomes solicitados j\u00e1 cobertos pelo cat\u00e1logo",
+      "id": "docs_especialidades_2026_10_26_nomes_solicitados_já_cobertos_pelo_catálogo",
+      "label": "Nomes solicitados já cobertos pelo catálogo",
       "_origin": "ast",
       "community": 150,
-      "community_name": "Complementa\u00e7\u00e3o do cat\u00e1logo de especialidades",
+      "community_name": "Complementação do catálogo de especialidades",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "nomes solicitados ja cobertos pelo catalogo",
@@ -27409,11 +27409,11 @@
       "source_location": "L13"
     },
     {
-      "id": "docs_especialidades_2026_10_26_valida\u00e7\u00e3o_do_crud",
-      "label": "Valida\u00e7\u00e3o do CRUD",
+      "id": "docs_especialidades_2026_10_26_validação_do_crud",
+      "label": "Validação do CRUD",
       "_origin": "ast",
       "community": 150,
-      "community_name": "Complementa\u00e7\u00e3o do cat\u00e1logo de especialidades",
+      "community_name": "Complementação do catálogo de especialidades",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "validacao do crud",
@@ -27425,7 +27425,7 @@
       "label": "HOMOLOGACAO-LABORATORIOS-2026-10-24.md",
       "_origin": "ast",
       "community": 151,
-      "community_name": "Homologa\u00e7\u00e3o de laborat\u00f3rios \u2014 24/10/2026",
+      "community_name": "Homologação de laboratórios — 24/10/2026",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "homologacao-laboratorios-2026-10-24.md",
@@ -27433,11 +27433,11 @@
       "source_location": "L1"
     },
     {
-      "id": "docs_homologacao_laboratorios_2026_10_24_cen\u00e1rios_aprovados",
-      "label": "Cen\u00e1rios aprovados",
+      "id": "docs_homologacao_laboratorios_2026_10_24_cenários_aprovados",
+      "label": "Cenários aprovados",
       "_origin": "ast",
       "community": 151,
-      "community_name": "Homologa\u00e7\u00e3o de laborat\u00f3rios \u2014 24/10/2026",
+      "community_name": "Homologação de laboratórios — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "cenarios aprovados",
@@ -27449,7 +27449,7 @@
       "label": "Defeitos corrigidos",
       "_origin": "ast",
       "community": 151,
-      "community_name": "Homologa\u00e7\u00e3o de laborat\u00f3rios \u2014 24/10/2026",
+      "community_name": "Homologação de laboratórios — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "defeitos corrigidos",
@@ -27457,23 +27457,23 @@
       "source_location": "L29"
     },
     {
-      "id": "docs_homologacao_laboratorios_2026_10_24_homologa\u00e7\u00e3o_de_laborat\u00f3rios_24_10_2026",
-      "label": "Homologa\u00e7\u00e3o de laborat\u00f3rios \u2014 24/10/2026",
+      "id": "docs_homologacao_laboratorios_2026_10_24_homologação_de_laboratórios_24_10_2026",
+      "label": "Homologação de laboratórios — 24/10/2026",
       "_origin": "ast",
       "community": 151,
-      "community_name": "Homologa\u00e7\u00e3o de laborat\u00f3rios \u2014 24/10/2026",
+      "community_name": "Homologação de laboratórios — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "homologacao de laboratorios \u2014 24/10/2026",
+      "norm_label": "homologacao de laboratorios — 24/10/2026",
       "source_file": "docs/HOMOLOGACAO-LABORATORIOS-2026-10-24.md",
       "source_location": "L1"
     },
     {
-      "id": "docs_homologacao_laboratorios_2026_10_24_m\u00e9todo_e_limites",
-      "label": "M\u00e9todo e limites",
+      "id": "docs_homologacao_laboratorios_2026_10_24_método_e_limites",
+      "label": "Método e limites",
       "_origin": "ast",
       "community": 151,
-      "community_name": "Homologa\u00e7\u00e3o de laborat\u00f3rios \u2014 24/10/2026",
+      "community_name": "Homologação de laboratórios — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "metodo e limites",
@@ -27481,11 +27481,11 @@
       "source_location": "L5"
     },
     {
-      "id": "docs_homologacao_laboratorios_2026_10_24_verifica\u00e7\u00f5es",
-      "label": "Verifica\u00e7\u00f5es",
+      "id": "docs_homologacao_laboratorios_2026_10_24_verificações",
+      "label": "Verificações",
       "_origin": "ast",
       "community": 151,
-      "community_name": "Homologa\u00e7\u00e3o de laborat\u00f3rios \u2014 24/10/2026",
+      "community_name": "Homologação de laboratórios — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "verificacoes",
@@ -28225,8 +28225,8 @@
       "source_location": "L1"
     },
     {
-      "id": "docs_admin_capacidade_implementa\u00e7\u00e3o",
-      "label": "Implementa\u00e7\u00e3o",
+      "id": "docs_admin_capacidade_implementação",
+      "label": "Implementação",
       "_origin": "ast",
       "community": 161,
       "community_name": "Uso de dados no painel admin",
@@ -28261,8 +28261,8 @@
       "source_location": "L1"
     },
     {
-      "id": "docs_admin_capacidade_verifica\u00e7\u00e3o_funcional",
-      "label": "Verifica\u00e7\u00e3o funcional",
+      "id": "docs_admin_capacidade_verificação_funcional",
+      "label": "Verificação funcional",
       "_origin": "ast",
       "community": 161,
       "community_name": "Uso de dados no painel admin",
@@ -28277,7 +28277,7 @@
       "label": "Comportamento corrigido",
       "_origin": "ast",
       "community": 162,
-      "community_name": "Corre\u00e7\u00e3o do cancelamento Asaas \u2014 24/10/2026",
+      "community_name": "Correção do cancelamento Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "comportamento corrigido",
@@ -28285,23 +28285,23 @@
       "source_location": "L5"
     },
     {
-      "id": "docs_correcao_cancelamento_asaas_2026_10_24_corre\u00e7\u00e3o_do_cancelamento_asaas_24_10_2026",
-      "label": "Corre\u00e7\u00e3o do cancelamento Asaas \u2014 24/10/2026",
+      "id": "docs_correcao_cancelamento_asaas_2026_10_24_correção_do_cancelamento_asaas_24_10_2026",
+      "label": "Correção do cancelamento Asaas — 24/10/2026",
       "_origin": "ast",
       "community": 162,
-      "community_name": "Corre\u00e7\u00e3o do cancelamento Asaas \u2014 24/10/2026",
+      "community_name": "Correção do cancelamento Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "correcao do cancelamento asaas \u2014 24/10/2026",
+      "norm_label": "correcao do cancelamento asaas — 24/10/2026",
       "source_file": "docs/CORRECAO-CANCELAMENTO-ASAAS-2026-10-24.md",
       "source_location": "L1"
     },
     {
-      "id": "docs_correcao_cancelamento_asaas_2026_10_24_evid\u00eancias_de_regress\u00e3o",
-      "label": "Evid\u00eancias de regress\u00e3o",
+      "id": "docs_correcao_cancelamento_asaas_2026_10_24_evidências_de_regressão",
+      "label": "Evidências de regressão",
       "_origin": "ast",
       "community": 162,
-      "community_name": "Corre\u00e7\u00e3o do cancelamento Asaas \u2014 24/10/2026",
+      "community_name": "Correção do cancelamento Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "evidencias de regressao",
@@ -28309,11 +28309,11 @@
       "source_location": "L14"
     },
     {
-      "id": "docs_correcao_cancelamento_asaas_2026_10_24_implanta\u00e7\u00e3o_e_limites",
-      "label": "Implanta\u00e7\u00e3o e limites",
+      "id": "docs_correcao_cancelamento_asaas_2026_10_24_implantação_e_limites",
+      "label": "Implantação e limites",
       "_origin": "ast",
       "community": 162,
-      "community_name": "Corre\u00e7\u00e3o do cancelamento Asaas \u2014 24/10/2026",
+      "community_name": "Correção do cancelamento Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "implantacao e limites",
@@ -28321,11 +28321,11 @@
       "source_location": "L38"
     },
     {
-      "id": "docs_correcao_cancelamento_asaas_2026_10_24_verifica\u00e7\u00f5es",
-      "label": "Verifica\u00e7\u00f5es",
+      "id": "docs_correcao_cancelamento_asaas_2026_10_24_verificações",
+      "label": "Verificações",
       "_origin": "ast",
       "community": 162,
-      "community_name": "Corre\u00e7\u00e3o do cancelamento Asaas \u2014 24/10/2026",
+      "community_name": "Correção do cancelamento Asaas — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "verificacoes",
@@ -28337,7 +28337,7 @@
       "label": "PLANOS-E-MIGRACAO-SUPABASE-2026-10-24.md",
       "_origin": "ast",
       "community": 163,
-      "community_name": "Planos e migra\u00e7\u00e3o no Supabase \u2014 24/10/2026",
+      "community_name": "Planos e migração no Supabase — 24/10/2026",
       "file_type": "document",
       "node_kind": "page",
       "norm_label": "planos-e-migracao-supabase-2026-10-24.md",
@@ -28349,7 +28349,7 @@
       "label": "Como identificar o plano",
       "_origin": "ast",
       "community": 163,
-      "community_name": "Planos e migra\u00e7\u00e3o no Supabase \u2014 24/10/2026",
+      "community_name": "Planos e migração no Supabase — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "como identificar o plano",
@@ -28357,11 +28357,11 @@
       "source_location": "L7"
     },
     {
-      "id": "docs_planos_e_migracao_supabase_2026_10_24_migra\u00e7\u00e3o_aplicada",
-      "label": "Migra\u00e7\u00e3o aplicada",
+      "id": "docs_planos_e_migracao_supabase_2026_10_24_migração_aplicada",
+      "label": "Migração aplicada",
       "_origin": "ast",
       "community": 163,
-      "community_name": "Planos e migra\u00e7\u00e3o no Supabase \u2014 24/10/2026",
+      "community_name": "Planos e migração no Supabase — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "migracao aplicada",
@@ -28369,23 +28369,23 @@
       "source_location": "L45"
     },
     {
-      "id": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migra\u00e7\u00e3o_no_supabase_24_10_2026",
-      "label": "Planos e migra\u00e7\u00e3o no Supabase \u2014 24/10/2026",
+      "id": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migração_no_supabase_24_10_2026",
+      "label": "Planos e migração no Supabase — 24/10/2026",
       "_origin": "ast",
       "community": 163,
-      "community_name": "Planos e migra\u00e7\u00e3o no Supabase \u2014 24/10/2026",
+      "community_name": "Planos e migração no Supabase — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "planos e migracao no supabase \u2014 24/10/2026",
+      "norm_label": "planos e migracao no supabase — 24/10/2026",
       "source_file": "docs/PLANOS-E-MIGRACAO-SUPABASE-2026-10-24.md",
       "source_location": "L1"
     },
     {
-      "id": "docs_planos_e_migracao_supabase_2026_10_24_situa\u00e7\u00e3o_observada",
-      "label": "Situa\u00e7\u00e3o observada",
+      "id": "docs_planos_e_migracao_supabase_2026_10_24_situação_observada",
+      "label": "Situação observada",
       "_origin": "ast",
       "community": 163,
-      "community_name": "Planos e migra\u00e7\u00e3o no Supabase \u2014 24/10/2026",
+      "community_name": "Planos e migração no Supabase — 24/10/2026",
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "situacao observada",
@@ -29211,8 +29211,8 @@
       "source_location": "L92"
     },
     {
-      "id": "readme_contas_de_demonstra\u00e7\u00e3o",
-      "label": "Contas de demonstra\u00e7\u00e3o",
+      "id": "readme_contas_de_demonstração",
+      "label": "Contas de demonstração",
       "_origin": "ast",
       "community": 179,
       "community_name": "Como rodar",
@@ -30219,7 +30219,7 @@
       "frontmatter": {
         "title": "Prevent Waterfall Chains in API Routes",
         "impact": "CRITICAL",
-        "impactDescription": "2-10\u00d7 improvement",
+        "impactDescription": "2-10× improvement",
         "tags": "api-routes, server-actions, waterfalls, parallelization"
       },
       "node_kind": "page",
@@ -30249,7 +30249,7 @@
       "frontmatter": {
         "title": "Dependency-Based Parallelization",
         "impact": "CRITICAL",
-        "impactDescription": "2-10\u00d7 improvement",
+        "impactDescription": "2-10× improvement",
         "tags": "async, parallelization, dependencies, better-all"
       },
       "node_kind": "page",
@@ -30279,7 +30279,7 @@
       "frontmatter": {
         "title": "Promise.all() for Independent Operations",
         "impact": "CRITICAL",
-        "impactDescription": "2-10\u00d7 improvement",
+        "impactDescription": "2-10× improvement",
         "tags": "async, parallelization, promises, waterfalls"
       },
       "node_kind": "page",
@@ -40725,8 +40725,8 @@
       "source_location": "L56"
     },
     {
-      "id": "readme_mapa_do_reposit\u00f3rio",
-      "label": "Mapa do reposit\u00f3rio",
+      "id": "readme_mapa_do_repositório",
+      "label": "Mapa do repositório",
       "_origin": "ast",
       "community": 6,
       "community_name": "requireUser",
@@ -45412,8 +45412,8 @@
       "source_location": "L74"
     },
     {
-      "id": "readme_autentica\u00e7\u00e3o",
-      "label": "Autentica\u00e7\u00e3o",
+      "id": "readme_autenticação",
+      "label": "Autenticação",
       "_origin": "ast",
       "community": 90,
       "community_name": "Lince Pet",
@@ -45448,8 +45448,8 @@
       "source_location": "L201"
     },
     {
-      "id": "readme_integra\u00e7\u00f5es",
-      "label": "Integra\u00e7\u00f5es",
+      "id": "readme_integrações",
+      "label": "Integrações",
       "_origin": "ast",
       "community": 90,
       "community_name": "Lince Pet",
@@ -45508,8 +45508,8 @@
       "source_location": "L33"
     },
     {
-      "id": "readme_produ\u00e7\u00e3o",
-      "label": "Produ\u00e7\u00e3o",
+      "id": "readme_produção",
+      "label": "Produção",
       "_origin": "ast",
       "community": 90,
       "community_name": "Lince Pet",
@@ -45520,8 +45520,8 @@
       "source_location": "L219"
     },
     {
-      "id": "readme_p\u00e1ginas",
-      "label": "P\u00e1ginas",
+      "id": "readme_páginas",
+      "label": "Páginas",
       "_origin": "ast",
       "community": 90,
       "community_name": "Lince Pet",
@@ -45568,8 +45568,8 @@
       "source_location": "L190"
     },
     {
-      "id": "readme_vari\u00e1veis_de_ambiente",
-      "label": "Vari\u00e1veis de ambiente",
+      "id": "readme_variáveis_de_ambiente",
+      "label": "Variáveis de ambiente",
       "_origin": "ast",
       "community": 90,
       "community_name": "Lince Pet",
@@ -46385,7 +46385,7 @@
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
       "norm_label": "explorar ordena a lista por nome ou nota",
-      "rationale": "O icone de filtro em /explorar ordena a aba atual (veterinarios, clinicas, profissionais) por nome ou nota, crescente ou decrescente. Parametros ordem e direcao na URL; sem eles a lista come\u00e7a pela maior nota. Empate de nota desempata pelo nome; nota ausente vale zero. Nao dispara nova busca.",
+      "rationale": "O icone de filtro em /explorar ordena a aba atual (veterinarios, clinicas, profissionais) por nome ou nota, crescente ou decrescente. Parametros ordem e direcao na URL; sem eles a lista começa pela maior nota. Empate de nota desempata pelo nome; nota ausente vale zero. Nao dispara nova busca.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -47001,7 +47001,7 @@
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
       "norm_label": "assinatura: contas anteriores ao asaas mantem o plano como cortesia",
-      "rationale": "Contas com plano pago antes do Asaas e sem assinatura (15/10/2026: 1 vet pro, 1 clinica clinic) mantem o plano; nao sao rebaixadas por script; perdem a cortesia so ao assinar/trocar pelo fluxo normal. Contas novas comecam em none.",
+      "rationale": "Legados e cortesias autorizadas pelo dono mantem acesso pelo subscription_plan_code sem criar recorrencia. Se existe assinatura, encerrar no Asaas e confirmar antes de conceder cortesia; conservar historico local como canceled. Webhook repetido de assinatura encerrada nao pode revogar cortesia posterior. Novos individuais comecam em free (5/mes); clinicas em none.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -48831,7 +48831,7 @@
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
       "norm_label": "assinatura: catalogo e precos por tipo de conta",
-      "rationale": "Vet: vet_starter R$ 39,90, vet_pro R$ 59,90 (modulo financeiro). Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e clinica sem plano = none, sem recursos pagos. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json).",
+      "rationale": "Vet: vet_starter R$ 39,90, vet_pro R$ 59,90 (diferenciacao comercial em definicao). Clinica: starter Pequena R$ 99,90 (5 vets), clinic Media R$ 149,90 (15), clinic_pro Grande R$ 219,90 (ilimitado). Prestador free/pro. Vet e prestador comecam em free (5/mes); clinica sem plano = none. Cada tipo so contrata os seus. Provedor unico Asaas; doc via MCP do Asaas (.cursor/mcp.json).",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -48885,13 +48885,13 @@
     },
     {
       "id": "rule_assinatura_trial_unico",
-      "label": "Assinatura: teste gratis de 14 dias so na primeira assinatura, sem cartao",
+      "label": "Assinatura: 14 dias apenas para clinicas; individuais usam freemium",
       "community": 65,
       "community_name": "assinatura-regras.ts",
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
-      "norm_label": "assinatura: teste gratis de 14 dias so na primeira assinatura, sem cartao",
-      "rationale": "Dono sem nenhuma assinatura com asaasSubscriptionId: plano ativa na hora, primeira fatura vence no dia 14; sem pagamento vira inadimplente e perde o plano.",
+      "norm_label": "assinatura: 14 dias apenas para clinicas; individuais usam freemium",
+      "rationale": "Decisao confirmada em 27/10/2026: novas assinaturas individuais nao tem teste; so ativam apos pagamento. Clinicas mantem teste de 14 dias na primeira assinatura paga. Testes concedidos anteriormente sao preservados.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -48915,7 +48915,7 @@
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
       "norm_label": "prestador: plano free com limite mensal e upgrade asaas",
-      "rationale": "Comeca no free (10 pedidos/mes); pro pelo mesmo fluxo /api/assinaturas (referencia prestador:<id>); recusa/cancelamento devolve a cota; cancelar ou atrasar volta para free.",
+      "rationale": "Comeca no free (5 aceites/mes por perfil, no mes de Brasilia); pro pelo mesmo fluxo /api/assinaturas (referencia prestador:<id>); recusa/cancelamento devolve a cota; cancelar ou atrasar volta para free.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -49302,7 +49302,7 @@
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
       "norm_label": "admin da lince = users.is_admin (promovido so por update confirmado)",
-      "rationale": "requireAdmin: sem login 401, nao admin 403. Menu Admin e /admin/aprovacoes so para admin. Nao ha cadastro de admin pela tela.",
+      "rationale": "requireAdmin: sem login 401, nao admin 403. Menu Admin abre /admin/dashboard e so aparece para admin. Nao ha cadastro de admin pela tela.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -49328,6 +49328,103 @@
       "norm_label": "src_generated_prisma_client_subscription",
       "source_file": "",
       "type": "external"
+    },
+    {
+      "id": "rule_admin_dashboard",
+      "label": "Painel admin mostra contagens em numeros e graficos",
+      "community": null,
+      "contributor": "regras-de-negocio",
+      "file_type": "rationale",
+      "norm_label": "painel admin mostra contagens em numeros e graficos",
+      "rationale": "Decisao do dono em 26/10/2026: /admin/dashboard e GET /api/admin/dashboard, com requireAdmin. Filas (CRMV com numero, RT pendente, CNPJ pendente), contas ativas por tipo, consultas e pedidos do mes civil de Brasilia, assinaturas active por codigo de plano. Os mesmos numeros aparecem em grafico de barras. Fila com pelo menos um item fica em destaque. O cartao de CRMV abre /admin/aprovacoes#crmv e o de responsavel tecnico abre /admin/aprovacoes#rt. Sem dados pessoais e sem faturamento. Uso de banco e Storage continua em /admin/uso.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null
+    },
+    {
+      "id": "rule_admin_profissoes",
+      "label": "Admin: profissões editaveis com inativacao e preservacao do historico",
+      "community": null,
+      "contributor": "regras-de-negocio",
+      "file_type": "rationale",
+      "norm_label": "admin: profissoes editaveis com inativacao e preservacao do historico",
+      "rationale": "Somente admin cria/edita nome, descricao e ordem, ativa/inativa logicamente. Revisao impede sobrescrita concorrente, nomes/slug duplicados recusados. Slug imutavel; modalidade nao muda com prestadores vinculados. Inativas saem das novas adesoes; perfis e pedidos existentes preservados. Seed nao sobrescreve admin.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null
+    },
+    {
+      "id": "rule_assinatura_preco_confirmado",
+      "label": "Contratacao: preco mensal e primeira fatura antes de confirmar",
+      "community": null,
+      "contributor": "regras-de-negocio",
+      "file_type": "rationale",
+      "norm_label": "contratacao: preco mensal e primeira fatura antes de confirmar",
+      "rationale": "Mostrar nome, preco do catalogo, recorrencia, primeira fatura e condicoes antes de iniciar assinatura. Aceite explicito do valor; backend recusa preco desatualizado antes do Asaas; selecionar nao cria cobranca. Pro/Starter aguardam diferenciacao comercial; financeiro anunciado nao prova funcionalidade entregue.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null
+    },
+    {
+      "id": "rule_deploy_status_github",
+      "label": "Deploy: status no GitHub depois dos testes",
+      "community": null,
+      "contributor": "regras-de-negocio",
+      "file_type": "rationale",
+      "norm_label": "deploy: status no github depois dos testes",
+      "rationale": "Decisao do dono em 26/10/2026: push na main roda lint e testes e so entao dispara o Render. O resultado aparece nos checks e em Deployments production. Auto-Deploy do Render fica desligado. RENDER_API_KEY e RENDER_SERVICE_ID so nos secrets do GitHub.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null
+    },
+    {
+      "id": "rule_domicilio_endereco_apos_aceite",
+      "label": "Domicilio: bairro no pedido e endereco completo apos o aceite",
+      "community": null,
+      "contributor": "regras-de-negocio",
+      "file_type": "rationale",
+      "norm_label": "domicilio: bairro no pedido e endereco completo apos o aceite",
+      "rationale": "Decisao do dono em 26/10/2026: profissional ve so o bairro enquanto a visita domiciliar esta pendente. Rua, numero e CEP aparecem depois do aceite. Tutor continua vendo o endereco completo. Remarcar esconde de novo ate novo aceite. Painel, avisos e Google Agenda do profissional seguem a mesma regra.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null
+    },
+    {
+      "id": "rule_freemium_individual_cinco",
+      "label": "Freemium: 5 agendamentos mensais por perfil individual",
+      "community": null,
+      "contributor": "regras-de-negocio",
+      "file_type": "rationale",
+      "norm_label": "freemium: 5 agendamentos mensais por perfil individual",
+      "rationale": "Decisao do dono em 27/10/2026: veterinarios e prestadores comecam em free (5/mes); clinicas e exames excluidos. Reserva vet consome ao criar; prestador no aceite. Mes calendario de Brasilia do evento, nao da consulta. Cota compartilhada entre locais/servicos, separada por perfil; nao limita nem rebaixa cortesias e planos pagos.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null
+    },
+    {
+      "id": "rule_freemium_transacao_cancelamento",
+      "label": "Freemium: trava da cota e devolucao ao mes original",
+      "community": null,
+      "contributor": "regras-de-negocio",
+      "file_type": "rationale",
+      "norm_label": "freemium: trava da cota e devolucao ao mes original",
+      "rationale": "Sexto consumo recusado dentro da transacao sob trava por assinante. Cancelar antes de iniciar libera uma unica vez no mes original; nunca credita outro mes. Virada mensal sem reset destrutivo ou escrita em GET. Agenda/historico permanecem acessiveis mesmo sem cota.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null
+    },
+    {
+      "id": "rule_pedido_aceite_confirmacao_prestador",
+      "label": "Pedido: confirmacao do aceite tambem para o prestador",
+      "community": null,
+      "contributor": "regras-de-negocio",
+      "file_type": "rationale",
+      "norm_label": "pedido: confirmacao do aceite tambem para o prestador",
+      "rationale": "Decisao do dono em 26/10/2026: ao aceitar, o prestador recebe 'Pedido confirmado' no sino e por e-mail (respeita notificar_email) como lembrete, com servico, pet, horario, endereco completo e valor. Codigo de inicio fica so com o tutor. Sem WhatsApp extra. Os e-mails de pedido e a confirmacao da consulta usam o mesmo layout do esqueci a senha, com cabecalho laranja.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null
+    },
+    {
+      "id": "rule_admin_planos_saude",
+      "label": "Admin: catalogo de planos de saude pet separado da assinatura",
+      "file_type": "rationale",
+      "rationale": "Decisao do dono em 27/10/2026: criar/editar nome e descricao, ativar/inativar logicamente convenios pet. Somente admin, revisao contra edicao concorrente e nomes duplicados recusados. Inativo sai de novas selecoes; vinculos/historico de vets e clinicas preservados e visiveis na edicao. Backend verifica novas associacoes sob trava de leitura. Catalogo nao comprova cobertura nem credenciamento.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
     }
   ],
   "links": [
@@ -159743,7 +159840,7 @@
     },
     {
       "source": "docs_admin_capacidade_uso_de_dados_no_painel_admin",
-      "target": "docs_admin_capacidade_implementa\u00e7\u00e3o",
+      "target": "docs_admin_capacidade_implementação",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159754,7 +159851,7 @@
     },
     {
       "source": "docs_admin_capacidade_uso_de_dados_no_painel_admin",
-      "target": "docs_admin_capacidade_verifica\u00e7\u00e3o_funcional",
+      "target": "docs_admin_capacidade_verificação_funcional",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159776,7 +159873,7 @@
     },
     {
       "source": "docs_correcao_cancelamento_asaas_2026_10_24",
-      "target": "docs_correcao_cancelamento_asaas_2026_10_24_corre\u00e7\u00e3o_do_cancelamento_asaas_24_10_2026",
+      "target": "docs_correcao_cancelamento_asaas_2026_10_24_correção_do_cancelamento_asaas_24_10_2026",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159786,8 +159883,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_correcao_cancelamento_asaas_2026_10_24_corre\u00e7\u00e3o_do_cancelamento_asaas_24_10_2026",
-      "target": "docs_correcao_cancelamento_asaas_2026_10_24_evid\u00eancias_de_regress\u00e3o",
+      "source": "docs_correcao_cancelamento_asaas_2026_10_24_correção_do_cancelamento_asaas_24_10_2026",
+      "target": "docs_correcao_cancelamento_asaas_2026_10_24_evidências_de_regressão",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159797,8 +159894,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_correcao_cancelamento_asaas_2026_10_24_corre\u00e7\u00e3o_do_cancelamento_asaas_24_10_2026",
-      "target": "docs_correcao_cancelamento_asaas_2026_10_24_verifica\u00e7\u00f5es",
+      "source": "docs_correcao_cancelamento_asaas_2026_10_24_correção_do_cancelamento_asaas_24_10_2026",
+      "target": "docs_correcao_cancelamento_asaas_2026_10_24_verificações",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159808,8 +159905,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_correcao_cancelamento_asaas_2026_10_24_corre\u00e7\u00e3o_do_cancelamento_asaas_24_10_2026",
-      "target": "docs_correcao_cancelamento_asaas_2026_10_24_implanta\u00e7\u00e3o_e_limites",
+      "source": "docs_correcao_cancelamento_asaas_2026_10_24_correção_do_cancelamento_asaas_24_10_2026",
+      "target": "docs_correcao_cancelamento_asaas_2026_10_24_implantação_e_limites",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159819,7 +159916,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_correcao_cancelamento_asaas_2026_10_24_corre\u00e7\u00e3o_do_cancelamento_asaas_24_10_2026",
+      "source": "docs_correcao_cancelamento_asaas_2026_10_24_correção_do_cancelamento_asaas_24_10_2026",
       "target": "docs_correcao_cancelamento_asaas_2026_10_24_comportamento_corrigido",
       "relation": "contains",
       "_origin": "ast",
@@ -159831,7 +159928,7 @@
     },
     {
       "source": "docs_correcoes_auditoria_seguranca",
-      "target": "docs_correcoes_auditoria_seguranca_corre\u00e7\u00f5es_da_auditoria_23_10_2026",
+      "target": "docs_correcoes_auditoria_seguranca_correções_da_auditoria_23_10_2026",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159841,7 +159938,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_correcoes_auditoria_seguranca_corre\u00e7\u00f5es_da_auditoria_23_10_2026",
+      "source": "docs_correcoes_auditoria_seguranca_correções_da_auditoria_23_10_2026",
       "target": "docs_correcoes_auditoria_seguranca_rastreabilidade",
       "relation": "contains",
       "_origin": "ast",
@@ -159852,8 +159949,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_correcoes_auditoria_seguranca_corre\u00e7\u00f5es_da_auditoria_23_10_2026",
-      "target": "docs_correcoes_auditoria_seguranca_valida\u00e7\u00e3o_e_limites",
+      "source": "docs_correcoes_auditoria_seguranca_correções_da_auditoria_23_10_2026",
+      "target": "docs_correcoes_auditoria_seguranca_validação_e_limites",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159863,7 +159960,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_correcoes_auditoria_seguranca_corre\u00e7\u00f5es_da_auditoria_23_10_2026",
+      "source": "docs_correcoes_auditoria_seguranca_correções_da_auditoria_23_10_2026",
       "target": "docs_correcoes_auditoria_seguranca_antes_de_liberar_ao_cliente",
       "relation": "contains",
       "_origin": "ast",
@@ -159875,7 +159972,7 @@
     },
     {
       "source": "docs_especialidades_2026_10_26",
-      "target": "docs_especialidades_2026_10_26_complementa\u00e7\u00e3o_do_cat\u00e1logo_de_especialidades",
+      "target": "docs_especialidades_2026_10_26_complementação_do_catálogo_de_especialidades",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159885,8 +159982,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_especialidades_2026_10_26_complementa\u00e7\u00e3o_do_cat\u00e1logo_de_especialidades",
-      "target": "docs_especialidades_2026_10_26_nomes_solicitados_j\u00e1_cobertos_pelo_cat\u00e1logo",
+      "source": "docs_especialidades_2026_10_26_complementação_do_catálogo_de_especialidades",
+      "target": "docs_especialidades_2026_10_26_nomes_solicitados_já_cobertos_pelo_catálogo",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159896,8 +159993,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_especialidades_2026_10_26_complementa\u00e7\u00e3o_do_cat\u00e1logo_de_especialidades",
-      "target": "docs_especialidades_2026_10_26_aplica\u00e7\u00e3o_e_verifica\u00e7\u00e3o",
+      "source": "docs_especialidades_2026_10_26_complementação_do_catálogo_de_especialidades",
+      "target": "docs_especialidades_2026_10_26_aplicação_e_verificação",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159907,8 +160004,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_especialidades_2026_10_26_complementa\u00e7\u00e3o_do_cat\u00e1logo_de_especialidades",
-      "target": "docs_especialidades_2026_10_26_administra\u00e7\u00e3o",
+      "source": "docs_especialidades_2026_10_26_complementação_do_catálogo_de_especialidades",
+      "target": "docs_especialidades_2026_10_26_administração",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159918,8 +160015,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_especialidades_2026_10_26_complementa\u00e7\u00e3o_do_cat\u00e1logo_de_especialidades",
-      "target": "docs_especialidades_2026_10_26_valida\u00e7\u00e3o_do_crud",
+      "source": "docs_especialidades_2026_10_26_complementação_do_catálogo_de_especialidades",
+      "target": "docs_especialidades_2026_10_26_validação_do_crud",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159930,7 +160027,7 @@
     },
     {
       "source": "docs_homologacao_asaas_2026_10_24",
-      "target": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
+      "target": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159940,8 +160037,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
-      "target": "docs_homologacao_asaas_2026_10_24_refer\u00eancias_oficiais_consultadas_pelo_mcp",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
+      "target": "docs_homologacao_asaas_2026_10_24_referências_oficiais_consultadas_pelo_mcp",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -159951,7 +160048,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
       "target": "docs_homologacao_asaas_2026_10_24_defeito_corrigido",
       "relation": "contains",
       "_origin": "ast",
@@ -159962,7 +160059,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
       "target": "docs_homologacao_asaas_2026_10_24_fluxos_aprovados",
       "relation": "contains",
       "_origin": "ast",
@@ -159973,7 +160070,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
       "target": "docs_homologacao_asaas_2026_10_24_meios_de_pagamento_e_eventos_posteriores",
       "relation": "contains",
       "_origin": "ast",
@@ -159984,7 +160081,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
       "target": "docs_homologacao_asaas_2026_10_24_bloqueador_confirmado_cancelamento_pode_informar_sucesso_sem_cancelar_no_asaas",
       "relation": "contains",
       "_origin": "ast",
@@ -159995,8 +160092,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
-      "target": "docs_homologacao_asaas_2026_10_24_ambiente_e_m\u00e9todo",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
+      "target": "docs_homologacao_asaas_2026_10_24_ambiente_e_método",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160006,8 +160103,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
-      "target": "docs_homologacao_asaas_2026_10_24_outras_pend\u00eancias",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
+      "target": "docs_homologacao_asaas_2026_10_24_outras_pendências",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160017,8 +160114,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
-      "target": "docs_homologacao_asaas_2026_10_24_verifica\u00e7\u00f5es_locais",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
+      "target": "docs_homologacao_asaas_2026_10_24_verificações_locais",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160028,8 +160125,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_homologa\u00e7\u00e3o_asaas_24_10_2026",
-      "target": "docs_homologacao_asaas_2026_10_24_pr\u00f3ximo_passo_recomendado",
+      "source": "docs_homologacao_asaas_2026_10_24_homologação_asaas_24_10_2026",
+      "target": "docs_homologacao_asaas_2026_10_24_próximo_passo_recomendado",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160040,7 +160137,7 @@
     },
     {
       "source": "docs_homologacao_laboratorios_2026_10_24",
-      "target": "docs_homologacao_laboratorios_2026_10_24_homologa\u00e7\u00e3o_de_laborat\u00f3rios_24_10_2026",
+      "target": "docs_homologacao_laboratorios_2026_10_24_homologação_de_laboratórios_24_10_2026",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160050,8 +160147,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_laboratorios_2026_10_24_homologa\u00e7\u00e3o_de_laborat\u00f3rios_24_10_2026",
-      "target": "docs_homologacao_laboratorios_2026_10_24_cen\u00e1rios_aprovados",
+      "source": "docs_homologacao_laboratorios_2026_10_24_homologação_de_laboratórios_24_10_2026",
+      "target": "docs_homologacao_laboratorios_2026_10_24_cenários_aprovados",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160061,7 +160158,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_laboratorios_2026_10_24_homologa\u00e7\u00e3o_de_laborat\u00f3rios_24_10_2026",
+      "source": "docs_homologacao_laboratorios_2026_10_24_homologação_de_laboratórios_24_10_2026",
       "target": "docs_homologacao_laboratorios_2026_10_24_defeitos_corrigidos",
       "relation": "contains",
       "_origin": "ast",
@@ -160072,8 +160169,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_laboratorios_2026_10_24_homologa\u00e7\u00e3o_de_laborat\u00f3rios_24_10_2026",
-      "target": "docs_homologacao_laboratorios_2026_10_24_verifica\u00e7\u00f5es",
+      "source": "docs_homologacao_laboratorios_2026_10_24_homologação_de_laboratórios_24_10_2026",
+      "target": "docs_homologacao_laboratorios_2026_10_24_verificações",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160083,8 +160180,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_laboratorios_2026_10_24_homologa\u00e7\u00e3o_de_laborat\u00f3rios_24_10_2026",
-      "target": "docs_homologacao_laboratorios_2026_10_24_m\u00e9todo_e_limites",
+      "source": "docs_homologacao_laboratorios_2026_10_24_homologação_de_laboratórios_24_10_2026",
+      "target": "docs_homologacao_laboratorios_2026_10_24_método_e_limites",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160095,7 +160192,7 @@
     },
     {
       "source": "docs_homologacao_regras_de_negocio_2026_10_24",
-      "target": "docs_homologacao_regras_de_negocio_2026_10_24_homologa\u00e7\u00e3o_das_regras_de_neg\u00f3cio_24_10_2026",
+      "target": "docs_homologacao_regras_de_negocio_2026_10_24_homologação_das_regras_de_negócio_24_10_2026",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160105,8 +160202,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologa\u00e7\u00e3o_das_regras_de_neg\u00f3cio_24_10_2026",
-      "target": "docs_homologacao_regras_de_negocio_2026_10_24_problemas_reproduzidos_antes_da_corre\u00e7\u00e3o",
+      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologação_das_regras_de_negócio_24_10_2026",
+      "target": "docs_homologacao_regras_de_negocio_2026_10_24_problemas_reproduzidos_antes_da_correção",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160116,8 +160213,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologa\u00e7\u00e3o_das_regras_de_neg\u00f3cio_24_10_2026",
-      "target": "docs_homologacao_regras_de_negocio_2026_10_24_implementa\u00e7\u00e3o_e_testes_de_comportamento",
+      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologação_das_regras_de_negócio_24_10_2026",
+      "target": "docs_homologacao_regras_de_negocio_2026_10_24_implementação_e_testes_de_comportamento",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160127,8 +160224,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologa\u00e7\u00e3o_das_regras_de_neg\u00f3cio_24_10_2026",
-      "target": "docs_homologacao_regras_de_negocio_2026_10_24_decis\u00f5es_do_dono",
+      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologação_das_regras_de_negócio_24_10_2026",
+      "target": "docs_homologacao_regras_de_negocio_2026_10_24_decisões_do_dono",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160138,8 +160235,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologa\u00e7\u00e3o_das_regras_de_neg\u00f3cio_24_10_2026",
-      "target": "docs_homologacao_regras_de_negocio_2026_10_24_migra\u00e7\u00f5es_pelo_mcp_do_supabase",
+      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologação_das_regras_de_negócio_24_10_2026",
+      "target": "docs_homologacao_regras_de_negocio_2026_10_24_migrações_pelo_mcp_do_supabase",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160149,8 +160246,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologa\u00e7\u00e3o_das_regras_de_neg\u00f3cio_24_10_2026",
-      "target": "docs_homologacao_regras_de_negocio_2026_10_24_verifica\u00e7\u00f5es_e_evid\u00eancias",
+      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologação_das_regras_de_negócio_24_10_2026",
+      "target": "docs_homologacao_regras_de_negocio_2026_10_24_verificações_e_evidências",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160160,7 +160257,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologa\u00e7\u00e3o_das_regras_de_neg\u00f3cio_24_10_2026",
+      "source": "docs_homologacao_regras_de_negocio_2026_10_24_homologação_das_regras_de_negócio_24_10_2026",
       "target": "docs_homologacao_regras_de_negocio_2026_10_24_uso_operacional_e_limites",
       "relation": "contains",
       "_origin": "ast",
@@ -160194,7 +160291,7 @@
     },
     {
       "source": "docs_planos_e_migracao_supabase_2026_10_24",
-      "target": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migra\u00e7\u00e3o_no_supabase_24_10_2026",
+      "target": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migração_no_supabase_24_10_2026",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160204,8 +160301,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migra\u00e7\u00e3o_no_supabase_24_10_2026",
-      "target": "docs_planos_e_migracao_supabase_2026_10_24_situa\u00e7\u00e3o_observada",
+      "source": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migração_no_supabase_24_10_2026",
+      "target": "docs_planos_e_migracao_supabase_2026_10_24_situação_observada",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160215,8 +160312,8 @@
       "weight": 1.0
     },
     {
-      "source": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migra\u00e7\u00e3o_no_supabase_24_10_2026",
-      "target": "docs_planos_e_migracao_supabase_2026_10_24_migra\u00e7\u00e3o_aplicada",
+      "source": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migração_no_supabase_24_10_2026",
+      "target": "docs_planos_e_migracao_supabase_2026_10_24_migração_aplicada",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -160226,7 +160323,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migra\u00e7\u00e3o_no_supabase_24_10_2026",
+      "source": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migração_no_supabase_24_10_2026",
       "target": "docs_planos_e_migracao_supabase_2026_10_24_como_identificar_o_plano",
       "relation": "contains",
       "_origin": "ast",
@@ -162416,7 +162513,7 @@
     },
     {
       "source": "readme_como_rodar",
-      "target": "readme_contas_de_demonstra\u00e7\u00e3o",
+      "target": "readme_contas_de_demonstração",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -162449,7 +162546,7 @@
     },
     {
       "source": "readme_lince_pet",
-      "target": "readme_vari\u00e1veis_de_ambiente",
+      "target": "readme_variáveis_de_ambiente",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -162471,7 +162568,7 @@
     },
     {
       "source": "readme_lince_pet",
-      "target": "readme_autentica\u00e7\u00e3o",
+      "target": "readme_autenticação",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -162482,7 +162579,7 @@
     },
     {
       "source": "readme_lince_pet",
-      "target": "readme_integra\u00e7\u00f5es",
+      "target": "readme_integrações",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -162504,7 +162601,7 @@
     },
     {
       "source": "readme_lince_pet",
-      "target": "readme_produ\u00e7\u00e3o",
+      "target": "readme_produção",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -162548,7 +162645,7 @@
     },
     {
       "source": "readme_lince_pet",
-      "target": "readme_mapa_do_reposit\u00f3rio",
+      "target": "readme_mapa_do_repositório",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -162559,7 +162656,7 @@
     },
     {
       "source": "readme_lince_pet",
-      "target": "readme_p\u00e1ginas",
+      "target": "readme_páginas",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -188027,7 +188124,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_mapa_do_reposit\u00f3rio",
+      "source": "readme_mapa_do_repositório",
       "target": "src_server_http_apirequest_from",
       "relation": "references",
       "_origin": "ast",
@@ -188075,7 +188172,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_homologacao_asaas_2026_10_24_outras_pend\u00eancias",
+      "source": "docs_homologacao_asaas_2026_10_24_outras_pendências",
       "target": "src_components_prestador_cardplano_cardplano",
       "relation": "references",
       "_origin": "ast",
@@ -188147,7 +188244,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_admin_capacidade_implementa\u00e7\u00e3o",
+      "source": "docs_admin_capacidade_implementação",
       "target": "src_server_auth_session_requireadmin",
       "relation": "references",
       "_origin": "ast",
@@ -188159,7 +188256,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_mapa_do_reposit\u00f3rio",
+      "source": "readme_mapa_do_repositório",
       "target": "src_server_auth_session_requireuser",
       "relation": "references",
       "_origin": "ast",
@@ -188183,7 +188280,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_mapa_do_reposit\u00f3rio",
+      "source": "readme_mapa_do_repositório",
       "target": "src_server_http_route",
       "relation": "references",
       "_origin": "ast",
@@ -188207,7 +188304,7 @@
       "weight": 1.0
     },
     {
-      "source": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migra\u00e7\u00e3o_no_supabase_24_10_2026",
+      "source": "docs_planos_e_migracao_supabase_2026_10_24_planos_e_migração_no_supabase_24_10_2026",
       "target": "src_server_services_laudos_storage_supabase",
       "relation": "references",
       "_origin": "ast",
@@ -195286,6 +195383,357 @@
       "relation": "conceptually_related_to",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_admin_dashboard",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_admin_profissoes",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_assinatura_preco_confirmado",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_deploy_status_github",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_freemium_individual_cinco",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_freemium_transacao_cancelamento",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_pedido_aceite_confirmacao_prestador",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_agendamentos_route",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_cotas_prestador",
+      "target": "rule_freemium_individual_cinco",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_cotas_prestador",
+      "target": "rule_freemium_transacao_cancelamento",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_google_calendar",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_pedidos_prestador",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_pedidos_prestador",
+      "target": "rule_pedido_aceite_confirmacao_prestador",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_subscription",
+      "target": "rule_freemium_individual_cinco",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_veterinario_dashboard",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_whatsapp_notificacoes",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_admin_planos_saude",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_tutor_appointmentitem",
+      "target": "rule_canais_email_codigo_no_painel",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_tutor_appointmentitem",
+      "target": "rule_prestador_codigo_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_admin_dashboard_page",
+      "target": "rule_admin_is_admin",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_admin_dashboard_page",
+      "target": "rule_admin_dashboard",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_admin_dashboard_route",
+      "target": "rule_admin_dashboard",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_admin_dashboard",
+      "target": "rule_admin_dashboard",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_admindashboard_paineldashboard",
+      "target": "rule_admin_dashboard",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_admindashboard_paineldashboard",
+      "target": "rule_visual_padrao_site",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_consulta_domicilio",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_endereco_domicilio",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_veterinarios_agendamentos_id_aceitar_route",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_veterinario_components_aceitardomicilio",
+      "target": "rule_domicilio_endereco_apos_aceite",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_veterinario_components_aceitardomicilio",
+      "target": "rule_visual_padrao_site",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_cotas_veterinario",
+      "target": "rule_freemium_individual_cinco",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_cotas_veterinario",
+      "target": "rule_freemium_transacao_cancelamento",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_admin_profissoes",
+      "target": "rule_admin_profissoes",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_admin_planos_saude",
+      "target": "rule_admin_planos_saude",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_planos_saude",
+      "target": "rule_admin_planos_saude",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_adminplanossaude_adminplanossaude",
+      "target": "rule_admin_planos_saude",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_adminprofissoes_adminprofissoes",
+      "target": "rule_admin_profissoes",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_assinatura_resumocontratacao",
+      "target": "rule_assinatura_preco_confirmado",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "docs/ARQUITETURA.md",
       "weight": 1.0
     }

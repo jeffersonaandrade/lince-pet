@@ -52,7 +52,7 @@ export default async function PrecosPage() {
   return (
     <PaginaInstitucional titulo="Preços" subtitulo="Para tutores, a Lince Pet é gratuita. Profissionais podem começar no plano gratuito e evoluir quando quiserem.">
       <Secao titulo="Veterinários" id="veterinario">
-        <Paragrafo>Plano gratuito com agenda e perfil na busca. Planos pagos com agendamentos ilimitados e destaque.</Paragrafo>
+        <Paragrafo>Plano gratuito com 5 agendamentos por mês, agenda e perfil na busca. Planos pagos com agendamentos ilimitados e destaque.</Paragrafo>
         <Planos planos={veterinarios.map(cartaoDePlano)} />
       </Secao>
       <Secao titulo="Clínicas" id="clinica">

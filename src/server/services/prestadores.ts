@@ -290,7 +290,7 @@ export async function buscarPrestadores(filtros: FiltrosBusca) {
       ...(filtros.cidade ? { cidade: { contains: filtros.cidade, mode: 'insensitive' } } : {}),
       ...(filtros.estado ? { estado: filtros.estado.toUpperCase() } : {}),
     },
-    tipoServico: { ativo: 1, ...(filtros.tipo ? { slug: filtros.tipo } : {}) },
+    ...(filtros.tipo ? { tipoServico: { slug: filtros.tipo } } : {}),
     ...(filtros.search
       ? {
           OR: [

@@ -340,7 +340,7 @@ export default function VeterinarioDashboard() {
 
   // Mapeia códigos técnicos de plano para nomes amigáveis
   const friendlyPlanName = (raw: string | null): string => {
-    if (!raw || raw === "none" || raw === "free") return "Sem plano";
+    if (!raw || raw === "none" || raw === "free") return "Gratuito";
     const code = String(raw).toLowerCase();
     if (code === "vet_starter") return "Vet Starter";
     if (code === "vet_pro") return "Vet Pro";
@@ -647,11 +647,11 @@ export default function VeterinarioDashboard() {
 
               {/* Painel à direita com Créditos e Plano atual */}
               <div className={styles.headerRightPanel}>
-                {subscriptionUsage && vetPlanoAtual && vetPlanoAtual !== 'none' && vetPlanoAtual !== 'free' && (
+                {subscriptionUsage && (
                   <div className={styles.metricBox} title="Limites de agendamento">
                     <div className={styles.metricLabel}>Agendamentos (Mensal)</div>
                     <div className={styles.metricValue}>
-                      {/* {subscriptionUsage.used} / */}
+                      {subscriptionUsage.used} /
                        {subscriptionUsage.limit === null ? "∞" : subscriptionUsage.limit}
                     </div>
                   </div>
@@ -695,30 +695,8 @@ export default function VeterinarioDashboard() {
         <div className={styles.mainContent}>
           {/* Coluna Esquerda - Calendário */}
           <div className={styles.leftColumn} style={{ position: 'relative' }}>
-            {(!vetPlanoAtual || vetPlanoAtual === 'none') && (
-              <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                backgroundColor: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(4px)',
-                zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                borderRadius: '16px', border: '1px solid #e2e8f0'
-              }}>
-                <Crown size={48} color="#e67e22" style={{ marginBottom: '16px' }} />
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1e293b', marginBottom: '8px' }}>Assinatura Necessária</h3>
-                <p style={{ color: '#64748b', textAlign: 'center', maxWidth: '300px', marginBottom: '24px' }}>
-                  Para visualizar sua agenda e gerenciar consultas, por favor assine um de nossos planos.
-                </p>
-                <button
-                  onClick={() => router.push("/dashboard/veterinario/alterar-plano")}
-                  style={{
-                    backgroundColor: '#e67e22', color: 'white', padding: '10px 24px', borderRadius: '8px',
-                    fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'background-color 0.2s'
-                  }}
-                >
-                  Ver Planos
-                </button>
-              </div>
-            )}
-            <div style={{ filter: (!vetPlanoAtual || vetPlanoAtual === 'none') ? 'blur(4px)' : 'none', pointerEvents: (!vetPlanoAtual || vetPlanoAtual === 'none') ? 'none' : 'auto' }}>
+            <p className="mb-4 text-sm text-slate-600">A cota renova a cada mês no fuso de Brasília. Cancelamentos antes do início devolvem a unidade ao mês da reserva. Seus atendimentos existentes continuam acessíveis.</p>
+            <div>
               <div className={styles.calendarCard}>
               <div className={styles.calendarHeader}>
                 <h2 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 0 }}>

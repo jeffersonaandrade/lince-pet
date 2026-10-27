@@ -3,7 +3,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 const prismaMock = vi.hoisted(() => {
   const tx = {
     bloqueioAgenda: { create: vi.fn() },
-    agendamento: { updateMany: vi.fn() },
+    $executeRaw: vi.fn(),
+    agendamento: { updateMany: vi.fn(), count: vi.fn().mockResolvedValue(0) },
     veterinario: { findUnique: vi.fn(), update: vi.fn() },
   }
   return {
@@ -97,6 +98,7 @@ async function rodarAfter() {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  prismaMock.tx.agendamento.count.mockResolvedValue(0)
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(HOJE)
   prismaMock.tx.bloqueioAgenda.create.mockImplementation(async ({ data }) => ({ ...bloqueioDb(), ...data }))
@@ -344,11 +346,11 @@ describe('criarBloqueio', () => {
 
   it('com conflitos: cancela consultas ativas com o motivo padrão e devolve o uso mensal do vet', async () => {
     prismaMock.agendamento.findMany.mockResolvedValueOnce([consulta(), consulta({ id: 'ag-2' })])
-    prismaMock.tx.veterinario.findUnique.mockResolvedValueOnce({ id: 'vet-1', monthlyAppointmentsUsed: 5 })
+    prismaMock.tx.agendamento.count.mockResolvedValueOnce(3)
     const r = await criarBloqueio('vet-1', BODY, { userId: 'u-vet' })
 
     const upd = prismaMock.tx.agendamento.updateMany.mock.calls[0][0]
-    expect(upd.where).toEqual({ id: { in: ['ag-1', 'ag-2'] }, status: { in: ['pendente', 'confirmado'] } })
+    expect(upd.where).toEqual({ id: { in: ['ag-1', 'ag-2'] }, status: { in: ['pendente', 'confirmado'] }, startedAt: null })
     expect(upd.data).toMatchObject({
       status: 'cancelado',
       motivoCancelamento: MOTIVO_CANCELAMENTO_BLOQUEIO,
@@ -369,14 +371,12 @@ describe('criarBloqueio', () => {
     expect(prismaMock.tx.veterinario.update.mock.calls[0][0].data.monthlyAppointmentsUsed).toBe(0)
   })
 
-  it('não mexe no uso mensal se já está zerado, nulo ou o vet não existe', async () => {
-    for (const vet of [{ id: 'vet-1', monthlyAppointmentsUsed: 0 }, { id: 'vet-1', monthlyAppointmentsUsed: null }, null]) {
-      prismaMock.agendamento.findMany.mockResolvedValueOnce([consulta()])
-      prismaMock.tx.veterinario.findUnique.mockResolvedValueOnce(vet)
-      await criarBloqueio('vet-1', BODY, { userId: 'u-vet' })
-    }
-    expect(prismaMock.tx.agendamento.updateMany).toHaveBeenCalledTimes(3)
-    expect(prismaMock.tx.veterinario.update).not.toHaveBeenCalled()
+  it('recalcula a cota dos cancelamentos sem depender do contador antigo', async () => {
+    prismaMock.agendamento.findMany.mockResolvedValueOnce([consulta()])
+    prismaMock.tx.agendamento.count.mockResolvedValueOnce(2)
+    await criarBloqueio('vet-1', BODY, { userId: 'u-vet' })
+    expect(prismaMock.tx.veterinario.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ monthlyAppointmentsUsed: 2 }) }))
+    expect(prismaMock.tx.agendamento.updateMany).toHaveBeenLastCalledWith(expect.objectContaining({ where: expect.objectContaining({ startedAt: null, cotaLiberadaEm: null }) }))
   })
 
   it('validação falha antes de consultar o banco', async () => {

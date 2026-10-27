@@ -23,7 +23,7 @@ export type Assinante = {
 }
 
 export const PLANO_PADRAO: Record<TipoAssinante, string> = {
-  veterinario: 'none',
+  veterinario: 'free',
   clinica: 'none',
   prestador: 'free',
 }

@@ -1,3 +1,4 @@
+import { liberarCotasVeterinario } from '@/server/services/cotas-veterinario'
 import { after } from 'next/server'
 import { DateTime } from 'luxon'
 import { prisma } from '@/server/db'
@@ -52,7 +53,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         return notFound({ message: 'Agendamento não encontrado' })
       }
 
-      if (!podeSerCancelado(agendamento.status)) {
+      if (agendamento.startedAt || !podeSerCancelado(agendamento.status)) {
         return badRequest({ message: 'Este agendamento não pode ser cancelado' })
       }
 
@@ -67,16 +68,7 @@ export const PATCH = route<{ id: string }>(async (req, { id }) => {
         }),
       })
 
-      const vet = agendamento.veterinarioId
-        ? await tx.veterinario.findFirst({ where: { id: agendamento.veterinarioId } })
-        : null
-
-      if (vet && (vet.monthlyAppointmentsUsed ?? 0) > 0) {
-        await tx.veterinario.update({
-          where: { id: vet.id },
-          data: updating({ monthlyAppointmentsUsed: vet.monthlyAppointmentsUsed! - 1 }),
-        })
-      }
+      if (agendamento.veterinarioId) await liberarCotasVeterinario(tx, agendamento.veterinarioId, [agendamento.id])
 
       return { agendamento: atualizado, motivo }
     })

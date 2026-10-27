@@ -49,7 +49,7 @@ export async function ativarPerfil(userId: string, body: Record<string, unknown>
       if (!await tx.tutor.findFirst({ where })) await tx.tutor.create({ data: creating({ userId }) })
     } else if (tipo === 'veterinario') {
       if (!await tx.veterinario.findFirst({ where })) await tx.veterinario.create({ data: creating({
-        userId, cpf, subscriptionPlanCode: 'none', crmvStatus: 'pendente', onboardingStep: 1, onboardingComplete: 0,
+        userId, cpf, subscriptionPlanCode: 'free', crmvStatus: 'pendente', onboardingStep: 1, onboardingComplete: 0,
       }) })
     } else {
       if (await tx.prestador.findFirst({ where })) return { tipo }

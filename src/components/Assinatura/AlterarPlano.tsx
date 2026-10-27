@@ -7,8 +7,9 @@ import Image from "next/image";
 import { Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { handleApiError, type ErrorState } from "@/utils/errorHandler";
-import { cartaoDePlano, DIAS_TESTE_GRATIS, type PlanoMetadata } from "@/config/planos";
+import { cartaoDePlano, type PlanoMetadata } from "@/config/planos";
 import { AssinaturasService, type StatusAssinatura } from "@/services/assinaturas/assinaturas";
+import { ResumoContratacao, precoMensal } from "./ResumoContratacao";
 import { GerenciarAssinatura } from "./GerenciarAssinatura";
 import styles from "./alterar-plano.module.css";
 
@@ -30,13 +31,13 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
   const router = useRouter();
   const { user, loading } = useAuth();
   const [status, setStatus] = useState<StatusAssinatura | null>(null);
-  const [planos, setPlanos] = useState<Array<PlanoMetadata & { priceCents: number }>>([]);
+  const [planos, setPlanos] = useState<Array<PlanoMetadata & { priceCents: number; trialDays: number }>>([]);
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [carregado, setCarregado] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [error, setError] = useState<ErrorState | null>(null);
   const [sucesso, setSucesso] = useState<string | null>(null);
-  const [abertoEm] = useState(() => Date.now());
+  const [aceito, setAceito] = useState(false);
   const atualizar = useCallback(async () => { setStatus(await AssinaturasService().obterStatus()); }, []);
 
   useEffect(() => {
@@ -70,24 +71,24 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
   }
 
   const planoAtual = status?.plan?.code ?? null;
-  const ehAtual = (code: string) => code === planoAtual && status?.statusLabel === "ativa";
-  const testeNaContratacao = Boolean(status?.testeDisponivel);
-  const vencimentoTeste = new Date(abertoEm + DIAS_TESTE_GRATIS * 86_400_000).toLocaleDateString("pt-BR");
+  const ehAtual = (code: string) => code === planoAtual && (code === "free" || status?.statusLabel === "ativa");
+  const escolha = planos.find(p => p.code === selecionado);
+  const testeNaContratacao = Boolean(status?.testeDisponivel && !status.subscription && escolha?.priceCents && escolha.trialDays > 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selecionado) return;
+    if (!selecionado || !escolha || !status || (escolha.priceCents > 0 && !aceito)) return;
     setEnviando(true);
     setError(null);
     setSucesso(null);
     try {
       const servico = AssinaturasService();
       const resposta = status?.subscription
-        ? await servico.upgrade(status.subscription.id, { planCode: selecionado })
-        : await servico.criarAssinatura({ planCode: selecionado });
+        ? await servico.upgrade(status.subscription.id, { planCode: selecionado, valorConfirmadoCentavos: escolha.priceCents, aceite: aceito })
+        : await servico.criarAssinatura({ planCode: selecionado, valorConfirmadoCentavos: escolha.priceCents, aceite: aceito });
 
       if (resposta?.checkoutUrl) {
-        window.location.href = resposta.checkoutUrl;
+        window.location.assign(resposta.checkoutUrl);
         return;
       }
       setStatus(await servico.obterStatus());
@@ -158,7 +159,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
                       className={`${styles.planButton} ${isCurrent ? styles.planButtonCurrent : isSelected ? styles.planButtonActive : ""}`}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setSelecionado(plan.code);
+                        setSelecionado(plan.code); setAceito(false);
                       }}
                       disabled={isCurrent}
                     >
@@ -180,19 +181,9 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
               })}
             </div>
 
-            {selecionado && !ehAtual(selecionado) && (
-              <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-6 text-left">
-                <h3 className="mb-2 text-lg font-semibold text-slate-800">Pagamento</h3>
-                <p className="text-sm text-slate-600">
-                  Você paga com Pix, boleto ou cartão de crédito na fatura segura do Asaas. A cobrança é mensal.
-                </p>
-                <p className="mt-2 text-sm text-slate-600">
-                  {testeNaContratacao
-                    ? `Primeira assinatura: ${DIAS_TESTE_GRATIS} dias grátis. O plano ativa agora e a 1a fatura vence em ${vencimentoTeste}.`
-                    : "O novo plano é ativado assim que o pagamento for confirmado pelo Asaas. Até lá, seu plano atual continua valendo."}
-                </p>
-              </div>
-            )}
+            {escolha && !ehAtual(escolha.code) ? (
+              <ResumoContratacao key={escolha.code} plano={escolha} testeDisponivel={testeNaContratacao} aceito={aceito} onAceite={setAceito} disabled={enviando} />
+            ) : null}
 
             <div className={styles.buttonContainer}>
               <button type="button" onClick={() => router.push(painel)} className={styles.backButton}>
@@ -201,9 +192,9 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
               <button
                 type="submit"
                 className={styles.continueButton}
-                disabled={!selecionado || enviando || ehAtual(selecionado) || status?.cancelamentoPendente}
+                disabled={!escolha || !status || (escolha.priceCents > 0 && !aceito) || !selecionado || enviando || ehAtual(selecionado) || status?.cancelamentoPendente}
               >
-                {enviando ? "Processando..." : testeNaContratacao ? "Começar teste grátis" : "Ir para o pagamento"}
+                {enviando ? "Processando..." : escolha?.priceCents === 0 ? "Usar plano gratuito" : testeNaContratacao ? `Confirmar teste — depois ${precoMensal(escolha?.priceCents ?? 0)}/mês` : `Confirmar ${escolha?.name ?? "plano"} — ${precoMensal(escolha?.priceCents ?? 0)}/mês`}
               </button>
             </div>
           </form>

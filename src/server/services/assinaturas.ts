@@ -38,6 +38,14 @@ async function planoContratavel(planCode: unknown, a: Assinante) {
 
 type Plano = Awaited<ReturnType<typeof planoContratavel>>
 
+type ConfirmacaoContratacao = { valorConfirmadoCentavos: unknown; aceite: unknown }
+function conferirConfirmacao(plan: Plano, confirmacao?: ConfirmacaoContratacao) {
+  if (!confirmacao) return // Chamadas internas; as rotas sempre enviam o objeto de confirmação.
+  if (!Number.isInteger(confirmacao.valorConfirmadoCentavos) || (plan.priceCents > 0 && confirmacao.aceite !== true)) throw erro(422, 'Confira o valor mensal e confirme as condições antes de contratar.')
+  if (confirmacao.valorConfirmadoCentavos !== plan.priceCents) throw erro(409, 'O preço deste plano mudou. Atualize a página e confirme o novo valor antes de contratar.')
+}
+
+
 async function exigirSemCancelamento(a: Assinante) {
   const pendente = await prisma.asaasCancelamento.findFirst({ where: { concluidoEm: null, subscription: assinaturasDo(a) }, select: { subscriptionId: true } })
   if (pendente) throw erro(409, 'Aguarde a confirmação do cancelamento antes de contratar outro plano.')
@@ -59,7 +67,7 @@ async function faturaEmAberto(service: AsaasService, asaasSubId: string) {
  */
 async function assinarNoAsaas(user: CurrentUser, a: Assinante, plan: Plano, asaas: AsaasFactory, customerId?: string | null) {
   const jaTevePaga = (await prisma.subscription.count({ where: { ...assinaturasDo(a), asaasSubscriptionId: { not: null } } })) > 0
-  const teste = temDireitoAoTeste(plan.trialDays, jaTevePaga)
+  const teste = a.tipo === 'clinica' && temDireitoAoTeste(plan.trialDays, jaTevePaga)
   const hoje = new Date()
   const vencimento = teste ? somarDias(hoje, plan.trialDays ?? 0) : hoje
 
@@ -111,10 +119,11 @@ async function assinarNoAsaas(user: CurrentUser, a: Assinante, plan: Plano, asaa
 }
 
 /** POST /api/assinaturas */
-export async function contratarPlano(user: CurrentUser, planCode: unknown, asaas: AsaasFactory) {
+export async function contratarPlano(user: CurrentUser, planCode: unknown, asaas: AsaasFactory, confirmacao?: ConfirmacaoContratacao) {
   const a = exigirAssinante(user)
   await exigirSemCancelamento(a)
   const plan = await planoContratavel(planCode, a)
+  conferirConfirmacao(plan, confirmacao)
 
   const existente = await prisma.subscription.findFirst({
     where: { ...assinaturasDo(a), status: { in: ['active', 'pending'] } },
@@ -153,7 +162,7 @@ export async function cancelarAssinaturas(a: Assinante, asaas: AsaasFactory) {
  * PATCH /api/assinaturas/:id/upgrade. Plano pago: nova assinatura `pending` (sem teste); a atual segue
  * valendo até o pagamento ser confirmado. `none` ou plano gratuito: cancela.
  */
-export async function trocarPlano(user: CurrentUser, subId: string, planCode: unknown, asaas: AsaasFactory) {
+export async function trocarPlano(user: CurrentUser, subId: string, planCode: unknown, asaas: AsaasFactory, confirmacao?: ConfirmacaoContratacao) {
   const a = exigirAssinante(user)
   if (!planCode || typeof planCode !== 'string') throw erro(400, 'planCode é obrigatório')
 
@@ -167,6 +176,7 @@ export async function trocarPlano(user: CurrentUser, subId: string, planCode: un
   }
 
   const plan = await planoContratavel(planCode, a)
+  conferirConfirmacao(plan, confirmacao)
   if (plan.priceCents === 0) {
     const resultado = await cancelarAssinaturas(a, asaas)
     return { ...resultado, subscription: null, checkoutUrl: null, emTeste: false, primeiraFatura: null }

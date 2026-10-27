@@ -1,3 +1,4 @@
+import { conferirNovosPlanosSaude } from './planos-saude'
 import 'server-only'
 import { DateTime } from 'luxon'
 import { Prisma, TipoClinica, UserType, type Clinica, type Especialidade, type User, type VeterinarioEndereco } from '@/generated/prisma/client'
@@ -153,9 +154,10 @@ export async function syncPlanosClinica(clinicaId: string, ids: unknown[]) {
   await prisma.$transaction(async (tx) => {
     const existing = await tx.clinicaPlano.findMany({ where: { clinicaId } })
     const current = new Set(existing.map((r) => r.planoId))
+    const add = wanted.filter((id) => !current.has(id))
+    await conferirNovosPlanosSaude(tx, add)
     const remove = [...current].filter((id) => !wanted.includes(id))
     if (remove.length) await tx.clinicaPlano.deleteMany({ where: { clinicaId, planoId: { in: remove } } })
-    const add = wanted.filter((id) => !current.has(id))
     if (add.length) await tx.clinicaPlano.createMany({ data: add.map((planoId) => ({ clinicaId, planoId })) })
   })
 }

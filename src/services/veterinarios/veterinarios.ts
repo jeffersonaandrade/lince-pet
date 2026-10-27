@@ -259,6 +259,7 @@ export interface VeterinarioPublicoApi {
   experiencias: { cargo: string; local: string; dataInicio: string; dataFim?: string | null; descricao?: string | null }[];
   planos: { id: string; name: string }[];
   limitReached?: boolean;
+  motivoBloqueioAgendamento?: string | null;
   /** CRMV ainda em análise ou reprovado: o perfil abre, mas não recebe agendamento. */
   crmvAprovado?: boolean;
 }

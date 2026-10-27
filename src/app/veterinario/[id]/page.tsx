@@ -106,6 +106,7 @@ interface Veterinario {
     name: string;
   }>;
   limitReached?: boolean;
+  motivoBloqueioAgendamento?: string | null;
 }
 
 const DIAS_SEMANA = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
@@ -220,6 +221,7 @@ export default function VeterinarioProfile() {
             descricao: exp.descricao ?? undefined,
           })),
           planos: vetData.planos || [],
+          motivoBloqueioAgendamento: vetData.motivoBloqueioAgendamento,
           limitReached: vetData.limitReached || vetData.crmvAprovado === false
         };
 
@@ -445,6 +447,7 @@ export default function VeterinarioProfile() {
   };
 
   const handleAgendar = () => {
+    if (veterinario?.limitReached || carregandoDisponibilidade || diaBloqueado || erroDisponibilidade || !selectedTimeSlot || !generateTimeSlots().includes(selectedTimeSlot) || horariosOcupados.includes(selectedTimeSlot)) return;
     if (user && user.userType !== "tutor") { router.push(urlDePerfis()); return; }
     if (!user) {
       setErroAgendamento("Você precisa estar logado para agendar uma consulta");
@@ -823,7 +826,7 @@ export default function VeterinarioProfile() {
                       {veterinario.limitReached ? (
                         <div style={{ textAlign: "center", padding: "20px", color: "var(--text-muted)", backgroundColor: "#f8fafc", borderRadius: "8px", border: "1px dashed #cbd5e1" }}>
                           <Calendar size={32} style={{ opacity: 0.5, marginBottom: "8px" }} />
-                          <p style={{ margin: 0, fontWeight: 500 }}>Este profissional não pode aceitar novos agendamentos no momento.</p>
+                          <p style={{ margin: 0, fontWeight: 500 }}>{veterinario.motivoBloqueioAgendamento || 'Este profissional não pode aceitar novos agendamentos no momento.'}</p>
                         </div>
                       ) : (
                         <>
@@ -943,7 +946,7 @@ export default function VeterinarioProfile() {
                   </div>
                 )}
 
-                <button className={styles.bookButton} onClick={handleAgendar} disabled={!selectedTimeSlot}>
+                <button className={styles.bookButton} onClick={handleAgendar} disabled={!selectedTimeSlot || !activeLocation || veterinario.limitReached || carregandoDisponibilidade || diaBloqueado || !!erroDisponibilidade || !generateTimeSlots().includes(selectedTimeSlot) || horariosOcupados.includes(selectedTimeSlot)}>
                   Agendar
                 </button>
               </div>

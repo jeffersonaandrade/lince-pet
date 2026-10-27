@@ -90,7 +90,7 @@ describe('erros do Asaas com detalhes da resposta', () => {
 })
 
 describe('trocarPlano: casos extras', () => {
-  it('prestador sem assinatura paga anterior que troca para o pro ganha o teste e o plano na hora', async () => {
+  it('prestador sem assinatura paga anterior troca para pro pendente, sem teste', async () => {
     const subPre = { ...atual, veterinarioId: null, prestadorId: 'pre-1', asaasCustomerId: null }
     prismaMock.subscription.findUnique.mockResolvedValueOnce(subPre)
     prismaMock.subscription.count.mockResolvedValueOnce(0)
@@ -100,9 +100,8 @@ describe('trocarPlano: casos extras', () => {
 
     expect(asaas.ensureCustomerForPrestador).toHaveBeenCalled()
     expect(asaas.createSubscription.mock.calls[0][0]).toMatchObject({ customerId: 'cus_pre', externalReference: 'prestador:pre-1' })
-    expect(prismaMock.prestador.update.mock.calls[0][0].data).toMatchObject({ subscriptionPlanCode: 'pro' })
-    expect(prismaMock.prestador.update.mock.calls[0][0].data).not.toHaveProperty('monthlyAppointmentsUsed')
-    expect(r).toMatchObject({ emTeste: true, checkoutUrl: null, message: 'Plano ativado no período de teste.' })
+    expect(prismaMock.prestador.update).not.toHaveBeenCalled()
+    expect(r).toMatchObject({ emTeste: false, message: 'Conclua o pagamento da fatura para ativar o novo plano.' })
   })
 
   it('plano gratuito que não é o padrão do dono também solicita cancelamento', async () => {

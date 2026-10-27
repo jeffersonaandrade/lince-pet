@@ -51,7 +51,7 @@ describe('cancelamento confirmado pelo provedor', () => {
     expect(remote.cancelSubscription.mock.invocationCallOrder[0]).toBeLessThan(db.$transaction.mock.invocationCallOrder[0])
     expect(db.subscription.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ status: 'canceled' }) }))
     expect(db.asaasCancelamento.updateMany).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ concluidoEm: expect.any(Date), ultimoErro: null }) }))
-    expect(db.veterinario.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ subscriptionPlanCode: 'none' }) }))
+    expect(db.veterinario.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ subscriptionPlanCode: 'free' }) }))
     expect(db.veterinario.update.mock.calls[0][0].data).not.toHaveProperty('monthlyAppointmentsUsed')
   })
   it('reconcilia DELETE já aceito cuja resposta se perdeu, sem novo DELETE', async () => {

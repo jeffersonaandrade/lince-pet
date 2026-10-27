@@ -80,21 +80,13 @@ beforeEach(() => {
 })
 
 describe('contratar plano', () => {
-  it('primeira assinatura: teste de 14 dias, plano já aplicado e fatura no fim do teste', async () => {
+  it('primeira assinatura de veterinário não cria teste, mesmo com catálogo antigo de 14 dias', async () => {
     const r = await contratarPlano(vet(), 'vet_starter', fabrica)
-
     const enviado = asaas.createSubscription.mock.calls[0][0]
-    expect(enviado.billingType).toBe('UNDEFINED')
-    expect(enviado.value).toBe(39.9)
-    expect(enviado.cycle).toBe('MONTHLY')
-    const dias = Math.round((new Date(enviado.nextDueDate).getTime() - new Date(r.primeiraFatura!).getTime()) / 86_400_000)
-    expect(dias).toBe(0)
-    expect(new Date(enviado.nextDueDate).getTime()).toBeGreaterThan(Date.now() + 12 * 86_400_000)
-
-    expect(prismaMock.subscription.create.mock.calls[0][0].data.status).toBe('active')
-    expect(prismaMock.subscription.create.mock.calls[0][0].data.trialEnd).toBeInstanceOf(Date)
-    expect(prismaMock.veterinario.update.mock.calls[0][0].data.subscriptionPlanCode).toBe('vet_starter')
-    expect(r).toMatchObject({ emTeste: true, checkoutUrl: null })
+    expect(enviado).toMatchObject({ billingType: 'UNDEFINED', value: 39.9, cycle: 'MONTHLY' })
+    expect(prismaMock.subscription.create.mock.calls[0][0].data).toMatchObject({ status: 'pending', trialEnd: null })
+    expect(prismaMock.veterinario.update).not.toHaveBeenCalled()
+    expect(r).toMatchObject({ emTeste: false, checkoutUrl: 'https://asaas/i/1' })
   })
 
   it('quem já assinou antes não tem teste: fica pendente e o plano não muda', async () => {
@@ -408,5 +400,22 @@ describe('assinaturas: mensagens, filtros e dados enviados', () => {
     expect(prismaMock.subscription.findMany).toHaveBeenCalledWith({ where: { veterinarioId: 'vet-1', status: 'pending' } })
     expect(prismaMock.subscription.updateMany).not.toHaveBeenCalled()
     expect(asaas.cancelSubscription).not.toHaveBeenCalled()
+  })
+})
+
+describe('confirmação do valor antes de contratar', () => {
+  it('preço alterado exige nova confirmação sem chamar o Asaas', async () => {
+    await expect(contratarPlano(vet(), 'vet_starter', fabrica, { valorConfirmadoCentavos: 2990, aceite: true })).rejects.toMatchObject({ status: 409 })
+    expect(asaas.createSubscription).not.toHaveBeenCalled()
+    expect(asaas.ensureCustomerForVeterinario).not.toHaveBeenCalled()
+  })
+  it.each([undefined, false, 'true'])('aceite %s não permite iniciar assinatura paga', async aceite => {
+    await expect(contratarPlano(vet(), 'vet_starter', fabrica, { valorConfirmadoCentavos: 3990, aceite })).rejects.toMatchObject({ status: 422 })
+    expect(asaas.createSubscription).not.toHaveBeenCalled()
+  })
+  it('preço confirmado e aceite explícito permitem seguir para a fatura, sem teste', async () => {
+    const r = await contratarPlano(vet(), 'vet_starter', fabrica, { valorConfirmadoCentavos: 3990, aceite: true })
+    expect(r.emTeste).toBe(false)
+    expect(asaas.createSubscription).toHaveBeenCalledWith(expect.objectContaining({ value: 39.9, billingType: 'UNDEFINED' }))
   })
 })
