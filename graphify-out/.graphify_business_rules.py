@@ -943,6 +943,8 @@ for code_id, rs in {
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
 freemium_nodes = [
+    rule("rule_contato_oficial_email", "Contato: e-mail oficial confirmado pelo dono",
+         "Decisao explicita de 27/10/2026: contato@lincepet.com.br e o e-mail de contato da LincePet. SITE.email alimenta o mailto da pagina /contato. Configurar o link nao cria a caixa, nao valida entrega e nao define responsavel pelo atendimento. WhatsApp de suporte continua sem numero confirmado."),
     rule("rule_whatsapp_fora_oferta_v1", "V1: WhatsApp adiado e fora da oferta comercial",
          "Decisao explicita do dono em 27/10/2026: avisos automaticos por WhatsApp ficam para depois da v1. Retirar promessa dos planos, cadastro, home e ajuda, inclusive fallback de features legadas do banco. Preservar historico e configuracoes existentes; e-mail e avisos no site permanecem. Gestao financeira/Starter tambem ficam para v2. Pendencias atualizadas em docs/PENDENCIAS-V1-2026-10-27.md; publicar codigo nao comprova homologacao financeira, restauracao ou aceite juridico."),
     rule("rule_oferta_individual_v1_v2", "Oferta individual: Gratuito e Pro na v1; Starter e financeiro na v2",
@@ -964,6 +966,8 @@ new_nodes += freemium_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in freemium_nodes]
 for code_id, rs in {
     "src_config_planos": ["rule_oferta_individual_v1_v2", "rule_whatsapp_fora_oferta_v1"],
+    "src_config_site": ["rule_contato_oficial_email"],
+    "src_app_contato_page": ["rule_contato_oficial_email"],
     "src_components_home_platformfeatures_platformfeatures": ["rule_whatsapp_fora_oferta_v1"],
     "src_app_ajuda_page": ["rule_whatsapp_fora_oferta_v1"],
     "src_server_services_assinatura_regras": ["rule_oferta_individual_v1_v2"],
