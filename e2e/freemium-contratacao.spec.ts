@@ -90,7 +90,7 @@ async function preencherCadastro(page: Page, tipo: 'veterinario' | 'prestador') 
     await page.getByLabel('Email', { exact: true }).fill('teste@example.com')
   } else {
     await page.getByRole('button', { name: /Passeador/ }).click()
-    await page.getByLabel('Celular (WhatsApp)').fill('11999999999')
+    await page.getByLabel('Celular').fill('11999999999')
     await page.getByLabel('E-mail', { exact: true }).fill('teste@example.com')
   }
   await page.getByLabel(/^Senha/).fill('senha123')

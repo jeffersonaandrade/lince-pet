@@ -25,7 +25,7 @@ export default function TermosDeUso() {
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>2. Descrição do Serviço</h2>
         <p className={styles.paragraph}>
-          O Lince Pet é uma plataforma que conecta tutores de animais de estimação a clínicas veterinárias e profissionais do setor, facilitando agendamentos e a comunicação através da nossa plataforma e integrações com o WhatsApp.
+          O Lince Pet é uma plataforma que conecta tutores de animais de estimação a clínicas veterinárias e profissionais do setor, facilitando agendamentos e a comunicação através da nossa plataforma.
         </p>
       </div>
 
@@ -43,16 +43,13 @@ export default function TermosDeUso() {
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>4. Integrações de Terceiros e APIs (Google e WhatsApp)</h2>
+        <h2 className={styles.sectionTitle}>4. Integrações de Terceiros e APIs (Google)</h2>
         <p className={styles.paragraph}>
-          Nossos serviços utilizam integrações com plataformas de terceiros, como a API do Google (Google Calendário) e um provedor de mensagens parceiro para o WhatsApp:
+          Nossos serviços podem utilizar integrações com plataformas de terceiros, como a API do Google (Google Calendário):
         </p>
         <ul className={styles.list}>
           <li className={styles.listItem}>
             <strong>Google:</strong> A integração com o Google Calendário permite a sincronização de agendas. O uso e a transferência de informações recebidas das APIs do Google estão de acordo com a <a href="/politica-de-privacidade" className={styles.link}>Política de Privacidade</a> do Lince Pet e as políticas do próprio Google.
-          </li>
-          <li className={styles.listItem}>
-            <strong>WhatsApp:</strong> O número da Lince Pet envia avisos automáticos sobre suas consultas (confirmação, lembretes, cancelamento e remarcação) para o celular cadastrado, quando o profissional tem esse recurso no plano. Não enviamos mensagens de marketing por WhatsApp. Tutores podem desativar os avisos em Perfil &gt; Notificações.
           </li>
         </ul>
       </div>

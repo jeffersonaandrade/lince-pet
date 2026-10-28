@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import WhatsAppManual from '@/components/TutorContact/WhatsAppManual';
 import { mensagemDeErro } from "@/lib/erros";
 import { ExamesClinicaService, formatarPreco, type AgendamentoExame } from "@/services/exames/exames";
 import { botaoPerigo, botaoPrimario, botaoSecundario, campo, Mensagem, Secao } from "./ui";
@@ -135,20 +134,6 @@ function ItemAgenda({ a, onMudou }: { a: AgendamentoExame; onMudou: () => void }
           </button>
         </div>
       ) : null}
-      <div className="mt-4">
-        <WhatsAppManual
-          telefone={a.tutor?.celular}
-          permitido={a.tutor?.whatsapp_permitido}
-          aviso={{
-            nome: a.tutor?.nome,
-            data: a.inicio_em ? new Date(a.inicio_em).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : undefined,
-            horario: a.inicio_em ? new Date(a.inicio_em).toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }) : undefined,
-            status: a.status,
-            local: a.clinica?.nome,
-            laudoDisponivel: Boolean(a.laudo),
-          }}
-        />
-      </div>
       <Mensagem texto={erro} />
       <Mensagem texto={ok} tipo="ok" />
     </li>

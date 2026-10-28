@@ -59,25 +59,7 @@ export default function PrivacyPolicy() {
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>4. Avisos por WhatsApp</h2>
-        <p className={styles.paragraph}>
-          O Lince Pet envia avisos de consultas por WhatsApp a partir de um número central da plataforma, por meio de um provedor de mensagens parceiro. Ao utilizar nossos serviços, você concorda que:
-        </p>
-        <ul className={styles.list}>
-          <li className={styles.listItem}>
-            Podemos enviar avisos sobre seus agendamentos (confirmação, lembretes 24h e 2h antes, cancelamento e remarcação). Não enviamos mensagens de marketing por WhatsApp.
-          </li>
-          <li className={styles.listItem}>
-            Seu número de celular e os dados da consulta (nome, pet, profissional, data, hora e local) são compartilhados com o provedor parceiro apenas para a entrega desses avisos, e também estão sujeitos às políticas do WhatsApp.
-          </li>
-          <li className={styles.listItem}>
-            Você pode deixar de receber esses avisos a qualquer momento em Perfil &gt; Notificações. O e-mail e os avisos no aplicativo continuam ativos.
-          </li>
-        </ul>
-      </div>
-
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>5. Compartilhamento de Dados</h2>
+        <h2 className={styles.sectionTitle}>4. Compartilhamento de Dados</h2>
         <p className={styles.paragraph}>
           Não vendemos suas informações pessoais. Podemos compartilhar suas informações apenas nas seguintes circunstâncias:
         </p>
@@ -92,14 +74,14 @@ export default function PrivacyPolicy() {
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>6. Segurança dos Dados</h2>
+        <h2 className={styles.sectionTitle}>5. Segurança dos Dados</h2>
         <p className={styles.paragraph}>
           Empregamos medidas de segurança robustas para proteger suas informações contra acesso não autorizado, alteração, divulgação ou destruição. No entanto, nenhum método de transmissão pela Internet ou armazenamento eletrônico é 100% seguro.
         </p>
       </div>
 
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>7. Seus Direitos (LGPD)</h2>
+        <h2 className={styles.sectionTitle}>6. Seus Direitos (LGPD)</h2>
         <p className={styles.paragraph}>
           Você tem o direito de acessar, corrigir, atualizar ou solicitar a exclusão de suas informações pessoais a qualquer momento. Para exercer esses direitos, entre em contato conosco.
         </p>

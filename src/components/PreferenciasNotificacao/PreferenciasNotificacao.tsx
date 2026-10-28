@@ -8,22 +8,19 @@ import { NotificacoesNavegador } from "./NotificacoesNavegador";
 
 type Aviso = (message: string, type?: "success" | "error") => void;
 
-type Canal = "email" | "whatsapp";
+type Canal = "email";
 
 const DESCRICOES: Record<Canal, { titulo: string; texto: string }> = {
   email: {
     titulo: "E-mail",
     texto: "Confirmação, cancelamento, remarcação e lembrete na véspera da consulta no e-mail do cadastro.",
   },
-  whatsapp: {
-    titulo: "WhatsApp",
-    texto: "Avisos e lembretes (24h e 2h antes) enviados pelo número da Lince Pet para o celular do cadastro.",
-  },
 };
 
 /**
  * Canais de aviso de consultas do usuário logado (tutor ou veterinário).
- * E-mail e WhatsApp salvam na hora; o Google Agenda entra como `children` (ConexaoGoogleAgenda).
+ * E-mail salva na hora; o Google Agenda entra como `children` (ConexaoGoogleAgenda).
+ * WhatsApp fica fora da v1 (possível na v2).
  */
 export function PreferenciasNotificacao({ onAviso, children }: { onAviso: Aviso; children?: ReactNode }) {
   const [canais, setCanais] = useState<CanaisNotificacao | null>(null);

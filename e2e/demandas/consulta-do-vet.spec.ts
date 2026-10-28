@@ -27,8 +27,7 @@ test.describe('consulta no painel do vet: contato do tutor e anotação privada'
     const modalCodigo = page.getByRole('dialog').filter({ hasText: 'Detalhes e Início da Consulta' })
     await expect(modalCodigo).toBeVisible()
     await expect(modalCodigo.getByText(dadosTutor.email)).toHaveAttribute('href', `mailto:${dadosTutor.email}`)
-    const digitos = dadosTutor.celular.replace(/\D/g, '')
-    await expect(modalCodigo.getByRole('link', { name: 'WhatsApp' })).toHaveAttribute('href', new RegExp(`wa\\.me/(55)?${digitos}`))
+    await expect(modalCodigo.getByRole('link', { name: /WhatsApp/i })).toHaveCount(0)
     await expect(modalCodigo.getByText('Minhas anotações'), 'antes do início não há anotação').toHaveCount(0)
 
     const codigo = modalCodigo.getByLabel('Código de início da consulta')

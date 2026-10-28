@@ -1,18 +1,14 @@
 import { Mail, Phone, User as UserIcon } from "lucide-react";
 import { formatPhone } from "@/utils/formatters";
-import WhatsAppManual from './WhatsAppManual';
-import type { AvisoWhatsApp } from '@/lib/whatsapp-manual';
 
 interface TutorContactProps {
   nome?: string;
   sobrenome?: string;
   telefone?: string | null;
   email?: string | null;
-  aviso?: AvisoWhatsApp;
-  whatsappPermitido?: boolean;
 }
 
-export default function TutorContact({ nome, sobrenome, telefone, email, aviso, whatsappPermitido }: TutorContactProps) {
+export default function TutorContact({ nome, sobrenome, telefone, email }: TutorContactProps) {
   const nomeCompleto = [nome, sobrenome].filter(Boolean).join(" ") || "Tutor";
 
   return (
@@ -29,7 +25,6 @@ export default function TutorContact({ nome, sobrenome, telefone, email, aviso, 
         <Phone size={14} className="shrink-0 text-gray-400" />
         <span>{telefone ? formatPhone(telefone) : "Não informado"}</span>
       </div>
-      <WhatsAppManual telefone={telefone} permitido={whatsappPermitido} aviso={{ ...aviso, nome: nomeCompleto }} />
 
       <div className="flex items-center gap-2 text-sm text-gray-700">
         <Mail size={14} className="shrink-0 text-gray-400" />
