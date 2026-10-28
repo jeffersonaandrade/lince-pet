@@ -10,6 +10,9 @@ export interface AgendamentoDashboard {
   cliente: string;
   clienteSobrenome?: string;
   tutorTelefone?: string | null;
+  tutorWhatsappPermitido?: boolean;
+  localNome?: string;
+  localEndereco?: string;
   tutorEmail?: string | null;
   petId?: string | null;
   pet: string;
@@ -53,6 +56,7 @@ export interface EventoCalendario {
     cliente: string;
     clienteSobrenome?: string;
     tutorTelefone?: string | null;
+    tutorWhatsappPermitido?: boolean;
     tutorEmail?: string | null;
     petId?: string | null;
     pet: string;
@@ -77,6 +81,9 @@ interface AgendamentoClinicaApi {
   tutor_nome: string;
   tutor_sobrenome?: string;
   tutor_telefone?: string | null;
+  tutor_whatsapp_permitido?: boolean;
+  local_nome?: string;
+  local_endereco?: string;
   tutor_email?: string | null;
   pet_id?: string | null;
   pet_nome?: string;
@@ -203,6 +210,7 @@ export class ClinicaDashboardService {
             cliente: agendamento.tutor_nome,
             clienteSobrenome: agendamento.tutor_sobrenome,
             tutorTelefone: agendamento.tutor_telefone,
+            tutorWhatsappPermitido: agendamento.tutor_whatsapp_permitido,
             tutorEmail: agendamento.tutor_email,
             petId: agendamento.pet_id ?? null,
             pet: agendamento.pet_nome || "Pet",
@@ -261,6 +269,7 @@ export class ClinicaDashboardService {
         cliente: agendamento.tutor_nome,
         clienteSobrenome: agendamento.tutor_sobrenome,
         tutorTelefone: agendamento.tutor_telefone,
+        tutorWhatsappPermitido: agendamento.tutor_whatsapp_permitido,
         tutorEmail: agendamento.tutor_email,
         petId: agendamento.pet_id ?? null,
         pet: agendamento.pet_nome || "Pet",
@@ -276,6 +285,8 @@ export class ClinicaDashboardService {
         data_consulta: agendamento.data_consulta,
         status: agendamento.status,
         observacoes: agendamento.observacoes,
+        localNome: agendamento.local_nome,
+        localEndereco: agendamento.local_endereco,
         valor: agendamento.valor_total,
       }));
     } catch (error) {

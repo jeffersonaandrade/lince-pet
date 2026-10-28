@@ -31,7 +31,7 @@ const agendamento = (over: Record<string, unknown> = {}) => ({
   localNome: 'Clínica',
   localEndereco: 'Rua A',
   createdAt: new Date(2026, 9, 1, 9, 5),
-  tutor: { user: { nome: 'João', sobrenome: 'Silva', celular: '81999', email: 'j@x.com' } },
+  tutor: { user: { nome: 'João', sobrenome: 'Silva', celular: '81999', email: 'j@x.com', notificarWhatsapp: 1 } },
   pet: { nome: 'Rex', especie: 'cão', raca: 'SRD', porte: 'médio', fotoUrl: 'https://cdn/rex.jpg' },
   ...over,
 })
@@ -142,7 +142,7 @@ describe('listAgendamentos: filtros', () => {
     expect(prismaMock.agendamento.findMany).toHaveBeenCalledWith({
       where: { veterinarioId: 'vet-1' },
       include: {
-        tutor: { include: { user: { select: { nome: true, sobrenome: true, celular: true, email: true } } } },
+        tutor: { include: { user: { select: { nome: true, sobrenome: true, celular: true, email: true, notificarWhatsapp: true } } } },
         pet: true,
       },
       orderBy: [{ dataConsulta: 'asc' }, { horarioConsulta: 'asc' }],
@@ -188,6 +188,14 @@ describe('listAgendamentos: filtros', () => {
 })
 
 describe('listAgendamentos: formatação', () => {
+  it('respeita o opt-out do tutor no aviso manual', async () => {
+    const a = agendamento()
+    a.tutor.user.notificarWhatsapp = 0
+    prismaMock.agendamento.findMany.mockResolvedValueOnce([a])
+    const [item] = await listAgendamentos(vet, {})
+    expect(item.tutor_whatsapp_permitido).toBe(false)
+  })
+
   it('mapeia os campos e formata datas', async () => {
     prismaMock.agendamento.findMany.mockResolvedValueOnce([agendamento({ precoConsulta: 200 })])
     const [item] = await listAgendamentos(vet, {})
@@ -202,6 +210,7 @@ describe('listAgendamentos: formatação', () => {
       tutor_nome: 'João',
       tutor_sobrenome: 'Silva',
       tutor_telefone: '81999',
+      tutor_whatsapp_permitido: true,
       tutor_email: 'j@x.com',
       pet_id: 'pet-1',
       pet_nome: 'Rex',

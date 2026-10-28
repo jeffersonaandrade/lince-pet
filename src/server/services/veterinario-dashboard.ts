@@ -129,7 +129,7 @@ export async function listAgendamentos(veterinario: Veterinario, qs: Record<stri
   const agendamentos = await prisma.agendamento.findMany({
     where,
     include: {
-      tutor: { include: { user: { select: { nome: true, sobrenome: true, celular: true, email: true } } } },
+      tutor: { include: { user: { select: { nome: true, sobrenome: true, celular: true, email: true, notificarWhatsapp: true } } } },
       pet: true,
     },
     orderBy: [{ dataConsulta: 'asc' }, { horarioConsulta: 'asc' }],
@@ -150,6 +150,7 @@ export async function listAgendamentos(veterinario: Veterinario, qs: Record<stri
         tutor_nome: agendamento.tutor?.user?.nome || 'Tutor não identificado',
         tutor_sobrenome: agendamento.tutor?.user?.sobrenome || '',
         tutor_telefone: agendamento.tutor?.user?.celular || null,
+        tutor_whatsapp_permitido: agendamento.tutor?.user?.notificarWhatsapp !== 0,
         tutor_email: agendamento.tutor?.user?.email || null,
         pet_id: agendamento.petId,
         pet_nome: agendamento.pet?.nome || 'Pet não identificado',

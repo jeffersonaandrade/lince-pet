@@ -49461,6 +49461,15 @@
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null,
       "contributor": "regras-de-negocio"
+    },
+    {
+      "id": "rule_whatsapp_manual_v1",
+      "label": "V1: aviso manual pelo WhatsApp do profissional",
+      "file_type": "rationale",
+      "rationale": "Decisao do dono em 27/10/2026: consultas vet/clinica, pedidos do prestador e exames oferecem Avisar tutor pelo WhatsApp sem exigir Pro. Destino e o telefone cadastrado pelo tutor no portal; respeita opt-out e telefone oculto. Abre wa.me com texto operacional para revisar e enviar pela conta conectada no dispositivo; nao escolhe remetente, nao envia sozinho, nao comprova entrega nem altera agendamento. Sem telefone valido explica indisponibilidade. Resultado aponta so para painel autenticado, sem laudo, diagnostico, prontuario ou codigo de inicio. Complementa e-mail e sino; automacao continua adiada.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
     }
   ],
   "links": [
@@ -195911,6 +195920,60 @@
     {
       "source": "src_app_contato_page",
       "target": "rule_contato_oficial_email",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_whatsapp_manual_v1",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_exames_agendaexames",
+      "target": "rule_whatsapp_manual_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_tutorcontact_whatsappmanual",
+      "target": "rule_whatsapp_manual_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_whatsapp_manual",
+      "target": "rule_whatsapp_manual_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_tutorcontact_tutorcontact",
+      "target": "rule_whatsapp_manual_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_prestador_painelpedidos",
+      "target": "rule_whatsapp_manual_v1",
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,

@@ -369,7 +369,7 @@ export function serializarPedido(a: Pedido, visao: 'tutor' | 'prestador') {
         }
       : {
           tutor: tutorUser
-            ? { nome: nomeCompleto(tutorUser), celular: ativo ? tutorUser.celular : null }
+            ? { nome: nomeCompleto(tutorUser), celular: ativo ? tutorUser.celular : null, whatsapp_permitido: tutorUser.notificarWhatsapp !== 0 }
             : null,
         }),
   }

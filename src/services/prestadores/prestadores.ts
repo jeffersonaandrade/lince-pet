@@ -67,7 +67,7 @@ export type Pedido = {
   servico: { id: string; nome: string; duracao_min: number | null } | null;
   tipo_servico: { slug: string; nome: string; modalidade: Modalidade } | null;
   pet: { id: string; nome: string; especie: string | null; raca: string | null } | null;
-  tutor?: { nome: string; celular: string | null } | null;
+  tutor?: { nome: string; celular: string | null; whatsapp_permitido?: boolean } | null;
   prestador?: { id: string; nome: string; foto_url: string | null; celular: string | null } | null;
   start_code?: string | null;
 };

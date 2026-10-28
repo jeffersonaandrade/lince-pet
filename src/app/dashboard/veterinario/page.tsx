@@ -65,6 +65,7 @@ interface CalendarEvent {
     cliente: string;
     clienteSobrenome?: string;
     tutorTelefone?: string | null;
+    tutorWhatsappPermitido?: boolean;
     tutorEmail?: string | null;
     petId?: string | null;
     pet: string;
@@ -91,6 +92,7 @@ interface ProximaConsulta {
   cliente: string;
   clienteSobrenome?: string;
   tutorTelefone?: string | null;
+  tutorWhatsappPermitido?: boolean;
   tutorEmail?: string | null;
   petId?: string | null;
   pet: string;
@@ -883,6 +885,7 @@ export default function VeterinarioDashboard() {
                             cliente: consulta.cliente,
                             clienteSobrenome: consulta.clienteSobrenome,
                             tutorTelefone: consulta.tutorTelefone,
+                            tutorWhatsappPermitido: consulta.tutorWhatsappPermitido,
                             tutorEmail: consulta.tutorEmail,
                             petId: consulta.petId,
                             pet: consulta.pet,
@@ -1215,6 +1218,13 @@ export default function VeterinarioDashboard() {
                     nome={selectedEvent.resource?.cliente}
                     sobrenome={selectedEvent.resource?.clienteSobrenome}
                     telefone={selectedEvent.resource?.tutorTelefone}
+                    whatsappPermitido={selectedEvent.resource?.tutorWhatsappPermitido}
+                    aviso={{
+                      data: moment(selectedEvent.start).format("DD/MM/YYYY"),
+                      horario: selectedEvent.resource?.horario,
+                      status: selectedEvent.resource?.status,
+                      local: selectedEvent.resource?.localNome,
+                    }}
                     email={selectedEvent.resource?.tutorEmail}
                   />
 
@@ -1441,6 +1451,13 @@ export default function VeterinarioDashboard() {
                     nome={selectedEvent.resource?.cliente}
                     sobrenome={selectedEvent.resource?.clienteSobrenome}
                     telefone={selectedEvent.resource?.tutorTelefone}
+                    whatsappPermitido={selectedEvent.resource?.tutorWhatsappPermitido}
+                    aviso={{
+                      data: moment(selectedEvent.start).format("DD/MM/YYYY"),
+                      horario: selectedEvent.resource?.horario,
+                      status: selectedEvent.resource?.status,
+                      local: selectedEvent.resource?.localNome,
+                    }}
                     email={selectedEvent.resource?.tutorEmail}
                   />
 
