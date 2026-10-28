@@ -1948,7 +1948,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  box-sizing: border-box;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
   z-index: 10000;
 }
 
@@ -1959,12 +1964,14 @@
   max-width: 520px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  max-height: 90vh;
+  max-height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
 
 .modalHeader {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1987,6 +1994,9 @@
 }
 
 .modalBody {
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -1997,6 +2007,7 @@
 
 /* Modal Footer & Buttons (Copied from Veterinario for consistency) */
 .modalFooter {
+  flex-shrink: 0;
   padding: 1rem 1.25rem;
   display: flex;
   justify-content: flex-end;

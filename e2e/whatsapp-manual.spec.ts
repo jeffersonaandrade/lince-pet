@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 
 // Respostas controladas: nenhum cadastro, envio ou agendamento real é alterado.
-async function preparar(page: Page, papel: string, telefone: string | null = '(81) 99999-1234', permitido = true) {
+async function preparar(page: Page, papel: string, telefone: string | null = '(81) 99999-1234', permitido = true, statusConsulta = 'realizado') {
   await page.route('**/api/**', route => {
     const p = new URL(route.request().url()).pathname
     if (route.request().method() !== 'GET') throw new Error(`Mutação inesperada: ${p}`)
@@ -12,7 +12,7 @@ async function preparar(page: Page, papel: string, telefone: string | null = '(8
     if (p === '/api/prestadores/pedidos') json = { data: [{ id: 'pedido', status: 'confirmado', inicio_em: '2026-10-28T17:30:00Z', fim_em: '2026-10-28T18:00:00Z', preco: 50, local_nome: 'Espaço de teste', local_endereco: 'Rua de teste', tutor: { nome: 'João & Maria', celular: telefone, whatsapp_permitido: permitido }, servico: { nome: 'Atendimento' }, pet: { nome: 'Pet de teste' } }] }
     if (p === '/api/clinicas/exames') json = { plano_com_exames: false }
     if (p === '/api/clinicas/exames/agenda') json = { agendamentos: [{ id: 'exame', status: 'realizado', inicio_em: '2026-10-28T02:30:00Z', preco: 50, exames: [{ nome: 'Exame de teste' }], clinica: { nome: 'Clínica de teste' }, tutor: { nome: 'João & Maria', celular: telefone, whatsapp_permitido: permitido }, pet: { nome: 'Pet de teste' }, laudo: { nome_arquivo: 'resultado.pdf' } }] }
-    if (p.endsWith('/agendamentos')) json = { agendamentos: [{ id: 123, data_consulta: papel === 'clinica' ? '2026-10-28' : '28/10/2026', horario_consulta: '14:30', status: 'realizado', tutor_nome: 'João & Maria', tutor_telefone: telefone, tutor_whatsapp_permitido: permitido, pet_nome: 'Pet de teste', local_nome: 'Clínica de teste', tipo_consulta: 'presencial' }] }
+    if (p.endsWith('/agendamentos')) json = { agendamentos: [{ id: 123, data_consulta: papel === 'clinica' ? '2026-10-28' : '28/10/2026', horario_consulta: '14:30', status: statusConsulta, tutor_nome: 'João & Maria', tutor_telefone: telefone, tutor_whatsapp_permitido: permitido, pet_nome: 'Pet de teste', local_nome: 'Clínica de teste', tipo_consulta: 'presencial' }] }
     if (p.includes('/estatisticas')) json = { agendamentosHoje: 1, agendamentosSemana: 1, agendamentosMes: 1, totalClientes: 1 }
     return route.fulfill({ json })
   })
@@ -86,3 +86,44 @@ test('opt-out do tutor impede o atalho', async ({ page }) => {
   await expect(page.getByText('O tutor desativou os avisos por WhatsApp.')).toBeVisible()
   await expect(botao(page)).toHaveCount(0)
 })
+
+for (const papel of ['veterinario', 'clinica']) {
+  test(`${papel}: modal cabe na área visível do Safari com barras e teclado`, async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperties(window.visualViewport!, {
+        height: { configurable: true, value: 600 },
+        offsetTop: { configurable: true, value: 64 },
+      })
+    })
+    await page.clock.setFixedTime(new Date('2026-10-28T15:00:00Z'))
+    await preparar(page, papel, '81999991234', true, 'pendente')
+    await page.goto(`/dashboard/${papel}`)
+    await page.getByRole('article').filter({ hasText: 'Pet de teste' }).first().click()
+    const dialog = page.getByRole('dialog')
+    const titulo = dialog.getByRole('heading').first()
+    const fechar = dialog.getByRole('button', { name: 'Fechar', exact: true }).first()
+    const rodape = dialog.getByRole('button', { name: papel === 'veterinario' ? 'Voltar' : 'Fechar', exact: true }).last()
+    async function conferirArea(top: number, height: number) {
+      await expect.poll(async () => (await titulo.boundingBox())!.y).toBeGreaterThanOrEqual(top)
+      for (const elemento of [titulo, fechar, rodape]) {
+        const box = (await elemento.boundingBox())!
+        expect(box.y).toBeGreaterThanOrEqual(top)
+        expect(box.y + box.height).toBeLessThanOrEqual(top + height)
+      }
+      await expect(botao(page)).toBeVisible()
+    }
+    await conferirArea(64, 600)
+    await expect(page.locator('body')).toHaveCSS('position', 'fixed')
+    await page.evaluate(() => {
+      Object.defineProperties(window.visualViewport!, { height: { configurable: true, value: 450 }, offsetTop: { configurable: true, value: 100 } })
+      window.visualViewport!.dispatchEvent(new Event('resize'))
+    })
+    await conferirArea(100, 450)
+    await dialog.locator('[class*="modalBody"]').evaluate(el => { el.scrollTop = el.scrollHeight })
+    await expect(titulo).toBeVisible()
+    await expect(rodape).toBeVisible()
+    await fechar.click()
+    await expect(dialog).toHaveCount(0)
+    await expect(page.locator('body')).not.toHaveCSS('position', 'fixed')
+  })
+}
