@@ -41,6 +41,13 @@ type Lista<T> = { data?: T[] }
 
 type ErroHttp = { response?: { status?: number; data?: unknown } }
 
+/** URL definida pelo servidor, nunca por parâmetros do pagador. */
+export function retornoPagamentoAsaas() {
+  const base = new URL(env('NEXT_PUBLIC_APP_URL') || 'https://lincepet.com.br')
+  if (!['https:', 'http:'].includes(base.protocol)) throw new Error('URL da aplicação inválida')
+  return { successUrl: `${base.origin}/pagamento/retorno`, autoRedirect: true }
+}
+
 const respostaDoErro = (error: unknown) => (error as ErroHttp | null | undefined)?.response
 
 /** Somente metadados fechados: nunca serializar Axios, headers, corpo, mensagem ou credencial. */
@@ -215,6 +222,7 @@ export class AsaasService {
       creditCardToken: input.creditCardToken || undefined,
       nextDueDate: input.nextDueDate || dataLocal(new Date()),
       externalReference: input.externalReference || undefined,
+      callback: retornoPagamentoAsaas(),
     }
 
     const res = await this.http.post<AsaasSubscription>('/subscriptions', payload)
@@ -224,6 +232,11 @@ export class AsaasService {
   async getSubscription(subscriptionId: string) {
     const res = await this.http.get(`/subscriptions/${subscriptionId}`)
     return res.data
+  }
+
+  /** Atualiza apenas a navegação da fatura; não registra pagamento nem altera valores. */
+  async configurarRetornoPagamento(paymentId: string) {
+    await this.http.put(`/payments/${encodeURIComponent(paymentId)}`, { callback: retornoPagamentoAsaas() })
   }
 
   async getSubscriptionPayments(subscriptionId: string) {

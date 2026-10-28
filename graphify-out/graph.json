@@ -49470,6 +49470,15 @@
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null,
       "contributor": "regras-de-negocio"
+    },
+    {
+      "id": "rule_pagamento_navegacao",
+      "label": "Pagamento: nova aba, retorno automatico e estado confirmado no backend",
+      "file_type": "rationale",
+      "rationale": "Decisao do dono em 27/10/2026: manter LincePet aberta e abrir pagamento por clique direto em nova aba, via /pagamento/abrir. POST autenticado seleciona fatura do titular e configura somente callback, sem criar cobranca ou alterar valor/status. Aceitar apenas HTTPS do dominio Asaas. Novas assinaturas tambem levam autoRedirect=true para /pagamento/retorno, origem NEXT_PUBLIC_APP_URL ou lincepet.com.br correspondente ao cadastro Asaas. Retorno consulta banco; URL de sucesso nao comprova pagamento. Plano ativo segue automaticamente para painel/onboarding; boleto aguarda compensacao. Aba original atualiza ao foco; leitura serial por ate 2 minutos, retomavel, com opcao manual. Polling usa incluir_fatura=0 e nao chama Asaas. Webhook permanece responsavel pela ativacao. Falha permite retomar a mesma fatura.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
     }
   ],
   "links": [
@@ -196028,6 +196037,60 @@
     {
       "source": "src_app_politica_de_privacidade_page",
       "target": "rule_whatsapp_fora_oferta_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_pagamento_navegacao",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_asaas",
+      "target": "rule_pagamento_navegacao",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_assinaturas_checkout",
+      "target": "rule_pagamento_navegacao",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_pagamento_abrir_page",
+      "target": "rule_pagamento_navegacao",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_pagamento_retorno_page",
+      "target": "rule_pagamento_navegacao",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_assinatura_linkpagamento",
+      "target": "rule_pagamento_navegacao",
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,

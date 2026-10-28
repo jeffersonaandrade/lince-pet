@@ -6,6 +6,7 @@ import { cartaoDePlano } from "@/config/planos";
 import { AssinaturasService, type PlanoBackend } from "@/services/assinaturas/assinaturas";
 import { handleApiError } from "@/utils/errorHandler";
 import { ResumoContratacao, precoMensal } from "./ResumoContratacao";
+import { LinkPagamento } from './LinkPagamento';
 
 /** Escolher antes do cadastro não cria assinatura nem concede acesso pago. */
 export function EscolhaPlanoCadastro({ tipo, selecionado, onEscolha }: {
@@ -47,6 +48,7 @@ export function EscolhaPlanoCadastro({ tipo, selecionado, onEscolha }: {
 }
 
 export function ConfirmarPlanoCadastro({ plano, onContinuar }: { plano: PlanoBackend; onContinuar: () => void }) {
+  const [pagamentoPronto, setPagamentoPronto] = useState(false);
   const [aceito, setAceito] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -56,7 +58,11 @@ export function ConfirmarPlanoCadastro({ plano, onContinuar }: { plano: PlanoBac
     setEnviando(true); setErro(null);
     try {
       const resultado = await AssinaturasService().criarAssinatura({ planCode: plano.code, valorConfirmadoCentavos: plano.priceCents, aceite: true });
-      if (resultado.checkoutUrl) { window.location.assign(resultado.checkoutUrl); return; }
+      if (resultado.checkoutUrl) {
+        setPagamentoPronto(true);
+        setResposta('Sua cobrança está pronta. Abra o pagamento em outra aba ou continue montando seu perfil.');
+        return;
+      }
       setResposta(resultado.message || "Assinatura solicitada. Consulte a cobrança no painel para concluir o pagamento.");
     } catch (e) { setErro(handleApiError(e).message); }
     finally { setEnviando(false); }
@@ -65,6 +71,7 @@ export function ConfirmarPlanoCadastro({ plano, onContinuar }: { plano: PlanoBac
     <h2 className="font-[family-name:var(--font-heading)] text-xl font-semibold text-slate-700">Conta criada. Confirme seu plano Pro</h2>
     <ResumoContratacao plano={plano} testeDisponivel={false} aceito={aceito} onAceite={setAceito} disabled={enviando || !!resposta} />
     {erro ? <p role="alert">{erro}</p> : null}
+    {pagamentoPronto ? <LinkPagamento /> : null}
     {resposta ? <p role="status">{resposta}</p> : <button type="button" onClick={confirmar} disabled={!aceito || enviando} className="w-full rounded-xl bg-[var(--primary)] hover:bg-[var(--primary-dark)] p-3 font-bold text-white disabled:opacity-50">{enviando ? "Processando..." : `Confirmar ${plano.name} — ${precoMensal(plano.priceCents)}/mês`}</button>}
     <button type="button" disabled={enviando} onClick={onContinuar} className="w-full rounded-xl border border-slate-300 p-3 font-semibold">{resposta ? "Continuar para montar perfil" : "Continuar no Gratuito e montar perfil"}</button>
   </section>;

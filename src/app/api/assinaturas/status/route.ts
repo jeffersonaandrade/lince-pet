@@ -9,7 +9,8 @@ import { statusLabel } from '@/server/services/assinatura-regras'
 import { usoMensalPrestador } from '@/server/services/cotas-prestador'
 
 export const GET = route(async (req) => {
-  const user = await requireUser(await ApiRequest.from(req), ['veterinario', 'clinica', 'prestador'])
+  const request = await ApiRequest.from(req)
+  const user = await requireUser(request, ['veterinario', 'clinica', 'prestador'])
   const assinante = assinanteDe(user)
   if (!assinante) return forbidden({ message: 'Apenas veterinários, clínicas e profissionais podem ver status' })
 
@@ -26,7 +27,7 @@ export const GET = route(async (req) => {
 
   const aPagar = pendente ?? (vigente?.status === 'past_due' ? vigente : null)
   let checkoutUrl: string | null = null
-  if (aPagar?.asaasSubscriptionId && !cancelamento) {
+  if (aPagar?.asaasSubscriptionId && !cancelamento && request.text('incluir_fatura') !== '0') {
     try {
       checkoutUrl = await getPendingInvoiceUrl(new AsaasService(), aPagar.asaasSubscriptionId)
     } catch (e) {

@@ -1,4 +1,5 @@
 import type { StatusAssinatura, StatusLabel } from "@/services/assinaturas/assinaturas";
+import { LinkPagamento } from './LinkPagamento';
 
 const SELO: Record<StatusLabel, { texto: string; classe: string }> = {
   ativa: { texto: "Ativa", classe: "bg-emerald-100 text-emerald-800" },
@@ -10,12 +11,13 @@ const SELO: Record<StatusLabel, { texto: string; classe: string }> = {
 
 /** Selo do status da assinatura (reflexo do Asaas) e atalho para pagar a fatura em aberto. */
 export function StatusAssinaturaAviso({ status }: { status: StatusAssinatura }) {
-  if (!status.statusLabel && !status.cancelamentoPendente) return null;
-  const selo = SELO[status.cancelamentoPendente ? "cancelamento_pendente" : status.statusLabel!];
+  const podePagar = !status.cancelamentoPendente && Boolean(status.checkoutUrl || status.pendingPlanId || ['pending', 'past_due'].includes(status.subscription?.status || ''));
+  if (!status.statusLabel && !status.cancelamentoPendente && !podePagar) return null;
+  const selo = SELO[status.cancelamentoPendente ? "cancelamento_pendente" : status.statusLabel || 'pendente'];
   const fimTeste = status.emTeste && status.trialEnd ? new Date(status.trialEnd).toLocaleDateString("pt-BR") : null;
 
   return (
-    <div className="mb-6 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 text-left sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-6 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 text-left">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-slate-600">Assinatura</span>
@@ -34,14 +36,7 @@ export function StatusAssinaturaAviso({ status }: { status: StatusAssinatura }) 
           <p role="status" className="text-sm text-amber-800">Há um cancelamento aguardando confirmação. A assinatura solicitada ainda pode estar ativa; tentaremos novamente automaticamente.</p>
         ) : null}
       </div>
-      {status.checkoutUrl ? (
-        <a
-          href={status.checkoutUrl}
-          className="inline-flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
-        >
-          Escolher forma de pagamento
-        </a>
-      ) : null}
+      {podePagar ? <LinkPagamento /> : null}
     </div>
   );
 }

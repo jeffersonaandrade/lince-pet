@@ -65,6 +65,12 @@ beforeEach(() => {
 })
 
 describe('GET /api/assinaturas/status', () => {
+  it('acompanhamento rápido usa somente o banco, sem consultar faturas no Asaas', async () => {
+    prismaMock.subscription.findMany.mockResolvedValue([sub({status:'pending'})])
+    const resposta = await statusRoute(new NextRequest('http://localhost/api/assinaturas/status?incluir_fatura=0'), {params:Promise.resolve({})})
+    expect(await resposta.json()).toMatchObject({statusLabel:'pendente',checkoutUrl:null})
+    expect(asaasFake.getSubscriptionPayments).not.toHaveBeenCalled()
+  })
   it('cancelamento pendente não oferece fatura que está sendo encerrada', async () => {
     prismaMock.asaasCancelamento.findFirst.mockResolvedValue({ motivo: 'usuario' })
     prismaMock.subscription.findMany.mockResolvedValue([sub({ status: 'pending' })])
