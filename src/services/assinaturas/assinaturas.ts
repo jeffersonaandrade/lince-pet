@@ -29,6 +29,9 @@ export type PlanoBackend = { id: string; code: string; name: string; priceCents:
 
 export function AssinaturasService() {
   return {
+    async prepararPagamento(): Promise<{ checkoutUrl: string | null }> {
+      return (await api.post('/assinaturas/checkout')).data;
+    },
     async listarPlanos(tipo?: "veterinario" | "clinica" | "prestador"): Promise<PlanoBackend[]> {
       const { data } = await api.get("/assinaturas/planos", { params: tipo ? { tipo } : {} });
       return data?.plans || [];
@@ -37,8 +40,8 @@ export function AssinaturasService() {
       const { data } = await api.post("/assinaturas", params);
       return data;
     },
-    async obterStatus(): Promise<StatusAssinatura> {
-      const { data } = await api.get("/assinaturas/status");
+    async obterStatus({ incluirFatura = true }: { incluirFatura?: boolean } = {}): Promise<StatusAssinatura> {
+      const { data } = await api.get("/assinaturas/status", { params: incluirFatura ? undefined : { incluir_fatura: '0' } });
       return data;
     },
     async upgrade(id: string, params: { planCode: string; valorConfirmadoCentavos: number; aceite: boolean }): Promise<RespostaContratacao> {

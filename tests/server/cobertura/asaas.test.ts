@@ -9,6 +9,7 @@ import AsaasDefault from '@/server/services/asaas'
 import { dataLocal } from '@/server/services/assinatura-regras'
 
 const ENVS = [
+  'NEXT_PUBLIC_APP_URL',
   'ASAAS_ENV',
   'ASAAS_BASE_URL',
   'ASAAS_BASE_URL_SANDBOX',
@@ -323,6 +324,18 @@ describe('AsaasService: clientes', () => {
 })
 
 describe('AsaasService: assinaturas e pagamentos', () => {
+  it('configura retorno da fatura existente sem alterar valor nem confirmar pagamento', async () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_URL', 'https://lincepet.com.br/caminho')
+    http.put.mockResolvedValueOnce({data:{}})
+    await new AsaasService().configurarRetornoPagamento('pay_123')
+    expect(http.put).toHaveBeenCalledWith('/payments/pay_123', {callback:{successUrl:'https://lincepet.com.br/pagamento/retorno',autoRedirect:true}})
+    expect(http.post).not.toHaveBeenCalled()
+  })
+  it('recusa origem de callback com esquema inválido antes de chamar o Asaas', async () => {
+    vi.stubEnv('NEXT_PUBLIC_APP_URL', 'javascript:alert(1)')
+    await expect(new AsaasService().createSubscription({customerId:'cus_1',value:59.90})).rejects.toThrow('URL da aplicação inválida')
+    expect(http.post).not.toHaveBeenCalled()
+  })
   it('createSubscription: padrão mensal, cobrança UNDEFINED e vencimento hoje (data de Brasília)', async () => {
     http.post.mockResolvedValueOnce({ data: { id: 'sub_1' } })
     const r = await new AsaasService().createSubscription({ customerId: 'cus_1', value: 49.9 })
@@ -336,6 +349,7 @@ describe('AsaasService: assinaturas e pagamentos', () => {
       creditCardToken: undefined,
       nextDueDate: dataLocal(new Date()),
       externalReference: undefined,
+      callback: { successUrl: 'https://lincepet.com.br/pagamento/retorno', autoRedirect: true },
     })
   })
 
@@ -360,6 +374,7 @@ describe('AsaasService: assinaturas e pagamentos', () => {
       creditCardToken: 'tok',
       nextDueDate: '2026-11-01',
       externalReference: 'sub:1',
+      callback: { successUrl: 'https://lincepet.com.br/pagamento/retorno', autoRedirect: true },
     })
   })
 

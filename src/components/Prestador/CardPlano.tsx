@@ -17,7 +17,7 @@ export function CardPlano({ revisao }: { revisao?: unknown }) {
   const [aceito, setAceito] = useState(false);
   const [enviando, setEnviando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
-  const atualizar = useCallback(async () => { setStatus(await AssinaturasService().obterStatus()); }, []);
+  const atualizar = useCallback(async () => { setStatus(await AssinaturasService().obterStatus({ incluirFatura: false })); }, []);
 
   useEffect(() => {
     AssinaturasService().listarPlanos("prestador").then(planos => setOferta(planos.find(p => p.code === PLANO_PAGO) ?? null)).catch(() => setOferta(null));
@@ -41,7 +41,11 @@ export function CardPlano({ revisao }: { revisao?: unknown }) {
       const resposta = subscription
         ? await servico.upgrade(subscription.id, { planCode: PLANO_PAGO, valorConfirmadoCentavos: oferta.priceCents, aceite: aceito })
         : await servico.criarAssinatura({ planCode: PLANO_PAGO, valorConfirmadoCentavos: oferta.priceCents, aceite: aceito });
-      if (resposta?.checkoutUrl) window.location.assign(resposta.checkoutUrl);
+      if (resposta?.checkoutUrl) {
+        setStatus(atual => atual ? { ...atual, checkoutUrl: resposta.checkoutUrl } : atual);
+        setConfirmando(false); setAceito(false);
+        await atualizar().catch(() => {});
+      }
       else { setStatus(await servico.obterStatus()); setConfirmando(false); setAceito(false); }
     } catch (e) {
       setErro(handleApiError(e).message);

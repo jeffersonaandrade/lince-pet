@@ -966,10 +966,17 @@ freemium_nodes += [
     rule("rule_whatsapp_manual_v1", "V1: aviso manual pelo WhatsApp do profissional",
          "Decisao do dono em 27/10/2026, confirmada no mesmo dia: consultas vet/clinica, pedidos do prestador e exames oferecem Avisar tutor pelo WhatsApp sem exigir Pro. Destino e o telefone do tutor; respeita opt-out e telefone oculto. Abre wa.me com texto operacional para envio humano; nao envia sozinho nem comprova entrega. Sem telefone valido explica indisponibilidade. Complementa e-mail e sino; automacao continua adiada. Decisao posterior: consultas veterinarias nao ganham nova etapa de aceite/recusa manual. Omitir a linha de situacao para pendente/aguardando, sem prometer confirmacao nem alterar status persistidos. Preservar cancelamento/realizacao, regras de pedidos do prestador e aceite especifico de domicilio."),
 ]
+freemium_nodes += [rule("rule_pagamento_navegacao", "Pagamento: nova aba, retorno automatico e estado confirmado no backend",
+    "Decisao do dono em 27/10/2026: manter LincePet aberta e abrir pagamento por clique direto em nova aba, via /pagamento/abrir. POST autenticado seleciona fatura do titular e configura somente callback, sem criar cobranca ou alterar valor/status. Aceitar apenas HTTPS do dominio Asaas. Novas assinaturas tambem levam autoRedirect=true para /pagamento/retorno, origem NEXT_PUBLIC_APP_URL ou lincepet.com.br correspondente ao cadastro Asaas. Retorno consulta banco; URL de sucesso nao comprova pagamento. Plano ativo segue automaticamente para painel/onboarding; boleto aguarda compensacao. Aba original atualiza ao foco; leitura serial por ate 2 minutos, retomavel, com opcao manual. Polling usa incluir_fatura=0 e nao chama Asaas. Webhook permanece responsavel pela ativacao. Falha permite retomar a mesma fatura.")]
 new_nodes += freemium_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in freemium_nodes]
 new_edges += [edge("rule_whatsapp_manual_v1", "rule_whatsapp_fora_oferta_v1", "references")]
 for code_id, rs in {
+    "src_server_services_assinaturas_checkout": ["rule_pagamento_navegacao"],
+    "src_server_services_asaas": ["rule_pagamento_navegacao"],
+    "src_app_pagamento_abrir_page": ["rule_pagamento_navegacao"],
+    "src_app_pagamento_retorno_page": ["rule_pagamento_navegacao"],
+    "src_components_assinatura_linkpagamento": ["rule_pagamento_navegacao"],
     "src_components_tutorcontact_whatsappmanual": ["rule_whatsapp_manual_v1"],
     "src_lib_whatsapp_manual": ["rule_whatsapp_manual_v1"],
     "src_components_tutorcontact_tutorcontact": ["rule_whatsapp_manual_v1"],

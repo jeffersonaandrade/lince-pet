@@ -38,7 +38,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
   const [error, setError] = useState<ErrorState | null>(null);
   const [sucesso, setSucesso] = useState<string | null>(null);
   const [aceito, setAceito] = useState(false);
-  const atualizar = useCallback(async () => { setStatus(await AssinaturasService().obterStatus()); }, []);
+  const atualizar = useCallback(async () => { setStatus(await AssinaturasService().obterStatus({ incluirFatura: false })); }, []);
 
   useEffect(() => {
     if (loading) return;
@@ -73,11 +73,12 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
   const planoAtual = status?.plan?.code ?? null;
   const ehAtual = (code: string) => code === planoAtual && (code === "free" || status?.statusLabel === "ativa");
   const escolha = planos.find(p => p.code === selecionado);
+  const aguardandoPagamento = Boolean(status?.checkoutUrl || status?.pendingPlanId || status?.subscription?.status === 'pending');
   const testeNaContratacao = Boolean(status?.testeDisponivel && !status.subscription && escolha?.priceCents && escolha.trialDays > 0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selecionado || !escolha || !status || (escolha.priceCents > 0 && !aceito)) return;
+    if (!selecionado || !escolha || !status || aguardandoPagamento || (escolha.priceCents > 0 && !aceito)) return;
     setEnviando(true);
     setError(null);
     setSucesso(null);
@@ -88,7 +89,9 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
         : await servico.criarAssinatura({ planCode: selecionado, valorConfirmadoCentavos: escolha.priceCents, aceite: aceito });
 
       if (resposta?.checkoutUrl) {
-        window.location.assign(resposta.checkoutUrl);
+        setStatus(atual => atual ? { ...atual, checkoutUrl: resposta.checkoutUrl } : atual);
+        setSucesso('Sua cobrança está pronta. Abra o pagamento em outra aba; você pode continuar na LincePet.');
+        await atualizar().catch(() => {});
         return;
       }
       setStatus(await servico.obterStatus());
@@ -192,7 +195,7 @@ export function AlterarPlano({ tipo, destaque, painel, titulo, descricao }: Prop
               <button
                 type="submit"
                 className={styles.continueButton}
-                disabled={!escolha || !status || (escolha.priceCents > 0 && !aceito) || !selecionado || enviando || ehAtual(selecionado) || status?.cancelamentoPendente}
+                disabled={aguardandoPagamento || !escolha || !status || (escolha.priceCents > 0 && !aceito) || !selecionado || enviando || ehAtual(selecionado) || status?.cancelamentoPendente}
               >
                 {enviando ? "Processando..." : escolha?.priceCents === 0 ? "Usar plano gratuito" : testeNaContratacao ? `Confirmar teste — depois ${precoMensal(escolha?.priceCents ?? 0)}/mês` : `Confirmar ${escolha?.name ?? "plano"} — ${precoMensal(escolha?.priceCents ?? 0)}/mês`}
               </button>
