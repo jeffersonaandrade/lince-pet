@@ -964,7 +964,7 @@ freemium_nodes = [
 ]
 freemium_nodes += [
     rule("rule_whatsapp_manual_v1", "V1: aviso manual pelo WhatsApp do profissional",
-         "Decisao do dono em 27/10/2026, confirmada no mesmo dia: consultas vet/clinica, pedidos do prestador e exames oferecem Avisar tutor pelo WhatsApp sem exigir Pro. Destino e o telefone do tutor; respeita opt-out e telefone oculto. Abre wa.me com texto operacional para envio humano; nao envia sozinho nem comprova entrega. Sem telefone valido explica indisponibilidade. Complementa e-mail e sino; automacao continua adiada."),
+         "Decisao do dono em 27/10/2026, confirmada no mesmo dia: consultas vet/clinica, pedidos do prestador e exames oferecem Avisar tutor pelo WhatsApp sem exigir Pro. Destino e o telefone do tutor; respeita opt-out e telefone oculto. Abre wa.me com texto operacional para envio humano; nao envia sozinho nem comprova entrega. Sem telefone valido explica indisponibilidade. Complementa e-mail e sino; automacao continua adiada. Decisao posterior: consultas veterinarias nao ganham nova etapa de aceite/recusa manual. Omitir a linha de situacao para pendente/aguardando, sem prometer confirmacao nem alterar status persistidos. Preservar cancelamento/realizacao, regras de pedidos do prestador e aceite especifico de domicilio."),
 ]
 new_nodes += freemium_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in freemium_nodes]

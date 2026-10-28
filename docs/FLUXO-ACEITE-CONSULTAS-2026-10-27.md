@@ -1,6 +1,6 @@
 # Aceite de consultas — situação encontrada em 27/10/2026
 
-O fluxo solicitado pelo dono é coerente: tutor solicita → profissional aceita ou recusa → sistema guarda a decisão → profissional pode avisar manualmente pelo WhatsApp. O envio manual não deve alterar o status. Esta nota registra a lacuna; a correção do modal não altera as regras de atendimento.
+**Decisão posterior do dono, em 27/10/2026:** não exigir aceite ou recusa manual nas consultas veterinárias. A sugestão de generalizar esse fluxo foi descartada. A reserva não deve ser comunicada como “Aguardando confirmação” no WhatsApp. O envio manual é opcional e não altera o status do agendamento.
 
 ## Evidências atuais
 
@@ -11,8 +11,8 @@ O fluxo solicitado pelo dono é coerente: tutor solicita → profissional aceita
 - A reserva de teste `d03b8f3b-a9c7-4df1-9650-5b85cf5467d1` foi consultada novamente: `status=pendente`, `confirmado_em=null`, `started_at=null`. O agente fez a reserva pelo tutor e não aceitou nem iniciou pelo veterinário.
 - A mensagem “Agendamento confirmado” após a reserva pelo tutor não representa o aceite pelo profissional; a apresentação precisa acompanhar o fluxo definido.
 
-## Adequação necessária
+## Sugestão anterior descartada
 
-Generalizar as transições para consultas presenciais/online, definir a atuação da clínica vinculada, registrar recusa/motivo e preservar agenda/cota/notificações com concorrência e idempotência. Se o aceite for obrigatório, o backend também deve impedir início de uma consulta pendente. Diferenciar na interface solicitação, confirmação, recusa, cancelamento e início; gerar a mensagem manual a partir da decisão persistida. Não exigir envio de WhatsApp para efetivar a decisão.
+A proposta anterior era generalizar aceite/recusa para consultas presenciais/online e exigir aceite antes do início. **Não implementar essa proposta:** o dono decidiu manter a reserva sem essa nova etapa. Na mensagem manual, omitir a linha de situação para os status internos `pendente` e `aguardando`, inclusive variações de caixa/espaços. Preservar informações de cancelamento, realização e demais situações existentes, sem converter pendência em confirmação.
 
-Clínicas e exames têm regras próprias e não recebem essa mudança por inferência. Nenhuma regra de aceite foi alterada nesta correção visual.
+Não migrar status existentes nem alterar cota, pagamento, início por código ou o aceite específico de domicílio para liberar endereço. Pedidos de serviços de prestadores, clínicas e exames mantêm suas próprias regras. Esta correção altera o texto da mensagem manual; não elimina transições de outros fluxos.
