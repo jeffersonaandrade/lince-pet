@@ -16,8 +16,17 @@ describe('Aviso manual ao telefone cadastrado do tutor', () => {
     expect(linkWhatsAppManual(telefone, {})).toBeNull()
   })
 
-  it.each([['cancelado', 'Cancelado'], ['pendente', 'Aguardando confirmação'], ['confirmado', 'Confirmado']])('informa a situação real %s', (status, rotulo) => {
+  it.each([['cancelado', 'Cancelado'], ['realizado', 'Realizado'], ['confirmado', 'Confirmado']])('informa a situação real %s', (status, rotulo) => {
     expect(mensagemWhatsAppManual({ status })).toContain(`Situação: ${rotulo}.`)
+  })
+
+  it.each(['pendente', 'aguardando', 'PENDENTE', ' aguardando '])('não inventa aceite para o status interno %s', status => {
+    const mensagem = mensagemWhatsAppManual({ nome: 'Ana', data: '28/10/2026', horario: '14:00', status })
+    expect(mensagem).not.toContain('Situação:')
+    expect(mensagem).not.toMatch(/aguardando|pendente|confirmação|confirmado/i)
+    expect(mensagem).toContain('28/10/2026 às 14:00')
+    expect(mensagem).toContain('https://lincepet.com.br/dashboard/tutor')
+    expect(new URL(linkWhatsAppManual('11999990001', { status })!).searchParams.get('text')).not.toContain('Situação:')
   })
 
   it('informa resultado disponível sem incluir laudo nem dados clínicos', () => {

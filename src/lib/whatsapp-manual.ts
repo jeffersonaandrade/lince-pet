@@ -14,8 +14,10 @@ const texto = (valor?: string | null) => (valor || '').replace(/https?:\/\/\S+|w
 
 export function mensagemWhatsAppManual(aviso: AvisoWhatsApp): string {
   const status = texto(aviso.status)
+  // O status interno da reserva não representa uma etapa de aceite do profissional.
+  const exibirStatus = status && !['pendente', 'aguardando'].includes(status.toLowerCase())
   const situacao: Record<string, string> = {
-    pendente: 'Aguardando confirmação', aguardando: 'Aguardando confirmação', confirmado: 'Confirmado',
+    confirmado: 'Confirmado',
     cancelado: 'Cancelado', realizado: 'Realizado', concluido: 'Concluído', concluida: 'Concluído', 'em andamento': 'Em andamento',
   }
   return [
@@ -23,7 +25,7 @@ export function mensagemWhatsAppManual(aviso: AvisoWhatsApp): string {
     'Informações do agendamento:',
     aviso.data ? `Data: ${texto(aviso.data)}${aviso.horario ? ` às ${texto(aviso.horario)}` : ''}.` : null,
     aviso.local ? `Local: ${texto(aviso.local)}.` : null,
-    status ? `Situação: ${situacao[status.toLowerCase()] || status}.` : null,
+    exibirStatus ? `Situação: ${situacao[status.toLowerCase()] || status}.` : null,
     aviso.laudoDisponivel ? 'O resultado está disponível para consulta no site.' : null,
     'Confira os detalhes acessando sua conta: https://lincepet.com.br/dashboard/tutor',
   ].filter(Boolean).join('\n')

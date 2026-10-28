@@ -49446,9 +49446,9 @@
     },
     {
       "id": "rule_whatsapp_fora_oferta_v1",
-      "label": "V1: WhatsApp adiado e fora da oferta comercial",
+      "label": "V1: WhatsApp automatico adiado; manual permanece",
       "file_type": "rationale",
-      "rationale": "Decisao explicita do dono em 27/10/2026: avisos automaticos por WhatsApp ficam para depois da v1. Retirar promessa dos planos, cadastro, home e ajuda, inclusive fallback de features legadas do banco. Preservar historico e configuracoes existentes; e-mail e avisos no site permanecem. Gestao financeira/Starter tambem ficam para v2. Pendencias atualizadas em docs/PENDENCIAS-V1-2026-10-27.md; publicar codigo nao comprova homologacao financeira, restauracao ou aceite juridico.",
+      "rationale": "Decisao do dono em 27/10/2026, esclarecida no mesmo dia: so a automacao pelo numero da Lince Pet fica fora da v1. Retirar promessa dos planos, home, ajuda e textos legais de envio automatico. Aviso manual Avisar tutor e preferencia/opt-out permanecem. Preservar historico/backend; producao segue em log. Automacao possivel na v2. Pendencias em docs/PENDENCIAS-V1-2026-10-27.md.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null,
       "contributor": "regras-de-negocio"
@@ -49466,7 +49466,7 @@
       "id": "rule_whatsapp_manual_v1",
       "label": "V1: aviso manual pelo WhatsApp do profissional",
       "file_type": "rationale",
-      "rationale": "Decisao do dono em 27/10/2026: consultas vet/clinica, pedidos do prestador e exames oferecem Avisar tutor pelo WhatsApp sem exigir Pro. Destino e o telefone cadastrado pelo tutor no portal; respeita opt-out e telefone oculto. Abre wa.me com texto operacional para revisar e enviar pela conta conectada no dispositivo; nao escolhe remetente, nao envia sozinho, nao comprova entrega nem altera agendamento. Sem telefone valido explica indisponibilidade. Resultado aponta so para painel autenticado, sem laudo, diagnostico, prontuario ou codigo de inicio. Complementa e-mail e sino; automacao continua adiada.",
+      "rationale": "Decisao do dono em 27/10/2026, confirmada no mesmo dia: consultas vet/clinica, pedidos do prestador e exames oferecem Avisar tutor pelo WhatsApp sem exigir Pro. Destino e o telefone do tutor; respeita opt-out e telefone oculto. Abre wa.me com texto operacional para envio humano; nao envia sozinho nem comprova entrega. Sem telefone valido explica indisponibilidade. Complementa e-mail e sino; automacao continua adiada. Decisao posterior: consultas veterinarias nao ganham nova etapa de aceite/recusa manual. Omitir a linha de situacao para pendente/aguardando, sem prometer confirmacao nem alterar status persistidos. Preservar cancelamento/realizacao, regras de pedidos do prestador e aceite especifico de domicilio.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null,
       "contributor": "regras-de-negocio"
@@ -195974,6 +195974,60 @@
     {
       "source": "src_components_prestador_painelpedidos",
       "target": "rule_whatsapp_manual_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "rule_whatsapp_manual_v1",
+      "target": "rule_whatsapp_fora_oferta_v1",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_contato_page",
+      "target": "rule_whatsapp_fora_oferta_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_preferenciasnotificacao_preferenciasnotificacao",
+      "target": "rule_whatsapp_manual_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_preferenciasnotificacao_preferenciasnotificacao",
+      "target": "rule_whatsapp_fora_oferta_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_termos_de_uso_page",
+      "target": "rule_whatsapp_fora_oferta_v1",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_politica_de_privacidade_page",
+      "target": "rule_whatsapp_fora_oferta_v1",
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,

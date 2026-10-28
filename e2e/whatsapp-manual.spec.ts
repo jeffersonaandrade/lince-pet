@@ -100,6 +100,8 @@ for (const papel of ['veterinario', 'clinica']) {
     await page.goto(`/dashboard/${papel}`)
     await page.getByRole('article').filter({ hasText: 'Pet de teste' }).first().click()
     const dialog = page.getByRole('dialog')
+    const mensagem = new URL((await botao(page).getAttribute('href'))!).searchParams.get('text')!
+    expect(mensagem).not.toMatch(/aguardando confirmação|situação: pendente/i)
     const titulo = dialog.getByRole('heading').first()
     const fechar = dialog.getByRole('button', { name: 'Fechar', exact: true }).first()
     const rodape = dialog.getByRole('button', { name: papel === 'veterinario' ? 'Voltar' : 'Fechar', exact: true }).last()
