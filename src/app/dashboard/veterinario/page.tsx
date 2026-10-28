@@ -19,6 +19,7 @@ import { AssinaturasService } from "@/services/assinaturas/assinaturas";
 import Link from "next/link";
 import ShareProfileButton from "@/components/ShareProfileButton/ShareProfileButton";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
+import ViewportDialog from "@/components/ui/ViewportDialog";
 import TutorContact from "@/components/TutorContact/TutorContact";
 import { AceitarDomicilio } from "./components/AceitarDomicilio";
 import BloqueiosLista from "@/components/BloqueioAgenda/BloqueiosLista";
@@ -1187,7 +1188,7 @@ export default function VeterinarioDashboard() {
       </div >
 
       {isModalOpen && selectedEvent && (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true">
+        <ViewportDialog className={styles.modalOverlay} role="dialog" aria-modal="true">
           <div className={`${styles.modalCard} ${styles.modalCardLarge}`}>
             <div className={styles.modalHeader}>
               <h4 className={styles.modalTitle}>
@@ -1421,11 +1422,11 @@ export default function VeterinarioDashboard() {
               )}
             </div>
           </div>
-        </div>
+        </ViewportDialog>
       )}
 
       {isCodeModalOpen && selectedEvent && (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true">
+        <ViewportDialog className={styles.modalOverlay} role="dialog" aria-modal="true">
           <div className={`${styles.modalCard} ${styles.modalCardLarge}`}>
 
             <div className={styles.modalHeader}>
@@ -1705,7 +1706,7 @@ export default function VeterinarioDashboard() {
               </button>
             </div>
           </div>
-        </div>
+        </ViewportDialog>
       )}
 
       {encaminhando ? (

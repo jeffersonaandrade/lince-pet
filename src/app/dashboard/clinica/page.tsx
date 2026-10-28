@@ -19,6 +19,7 @@ import { AssinaturasService } from "@/services/assinaturas/assinaturas";
 import Link from "next/link";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
 import ShareProfileButton from "@/components/ShareProfileButton/ShareProfileButton";
+import ViewportDialog from "@/components/ui/ViewportDialog";
 import TutorContact from "@/components/TutorContact/TutorContact";
 import BloqueiosLista from "@/components/BloqueioAgenda/BloqueiosLista";
 import ProntuarioPet from "@/components/Prontuario/ProntuarioPet";
@@ -1139,7 +1140,7 @@ export default function ClinicaDashboard() {
 
       {/* Modal de Detalhes do Evento */}
       {isModalOpen && selectedEvent && (
-        <div className={styles.modalOverlay} role="dialog" aria-modal="true" onClick={() => setIsModalOpen(false)}>
+        <ViewportDialog className={styles.modalOverlay} role="dialog" aria-modal="true" onClick={() => setIsModalOpen(false)}>
           <div className={`${styles.modalCard} ${styles.modalCardLarge}`} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h4 className={styles.modalTitle}>Detalhes da Consulta</h4>
@@ -1314,12 +1315,12 @@ export default function ClinicaDashboard() {
               </button>
             </div>
           </div>
-        </div>
+        </ViewportDialog>
       )}
 
       {/* Modal para Adicionar Veterinário */}
       {isAddVetModalOpen && (
-        <div className={styles.modalOverlay} onClick={() => setIsAddVetModalOpen(false)}>
+        <ViewportDialog className={styles.modalOverlay} onClick={() => setIsAddVetModalOpen(false)}>
           <div className={styles.modalCard} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>Vincular Novo Profissional</h3>
@@ -1386,7 +1387,7 @@ export default function ClinicaDashboard() {
               </div>
             </div>
           </div>
-        </div>
+        </ViewportDialog>
       )}
 
       {encaminhando ? (
