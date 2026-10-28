@@ -1174,6 +1174,13 @@ export default function ClinicaDashboard() {
                     nome={selectedEvent.resource?.cliente}
                     sobrenome={selectedEvent.resource?.clienteSobrenome}
                     telefone={selectedEvent.resource?.tutorTelefone}
+                    whatsappPermitido={selectedEvent.resource?.tutorWhatsappPermitido}
+                    aviso={{
+                      data: moment(selectedEvent.start).format("DD/MM/YYYY"),
+                      horario: selectedEvent.resource?.horario,
+                      status: selectedEvent.resource?.status,
+                      local: selectedEvent.resource?.localNome,
+                    }}
                     email={selectedEvent.resource?.tutorEmail}
                   />
 

@@ -102,7 +102,7 @@ test.describe('cadastro', () => {
     await page.getByLabel('Sobrenome').fill('Teste')
     await page.getByLabel('E-mail').fill(emailUnico('prestador'))
     await page.locator('input[type="password"]').fill(SENHA)
-    await page.getByLabel('Celular').fill('11912345678')
+    await page.getByLabel('Celular (WhatsApp)').fill('11912345678')
     await page.getByRole('button', { name: 'Criar conta e montar perfil' }).click()
     await expect(page.getByText('Escolha o tipo de serviço que você oferece.')).toBeVisible()
 

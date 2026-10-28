@@ -10,7 +10,7 @@
 | Bloqueante operacional | Recuperação e alertas | Restaurar backup em ambiente isolado, recuperar banco e arquivos privados, conferir integridade e permissões e registrar tempos/perda aceitáveis. Demonstrar alerta acionável de queda da aplicação, cron parado e cancelamentos/cobranças sem conciliação. Há health check e monitor de capacidade; isso não comprova restauração nem alertas de todos os processos. |
 | Bloqueante para lançamento comercial | Operação e política de dados | Nomear responsáveis por CRMV/RT, suporte, reclamações, cobrança e cancelamentos; definir rotinas de atendimento e contingência. Validar termos, privacidade, retenção e eliminação definitiva de prontuários com os responsáveis técnico/jurídico. Não presumir prazo legal nem prometer exclusão imediata. |
 | Alta | Regressão E2E completa da candidata | Executar toda a suíte de navegador com banco isolado e expectativas atualizadas ao freemium de 5. As rodadas recentes cobriram contratação/cadastro, exames, encaminhamentos e concorrência da agenda; não equivalem à suíte inteira. Existem expectativas antigas como o default `none` em `e2e/demandas/laboratorio.spec.ts`, enquanto a regra atual é `free`. |
-| Alta | Operação do suporte | O dono confirmou `contato@lincepet.com.br`, configurado em `src/config/site.ts` para a página de contato. Falta confirmar recebimento da caixa e responsável/rotina de atendimento. Contato por WhatsApp e demais integrações WhatsApp ficam fora da v1; suporte na v1 é por e-mail. |
+| Alta | Operação do suporte | O dono confirmou `contato@lincepet.com.br`, configurado em `src/config/site.ts` para a página de contato. Falta confirmar recebimento da caixa e responsável/rotina de atendimento. WhatsApp de suporte continua sem número; avisos manuais pelo profissional seguem na v1; automação fica para depois. |
 | Alta | Busca e crescimento do catálogo | Corrigir UF minúscula e cidade sem acento, remover os respectivos `test.fail()` após comprovar os resultados e implementar paginação no banco e na interface sem ocultar silenciosamente profissionais. Evidência: `e2e/filtros/explorar.spec.ts` e pendência NV-19 em `docs/CORRECOES-AUDITORIA-SEGURANCA.md`. |
 | Alta operacional | Automação da publicação | Configurar `RENDER_API_KEY` e `RENDER_SERVICE_ID` nos secrets corretos do GitHub e demonstrar o job de deploy concluído. Hoje os testes passam, mas esse job falha por ausência dos secrets; a publicação foi executada manualmente pelo conector do Render, com workspace confirmado e revisão do commit implantado. |
 
@@ -29,7 +29,7 @@
 
 ## Fora do escopo da v1 por decisão do dono
 
-- Integrações WhatsApp (automáticas e manuais): fora da v1. Sem promessas na oferta, preferência de canal, aviso manual ao tutor, suporte por WhatsApp nem menções em termos/privacidade/contato. Código/histórico de backend preservados para possível v2.
+- Notificações automáticas por WhatsApp: fora da oferta da v1. Sem promessa nos planos, home, ajuda e textos legais de envio pelo número da Lince Pet. Aviso manual pelo profissional permanece. Features/histórico/opt-out preservados para possível automação na v2.
 - Gestão financeira e retorno do Starter: v2, sem preço ou diferenciação futura presumidos.
 
 ## Fontes

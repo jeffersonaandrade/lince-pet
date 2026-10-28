@@ -155,7 +155,7 @@ export default function PrestadorSignup() {
           </Campo>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <Campo label="Celular" erro={campoErro("celular")}>
+            <Campo label="Celular (WhatsApp)" erro={campoErro("celular")}>
               <Entrada
                 name="celular"
                 value={form.celular}

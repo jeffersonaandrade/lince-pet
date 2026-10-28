@@ -944,9 +944,9 @@ for code_id, rs in {
 
 freemium_nodes = [
     rule("rule_contato_oficial_email", "Contato: e-mail oficial confirmado pelo dono",
-         "Decisao explicita de 27/10/2026: contato@lincepet.com.br e o e-mail de contato da LincePet. SITE.email alimenta o mailto da pagina /contato. Configurar o link nao cria a caixa, nao valida entrega e nao define responsavel pelo atendimento. Suporte WhatsApp fora da v1."),
-    rule("rule_whatsapp_fora_oferta_v1", "V1: sem integracoes WhatsApp (manual ou automatica)",
-         "Decisao do dono em 27/10/2026, reforcada no mesmo dia: v1 sem WhatsApp automatico nem manual. Remover do frontend promessas, preferencia de canal, Avisar tutor, card de suporte e mencoes em termos/privacidade/contato/cadastro. Preservar backend/historico/opt-out/feature de plano; producao segue em log. Possivel na v2. Pendencias em docs/PENDENCIAS-V1-2026-10-27.md."),
+         "Decisao explicita de 27/10/2026: contato@lincepet.com.br e o e-mail de contato da LincePet. SITE.email alimenta o mailto da pagina /contato. Configurar o link nao cria a caixa, nao valida entrega e nao define responsavel pelo atendimento. WhatsApp de suporte continua sem numero confirmado."),
+    rule("rule_whatsapp_fora_oferta_v1", "V1: WhatsApp automatico adiado; manual permanece",
+         "Decisao do dono em 27/10/2026, esclarecida no mesmo dia: so a automacao pelo numero da Lince Pet fica fora da v1. Retirar promessa dos planos, home, ajuda e textos legais de envio automatico. Aviso manual Avisar tutor e preferencia/opt-out permanecem. Preservar historico/backend; producao segue em log. Automacao possivel na v2. Pendencias em docs/PENDENCIAS-V1-2026-10-27.md."),
     rule("rule_oferta_individual_v1_v2", "Oferta individual: Gratuito e Pro na v1; Starter e financeiro na v2",
          "Decisao explicita do dono em 27/10/2026: Starter fora da oferta inicial e de novas contratacoes via API. V1: free 5 agendamentos/mes e Pro ilimitado, veterinario R$59,90 e prestador R$59,00 mensais. Acessos, IDs, cortesias e assinaturas existentes preservados. Gestao financeira e retorno do Starter na v2; diferenciacao e precos futuros pendentes. Nao anunciar financeiro nem dashboard avancado agora. Clinicas/exames separados, inclusive codigo starter da Pequena e teste de 14 dias."),
     rule("rule_cadastro_comparacao_gratuito_pro", "Cadastro: comparar Gratuito e Pro antes da escolha, com identidade visual do site",
@@ -963,17 +963,19 @@ freemium_nodes = [
          "Mostrar nome, preco do catalogo, recorrencia, primeira fatura e condicoes antes de iniciar assinatura. Aceite explicito do valor; backend recusa preco desatualizado antes do Asaas; selecionar nao cria cobranca. V1 oferece Gratuito e Pro; Starter e gestao financeira ficam para v2. Cadastro compara planos e preco antes da escolha; Pro exige confirmacao separada apos criar conta, sem cobrar ao selecionar."),
 ]
 freemium_nodes += [
-    rule("rule_whatsapp_manual_v1", "V1: aviso manual WhatsApp removido do frontend",
-         "Decisao do dono reforcada em 27/10/2026: o aviso manual Avisar tutor pelo WhatsApp sai da v1 junto com as demais integracoes. Codigo/UI e testes do fluxo manual removidos; telefone/e-mail do tutor permanecem no contato. Possivel na v2 sob rule_whatsapp_fora_oferta_v1."),
+    rule("rule_whatsapp_manual_v1", "V1: aviso manual pelo WhatsApp do profissional",
+         "Decisao do dono em 27/10/2026, confirmada no mesmo dia: consultas vet/clinica, pedidos do prestador e exames oferecem Avisar tutor pelo WhatsApp sem exigir Pro. Destino e o telefone do tutor; respeita opt-out e telefone oculto. Abre wa.me com texto operacional para envio humano; nao envia sozinho nem comprova entrega. Sem telefone valido explica indisponibilidade. Complementa e-mail e sino; automacao continua adiada."),
 ]
 new_nodes += freemium_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in freemium_nodes]
 new_edges += [edge("rule_whatsapp_manual_v1", "rule_whatsapp_fora_oferta_v1", "references")]
 for code_id, rs in {
-    "src_components_tutorcontact_tutorcontact": ["rule_whatsapp_fora_oferta_v1", "rule_whatsapp_manual_v1"],
-    "src_components_prestador_painelpedidos": ["rule_whatsapp_fora_oferta_v1"],
-    "src_components_exames_agendaexames": ["rule_whatsapp_fora_oferta_v1"],
-    "src_components_preferenciasnotificacao_preferenciasnotificacao": ["rule_whatsapp_fora_oferta_v1"],
+    "src_components_tutorcontact_whatsappmanual": ["rule_whatsapp_manual_v1"],
+    "src_lib_whatsapp_manual": ["rule_whatsapp_manual_v1"],
+    "src_components_tutorcontact_tutorcontact": ["rule_whatsapp_manual_v1"],
+    "src_components_prestador_painelpedidos": ["rule_whatsapp_manual_v1"],
+    "src_components_exames_agendaexames": ["rule_whatsapp_manual_v1"],
+    "src_components_preferenciasnotificacao_preferenciasnotificacao": ["rule_whatsapp_manual_v1", "rule_whatsapp_fora_oferta_v1"],
     "src_app_termos_de_uso_page": ["rule_whatsapp_fora_oferta_v1"],
     "src_app_politica_de_privacidade_page": ["rule_whatsapp_fora_oferta_v1"],
     "src_config_planos": ["rule_oferta_individual_v1_v2", "rule_whatsapp_fora_oferta_v1"],
@@ -984,7 +986,7 @@ for code_id, rs in {
     "src_server_services_assinatura_regras": ["rule_oferta_individual_v1_v2"],
     "src_components_assinatura_planocadastro": ["rule_cadastro_comparacao_gratuito_pro", "rule_assinatura_preco_confirmado", "rule_visual_padrao_site"],
     "src_app_signup_veterinario_components_veterinariosignup": ["rule_cadastro_comparacao_gratuito_pro"],
-    "src_app_signup_prestador_page": ["rule_cadastro_comparacao_gratuito_pro", "rule_whatsapp_fora_oferta_v1"],
+    "src_app_signup_prestador_page": ["rule_cadastro_comparacao_gratuito_pro"],
     "src_server_services_cotas_veterinario": ["rule_freemium_individual_cinco", "rule_freemium_transacao_cancelamento"],
     "src_server_services_cotas_prestador": ["rule_freemium_individual_cinco", "rule_freemium_transacao_cancelamento"],
     "src_server_services_subscription": ["rule_freemium_individual_cinco"],
