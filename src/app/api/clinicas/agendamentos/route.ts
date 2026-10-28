@@ -29,7 +29,7 @@ export const GET = route(async (req) => {
     const agendamentos = await prisma.agendamento.findMany({
       where,
       include: {
-        tutor: { include: { user: { select: { nome: true, sobrenome: true, celular: true, email: true } } } },
+        tutor: { include: { user: { select: { nome: true, sobrenome: true, celular: true, email: true, notificarWhatsapp: true } } } },
         pet: true,
         veterinario: { include: { user: true } },
       },
@@ -41,6 +41,7 @@ export const GET = route(async (req) => {
       tutor_nome: a.tutor?.user?.nome || 'Tutor',
       tutor_sobrenome: a.tutor?.user?.sobrenome || '',
       tutor_telefone: a.tutor?.user?.celular || null,
+      tutor_whatsapp_permitido: a.tutor?.user?.notificarWhatsapp !== 0,
       tutor_email: a.tutor?.user?.email || null,
       pet_id: a.petId,
       pet_nome: a.pet?.nome || 'Pet',

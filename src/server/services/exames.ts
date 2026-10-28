@@ -472,7 +472,7 @@ export function serializarAgendamentoExame(a: AgendamentoExameCompleto) {
     motivo_cancelamento: a.motivoCancelamento,
     clinica: a.clinica ? { id: a.clinica.id, nome: a.clinica.nomeClinica, endereco: a.clinica.endereco } : null,
     pet: a.pet ? { id: a.pet.id, nome: a.pet.nome, especie: a.pet.especie, raca: a.pet.raca } : null,
-    tutor: tutorUser ? { nome: `${tutorUser.nome} ${tutorUser.sobrenome ?? ''}`.trim(), celular: tutorUser.celular, email: tutorUser.email } : null,
+    tutor: tutorUser ? { nome: `${tutorUser.nome} ${tutorUser.sobrenome ?? ''}`.trim(), celular: tutorUser.celular, whatsapp_permitido: tutorUser.notificarWhatsapp !== 0, email: tutorUser.email } : null,
     exames: a.exames.map((e) => ({ nome: e.nome, preparo: e.preparo, combo: Boolean(e.comboId) })),
     laudo: a.laudo ? { nome_arquivo: a.laudo.nomeArquivo, enviado_em: a.laudo.enviadoEm?.toISOString() ?? null } : null,
   }

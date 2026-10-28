@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import WhatsAppManual from '@/components/TutorContact/WhatsAppManual';
 import { PrestadoresService, type Pedido } from "@/services/prestadores/prestadores";
 import { handleApiError } from "@/utils/errorHandler";
 import { Alerta, SeloStatus, botaoPrimario, botaoSecundario, formatarPreco, inputClass } from "./ui";
@@ -178,6 +179,20 @@ function ItemPedido({ pedido, onAtualizado }: { pedido: Pedido; onAtualizado: (p
           <Onde pedido={pedido} />
         </div>
       </dl>
+
+      <div className="mt-4">
+        <WhatsAppManual
+          telefone={pedido.tutor?.celular}
+          permitido={pedido.tutor?.whatsapp_permitido}
+          aviso={{
+            nome: pedido.tutor?.nome,
+            data: pedido.inicio_em ? new Date(pedido.inicio_em).toLocaleDateString('pt-BR', { timeZone: FUSO }) : undefined,
+            horario: quando?.inicio,
+            status: pedido.status,
+            local: pedido.local_nome,
+          }}
+        />
+      </div>
 
       {pedido.observacoes ? (
         <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">

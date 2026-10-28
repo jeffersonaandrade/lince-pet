@@ -79,7 +79,7 @@ export type AgendamentoExame = {
   motivo_cancelamento: string | null;
   clinica: { id: string; nome: string; endereco: string | null } | null;
   pet: { id: string; nome: string; especie: string | null; raca: string | null } | null;
-  tutor: { nome: string; celular: string | null; email: string } | null;
+  tutor: { nome: string; celular: string | null; whatsapp_permitido?: boolean; email: string } | null;
   exames: { nome: string; preparo: string | null; combo: boolean }[];
   laudo: { nome_arquivo: string | null; enviado_em: string | null } | null;
 };

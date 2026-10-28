@@ -962,9 +962,18 @@ freemium_nodes = [
     rule("rule_assinatura_preco_confirmado", "Contratacao: preco mensal e primeira fatura antes de confirmar",
          "Mostrar nome, preco do catalogo, recorrencia, primeira fatura e condicoes antes de iniciar assinatura. Aceite explicito do valor; backend recusa preco desatualizado antes do Asaas; selecionar nao cria cobranca. V1 oferece Gratuito e Pro; Starter e gestao financeira ficam para v2. Cadastro compara planos e preco antes da escolha; Pro exige confirmacao separada apos criar conta, sem cobrar ao selecionar."),
 ]
+freemium_nodes += [
+    rule("rule_whatsapp_manual_v1", "V1: aviso manual pelo WhatsApp do profissional",
+         "Decisao do dono em 27/10/2026: consultas vet/clinica, pedidos do prestador e exames oferecem Avisar tutor pelo WhatsApp sem exigir Pro. Destino e o telefone cadastrado pelo tutor no portal; respeita opt-out e telefone oculto. Abre wa.me com texto operacional para revisar e enviar pela conta conectada no dispositivo; nao escolhe remetente, nao envia sozinho, nao comprova entrega nem altera agendamento. Sem telefone valido explica indisponibilidade. Resultado aponta so para painel autenticado, sem laudo, diagnostico, prontuario ou codigo de inicio. Complementa e-mail e sino; automacao continua adiada."),
+]
 new_nodes += freemium_nodes
 new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in freemium_nodes]
 for code_id, rs in {
+    "src_components_tutorcontact_whatsappmanual": ["rule_whatsapp_manual_v1"],
+    "src_lib_whatsapp_manual": ["rule_whatsapp_manual_v1"],
+    "src_components_tutorcontact_tutorcontact": ["rule_whatsapp_manual_v1"],
+    "src_components_prestador_painelpedidos": ["rule_whatsapp_manual_v1"],
+    "src_components_exames_agendaexames": ["rule_whatsapp_manual_v1"],
     "src_config_planos": ["rule_oferta_individual_v1_v2", "rule_whatsapp_fora_oferta_v1"],
     "src_config_site": ["rule_contato_oficial_email"],
     "src_app_contato_page": ["rule_contato_oficial_email"],
