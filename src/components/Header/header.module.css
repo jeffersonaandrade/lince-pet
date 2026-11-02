@@ -359,13 +359,14 @@
   transform: translateX(100%);
   transition: transform 0.25s ease;
   z-index: 150;
-  display: flex;
+  display: none;
   flex-direction: column;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 .sideMenu.open {
+  display: flex;
   transform: translateX(0);
 }
 

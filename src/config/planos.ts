@@ -33,6 +33,7 @@ export const PLANOS_VETERINARIO: PlanoMetadata[] = [
       'Agenda e gestão dos atendimentos',
       'Bloqueio de horário personalizado',
       'Prioridade na busca',
+      'Controle financeiro: organize receitas e despesas, acompanhe pagamentos e saiba o que ainda falta receber.',
     ],
   },
 ]
@@ -87,6 +88,7 @@ export const PLANOS_CLINICA: PlanoMetadata[] = [
       'Agenda de exames ilimitada',
       'Topo da categoria de busca',
       'Dashboard de métricas nível completo',
+      'Controle financeiro: organize receitas e despesas, acompanhe pagamentos e saiba o que ainda falta receber.',
     ],
   },
 ]

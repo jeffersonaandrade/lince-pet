@@ -91,6 +91,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   googleEventos       AgendamentoGoogleEvento[]
   pushInscricoes      PushInscricao[]
+  financeiroLancamentos FinanceiroLancamento[]
 
   @@index([userType])
   @@index([email])
@@ -98,6 +99,57 @@ model User {
   @@index([cidade])
   @@index([ativo])
   @@map("users")
+}
+
+/// Caixa gerencial do perfil. Não representa cobrança ou saldo bancário.
+model FinanceiroLancamento {
+  id String @id @db.Uuid
+  userId String @map("user_id") @db.Char(36)
+  perfil String @db.VarChar(20)
+  tipo String @db.VarChar(10)
+  descricao String @db.VarChar(160)
+  categoria String @db.VarChar(60)
+  contraparte String @db.VarChar(160)
+  vencimento String @db.VarChar(10)
+  valorCentavos Int @map("valor_centavos")
+  pagoCentavos Int @default(0) @map("pago_centavos")
+  estado String @default("aberto") @db.VarChar(12)
+  agendamentoId String? @map("agendamento_id") @db.Char(36)
+  versao Int @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  baixas FinanceiroBaixa[]
+  eventos FinanceiroEvento[]
+  @@unique([userId, perfil, agendamentoId])
+  @@index([userId, perfil, vencimento])
+  @@map("financeiro_lancamentos")
+}
+
+model FinanceiroBaixa {
+  id String @id @db.Uuid
+  lancamentoId String @map("lancamento_id") @db.Uuid
+  valorCentavos Int @map("valor_centavos")
+  data String @db.VarChar(10)
+  forma String @db.VarChar(30)
+  desfeita Int @default(0) @db.SmallInt
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  lancamento FinanceiroLancamento @relation(fields: [lancamentoId], references: [id], onDelete: Restrict)
+  @@index([lancamentoId, data])
+  @@index([data])
+  @@map("financeiro_baixas")
+}
+
+model FinanceiroEvento {
+  id String @id @default(uuid()) @db.Uuid
+  lancamentoId String @map("lancamento_id") @db.Uuid
+  acao String @db.VarChar(30)
+  motivo String? @db.VarChar(250)
+  dados Json
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  lancamento FinanceiroLancamento @relation(fields: [lancamentoId], references: [id], onDelete: Restrict)
+  @@index([lancamentoId, createdAt])
+  @@map("financeiro_eventos")
 }
 
 model Tutor {

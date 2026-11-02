@@ -686,6 +686,7 @@ export default function VeterinarioDashboard() {
                   </Link>
                 </div>
                 {vetId && <ShareProfileButton veterinarioId={vetId} />}
+                <Link href="/dashboard/veterinario/financeiro" className={styles.editProfileButton}>Controle financeiro</Link>
                 <Link href="/dashboard/veterinario/perfil" className={styles.editProfileButton}>
                   Editar Perfil
                 </Link>
