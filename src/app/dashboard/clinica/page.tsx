@@ -630,6 +630,7 @@ export default function ClinicaDashboard() {
                 </div>
                 <ShareProfileButton clinicaId={clinicaId || user.id} />
                 {/* Links de edição */}
+                <Link href="/dashboard/clinica/financeiro" className={styles.editProfileButton}>Controle financeiro</Link>
                 <Link href="/dashboard/clinica/perfil" className={styles.editProfileButton}>
                   Editar Perfil
                 </Link>

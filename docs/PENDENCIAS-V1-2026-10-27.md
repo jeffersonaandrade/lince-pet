@@ -1,5 +1,7 @@
 # Pendências para fechar a v1 — 27/10/2026
 
+> Atualização de escopo em 02/11/2026: o dono autorizou o controle financeiro básico para Vet Pro e Clínica Grande. A decisão substitui o adiamento integral citado abaixo; recursos avançados e retorno do Starter continuam fora do escopo. Implementação e homologação local em [CONTROLE-FINANCEIRO-2026-11-02.md](CONTROLE-FINANCEIRO-2026-11-02.md).
+
 **VIÁVEL COM RISCOS.** Publicação do código não equivale a homologação comercial e operacional da v1. Esta revisão confronta a lista anterior com o código, testes e relatórios existentes; não declara execução de pagamentos reais, restauração de backup ou aprovação jurídica.
 
 ## O que ainda falta
