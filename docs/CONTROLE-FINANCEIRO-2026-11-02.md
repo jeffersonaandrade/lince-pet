@@ -59,6 +59,8 @@ Executados para veterinário e clínica, com frontend, API e PostgreSQL locais r
 
 `npx playwright test e2e/financeiro.spec.ts --project=chromium`: **18 passaram**, sendo 11 cenários de financeiro e 7 preparações de sessão. DATABASE_URL e DIRECT_URL precisam apontar para PostgreSQL local na porta 5433. Regras puras em `tests/lib/financeiro.test.ts`: **6 passaram**. Suíte unitária completa: **1.711 passaram; 48 ignorados**, estes de contrato/integração que dependem de habilitação própria.
 
+A rodada final também passou com os mesmos 18 testes contra o artefato de produção local (`next start`), incluindo CSV com decimais brasileiros e rejeição de reenvio do mesmo identificador com dados diferentes. Os prints finais são dessa rodada. `npm run build` aprovado com Webpack; 49 avisos legados de lint, sem erros. O comando usa o fallback oficial `next build --webpack` após falha do loader de fontes Google no Turbopack local. Conferência SQL: as três tabelas estão com RLS habilitada e zero políticas públicas.
+
 ## Evidências
 
 Prints locais em [evidencias/financeiro-2026-11-02](evidencias/financeiro-2026-11-02): painel, celular, histórico, escolha de plano, recusa de excesso de pagamento e restrição de plano, para os dois perfis. Os prints comprovam homologação local; não comprovam publicação.
