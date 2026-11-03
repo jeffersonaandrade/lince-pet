@@ -1,7 +1,7 @@
 import { ApiRequest, notFound, ok, route, serverError } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
 import { prisma } from '@/server/db'
-import { updating } from '@/server/lucid'
+import { now, updating } from '@/server/lucid'
 import {
   dirtyFields,
   enderecoWriteData,
@@ -39,7 +39,18 @@ export const PUT = route<{ id: string }>(async (req, { id }) => {
       'horariosDisponibilidade',
       'ativo',
       'nomeClinica',
+      'isPrimary',
     ])
+
+    if ('isPrimary' in data) {
+      data.isPrimary = data.isPrimary ? 1 : 0
+      if (data.isPrimary === 1) {
+        await prisma.veterinarioEndereco.updateMany({
+          where: { veterinarioId: veterinario.id, id: { not: endereco.id } },
+          data: { isPrimary: 0, updatedAt: now() },
+        })
+      }
+    }
 
     if (data.horariosDisponibilidade && typeof data.horariosDisponibilidade === 'object') {
       data.horariosDisponibilidade = JSON.stringify(data.horariosDisponibilidade)

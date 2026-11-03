@@ -170,7 +170,7 @@ export async function processStep4(user: CurrentUser, payload: Infer<typeof step
     await tx.veterinarioEndereco.deleteMany({ where: { veterinarioId: veterinario.id } })
 
     if (visitTypes.presencial && locations && locations.length > 0) {
-      for (const [i, location] of locations.entries()) {
+      for (const location of locations) {
         await tx.veterinarioEndereco.create({
           data: creating({
             veterinarioId: veterinario.id,
@@ -185,7 +185,7 @@ export async function processStep4(user: CurrentUser, payload: Infer<typeof step
             horariosDisponibilidade: (location.horariosDisponibilidade as Prisma.InputJsonValue | undefined) || Prisma.DbNull,
             aceitaEmergencia: Number(location.aceitaEmergencia || false),
             observacoes: location.observacoes || null,
-            isPrimary: Number(location.isPrimary || i === 0),
+            isPrimary: Number(Boolean(location.isPrimary)),
             precoConsulta: Math.round(Number(location.precoConsulta) * 100) / 100,
             fotoUrl: location.fotoUrl || null,
             ativo: 1,

@@ -29,6 +29,7 @@ type EnderecoApi = Partial<
   id?: number;
   precoConsulta?: number | string | null;
   aceitaEmergencia?: boolean;
+  isPrimary?: boolean | number | null;
   horariosDisponibilidade?: Record<string, string[]> | null;
 };
 
@@ -238,6 +239,7 @@ export default function PerfilVeterinario() {
               segunda: [], terca: [], quarta: [], quinta: [], sexta: [], sabado: [], domingo: []
             },
             fotoUrl: end.fotoUrl || "",
+            isPrimary: Number(end.isPrimary) === 1,
           }));
           setEnderecos(processedEnderecos);
         }
@@ -767,6 +769,25 @@ export default function PerfilVeterinario() {
                       className={styles.locationImageUploader}
                     />
                     <p className={styles.fieldHelp}>Esta imagem aparecerá no seu perfil para os tutores. Clique para alterar.</p>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(endereco.isPrimary)}
+                        onChange={(e) => {
+                          const ligado = e.target.checked;
+                          setEnderecos((atual) => atual.map((item, i) => ({
+                            ...item,
+                            isPrimary: ligado ? i === index : i === index ? false : item.isPrimary,
+                          })));
+                          setHasUnsavedChanges(true);
+                        }}
+                      />
+                      <span>Local preferido</span>
+                    </label>
+                    <p className={styles.fieldHelp}>Aparece embaixo do seu nome na busca e com uma estrela quando o tutor agenda. Desmarque para retirar.</p>
                   </div>
 
                   {/* Nome da Clínica Edit */}

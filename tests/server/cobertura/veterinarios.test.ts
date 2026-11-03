@@ -550,7 +550,7 @@ describe('getVeterinarioById', () => {
         precoConsultaOnline: 80,
         horariosOnline: '{"ter":["10:00"]}',
         enderecos: [
-          endereco({ id: 'e1', precoConsulta: 0, horariosDisponibilidade: 'inválido' }),
+          endereco({ id: 'e1', nomeClinica: 'Outra', precoConsulta: 0, horariosDisponibilidade: 'inválido' }),
           endereco({ id: 'e2', clinicaId: 'cli-9', isPrimary: 1, cidade: 'Olinda', precoConsulta: 120, horariosDisponibilidade: 42 }),
         ],
         avaliacoes: [{ estrelas: 5 }, { estrelas: 4 }, { estrelas: 4 }],
@@ -605,6 +605,15 @@ describe('getVeterinarioById', () => {
         isPrimary: true,
       }),
     ])
+  })
+
+  it('sem local preferido, o nome do primeiro endereço não aparece como clínica', async () => {
+    prismaMock.veterinario.findMany.mockResolvedValueOnce([
+      { id: 'v', enderecos: [endereco({ nomeClinica: 'Cia do Animal', isPrimary: 0 })] },
+    ])
+    const vet = await getVeterinarioById('v')
+    expect(vet.clinica).toBeNull()
+    expect(vet.cidade).toBe('Recife')
   })
 
   it('só online e sem endereços: preço vem de precoConsultaOnline', async () => {
