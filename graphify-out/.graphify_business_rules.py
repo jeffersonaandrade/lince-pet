@@ -802,8 +802,10 @@ for code_id, rs in exames_impl.items():
     impl[code_id] = impl.get(code_id, []) + [r for r in rs if r not in impl.get(code_id, [])]
 
 entrega_nodes = [
-    rule("rule_entrega_commit_push_main", "Entrega: commit e push direto na main autorizados",
-         "Autorizacao do usuario em 23/10/2026, enquanto nao revogada: ao concluir trabalho autorizado neste projeto, executar verificacoes pertinentes, commitar e fazer push direto na main sem pedir nova confirmacao. Atualizar remoto e integrar alteracoes existentes preservando historico e trabalho de terceiros, sem force-push. Relatar commit e resultados ou pendencias; push nao confirma termino do deploy. Regra operacional tambem registrada em .cursor/rules/graphify.mdc."),
+    rule("rule_entrega_pr_para_main", "Entrega: abrir PR para main (sem merge automatico)",
+         "Decisao do usuario em 03/11/2026: ao concluir trabalho autorizado, verificar, commitar na branch, push e abrir PR para main via gh/API; nao mergear nem push direto na main salvo pedido explicito. Revoga push direto na main de 23/10/2026. Sem force-push; relatar link do PR e testes; PR nao confirma deploy. Tambem em .cursor/rules/graphify.mdc."),
+    rule("rule_entrega_commit_push_main", "Entrega: commit e push direto na main (revogada em 03/11/2026)",
+         "Autorizacao de 23/10/2026 revogada em 03/11/2026. Substituida por rule_entrega_pr_para_main (abrir PR, sem merge automatico)."),
     rule("rule_deploy_status_github", "Deploy: status no GitHub depois dos testes",
          "Decisao do dono em 26/10/2026: push na main roda lint e testes e so entao dispara o Render. O resultado aparece nos checks e em Deployments production. Auto-Deploy do Render fica desligado. RENDER_API_KEY e RENDER_SERVICE_ID so nos secrets do GitHub."),
 ]

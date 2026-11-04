@@ -47151,13 +47151,13 @@
     },
     {
       "id": "rule_entrega_commit_push_main",
-      "label": "Entrega: commit e push direto na main autorizados",
+      "label": "Entrega: commit e push direto na main (revogada em 03/11/2026)",
       "community": 13,
       "community_name": "Regras de negocio (docs/ARQUITETURA.md)",
       "contributor": "regras-de-negocio",
       "file_type": "rationale",
-      "norm_label": "entrega: commit e push direto na main autorizados",
-      "rationale": "Autorizacao do usuario em 23/10/2026, enquanto nao revogada: ao concluir trabalho autorizado neste projeto, executar verificacoes pertinentes, commitar e fazer push direto na main sem pedir nova confirmacao. Atualizar remoto e integrar alteracoes existentes preservando historico e trabalho de terceiros, sem force-push. Relatar commit e resultados ou pendencias; push nao confirma termino do deploy. Regra operacional tambem registrada em .cursor/rules/graphify.mdc.",
+      "norm_label": "entrega: commit e push direto na main (revogada em 03/11/2026)",
+      "rationale": "Autorizacao de 23/10/2026 revogada em 03/11/2026. Substituida por rule_entrega_pr_para_main.",
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null
     },
@@ -49500,6 +49500,18 @@
       "community": 22,
       "community_name": "api.tsx",
       "norm_label": "clinica: categorias aceitas por plano de saude"
+    },
+    {
+      "id": "rule_entrega_pr_para_main",
+      "label": "Entrega: abrir PR para main (sem merge automatico)",
+      "file_type": "rationale",
+      "rationale": "Decisao do usuario em 03/11/2026: abrir PR para main; nao mergear nem push direto na main salvo pedido explicito. Revoga push direto de 23/10/2026.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio",
+      "community": 22,
+      "community_name": "api.tsx",
+      "norm_label": "entrega: abrir pr para main (sem merge automatico)"
     }
   ],
   "links": [
@@ -196266,6 +196278,15 @@
       "source": "src_app_explorar_page",
       "target": "rule_clinica_plano_categorias_aceitas",
       "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_entrega_pr_para_main",
+      "relation": "conceptually_related_to",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/ARQUITETURA.md",
