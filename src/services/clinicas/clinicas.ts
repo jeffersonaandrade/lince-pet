@@ -44,7 +44,9 @@ export const submitClinicaOnboardingStep4 = async (data: { nome?: string; descri
   }
 };
 
-export const submitClinicaOnboardingStep5 = async (data: { planos: string[] }) => {
+export const submitClinicaOnboardingStep5 = async (data: {
+  planos: Array<string | { id: string; categoriasAceitas?: string | null }>;
+}) => {
   const response = await api.post("/clinicas/onboarding/step5", data);
   return response.data;
 };

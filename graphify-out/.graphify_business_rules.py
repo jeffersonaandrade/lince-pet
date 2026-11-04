@@ -1040,6 +1040,23 @@ for code_id, rs in {
 }.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
+planos_cat_nodes = [
+    rule("rule_clinica_plano_categorias_aceitas", "Clinica: categorias aceitas por plano de saude",
+         "Decisao do dono: cada clinica aceita faixas/categorias diferentes do mesmo plano (ex. Pet Top Diamante/Premium/Gold; EuPet Premium/Super/Safety). No onboarding/perfil, ao marcar o plano preenche clinica_planos.categorias_aceitas (texto livre). Tutor ve Plano — categorias no perfil e no card; filtro de explorar continua so pela marca. Escopo clinica; vet individual fora deste escopo."),
+]
+new_nodes += planos_cat_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in planos_cat_nodes]
+for code_id, rs in {
+    "src_lib_planos_saude": ["rule_clinica_plano_categorias_aceitas"],
+    "src_server_services_clinicas": ["rule_clinica_plano_categorias_aceitas"],
+    "src_app_api_clinicas_onboarding_step5_route": ["rule_clinica_plano_categorias_aceitas"],
+    "src_app_onboarding_clinica_page": ["rule_clinica_plano_categorias_aceitas"],
+    "src_app_dashboard_clinica_perfil_page": ["rule_clinica_plano_categorias_aceitas"],
+    "src_app_clinicas_id_page": ["rule_clinica_plano_categorias_aceitas"],
+    "src_app_explorar_page": ["rule_clinica_plano_categorias_aceitas"],
+}.items():
+    impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 

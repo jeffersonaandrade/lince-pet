@@ -1,4 +1,5 @@
 import { conferirNovosPlanosSaude } from './planos-saude'
+import { normalizarPlanosClinicaInput } from '@/lib/planos-saude'
 import 'server-only'
 import { DateTime } from 'luxon'
 import { Prisma, TipoClinica, UserType, type Clinica, type Especialidade, type User, type VeterinarioEndereco } from '@/generated/prisma/client'
@@ -149,17 +150,42 @@ export async function syncEspecialidadesClinica(clinicaId: string, ids: unknown[
   })
 }
 
-export async function syncPlanosClinica(clinicaId: string, ids: unknown[]) {
-  const wanted = [...new Set(ids.map(String))]
+export async function syncPlanosClinica(clinicaId: string, planos: unknown) {
+  const wanted = normalizarPlanosClinicaInput(planos)
+  const wantedIds = wanted.map((p) => p.id)
+  const categoriasPorId = new Map(wanted.map((p) => [p.id, p.categoriasAceitas]))
   await prisma.$transaction(async (tx) => {
     const existing = await tx.clinicaPlano.findMany({ where: { clinicaId } })
     const current = new Set(existing.map((r) => r.planoId))
-    const add = wanted.filter((id) => !current.has(id))
+    const add = wantedIds.filter((id) => !current.has(id))
     await conferirNovosPlanosSaude(tx, add)
-    const remove = [...current].filter((id) => !wanted.includes(id))
+    const remove = [...current].filter((id) => !wantedIds.includes(id))
     if (remove.length) await tx.clinicaPlano.deleteMany({ where: { clinicaId, planoId: { in: remove } } })
-    if (add.length) await tx.clinicaPlano.createMany({ data: add.map((planoId) => ({ clinicaId, planoId })) })
+    if (add.length) {
+      await tx.clinicaPlano.createMany({
+        data: add.map((planoId) => ({
+          clinicaId,
+          planoId,
+          categoriasAceitas: categoriasPorId.get(planoId) ?? null,
+        })),
+      })
+    }
+    const keep = wantedIds.filter((id) => current.has(id))
+    for (const planoId of keep) {
+      await tx.clinicaPlano.update({
+        where: { clinicaId_planoId: { clinicaId, planoId } },
+        data: { categoriasAceitas: categoriasPorId.get(planoId) ?? null },
+      })
+    }
   })
+}
+
+/** Plano da clínica para API (marca + categorias aceitas). */
+export function planoClinicaPublico(cp: { categoriasAceitas?: string | null; plano: { id: string; name: string; ativo?: number | null; descricao?: string | null; image?: string | null } }) {
+  return {
+    ...cp.plano,
+    categoriasAceitas: cp.categoriasAceitas?.trim() || null,
+  }
 }
 
 export type ClinicaRegistrationData = {

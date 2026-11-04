@@ -1,7 +1,5 @@
 "use client";
 
-import { incluirPlanosVinculados } from "@/lib/planos-saude";
-
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -23,6 +21,7 @@ import { mensagemDeErro } from "@/lib/erros";
 import styles from "./clinica-onboarding.module.css";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
 import GradeSemanalEditor from "@/components/GradeHorarios/GradeSemanalEditor";
+import { exemploCategoriasPlano, incluirPlanosVinculados } from "@/lib/planos-saude";
 
 interface Especialidade {
   id: string;
@@ -112,6 +111,7 @@ export default function ClinicaOnboardingPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [availablePlans, setAvailablePlans] = useState<{ id: string; name: string }[]>([]);
   const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
+  const [categoriasPorPlano, setCategoriasPorPlano] = useState<Record<string, string>>({});
 
   const hasFetched = useRef(false);
 
@@ -167,7 +167,14 @@ export default function ClinicaOnboardingPage() {
           }
           if (clinica.descricao || clinica.sobre) setDescricao(clinica.descricao || clinica.sobre || "");
           if (clinica.fotoPerfil) setPhotoPreview(clinica.fotoPerfil);
-          if (clinica.planos) { setSelectedPlans(clinica.planos.map((p: { id: string }) => p.id)); setAvailablePlans(ativos => incluirPlanosVinculados(ativos, clinica.planos)); }
+          if (clinica.planos) {
+            const planos = clinica.planos as { id: string; name?: string; categoriasAceitas?: string | null }[];
+            setSelectedPlans(planos.map((p) => p.id));
+            setCategoriasPorPlano(
+              Object.fromEntries(planos.map((p) => [p.id, p.categoriasAceitas?.trim() || ""]))
+            );
+            setAvailablePlans((ativos) => incluirPlanosVinculados(ativos, planos));
+          }
         }
 
         setIsLoadingInitial(false);
@@ -213,7 +220,12 @@ export default function ClinicaOnboardingPage() {
           }
           break;
         case 5:
-          await submitClinicaOnboardingStep5({ planos: selectedPlans });
+          await submitClinicaOnboardingStep5({
+            planos: selectedPlans.map((id) => ({
+              id,
+              categoriasAceitas: categoriasPorPlano[id]?.trim() || null,
+            })),
+          });
           await completeClinicaOnboarding();
           updateUser({ onboardingComplete: 1 });
           router.push("/dashboard/clinica");
@@ -367,24 +379,60 @@ export default function ClinicaOnboardingPage() {
           {currentStep === 5 && (
             <div className={styles.stepContainer}>
               <h2>Planos de Saúde</h2>
-              <p>Selecione todos os planos de saúde que sua clínica aceita.</p>
+              <p>
+                Selecione os planos e informe as categorias que a clínica aceita em cada um
+                (cada clínica aceita faixas diferentes do mesmo plano).
+              </p>
 
               <div className={styles.optionsGrid}>
-                {availablePlans.map((plan) => (
-                  <div key={plan.id}
-                    className={`${styles.optionCard} ${selectedPlans.includes(plan.id) ? styles.selected : ""}`}
-                    onClick={() => {
-                      if (selectedPlans.includes(plan.id)) {
-                        setSelectedPlans(prev => prev.filter(id => id !== plan.id));
-                      } else {
-                        setSelectedPlans(prev => [...prev, plan.id]);
-                      }
-                    }}
-                  >
-                    <span className={styles.optionLabel}>{plan.name}</span>
-                    {selectedPlans.includes(plan.id) && <Check size={18} className={styles.checkIcon} />}
-                  </div>
-                ))}
+                {availablePlans.map((plan) => {
+                  const selecionado = selectedPlans.includes(plan.id);
+                  return (
+                    <div key={plan.id} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div
+                        className={`${styles.optionCard} ${selecionado ? styles.selected : ""}`}
+                        onClick={() => {
+                          if (selecionado) {
+                            setSelectedPlans((prev) => prev.filter((id) => id !== plan.id));
+                            setCategoriasPorPlano((prev) => {
+                              const next = { ...prev };
+                              delete next[plan.id];
+                              return next;
+                            });
+                          } else {
+                            setSelectedPlans((prev) => [...prev, plan.id]);
+                          }
+                        }}
+                      >
+                        <span className={styles.optionLabel}>{plan.name}</span>
+                        {selecionado ? <Check size={18} className={styles.checkIcon} /> : null}
+                      </div>
+                      {selecionado ? (
+                        <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 13 }}>
+                          <span style={{ color: "#64748b", fontWeight: 500 }}>Categorias aceitas</span>
+                          <input
+                            type="text"
+                            value={categoriasPorPlano[plan.id] || ""}
+                            placeholder={exemploCategoriasPlano(plan.name)}
+                            maxLength={500}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) =>
+                              setCategoriasPorPlano((prev) => ({ ...prev, [plan.id]: e.target.value }))
+                            }
+                            style={{
+                              width: "100%",
+                              border: "1px solid #cbd5e1",
+                              borderRadius: 8,
+                              padding: "8px 10px",
+                              fontSize: 14,
+                            }}
+                          />
+                          <span style={{ color: "#94a3b8", fontSize: 12 }}>{exemploCategoriasPlano(plan.name)}</span>
+                        </label>
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

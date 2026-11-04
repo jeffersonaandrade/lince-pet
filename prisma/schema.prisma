@@ -524,10 +524,12 @@ model VeterinarioPlano {
 }
 
 model ClinicaPlano {
-  clinicaId String    @map("clinica_id") @db.Char(36)
-  planoId   String    @map("plano_id") @db.Char(36)
-  createdAt DateTime? @map("created_at") @db.Timestamp(0)
-  updatedAt DateTime? @map("updated_at") @db.Timestamp(0)
+  clinicaId          String    @map("clinica_id") @db.Char(36)
+  planoId            String    @map("plano_id") @db.Char(36)
+  /** Categorias/faixas do convênio que a clínica aceita (ex.: Diamante, Premium, Gold). */
+  categoriasAceitas  String?   @map("categorias_aceitas") @db.VarChar(500)
+  createdAt          DateTime? @map("created_at") @db.Timestamp(0)
+  updatedAt          DateTime? @map("updated_at") @db.Timestamp(0)
 
   clinica Clinica @relation(fields: [clinicaId], references: [id], onDelete: Cascade)
   plano   Plano   @relation(fields: [planoId], references: [id], onDelete: Cascade)

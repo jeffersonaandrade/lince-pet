@@ -52,7 +52,7 @@ interface Clinica {
   rating: number;
   totalReviews: number;
   especialidades?: { nome: string }[];
-  planos?: { id: string; name: string }[];
+  planos?: { id: string; name: string; categoriasAceitas?: string | null }[];
   sobre?: string | null;
   descricao?: string | null;
 }
@@ -623,7 +623,9 @@ function ExplorarContent() {
                         <div className={styles.planos}>
                           {clinic.planos.map((plano) => (
                             <span key={plano.id} className={styles.planoTag}>
-                              {plano.name}
+                              {plano.categoriasAceitas?.trim()
+                                ? `${plano.name} — ${plano.categoriasAceitas.trim()}`
+                                : plano.name}
                             </span>
                           ))}
                         </div>

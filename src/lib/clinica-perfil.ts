@@ -25,7 +25,7 @@ export interface ClinicaDetalheApi {
   descricao?: string | null;
   sobre?: string | null;
   especialidades?: { nome: string }[];
-  planos?: { name: string }[];
+  planos?: { name: string; categoriasAceitas?: string | null }[];
   comodidades?: unknown;
   horariosFuncionamento?: unknown;
   veterinarios?: VeterinarioDaClinicaApi[];
@@ -62,7 +62,7 @@ export interface PerfilClinica {
   whatsappLink: string | null;
   description: string;
   specialties: string[];
-  planos: string[];
+  planos: { name: string; categoriasAceitas?: string | null }[];
   amenities: string[];
   horarios: GradeSemanal;
   professionals: ProfissionalDaClinica[];
@@ -143,7 +143,10 @@ export function perfilDaClinica(
     whatsappLink: toWhatsAppLink(data.whatsapp || data.telefone),
     description: data.descricao || data.sobre || DESCRICAO_PADRAO,
     specialties: data.especialidades?.map((e) => e.nome) || [],
-    planos: data.planos?.map((p) => p.name) || [],
+    planos: (data.planos || []).map((p) => ({
+      name: p.name,
+      categoriasAceitas: p.categoriasAceitas?.trim() || null,
+    })),
     amenities: comodidadesMarcadas(data.comodidades),
     horarios: normalizarGrade(data.horariosFuncionamento),
     professionals: data.veterinarios?.map(profissional) || [],

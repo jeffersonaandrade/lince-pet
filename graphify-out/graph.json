@@ -49488,6 +49488,18 @@
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null,
       "contributor": "regras-de-negocio"
+    },
+    {
+      "id": "rule_clinica_plano_categorias_aceitas",
+      "label": "Clinica: categorias aceitas por plano de saude",
+      "file_type": "rationale",
+      "rationale": "Decisao do dono: cada clinica aceita faixas/categorias diferentes do mesmo plano. clinica_planos.categorias_aceitas texto livre; tutor ve Plano — categorias; filtro explorar so pela marca.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio",
+      "community": 22,
+      "community_name": "api.tsx",
+      "norm_label": "clinica: categorias aceitas por plano de saude"
     }
   ],
   "links": [
@@ -196181,6 +196193,78 @@
     {
       "source": "src_app_onboarding_clinica_page",
       "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_clinica_plano_categorias_aceitas",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_planos_saude",
+      "target": "rule_clinica_plano_categorias_aceitas",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_clinicas",
+      "target": "rule_clinica_plano_categorias_aceitas",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_clinicas_onboarding_step5_route",
+      "target": "rule_clinica_plano_categorias_aceitas",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_onboarding_clinica_page",
+      "target": "rule_clinica_plano_categorias_aceitas",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_clinica_perfil_page",
+      "target": "rule_clinica_plano_categorias_aceitas",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_clinicas_id_page",
+      "target": "rule_clinica_plano_categorias_aceitas",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_explorar_page",
+      "target": "rule_clinica_plano_categorias_aceitas",
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
