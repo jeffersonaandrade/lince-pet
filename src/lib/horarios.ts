@@ -50,3 +50,38 @@ export function dataParaIso(data: string | null | undefined): string {
   if (partes.length === 3) return `${partes[2]}-${partes[1]}-${partes[0]}`;
   return data.slice(0, 10);
 }
+
+const HHMM = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+/** Minutos desde 00:00; `null` se o horário não for `HH:mm` válido. */
+export function minutosDoHorario(horario: string): number | null {
+  const m = HHMM.exec(horario.trim().slice(0, 5));
+  if (!m) return null;
+  return Number(m[1]) * 60 + Number(m[2]);
+}
+
+const hhmm = (minutos: number) =>
+  `${String(Math.floor(minutos / 60)).padStart(2, "0")}:${String(minutos % 60).padStart(2, "0")}`;
+
+/**
+ * Inícios em que a consulta inteira cabe na grade do dia.
+ * Cada horário marcado é um bloco de 30 min; com duração 45, o início 16:30 só vale se 16:30 e 17:00 estiverem na grade.
+ */
+export function iniciosQueCabemNaGrade(horariosDoDia: string[], duracaoMin: number): string[] {
+  const duracao = Math.floor(Number(duracaoMin) || 0);
+  if (duracao <= 0) return [];
+  const blocos = new Set(
+    horariosDoDia
+      .map((h) => h.trim().slice(0, 5))
+      .filter((h) => minutosDoHorario(h) !== null)
+  );
+  return [...blocos]
+    .filter((inicio) => {
+      const base = minutosDoHorario(inicio)!;
+      for (let t = base; t < base + duracao; t += 30) {
+        if (!blocos.has(hhmm(t))) return false;
+      }
+      return true;
+    })
+    .sort((a, b) => a.localeCompare(b));
+}

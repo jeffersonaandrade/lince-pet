@@ -911,7 +911,7 @@ perfis_nodes = [
     rule("rule_perfis_individuais_mesmo_login", "Perfis: tutor, veterinario e prestador no mesmo login",
          "Decisao explicita do dono em 26/10/2026: troca explicita e propriedade verificada no servidor; clinica/laboratorio mantem login separado. Preservar IDs e dados; sem fusao automatica por email. Plano e aprovacao por perfil profissional; tutor gratuito."),
     rule("rule_domicilio_duracao_deslocamento", "Domicilio: duracao por modalidade e intervalo antes/depois",
-         "Dono escolheu duracao configuravel por modalidade, domicilio inicial 60 min; deslocamento configuravel antes e depois, inicial 40 min. Entre consultas exigir maior intervalo sem somar. Manter grade cadastrada: fim 16h com 40 min oferece 17h na grade de meia hora. Primeira consulta pode ser no inicio da grade com deslocamento anterior fora da grade, respeitando bloqueios e reservas. Snapshot preserva reservas existentes."),
+         "Dono escolheu duracao configuravel por modalidade, domicilio inicial 60 min; deslocamento configuravel antes e depois, inicial 40 min. Entre consultas exigir maior intervalo sem somar. Manter grade cadastrada: fim 16h com 40 min oferece 17h na grade de meia hora. Toda a duracao precisa caber na grade; o tutor so ve inicios em que a consulta inteira cabe (ex.: 45 min some o ultimo bloco antes de intervalo ou fim do dia). Primeira consulta pode ser no inicio da grade com deslocamento anterior fora da grade, respeitando bloqueios e reservas. Snapshot preserva reservas existentes."),
     rule("rule_agenda_profissional_mesma_pessoa", "Agenda: impedir simultaneidade entre perfis da mesma pessoa",
          "Decisao do dono: reservas de veterinario e prestador do mesmo usuario nao se sobrepoem, inclusive pendentes e remarcacoes. Trava transacional comum por user_id. Disponibilidade falha fechada e nao revela paciente do outro perfil."),
     rule("rule_tutor_endereco_proprio", "Tutor: endereco residencial separado do profissional",
@@ -938,6 +938,10 @@ for code_id, rs in {
     "src_app_api_veterinarios_agendamentos_id_aceitar_route": ["rule_domicilio_endereco_apos_aceite"],
     "src_app_dashboard_veterinario_components_aceitardomicilio": ["rule_domicilio_endereco_apos_aceite", "rule_visual_padrao_site"],
     "src_components_agendaconfig_agendaconfig": ["rule_domicilio_duracao_deslocamento", "rule_visual_padrao_site"],
+    "src_lib_horarios": ["rule_domicilio_duracao_deslocamento"],
+    "src_lib_agenda_tutor": ["rule_domicilio_duracao_deslocamento"],
+    "src_app_veterinario_id_page": ["rule_domicilio_duracao_deslocamento"],
+    "src_app_clinicas_id_page": ["rule_domicilio_duracao_deslocamento"],
     "src_app_perfis_page": ["rule_perfis_individuais_mesmo_login", "rule_visual_padrao_site"],
 }.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))

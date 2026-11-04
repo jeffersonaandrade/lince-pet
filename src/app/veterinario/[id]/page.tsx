@@ -41,7 +41,7 @@ import { PetsService, type PetRecord } from "@/services/pets/pets";
 import { FavoritesService } from "@/services/favorites/favorites";
 import MiniCalendar from "@/components/MiniCalendar/MiniCalendar";
 import { abbreviateAddress } from "@/utils/formatters";
-import { normalizarGrade } from "@/lib/horarios";
+import { iniciosQueCabemNaGrade, normalizarGrade } from "@/lib/horarios";
 import { mensagemDeErro } from "@/lib/erros";
 
 // Types
@@ -128,6 +128,7 @@ export default function VeterinarioProfile() {
   const { encaminhamentoId, petId: petEncaminhadoId, encaminhamento } = useEncaminhamentoDaUrl();
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [diaBloqueado, setDiaBloqueado] = useState(false);
+  const [duracaoMin, setDuracaoMin] = useState(30);
   const [carregandoDisponibilidade, setCarregandoDisponibilidade] = useState(false);
   const [erroDisponibilidade, setErroDisponibilidade] = useState('');
   const [showAllSlots, setShowAllSlots] = useState(false);
@@ -402,7 +403,8 @@ export default function VeterinarioProfile() {
     const selectedDate = new Date(today);
     selectedDate.setDate(today.getDate() + selectedDay);
     const dayName = getDayName(selectedDate);
-    return activeLocation.availability[dayName] || [];
+    // Só começa a consulta onde a duração inteira cabe na grade (ex.: 45 min precisa de dois blocos).
+    return iniciosQueCabemNaGrade(activeLocation.availability[dayName] || [], duracaoMin);
   };
 
   // Availability Check
@@ -426,6 +428,7 @@ export default function VeterinarioProfile() {
         if (!atual) return;
         setHorariosOcupados(resp.horarios_ocupados || []);
         setDiaBloqueado(Boolean(resp.dia_bloqueado));
+        setDuracaoMin(Number(resp.duracao_min) > 0 ? Number(resp.duracao_min) : 30);
       } catch {
         if (!atual) return;
         setHorariosOcupados([]);
@@ -442,8 +445,11 @@ export default function VeterinarioProfile() {
   }, [vetId, selectedDay, selectedLocationId]);
 
   useEffect(() => {
-    setSelectedTimeSlot((atual) => atual && (diaBloqueado || horariosOcupados.includes(atual)) ? null : atual);
-  }, [horariosOcupados, diaBloqueado]);
+    setSelectedTimeSlot((atual) => {
+      if (!atual || diaBloqueado || horariosOcupados.includes(atual)) return null;
+      return generateTimeSlots().includes(atual) ? atual : null;
+    });
+  }, [horariosOcupados, diaBloqueado, duracaoMin, selectedDay, activeLocation]);
 
   // Actions
   const openInMaps = (address: string) => {
@@ -877,10 +883,10 @@ export default function VeterinarioProfile() {
                                   // Always show the selected day
                                   if (offset === selectedDay) return true;
 
-                                  // Otherwise show only days with availability
+                                  // Otherwise show only days with início que cabe na duração
                                   if (!activeLocation) return false;
                                   const dayName = getDayName(date);
-                                  return activeLocation.availability[dayName] && activeLocation.availability[dayName].length > 0;
+                                  return iniciosQueCabemNaGrade(activeLocation.availability[dayName] || [], duracaoMin).length > 0;
                                 })
                                 .map(({ date, offset }) => (
                                   <div key={offset}

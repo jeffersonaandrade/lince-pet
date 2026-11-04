@@ -35,6 +35,7 @@ export default function AgendaConfig({ onDomicilioAlterado }: { onDomicilioAlter
       <fieldset disabled={salvando} className="grid gap-3 border-0 p-0 sm:grid-cols-3">
         {([['duracaoPresencialMin', 'Consulta presencial (min)'], ['duracaoOnlineMin', 'Teleconsulta (min)'], ['duracaoDomicilioMin', 'Consulta domiciliar (min)']] as const).map(([key, label]) => <label key={key} className="flex flex-col gap-1 text-sm font-medium">{label}<input type="number" required min={15} max={240} step={1} value={config[key]} onChange={e => setConfig({ ...config, [key]: Number(e.target.value) })} className={campo} /></label>)}
       </fieldset>
+      <p className="text-sm text-slate-500">Cada horário da grade é um bloco de 30 minutos. Com duração maior que 30, marque blocos seguidos o bastante: para 45 minutos às 16h, marque 16:00 e 16:30. O tutor só vê inícios em que a consulta inteira cabe.</p>
       <label className="flex items-center gap-2 text-sm font-medium"><input type="checkbox" disabled={salvando} checked={config.atendeDomicilio} onChange={e => setConfig({ ...config, atendeDomicilio: e.target.checked })} />Atendo a domicílio</label>
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-sm font-medium">Deslocamento entre atendimentos (min)<input type="number" required min={0} max={240} disabled={salvando} value={config.deslocamentoMin} onChange={e => setConfig({ ...config, deslocamentoMin: Number(e.target.value) })} className={campo} /></label>

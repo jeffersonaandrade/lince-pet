@@ -1,5 +1,5 @@
 import type { AgendamentoTutor, DisponibilidadeResponse } from "@/services/agendamentos/agendamentos";
-import { dataParaIso, diaDaSemana, normalizarGrade, type GradeSemanal } from "./horarios";
+import { dataParaIso, diaDaSemana, iniciosQueCabemNaGrade, normalizarGrade, type GradeSemanal } from "./horarios";
 
 /** Âncora das "Próximas Consultas" no painel do tutor; os e-mails de consulta apontam para ela. */
 export const ANCORA_CONSULTAS = "consultas";
@@ -107,7 +107,8 @@ export function horariosParaReagendar({
   const hojeIso = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
   const agoraHHmm = `${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
 
-  const livres = (grade[dia] ?? []).filter((slot) => {
+  const cabem = iniciosQueCabemNaGrade(grade[dia] ?? [], disponibilidade.duracao_min ?? 30);
+  const livres = cabem.filter((slot) => {
     if (bloqueados.has(slot)) return false;
     if (data === hojeIso && slot <= agoraHHmm) return false;
     return !ocupados.has(slot) || (mesmaData && slot === horarioAtual);

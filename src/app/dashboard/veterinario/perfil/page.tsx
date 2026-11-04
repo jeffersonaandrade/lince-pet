@@ -801,7 +801,7 @@ export default function PerfilVeterinario() {
 
                   {/* Schedule Edit */}
                   <p className={styles.sectionDescription}>
-                    Selecione os horários disponíveis para este local:
+                    Selecione os blocos de 30 minutos deste local. Se a consulta presencial durar mais que 30 minutos, marque blocos seguidos o bastante (ex.: 45 min às 16h → 16:00 e 16:30). O tutor só vê inícios em que a duração inteira cabe.
                   </p>
                   <div className={styles.horariosSection}>
                     {DIAS_SEMANA_KEYS.map((day) => (
