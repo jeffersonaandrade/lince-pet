@@ -41,7 +41,7 @@ new_nodes = [
     rule("rule_bloqueio_sem_estorno", "Sem estorno automatico em consulta cancelada por bloqueio",
          "Consulta paga cancelada pelo bloqueio e estornada manualmente."),
     rule("rule_bloqueio_todos_locais", "Bloqueio vale para todos os locais do vet",
-         "O bloqueio e do veterinario, nao do endereco: presencial e online."),
+         "O bloqueio e do veterinario, nao do endereco: presencial, online e domicilio. Na tela de agendar, trocar o dia some os horarios ate a disponibilidade nova voltar."),
     rule("rule_bloqueio_trava_backend", "Agendar/reagendar em horario bloqueado retorna 400",
          "POST /agendamentos e PATCH /agendamentos/:id/reagendar recusam horario bloqueado; disponibilidade inclui bloqueados em horarios_ocupados e dia_bloqueado."),
 ]
@@ -95,6 +95,9 @@ impl = {
         "rule_bloqueio_recorrente_semanal", "rule_bloqueio_intervalo_horarios",
     ],
     "src_services_veterinarios_bloqueios": ["rule_bloqueio_recorrente_semanal"],
+    "src_app_veterinario_id_page": ["rule_bloqueio_todos_locais", "rule_bloqueio_trava_backend"],
+    "src_app_clinicas_id_page": ["rule_bloqueio_todos_locais"],
+    "src_hook_tutor_usereagendamento": ["rule_bloqueio_todos_locais", "rule_bloqueio_trava_backend"],
 }
 new_edges += [edge("concept_regras_de_negocio", r) for r in anotacao_rules]
 new_edges += [edge("rule_anotacao_privada_visibilidade", r) for r in anotacao_rules[1:]]

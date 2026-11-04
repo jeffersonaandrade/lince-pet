@@ -193,13 +193,18 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
 
   // Availability Check (REPLICATED FROM VETERINARIO)
   useEffect(() => {
+    let atual = true;
+    setCarregandoDisponibilidade(true);
+    setErroDisponibilidade('');
+    setSelectedTimeSlot(null);
+    setHorariosOcupados([]);
+    setDiaBloqueado(false);
+    setShowAllSlots(false);
+
     const fetchDisponibilidade = async () => {
-      // If a professional is selected, check their availability
-      // Otherwise, we can't easily check for occupied slots without a specific provider ID
       const providerId = selectedProfessional?.id;
       if (!providerId) {
-        setHorariosOcupados([]);
-        setDiaBloqueado(false);
+        if (atual) setCarregandoDisponibilidade(false);
         return;
       }
 
@@ -209,23 +214,22 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
       const dataStr = formatLocalISODate(selectedDate);
 
       try {
-        setCarregandoDisponibilidade(true);
-        setErroDisponibilidade('');
         const resp = await AgendamentosService.verificarDisponibilidade(providerId, dataStr);
+        if (!atual) return;
         setHorariosOcupados(resp.horarios_ocupados || []);
         setDiaBloqueado(Boolean(resp.dia_bloqueado));
       } catch (e) {
         console.error("Erro ao carregar disponibilidade:", e);
+        if (!atual) return;
         setHorariosOcupados([]);
         setDiaBloqueado(true);
-        setSelectedTimeSlot(null);
         setErroDisponibilidade('Não foi possível consultar a agenda. Entre na sua conta ou tente novamente.');
       } finally {
-        setCarregandoDisponibilidade(false);
+        if (atual) setCarregandoDisponibilidade(false);
       }
     };
     fetchDisponibilidade();
-    setShowAllSlots(false); // Reset expansion when day changes
+    return () => { atual = false; };
   }, [selectedProfessional?.id, selectedDay]);
 
   // Load Pets

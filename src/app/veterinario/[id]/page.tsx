@@ -408,17 +408,25 @@ export default function VeterinarioProfile() {
   // Availability Check
   const vetId = veterinario?.id;
   useEffect(() => {
-    // Uma troca de data/local invalida a consulta anterior, mesmo se ela terminar depois.
+    // Troca de data/local: some os horários antigos na hora, para não marcar num dia bloqueado
+    // enquanto a consulta nova ainda não voltou (presencial, online ou domicílio).
     let atual = true;
+    setCarregandoDisponibilidade(true);
+    setErroDisponibilidade('');
+    setSelectedTimeSlot(null);
+    setHorariosOcupados([]);
+    setDiaBloqueado(false);
+    setShowAllSlots(false);
     const fetchDisponibilidade = async () => {
-      if (!vetId) return;
+      if (!vetId) {
+        if (atual) setCarregandoDisponibilidade(false);
+        return;
+      }
       const today = new Date();
       const selectedDate = new Date(today);
       selectedDate.setDate(today.getDate() + selectedDay);
       const data = formatLocalISODate(selectedDate);
       try {
-        setCarregandoDisponibilidade(true);
-        setErroDisponibilidade('');
         const resp = await AgendamentosService.verificarDisponibilidade(vetId, data, {
           tipo_consulta: selectedLocationId === -2 ? 'domicilio' : selectedLocationId === -1 ? 'online' : 'presencial',
           endereco_id: selectedLocationId && selectedLocationId !== -1 && selectedLocationId !== -2 ? selectedLocationId : undefined,
@@ -430,14 +438,12 @@ export default function VeterinarioProfile() {
         if (!atual) return;
         setHorariosOcupados([]);
         setDiaBloqueado(true);
-        setSelectedTimeSlot(null);
         setErroDisponibilidade('Não foi possível consultar a agenda. Entre na sua conta ou tente novamente.');
       } finally {
         if (atual) setCarregandoDisponibilidade(false);
       }
     };
     fetchDisponibilidade();
-    setShowAllSlots(false); // Reset expansion when day changes
     return () => { atual = false; };
   }, [vetId, selectedDay, selectedLocationId]);
 
