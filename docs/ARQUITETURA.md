@@ -93,7 +93,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Quem bloqueia:** o veterinário (`/api/veterinarios/bloqueios`) e a clínica com vínculo `aceito` (`/api/clinicas/veterinarios/:vet/bloqueios`, `DELETE /api/clinicas/bloqueios/:id`). Sem vínculo aceito: 404.
 - **Consultas no período:** o front chama `POST ...?preview=1` e mostra as consultas `pendente`/`confirmado` afetadas. Ao confirmar, elas são canceladas com motivo "Agenda bloqueada pelo profissional", o uso mensal do vet é devolvido e o tutor é avisado (in-app + e-mail).
 - **Sem estorno automático:** consulta paga cancelada pelo bloqueio é estornada manualmente.
-- **Vale para todos os locais:** o bloqueio é do veterinário, não do endereço (presencial e online).
+- **Vale para todos os locais:** o bloqueio é do veterinário, não do endereço (presencial, online e domicílio). Na tela de agendar, trocar o dia some os horários na hora até a disponibilidade nova voltar, para não marcar num dia bloqueado com a resposta do dia anterior.
 - **Remover bloqueio** libera os horários, mas não restaura consultas canceladas.
 - **Trava no backend:** `POST /api/agendamentos` e `PATCH /api/agendamentos/:id/reagendar` recusam horário bloqueado (400).
 

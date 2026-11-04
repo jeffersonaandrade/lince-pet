@@ -43,6 +43,26 @@ describe('GET /api/agendamentos/disponibilidade/:veterinario_id', () => {
     expect(res.headers.get('cache-control')).toContain('no-store')
   })
 
+  it('bloqueio de dia inteiro também fecha a teleconsulta', async () => {
+    prismaMock.veterinario.findUnique.mockResolvedValue({
+      id: 'vet-1',
+      userId: 'dono',
+      atendeOnline: 1,
+      duracaoOnlineMin: 45,
+      horariosOnline: { segunda: ['14:00', '14:30', '15:00', '15:30'] },
+    })
+    prismaMock.agendamento.findMany.mockResolvedValue([])
+    bloqueios.bloqueiosDoPeriodo.mockResolvedValue([
+      { dataInicio: '2030-01-07', dataFim: '2030-01-12', recorrente: 0, diasSemana: null, horarios: null },
+    ])
+
+    const res = await consultar('?data=2030-01-07&tipo_consulta=online')
+    expect(res.status).toBe(200)
+    const body = await res.json()
+    expect(body.dia_bloqueado).toBe(true)
+    expect(body.horarios_ocupados).toEqual(expect.arrayContaining(['14:00', '14:30', '15:00']))
+  })
+
   it.each([
     ['sem data', ''],
     ['data inválida', '?data=amanha'],

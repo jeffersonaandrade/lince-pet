@@ -42,7 +42,9 @@ export function useReagendamento(onReagendado: (id: string, dataIso: string, hor
     let ativo = true;
     const grade = gradeDoAgendamento(agenda, agendamento);
     setCarregandoHorarios(true);
-    AgendamentosService.verificarDisponibilidade(agendamento.veterinario.id, data)
+    AgendamentosService.verificarDisponibilidade(agendamento.veterinario.id, data, {
+      tipo_consulta: agendamento.tipo_consulta || 'presencial',
+    })
       .then((disponibilidade) => {
         if (!ativo) return;
         const livres = horariosParaReagendar({ grade, agendamento, data, disponibilidade });
