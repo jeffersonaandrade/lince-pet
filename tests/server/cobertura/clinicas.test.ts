@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => {
     user: { create: vi.fn(), update: vi.fn() },
     clinica: { create: vi.fn(), update: vi.fn() },
     especialidadeRelacionamento: { findMany: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn() },
-    clinicaPlano: { findMany: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn() },
+    clinicaPlano: { findMany: vi.fn(), deleteMany: vi.fn(), createMany: vi.fn(), update: vi.fn() },
     $transaction: vi.fn(),
   }
   prisma.$transaction.mockImplementation(async (fn: (tx: typeof prisma) => unknown) => fn(prisma))
@@ -182,7 +182,13 @@ describe('syncPlanosClinica', () => {
     prisma.clinicaPlano.findMany.mockResolvedValueOnce([{ planoId: 'p1' }, { planoId: 'p2' }])
     await syncPlanosClinica('c1', ['p2', 'p3'])
     expect(prisma.clinicaPlano.deleteMany).toHaveBeenCalledWith({ where: { clinicaId: 'c1', planoId: { in: ['p1'] } } })
-    expect(prisma.clinicaPlano.createMany).toHaveBeenCalledWith({ data: [{ clinicaId: 'c1', planoId: 'p3' }] })
+    expect(prisma.clinicaPlano.createMany).toHaveBeenCalledWith({
+      data: [{ clinicaId: 'c1', planoId: 'p3', categoriasAceitas: null }],
+    })
+    expect(prisma.clinicaPlano.update).toHaveBeenCalledWith({
+      where: { clinicaId_planoId: { clinicaId: 'c1', planoId: 'p2' } },
+      data: { categoriasAceitas: null },
+    })
   })
 
   it('sem diferença não apaga nem cria', async () => {
@@ -190,6 +196,19 @@ describe('syncPlanosClinica', () => {
     await syncPlanosClinica('c1', ['p1'])
     expect(prisma.clinicaPlano.deleteMany).not.toHaveBeenCalled()
     expect(prisma.clinicaPlano.createMany).not.toHaveBeenCalled()
+    expect(prisma.clinicaPlano.update).toHaveBeenCalledWith({
+      where: { clinicaId_planoId: { clinicaId: 'c1', planoId: 'p1' } },
+      data: { categoriasAceitas: null },
+    })
+  })
+
+  it('atualiza categorias dos planos mantidos', async () => {
+    prisma.clinicaPlano.findMany.mockResolvedValueOnce([{ planoId: 'p1' }])
+    await syncPlanosClinica('c1', [{ id: 'p1', categoriasAceitas: 'Diamante, Gold' }])
+    expect(prisma.clinicaPlano.update).toHaveBeenCalledWith({
+      where: { clinicaId_planoId: { clinicaId: 'c1', planoId: 'p1' } },
+      data: { categoriasAceitas: 'Diamante, Gold' },
+    })
   })
 })
 
