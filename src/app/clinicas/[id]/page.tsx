@@ -18,6 +18,7 @@ import {
   type ProfissionalDaClinica,
 } from "@/lib/clinica-perfil";
 import { mensagemDeErro } from "@/lib/erros";
+import { iniciosQueCabemNaGrade } from "@/lib/horarios";
 import { SecaoExamesClinica } from "@/components/Exames/SecaoExamesClinica";
 
 import {
@@ -67,6 +68,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
   const [selectedProfessional, setSelectedProfessional] = useState<ProfissionalDaClinica | null>(null);
   const [horariosOcupados, setHorariosOcupados] = useState<string[]>([]);
   const [diaBloqueado, setDiaBloqueado] = useState(false);
+  const [duracaoMin, setDuracaoMin] = useState(30);
   const [carregandoDisponibilidade, setCarregandoDisponibilidade] = useState(false);
   const [erroDisponibilidade, setErroDisponibilidade] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -135,14 +137,10 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
     selectedDate.setDate(today.getDate() + selectedDay);
     const dayName = getDayName(selectedDate);
 
-    if (selectedProfessional?.specificSchedule) {
-      return selectedProfessional.specificSchedule[dayName] || [];
-    }
-
-    if (!clinic?.horarios) return [];
-
-    const slots = clinic.horarios[dayName] || [];
-    return slots;
+    const daGrade = selectedProfessional?.specificSchedule
+      ? selectedProfessional.specificSchedule[dayName] || []
+      : clinic?.horarios?.[dayName] || [];
+    return iniciosQueCabemNaGrade(daGrade, duracaoMin);
   };
 
   // Initialize selectedDay to today or next available
@@ -218,6 +216,7 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
         if (!atual) return;
         setHorariosOcupados(resp.horarios_ocupados || []);
         setDiaBloqueado(Boolean(resp.dia_bloqueado));
+        setDuracaoMin(Number(resp.duracao_min) > 0 ? Number(resp.duracao_min) : 30);
       } catch (e) {
         console.error("Erro ao carregar disponibilidade:", e);
         if (!atual) return;

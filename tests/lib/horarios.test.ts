@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { dataParaIso, diaDaSemana, normalizarDia, normalizarGrade } from '@/lib/horarios'
+import { dataParaIso, diaDaSemana, iniciosQueCabemNaGrade, normalizarDia, normalizarGrade } from '@/lib/horarios'
 
 describe('normalizarDia', () => {
   it('ignora caixa, acento e o sufixo -feira', () => {
@@ -49,5 +49,25 @@ describe('dataParaIso', () => {
     expect(dataParaIso(null)).toBe('')
     expect(dataParaIso(undefined)).toBe('')
     expect(dataParaIso('')).toBe('')
+  })
+})
+
+describe('iniciosQueCabemNaGrade', () => {
+  const quinta = ['08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30']
+
+  it('com 30 minutos, todos os blocos marcados são início válido', () => {
+    expect(iniciosQueCabemNaGrade(quinta, 30)).toEqual(quinta)
+  })
+
+  it('com 45 minutos, some o último bloco e o que fica antes do intervalo', () => {
+    expect(iniciosQueCabemNaGrade(quinta, 45)).toEqual([
+      '08:30', '09:00', '09:30', '10:00', '10:30', '11:00',
+      '13:00', '13:30', '14:00', '14:30', '15:00', '15:30', '16:00',
+    ])
+  })
+
+  it('duração inválida ou grade vazia não oferece início', () => {
+    expect(iniciosQueCabemNaGrade(quinta, 0)).toEqual([])
+    expect(iniciosQueCabemNaGrade([], 45)).toEqual([])
   })
 })

@@ -180,4 +180,16 @@ describe('horariosParaReagendar', () => {
     })
     expect(r).toEqual(['11:00'])
   })
+
+  it('com duração maior que 30, some inícios sem bloco seguinte na grade', () => {
+    const grade45 = { segunda: ['14:00', '14:30', '15:00', '15:30', '16:00'] }
+    const r = horariosParaReagendar({
+      grade: grade45,
+      agendamento: consulta,
+      data: '2026-10-26',
+      disponibilidade: { ...livre, duracao_min: 45 },
+      agora: longeDeHoje,
+    })
+    expect(r).toEqual(['14:00', '14:30', '15:00', '15:30'])
+  })
 })

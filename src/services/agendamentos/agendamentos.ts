@@ -99,6 +99,8 @@ export interface DisponibilidadeResponse {
   horarios_ocupados: string[];
   horarios_bloqueados?: string[];
   dia_bloqueado?: boolean;
+  /** Duração da modalidade em minutos; o tutor só vê inícios em que a consulta inteira cabe na grade. */
+  duracao_min?: number;
 }
 
 /**
