@@ -144,6 +144,11 @@ export function ConexaoGoogleAgenda({
         <span className="text-xs text-slate-500">
           Consultas marcadas, remarcadas ou canceladas atualizam o evento na sua agenda do Google.
         </span>
+        {!conectado ? (
+          <span className="text-xs text-slate-500">
+            O Google pode avisar que o app ainda não foi verificado. Em Avançado, escolha continuar para a Lince Pet — a conexão é segura do nosso lado. A verificação oficial do Google está em andamento.
+          </span>
+        ) : null}
         <span className={`text-xs font-semibold ${conectado ? "text-green-600" : "text-slate-400"}`}>
           ● {conectado ? "Conectado" : "Não conectado"}
         </span>

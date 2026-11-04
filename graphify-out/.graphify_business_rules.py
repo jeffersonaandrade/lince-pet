@@ -255,6 +255,8 @@ canais_nodes = [
          "Criar insere; remarcar faz PATCH (404/410 cria outro); cancelar pelo tutor ou por bloqueio apaga; id em agendamento_google_eventos; falha nunca derruba o fluxo; 401/403 desliga a integracao."),
     rule("rule_google_agenda_desconectar", "Google Agenda: desconectar para de criar eventos sem apagar historico",
          "POST /api/google/calendar/disconnect revoga o token (melhor esforco) e limpa credenciais; consultas da plataforma e eventos ja criados permanecem."),
+    rule("rule_google_agenda_verificacao_oauth", "Google Agenda: verificacao OAuth pendente no Google Cloud",
+         "Escopo calendar.events e sensivel; ate o app ser verificado no Google Cloud Console o Google mostra aviso de app nao verificado. Nao se resolve so no codigo (LIN-70). A tela de conectar Agenda avisa e orienta Avançado → continuar na Lince Pet."),
 ]
 nodes_ids = {n["id"] for n in new_nodes}
 new_nodes += [n for n in canais_nodes if n["id"] not in nodes_ids]
@@ -265,8 +267,9 @@ impl.update({
     "src_app_api_me_notificacoes_route": ["rule_whatsapp_opt_out", "rule_canais_por_usuario"],
     "src_components_preferenciasnotificacao_preferenciasnotificacao": [
         "rule_canais_por_usuario", "rule_google_agenda_conexao_e_canal", "rule_google_agenda_desconectar",
+        "rule_google_agenda_verificacao_oauth",
     ],
-    "src_server_services_google_calendar": ["rule_google_agenda_sincroniza_evento", "rule_google_agenda_desconectar"],
+    "src_server_services_google_calendar": ["rule_google_agenda_sincroniza_evento", "rule_google_agenda_desconectar", "rule_google_agenda_verificacao_oauth"],
     "src_app_api_google_calendar_disconnect_route": ["rule_google_agenda_desconectar"],
     "src_app_api_agendamentos_route": [
         "rule_bloqueio_trava_backend", "rule_whatsapp_eventos_destinatarios", "rule_whatsapp_nao_bloqueia",
