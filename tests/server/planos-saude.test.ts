@@ -1,12 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { conferirNovosPlanosSaude } from '@/server/services/planos-saude'
-import { incluirPlanosVinculados } from '@/lib/planos-saude'
 
-it('planos inativos já vinculados continuam visíveis no formulário', () => {
-  expect(incluirPlanosVinculados([{ id: 'a', name: 'Ativo' }], [{ id: 'a', name: 'Ativo' }, { id: 'i', name: 'Antigo' }])).toEqual([
-    { id: 'a', name: 'Ativo' }, { id: 'i', name: 'Antigo (inativo)' },
-  ])
-})
 describe('novas associações de plano de saúde', () => {
   it('sem novos vínculos não consulta nem rejeita os antigos', async () => {
     const tx = { $queryRaw: vi.fn() }

@@ -17,6 +17,7 @@ import {
   type PerfilClinica,
   type ProfissionalDaClinica,
 } from "@/lib/clinica-perfil";
+import { rotuloPlanoComCategorias } from "@/lib/planos-saude";
 import { mensagemDeErro } from "@/lib/erros";
 import { iniciosQueCabemNaGrade } from "@/lib/horarios";
 import { SecaoExamesClinica } from "@/components/Exames/SecaoExamesClinica";
@@ -538,12 +539,12 @@ export default function ClinicProfilePage({ params: paramsPromise }: { params: P
                 <p style={{ marginBottom: '1.5rem', fontSize: '0.95rem' }}>Esta clínica aceita os seguintes planos de saúde e convênios pet:</p>
                 {clinic.planos && clinic.planos.length > 0 ? (
                   <div className={styles.specialtiesGrid}>
-                    {clinic.planos.map((plano: string) => (
-                      <div key={plano} className={styles.specialtyCard}>
+                    {clinic.planos.map((plano) => (
+                      <div key={plano.name} className={styles.specialtyCard}>
                         <div className={styles.specialtyIcon} style={{ background: '#f8fafc', color: 'var(--primary)' }}>
                           <CheckCircle size={20} />
                         </div>
-                        <span>{plano}</span>
+                        <span>{rotuloPlanoComCategorias(plano)}</span>
                       </div>
                     ))}
                   </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { incluirPlanosVinculados } from "@/lib/planos-saude";
+import { exemploCategoriasPlano, incluirPlanosVinculados } from "@/lib/planos-saude";
 
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,7 +39,7 @@ type ClinicaProgresso = {
     especialidades?: { id?: string | number }[];
     comodidades?: Record<string, boolean> | string | null;
     horariosFuncionamento?: Record<string, string[]> | string | null;
-    planos?: { id: string }[];
+    planos?: { id: string; name?: string; categoriasAceitas?: string | null }[];
 };
 
 type ProgressoClinica = (ClinicaProgresso & { clinica?: ClinicaProgresso; data?: { clinica?: ClinicaProgresso } }) | null;
@@ -132,6 +132,7 @@ export default function PerfilClinica() {
     // ── Planos de Saúde ────────────────────────────────────────────────────────
     const [planosDisponiveis, setPlanosDisponiveis] = useState<{ id: string; name: string }[]>([]);
     const [planosSelecionados, setPlanosSelecionados] = useState<string[]>([]);
+    const [categoriasPorPlano, setCategoriasPorPlano] = useState<Record<string, string>>({});
 
     // ── Profissionais Vinculados ───────────────────────────────────────────────
     const [profissionais, setProfissionais] = useState<Profissional[]>([]);
@@ -214,7 +215,12 @@ export default function PerfilClinica() {
                 // Planos
                 if (Array.isArray(clinica.planos)) {
                     setPlanosSelecionados(clinica.planos.map((p) => p.id));
-                    setPlanosDisponiveis(ativos => incluirPlanosVinculados(ativos, clinica.planos!));
+                    setCategoriasPorPlano(
+                        Object.fromEntries(
+                            clinica.planos.map((p) => [p.id, p.categoriasAceitas?.trim() || ""])
+                        )
+                    );
+                    setPlanosDisponiveis((ativos) => incluirPlanosVinculados(ativos, clinica.planos!));
                 }
             }
 
@@ -255,9 +261,17 @@ export default function PerfilClinica() {
     };
 
     const togglePlano = (id: string) => {
-        setPlanosSelecionados((prev) =>
-            prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
-        );
+        setPlanosSelecionados((prev) => {
+            if (prev.includes(id)) {
+                setCategoriasPorPlano((cats) => {
+                    const next = { ...cats };
+                    delete next[id];
+                    return next;
+                });
+                return prev.filter((p) => p !== id);
+            }
+            return [...prev, id];
+        });
         setHasUnsavedChanges(true);
     };
 
@@ -270,7 +284,12 @@ export default function PerfilClinica() {
                 submitClinicaOnboardingStep1({ especialidades: especialidadesSelecionadas as string[] }),
                 submitClinicaOnboardingStep2({ comodidades }),
                 submitClinicaOnboardingStep3({ horariosFuncionamento: horarios }),
-                submitClinicaOnboardingStep5({ planos: planosSelecionados })
+                submitClinicaOnboardingStep5({
+                    planos: planosSelecionados.map((id) => ({
+                        id,
+                        categoriasAceitas: categoriasPorPlano[id]?.trim() || null,
+                    })),
+                }),
             ]);
             if (updateUser && user) updateUser({ ...user, nome });
             setHasUnsavedChanges(false);
@@ -461,12 +480,14 @@ export default function PerfilClinica() {
                 <div className={styles.section}>
                     <h2 className={styles.sectionTitle}>Planos de Saúde Atendidos</h2>
                     <p className={styles.sectionDescription}>
-                        Selecione os planos de saúde que sua clínica aceita.
+                        Selecione os planos e informe as categorias que a clínica aceita em cada um
+                        (ex.: Pet Top Diamante/Premium/Gold; EuPet Premium/Super/Safety).
                     </p>
                     <div className={styles.especialidadesGrid}>
                         {planosDisponiveis.map((plano) => (
                             <button
                                 key={plano.id}
+                                type="button"
                                 className={`${styles.especialidadeChip} ${planosSelecionados.includes(plano.id)
                                     ? styles.selected
                                     : ""
@@ -477,6 +498,33 @@ export default function PerfilClinica() {
                             </button>
                         ))}
                     </div>
+                    {planosSelecionados.length > 0 ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginTop: "1rem" }}>
+                            {planosSelecionados.map((id) => {
+                                const plano = planosDisponiveis.find((p) => p.id === id);
+                                if (!plano) return null;
+                                return (
+                                    <label key={id} className={styles.label} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                        <span>Categorias aceitas — {plano.name}</span>
+                                        <input
+                                            type="text"
+                                            className={styles.input}
+                                            value={categoriasPorPlano[id] || ""}
+                                            placeholder={exemploCategoriasPlano(plano.name)}
+                                            maxLength={500}
+                                            onChange={(e) => {
+                                                setCategoriasPorPlano((prev) => ({ ...prev, [id]: e.target.value }));
+                                                setHasUnsavedChanges(true);
+                                            }}
+                                        />
+                                        <span style={{ fontWeight: 400, color: "#64748b", fontSize: "0.85rem" }}>
+                                            {exemploCategoriasPlano(plano.name)}
+                                        </span>
+                                    </label>
+                                );
+                            })}
+                        </div>
+                    ) : null}
                 </div>
 
                 {/* ── Avisos ────────────────────────────────────────────────────── */}

@@ -39,7 +39,10 @@ export const GET = route(async (req) => {
         ...clinicaPublica(clinica),
         user: usuarioPublico(user),
         especialidades: especialidades.get(clinica.id) ?? [],
-        planos: clinicaPlanos.map((cp) => cp.plano),
+        planos: clinicaPlanos.map((cp) => ({
+          ...cp.plano,
+          categoriasAceitas: cp.categoriasAceitas?.trim() || null,
+        })),
         avaliacoes,
         rating: rating || 0.0,
         totalReviews,

@@ -179,6 +179,7 @@ Toda decisão de negócio nova entra aqui e no grafo do graphify (ver `.cursor/r
 - **Só quem aceita:** `GET /api/veterinarios/search?plano=` e `GET /api/clinicas?plano=` devolvem apenas quem tem aquele nome em `veterinario_planos` ou `clinica_planos`. A comparação não diferencia maiúsculas.
 - **Sem exemplo:** se ninguém aceita o plano, `/explorar` fica vazio. Não entra profissional fictício.
 - **Perfil e card da busca:** `/veterinario/[id]`, `/clinicas/[id]` e os cards de veterinário e de clínica em `/explorar` mostram só os planos ligados àquele cadastro.
+- **Categorias por clínica (03/11/2026):** cada clínica aceita faixas/categorias diferentes do mesmo plano (ex.: Pet Top Diamante/Premium/Gold; EuPet Premium/Super/Safety). No onboarding e no perfil, ao marcar um plano a clínica preenche `clinica_planos.categorias_aceitas` (texto livre). O tutor vê “Plano — categorias” no perfil e no card da busca. O filtro de `/explorar` continua só pela marca do catálogo. Veterinário individual não usa esse campo neste escopo.
 - **Ordenação:** o ícone de filtro na barra de `/explorar` ordena a aba atual (veterinários, clínicas e profissionais pet) por nome ou por nota, crescente ou decrescente. A ordem fica na URL (`ordem=nome|nota`, `direcao=asc|desc`) e não dispara nova busca. Sem esses parâmetros, a lista começa pela maior nota. Empate de nota desempata pelo nome. Nota ausente conta como zero.
 
 ### Notificações por WhatsApp

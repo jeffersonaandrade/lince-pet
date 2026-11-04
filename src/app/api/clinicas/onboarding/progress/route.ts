@@ -1,7 +1,7 @@
 import { prisma } from '@/server/db'
 import { ApiRequest, ok, route, unauthorized } from '@/server/http'
 import { requireUser } from '@/server/auth/session'
-import { especialidadesPorEntidade, serializeClinica } from '@/server/services/clinicas'
+import { especialidadesPorEntidade, planoClinicaPublico, serializeClinica } from '@/server/services/clinicas'
 
 export const GET = route(async (req) => {
   const currentUser = await requireUser(await ApiRequest.from(req))
@@ -13,7 +13,7 @@ export const GET = route(async (req) => {
   const especialidades = (await especialidadesPorEntidade([clinica.id], 'clinica')).get(clinica.id) ?? []
   const planos = (
     await prisma.clinicaPlano.findMany({ where: { clinicaId: clinica.id }, include: { plano: true } })
-  ).map((cp) => cp.plano)
+  ).map(planoClinicaPublico)
 
   const currentStep = clinica.onboardingComplete
     ? 6
