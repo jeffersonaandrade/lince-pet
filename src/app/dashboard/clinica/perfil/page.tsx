@@ -24,6 +24,7 @@ import { getEspecialidades, getPlanos } from "@/services/veterinarios/veterinari
 import { Search, UserPlus, Trash2, CheckCircle } from "lucide-react";
 import { mensagemDaApi } from "@/lib/erros";
 import { NotificacoesNavegador } from "@/components/PreferenciasNotificacao/NotificacoesNavegador";
+import GradeSemanalEditor from "@/components/GradeHorarios/GradeSemanalEditor";
 import styles from "./perfil.module.css";
 
 interface Especialidade {
@@ -77,6 +78,7 @@ const DIAS_SEMANA_MAP: Record<string, string> = {
     domingo: "Domingo",
 };
 const DIAS_KEYS = Object.keys(DIAS_SEMANA_MAP);
+const DIAS_NOMES = DIAS_KEYS.map((d) => DIAS_SEMANA_MAP[d]);
 
 function Toast({
     message,
@@ -239,28 +241,6 @@ export default function PerfilClinica() {
 
         loadData();
     }, [tipoUsuario, nomeDoUsuario, loading, router, loadData]);
-
-    // ── Generate Time Slots ────────────────────────────────────────────────────
-    const generateTimeSlots = () => {
-        const slots: string[] = [];
-        for (let hour = 7; hour <= 22; hour++) {
-            slots.push(`${hour.toString().padStart(2, "0")}:00`);
-            slots.push(`${hour.toString().padStart(2, "0")}:30`);
-        }
-        slots.push("23:00");
-        return slots;
-    };
-
-    const toggleTimeSlot = (day: string, time: string) => {
-        setHorarios((prev) => {
-            const current = prev[day] || [];
-            const updated = current.includes(time)
-                ? current.filter((t) => t !== time)
-                : [...current, time].sort();
-            return { ...prev, [day]: updated };
-        });
-        setHasUnsavedChanges(true);
-    };
 
     const toggleEspecialidade = (id: string | number) => {
         setEspecialidadesSelecionadas((prev) =>
@@ -462,50 +442,19 @@ export default function PerfilClinica() {
                 <div className={styles.section}>
                     <h2 className={styles.sectionTitle}>Horários de Funcionamento</h2>
                     <p className={styles.sectionDescription}>
-                        Selecione os horários disponíveis para agendamento em cada dia da
-                        semana.
+                        Marque bloco a bloco, um intervalo (das/até) ou aberto 24h — inclusive
+                        todos os dias de uma vez para clínicas 24h.
                     </p>
-
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                        {DIAS_KEYS.map((day) => (
-                            <div key={day}>
-                                <div
-                                    className={styles.label}
-                                    style={{ marginBottom: "0.6rem" }}
-                                >
-                                    {DIAS_SEMANA_MAP[day]}
-                                </div>
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                                    {generateTimeSlots().map((time) => {
-                                        const isSelected = (horarios[day] || []).includes(time);
-                                        return (
-                                            <button
-                                                key={time}
-                                                type="button"
-                                                onClick={() => toggleTimeSlot(day, time)}
-                                                style={{
-                                                    padding: "0.4rem 0.7rem",
-                                                    border: `2px solid ${isSelected ? "var(--primary)" : "#e0e0e0"}`,
-                                                    borderRadius: "6px",
-                                                    background: isSelected ? "var(--primary)" : "#fff",
-                                                    color: isSelected ? "#fff" : "#555",
-                                                    fontSize: "0.82rem",
-                                                    fontWeight: 500,
-                                                    cursor: "pointer",
-                                                    transition: "all 0.15s",
-                                                    minWidth: "56px",
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {time}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
+                    <GradeSemanalEditor
+                        value={horarios}
+                        dias={DIAS_KEYS}
+                        nomes={DIAS_NOMES}
+                        disabled={isSaving}
+                        onChange={(grade) => {
+                            setHorarios(grade);
+                            setHasUnsavedChanges(true);
+                        }}
+                    />
                 </div>
 
                 {/* ── Planos de Saúde ───────────────────────────────────────────── */}

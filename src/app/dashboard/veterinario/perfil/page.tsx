@@ -15,6 +15,7 @@ import styles from "./perfil.module.css";
 import { useFeatureGate } from "@/hook/useFeatureGate";
 import PremiumGateModal from "@/components/PremiumGateModal/PremiumGateModal";
 import AgendaConfig from "@/components/AgendaConfig/AgendaConfig";
+import GradeSemanalEditor from "@/components/GradeHorarios/GradeSemanalEditor";
 
 interface Especialidade {
   id: string | number;
@@ -58,6 +59,7 @@ const DIAS_SEMANA_MAP: { [key: string]: string } = {
 };
 
 const DIAS_SEMANA_KEYS = ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"];
+const DIAS_SEMANA_NOMES = DIAS_SEMANA_KEYS.map((d) => DIAS_SEMANA_MAP[d]);
 
 function Toast({
   message,
@@ -299,37 +301,11 @@ export default function PerfilVeterinario() {
 
   
 
-  const updateOnlineSchedule = (day: string, time: string) => {
-    const currentSchedule = horariosOnline[day] || [];
-    const newDaySchedule = currentSchedule.includes(time)
-      ? currentSchedule.filter((t) => t !== time)
-      : [...currentSchedule, time].sort();
-
-    setHorariosOnline({
-      ...horariosOnline,
-      [day]: newDaySchedule
-    });
-    setHasUnsavedChanges(true);
-  };
-
   const toggleEspecialidade = (id: string | number) => {
     setEspecialidadesSelecionadas((prev) =>
       prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id]
     );
     setHasUnsavedChanges(true);
-  };
-
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 8; hour <= 23; hour++) {
-      slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      if (hour < 23) {
-        slots.push(`${hour.toString().padStart(2, "0")}:30`);
-      }
-    }
-    // Add final 23:30 slot
-    slots.push("23:30");
-    return slots;
   };
 
   const toggleAccordion = (index: number) => {
@@ -340,27 +316,6 @@ export default function PerfilVeterinario() {
   const updateLocalLocation = <K extends keyof Endereco>(index: number, field: K, value: Endereco[K]) => {
     const updatedEnderecos = [...enderecos];
     updatedEnderecos[index] = { ...updatedEnderecos[index], [field]: value };
-    setEnderecos(updatedEnderecos);
-    setHasUnsavedChanges(true);
-  };
-
-  // Update schedule for a specific location
-  const updateLocalSchedule = (index: number, day: string, time: string) => {
-    const updatedEnderecos = [...enderecos];
-    const currentSchedule = updatedEnderecos[index].horariosDisponibilidade || {};
-    const daySchedule = currentSchedule[day] || [];
-
-    const newDaySchedule = daySchedule.includes(time)
-      ? daySchedule.filter((t) => t !== time)
-      : [...daySchedule, time].sort();
-
-    updatedEnderecos[index] = {
-      ...updatedEnderecos[index],
-      horariosDisponibilidade: {
-        ...currentSchedule,
-        [day]: newDaySchedule
-      }
-    };
     setEnderecos(updatedEnderecos);
     setHasUnsavedChanges(true);
   };
@@ -701,26 +656,17 @@ export default function PerfilVeterinario() {
 
               {showOnlineSchedule && (
                 <div className={styles.horariosSection} style={{ marginTop: '15px' }}>
-                  {DIAS_SEMANA_KEYS.map((day) => (
-                    <div key={day} className={styles.daySchedule}>
-                      <div className={styles.dayLabel}>{DIAS_SEMANA_MAP[day]}</div>
-                      <div className={styles.timeSlots}>
-                        {generateTimeSlots().map((time) => (
-                          <button
-                            key={time}
-                            type="button"
-                            onClick={() => updateOnlineSchedule(day, time)}
-                            className={`${styles.timeSlot} ${horariosOnline[day]?.includes(time)
-                              ? styles.selected
-                              : ""
-                              }`}
-                          >
-                            {time}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                  <GradeSemanalEditor
+                    value={horariosOnline}
+                    dias={DIAS_SEMANA_KEYS}
+                    nomes={DIAS_SEMANA_NOMES}
+                    disabled={isSaving}
+                    onChange={(grade) => {
+                      setHorariosOnline(grade);
+                      setHasUnsavedChanges(true);
+                    }}
+                    ajuda="Marque bloco a bloco, intervalo (das/até) ou aberto 24h."
+                  />
                 </div>
               )}
 
@@ -822,29 +768,23 @@ export default function PerfilVeterinario() {
 
                   {/* Schedule Edit */}
                   <p className={styles.sectionDescription}>
-                    Selecione os blocos de 30 minutos deste local. Se a consulta presencial durar mais que 30 minutos, marque blocos seguidos o bastante (ex.: 45 min às 16h → 16:00 e 16:30). O tutor só vê inícios em que a duração inteira cabe.
+                    Marque bloco a bloco, intervalo (das/até) ou aberto 24h. Se a consulta presencial
+                    durar mais que 30 minutos, marque blocos seguidos o bastante (ex.: 45 min às 16h →
+                    16:00 e 16:30). O tutor só vê inícios em que a duração inteira cabe.
                   </p>
                   <div className={styles.horariosSection}>
-                    {DIAS_SEMANA_KEYS.map((day) => (
-                      <div key={day} className={styles.daySchedule}>
-                        <div className={styles.dayLabel}>{DIAS_SEMANA_MAP[day]}</div>
-                        <div className={styles.timeSlots}>
-                          {generateTimeSlots().map((time) => (
-                            <button
-                              key={time}
-                              type="button"
-                              onClick={() => updateLocalSchedule(index, day, time)}
-                              className={`${styles.timeSlot} ${endereco.horariosDisponibilidade?.[day]?.includes(time)
-                                ? styles.selected
-                                : ""
-                                }`}
-                            >
-                              {time}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                    <GradeSemanalEditor
+                      value={endereco.horariosDisponibilidade || {}}
+                      dias={DIAS_SEMANA_KEYS}
+                      nomes={DIAS_SEMANA_NOMES}
+                      disabled={isSaving}
+                      onChange={(grade) => {
+                        const updated = [...enderecos];
+                        updated[index] = { ...updated[index], horariosDisponibilidade: grade };
+                        setEnderecos(updated);
+                        setHasUnsavedChanges(true);
+                      }}
+                    />
                   </div>
 
                 </div>

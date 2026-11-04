@@ -33,6 +33,18 @@ import styles from "./onboarding.module.css";
 import { uploadOnboardingPhoto } from "@/services/veterinarios/veterinarios";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
 import AgendaConfig from "@/components/AgendaConfig/AgendaConfig";
+import GradeSemanalEditor from "@/components/GradeHorarios/GradeSemanalEditor";
+
+const DIAS_LOCAL_KEYS = ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"] as const;
+const DIAS_LOCAL_NOMES = [
+  "Segunda-feira",
+  "Terça-feira",
+  "Quarta-feira",
+  "Quinta-feira",
+  "Sexta-feira",
+  "Sábado",
+  "Domingo",
+];
 
 interface OnboardingStep {
   title: string;
@@ -197,20 +209,6 @@ export default function OnboardingPage() {
     return digits;
   };
 
-  // Helper functions
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 8; hour <= 23; hour++) {
-      slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      if (hour < 23) {
-        slots.push(`${hour.toString().padStart(2, "0")}:30`);
-      }
-    }
-    // Add final 23:30 slot
-    slots.push("23:30");
-    return slots;
-  };
-
   const handleCepChange = async (cep: string) => {
     const formattedCep = cep
       .replace(/\D/g, "")
@@ -263,18 +261,6 @@ export default function OnboardingPage() {
       }
       setError(null);
     }
-  };
-
-  const handleTimeToggle = (day: string, time: string) => {
-    setLocationModalData((prev) => ({
-      ...prev,
-      horariosDisponibilidade: {
-        ...prev.horariosDisponibilidade,
-        [day]: prev.horariosDisponibilidade[day].includes(time)
-          ? prev.horariosDisponibilidade[day].filter((t) => t !== time)
-          : [...prev.horariosDisponibilidade[day], time].sort(),
-      },
-    }));
   };
 
   const hasAvailabilityHours = (location: LocationData) => {
@@ -1963,52 +1949,27 @@ export default function OnboardingPage() {
                       Horários de Disponibilidade
                     </h4>
                     <p className={styles.horariosSubtext}>
-                      Selecione os horários em que você estará disponível neste
-                      local:
+                      Marque bloco a bloco, intervalo (das/até) ou aberto 24h neste local.
                     </p>
-
-                    {[
-                      "segunda",
-                      "terca",
-                      "quarta",
-                      "quinta",
-                      "sexta",
-                      "sabado",
-                      "domingo",
-                    ].map((day) => {
-                      const dayNames: { [key: string]: string } = {
-                        segunda: "Segunda-feira",
-                        terca: "Terça-feira",
-                        quarta: "Quarta-feira",
-                        quinta: "Quinta-feira",
-                        sexta: "Sexta-feira",
-                        sabado: "Sábado",
-                        domingo: "Domingo",
-                      };
-
-                      return (
-                        <div key={day} className={styles.daySchedule}>
-                          <div className={styles.dayLabel}>{dayNames[day]}</div>
-                          <div className={styles.timeSlots}>
-                            {generateTimeSlots().map((time) => (
-                              <button
-                                key={time}
-                                type="button"
-                                onClick={() => handleTimeToggle(day, time)}
-                                className={`${styles.timeSlot} ${locationModalData.horariosDisponibilidade[
-                                  day
-                                ]?.includes(time)
-                                  ? styles.selected
-                                  : ""
-                                  }`}
-                              >
-                                {time}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
+                    <GradeSemanalEditor
+                      value={locationModalData.horariosDisponibilidade}
+                      dias={DIAS_LOCAL_KEYS}
+                      nomes={DIAS_LOCAL_NOMES}
+                      onChange={(grade) =>
+                        setLocationModalData((prev) => ({
+                          ...prev,
+                          horariosDisponibilidade: {
+                            segunda: grade.segunda || [],
+                            terca: grade.terca || [],
+                            quarta: grade.quarta || [],
+                            quinta: grade.quinta || [],
+                            sexta: grade.sexta || [],
+                            sabado: grade.sabado || [],
+                            domingo: grade.domingo || [],
+                          },
+                        }))
+                      }
+                    />
                   </div>
                 </div>
 

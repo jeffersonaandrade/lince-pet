@@ -56,6 +56,7 @@ Todo arquivo em `src/server` começa com `import 'server-only'`.
 - **Uploads:** multipart -> `UploadedFile` (tamanho/extensão) -> `src/server/services/storage.ts` (sharp + Supabase Storage) -> URL pública gravada no banco. Detalhes em "Storage de imagens".
 - **Local preferido:** só o veterinário marca, no perfil, qual local aparece embaixo do nome na busca e com estrela na hora de agendar. Sem a marca, o nome não entra na busca e o tutor não vê estrela. O cadastro não marca o primeiro endereço. Marcas antigas, feitas sozinhas, foram retiradas.
 - **Agenda:** a grade semanal fica em `veterinario_enderecos.horarios_funcionamento` (presencial) e `veterinarios.horarios_online`, editada no Perfil. `PUT /api/veterinarios/profile` não altera dono (`veterinario_id`), clínica (`clinica_id`), id nem foto do endereço principal: esses campos são ignorados (foto tem upload próprio; clínica só por vínculo aceito). Bloqueios pontuais ficam em `bloqueios_agenda` (`src/server/services/bloqueios.ts`). `GET /api/agendamentos/disponibilidade/:vet` devolve `horarios_ocupados` (consultas + bloqueios), `horarios_bloqueados` e `dia_bloqueado`.
+- **Edição da grade:** no Perfil e no onboarding (vet, clínica e domicílio), o profissional marca blocos de 30 min um a um, por intervalo Das/Até (fim exclusivo, igual ao bloqueio) ou Aberto 24h; clínicas e grades semanais também têm “Todos os dias 24h”. A grade continua sendo a lista de blocos `HH:mm` — só a UX de marcação muda (`GradeDiaEditor` / `GradeSemanalEditor`).
 
 ## Regras de negócio
 

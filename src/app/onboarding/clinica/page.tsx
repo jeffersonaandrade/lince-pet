@@ -22,6 +22,7 @@ import { type ErrorState } from "@/utils/errorHandler";
 import { mensagemDeErro } from "@/lib/erros";
 import styles from "./clinica-onboarding.module.css";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
+import GradeSemanalEditor from "@/components/GradeHorarios/GradeSemanalEditor";
 
 interface Especialidade {
   id: string;
@@ -82,6 +83,8 @@ const DIAS_SEMANA_MAP: { [key: string]: string } = {
   sabado: "Sábado",
   domingo: "Domingo",
 };
+const DIAS_KEYS = Object.keys(DIAS_SEMANA_MAP);
+const DIAS_NOMES = DIAS_KEYS.map((d) => DIAS_SEMANA_MAP[d]);
 
 export default function ClinicaOnboardingPage() {
   const { user, loading, updateUser } = useAuth();
@@ -109,28 +112,6 @@ export default function ClinicaOnboardingPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [availablePlans, setAvailablePlans] = useState<{ id: string; name: string }[]>([]);
   const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
-
-  // Helper: Generate Time Slots
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 8; hour <= 23; hour++) {
-      slots.push(`${hour.toString().padStart(2, "0")}:00`);
-      if (hour < 23) {
-        slots.push(`${hour.toString().padStart(2, "0")}:30`);
-      }
-    }
-    slots.push("23:30");
-    return slots;
-  };
-
-  const handleTimeToggle = (day: string, time: string) => {
-    setHorariosFuncionamento((prev) => ({
-      ...prev,
-      [day]: prev[day].includes(time)
-        ? prev[day].filter((t) => t !== time)
-        : [...prev[day], time].sort(),
-    }));
-  };
 
   const hasFetched = useRef(false);
 
@@ -337,27 +318,17 @@ export default function ClinicaOnboardingPage() {
           {currentStep === 3 && (
             <div className={styles.stepContainer}>
               <h2>Horário de Funcionamento</h2>
-              <p>Selecione os horários de atendimento para cada dia da semana.</p>
-
-              <div className={styles.scheduleGrid}>
-                {Object.keys(DIAS_SEMANA_MAP).map((day) => (
-                  <div key={day} className={styles.daySchedule}>
-                    <h3 className={styles.dayTitle}>{DIAS_SEMANA_MAP[day]}</h3>
-                    <div className={styles.timeSlots}>
-                      {generateTimeSlots().map((time) => (
-                        <button
-                          key={`${day}-${time}`}
-                          type="button"
-                          className={`${styles.timeSlot} ${horariosFuncionamento[day].includes(time) ? styles.selectedTime : ""}`}
-                          onClick={() => handleTimeToggle(day, time)}
-                        >
-                          {time}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p>
+                Marque bloco a bloco, um intervalo (das/até) ou aberto 24h — inclusive todos os
+                dias de uma vez para clínicas 24h.
+              </p>
+              <GradeSemanalEditor
+                value={horariosFuncionamento}
+                dias={DIAS_KEYS}
+                nomes={DIAS_NOMES}
+                disabled={isLoading}
+                onChange={setHorariosFuncionamento}
+              />
             </div>
           )}
 
