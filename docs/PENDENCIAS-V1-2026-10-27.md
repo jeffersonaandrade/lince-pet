@@ -15,6 +15,7 @@
 | Alta | Operação do suporte | O dono confirmou `contato@lincepet.com.br`, configurado em `src/config/site.ts` para a página de contato. Falta confirmar recebimento da caixa e responsável/rotina de atendimento. WhatsApp de suporte continua sem número; avisos manuais pelo profissional seguem na v1; automação fica para depois. |
 | Alta | Busca e crescimento do catálogo | Corrigir UF minúscula e cidade sem acento, remover os respectivos `test.fail()` após comprovar os resultados e implementar paginação no banco e na interface sem ocultar silenciosamente profissionais. Evidência: `e2e/filtros/explorar.spec.ts` e pendência NV-19 em `docs/CORRECOES-AUDITORIA-SEGURANCA.md`. |
 | Alta operacional | Automação da publicação | Configurar `RENDER_API_KEY` e `RENDER_SERVICE_ID` nos secrets corretos do GitHub e demonstrar o job de deploy concluído. Hoje os testes passam, mas esse job falha por ausência dos secrets; a publicação foi executada manualmente pelo conector do Render, com workspace confirmado e revisão do commit implantado. |
+| Alta operacional | Verificação OAuth do Google Agenda | Submeter o cliente OAuth à verificação do Google (escopo `calendar.events`). Sem isso, o usuário vê “o Google não verificou este app”. Card [LIN-70](https://linear.app/lincepet/issue/LIN-70/verificar-o-app-lince-pet-no-google-oauth-agenda). |
 
 ## Itens da lista anterior que já têm decisão e implementação
 
