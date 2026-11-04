@@ -49479,6 +49479,15 @@
       "source_file": "docs/ARQUITETURA.md",
       "source_location": null,
       "contributor": "regras-de-negocio"
+    },
+    {
+      "id": "rule_grade_edicao_intervalo_24h",
+      "label": "Grade: marcar bloco a bloco, intervalo Das/Ate ou aberto 24h",
+      "file_type": "rationale",
+      "rationale": "Decisao do dono: editar a grade semanal (perfil e onboarding de vet/clinica/domicilio) sem clicar em cada bloco de 30 min. Opcoes: clique unitario, intervalo Das/Ate com fim exclusivo (igual ao bloqueio) e Aberto 24h; atalho Todos os dias 24h na grade semanal. Persistencia continua sendo lista de HH:mm por dia.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
     }
   ],
   "links": [
@@ -196091,6 +196100,87 @@
     {
       "source": "src_components_assinatura_linkpagamento",
       "target": "rule_pagamento_navegacao",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_grade_horarios",
+      "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_gradehorarios_gradediaeditor",
+      "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_gradehorarios_gradesemanaleditor",
+      "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_agendaconfig_agendaconfig",
+      "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_veterinario_perfil_page",
+      "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_clinica_perfil_page",
+      "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_onboarding_page",
+      "target": "rule_grade_edicao_intervalo_24h",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_onboarding_clinica_page",
+      "target": "rule_grade_edicao_intervalo_24h",
       "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,

@@ -2,12 +2,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { isAxiosError } from "axios";
 import { api } from "@/hook/api";
-import { DIAS_SEMANA } from "@/lib/horarios";
+import GradeSemanalEditor from "@/components/GradeHorarios/GradeSemanalEditor";
 
 type Config = { duracaoPresencialMin: number; duracaoOnlineMin: number; duracaoDomicilioMin: number; deslocamentoMin: number; atendeDomicilio: boolean; precoConsultaDomicilio: number; horariosDomicilio: Record<string, string[]> };
 const campo = "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-light)]";
-const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-const horarios = Array.from({ length: 48 }, (_, i) => `${String(Math.floor(i / 2)).padStart(2, '0')}:${i % 2 ? '30' : '00'}`);
 
 export default function AgendaConfig({ onDomicilioAlterado }: { onDomicilioAlterado?: (ativo: boolean) => void }) {
   const [config, setConfig] = useState<Config | null>(null);
@@ -42,12 +40,13 @@ export default function AgendaConfig({ onDomicilioAlterado }: { onDomicilioAlter
         <label className="flex flex-col gap-1 text-sm font-medium">Preço da consulta domiciliar (R$)<input type="number" required min={config.atendeDomicilio ? 0.01 : 0} step="0.01" max={999999} disabled={salvando} value={config.precoConsultaDomicilio} onChange={e => setConfig({ ...config, precoConsultaDomicilio: Number(e.target.value) })} className={campo} /></label>
       </div>
       <p className="text-sm text-slate-500">O deslocamento é reservado antes e depois do atendimento domiciliar. Entre duas consultas usamos o maior intervalo necessário, sem somá-lo duas vezes. A grade mantém os horários cadastrados.</p>
-      {config.atendeDomicilio ? <fieldset disabled={salvando} className="flex flex-col gap-2 rounded-lg border border-slate-200 p-3"><legend className="px-1 text-sm font-semibold">Grade domiciliar — blocos de 30 minutos</legend>
-        <p className="text-sm text-slate-500">Marque blocos consecutivos suficientes para a duração da consulta. Para uma consulta de 60 minutos às 15h, marque 15h e 15h30.</p>
-        {DIAS_SEMANA.map((dia, i) => <details key={dia} className="rounded-lg border border-slate-200 p-3"><summary className="cursor-pointer text-sm font-semibold">{dias[i]} ({config.horariosDomicilio[dia]?.length ?? 0} blocos)</summary><div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">{horarios.map(h => <label key={h} className="flex items-center gap-2 text-sm"><input type="checkbox" aria-label={`${dias[i]} ${h}`} checked={config.horariosDomicilio[dia]?.includes(h) ?? false} onChange={e => {
-          const atual = config.horariosDomicilio[dia] ?? [];
-          setConfig({ ...config, horariosDomicilio: { ...config.horariosDomicilio, [dia]: e.target.checked ? [...atual, h].sort() : atual.filter(x => x !== h) } });
-        }} />{h}</label>)}</div></details>)}
+      {config.atendeDomicilio ? <fieldset disabled={salvando} className="flex flex-col gap-3 rounded-lg border border-slate-200 p-3"><legend className="px-1 text-sm font-semibold">Grade domiciliar — blocos de 30 minutos</legend>
+        <GradeSemanalEditor
+          value={config.horariosDomicilio}
+          disabled={salvando}
+          onChange={(horariosDomicilio) => setConfig({ ...config, horariosDomicilio })}
+          ajuda="Use intervalo (das/até), aberto 24h ou clique em cada bloco. Para consulta de 60 min às 15h, marque 15:00 e 15:30."
+        />
       </fieldset> : null}
       <p className="text-sm text-slate-500">As mudanças não alteram consultas já reservadas. Novas reservas e remarcações respeitarão a disponibilidade atual.</p>
       <button type="submit" disabled={salvando} className="self-start rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--primary-dark)] disabled:opacity-50">{salvando ? 'Salvando agenda…' : 'Salvar configuração da agenda'}</button>

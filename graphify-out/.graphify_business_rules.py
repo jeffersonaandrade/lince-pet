@@ -1022,6 +1022,24 @@ for code_id, rs in {
 }.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
 
+grade_ux_nodes = [
+    rule("rule_grade_edicao_intervalo_24h", "Grade: marcar bloco a bloco, intervalo Das/Ate ou aberto 24h",
+         "Decisao do dono: editar a grade semanal (perfil e onboarding de vet/clinica/domicilio) sem clicar em cada bloco de 30 min. Opcoes: clique unitario, intervalo Das/Ate com fim exclusivo (igual ao bloqueio) e Aberto 24h; atalho Todos os dias 24h na grade semanal. Persistencia continua sendo lista de HH:mm por dia."),
+]
+new_nodes += grade_ux_nodes
+new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in grade_ux_nodes]
+for code_id, rs in {
+    "src_lib_grade_horarios": ["rule_grade_edicao_intervalo_24h"],
+    "src_components_gradehorarios_gradediaeditor": ["rule_grade_edicao_intervalo_24h", "rule_visual_padrao_site"],
+    "src_components_gradehorarios_gradesemanaleditor": ["rule_grade_edicao_intervalo_24h", "rule_visual_padrao_site"],
+    "src_components_agendaconfig_agendaconfig": ["rule_grade_edicao_intervalo_24h"],
+    "src_app_dashboard_veterinario_perfil_page": ["rule_grade_edicao_intervalo_24h"],
+    "src_app_dashboard_clinica_perfil_page": ["rule_grade_edicao_intervalo_24h"],
+    "src_app_onboarding_page": ["rule_grade_edicao_intervalo_24h"],
+    "src_app_onboarding_clinica_page": ["rule_grade_edicao_intervalo_24h"],
+}.items():
+    impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))
+
 for code_id, rs in impl.items():
     new_edges += [edge(code_id, r, "implements") for r in rs]
 
