@@ -46,6 +46,7 @@ export interface LocalAtendimento {
   observacoes?: string;
   horariosDisponibilidade?: Record<string, string[]>;
   fotoUrl?: string;
+  isPrimary?: boolean;
 }
 
 export interface VeterinarioHorario {

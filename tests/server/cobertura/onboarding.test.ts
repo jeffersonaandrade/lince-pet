@@ -256,7 +256,7 @@ describe('processStep4 (tipos de visita e locais)', () => {
       complemento: 'Sala 2',
       aceitaEmergencia: 1,
       observacoes: 'obs',
-      isPrimary: 1,
+      isPrimary: 0,
       precoConsulta: 120.46,
       fotoUrl: 'f.jpg',
       ativo: 1,

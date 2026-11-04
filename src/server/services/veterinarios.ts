@@ -417,7 +417,8 @@ function parseJsonSafe(value: unknown) {
 }
 
 function formatVeterinarioData(vet: VeterinarioLoaded) {
-  const enderecoPrincipal = vet.enderecos?.find((end) => end.isPrimary) || vet.enderecos?.[0]
+  const preferido = vet.enderecos?.find((end) => end.isPrimary)
+  const enderecoPrincipal = preferido || vet.enderecos?.[0]
 
   const totalReviews = vet.avaliacoes?.length || 0
   let rating = 0
@@ -473,7 +474,7 @@ function formatVeterinarioData(vet: VeterinarioLoaded) {
     rating: rating,
     totalReviews: totalReviews,
     availability: parseJsonSafe(enderecoPrincipal?.horariosDisponibilidade),
-    clinica: enderecoPrincipal?.nomeClinica || null,
+    clinica: preferido?.nomeClinica || null,
     creditos: vet.creditos || 0,
     locations: locations,
     atendeOnline: !!vet.atendeOnline,
