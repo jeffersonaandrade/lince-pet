@@ -22,6 +22,7 @@ import styles from "./clinica-onboarding.module.css";
 import ProfileImageUploader from "@/components/ProfileImageUploader/ProfileImageUploader";
 import GradeSemanalEditor from "@/components/GradeHorarios/GradeSemanalEditor";
 import { exemploCategoriasPlano, incluirPlanosVinculados } from "@/lib/planos-saude";
+import { AREAS_DE_EXAMES, comodidadeDeCentroDeExames, PERFIS_ATENDIMENTO, perfilAtendimentoValido, type PerfilAtendimento } from "@/lib/perfil-atendimento";
 
 interface Especialidade {
   id: string;
@@ -60,6 +61,15 @@ const onboardingSteps: OnboardingStep[] = [
   },
 ];
 
+const etapasDeExames: OnboardingStep[] = [
+  { title: "Bem-vindo ao Lince Pet!", description: "Configure seu centro de exames ou laboratório." },
+  { title: "Áreas de exames", description: "Informe as áreas em que seu centro atua." },
+  { title: "Estrutura do local", description: "Informe o que os tutores encontram no local." },
+  { title: "Horários de atendimento", description: "Quando você recebe pets para exames e coletas?" },
+  { title: "Perfil do centro de exames", description: "Adicione a foto e descreva os serviços." },
+  { title: "Convênios para exames", description: "Informe quais planos pet são aceitos para exames." },
+];
+
 const COMODIDADES_LIST = [
   { key: "estacionamento", label: "Estacionamento Próprio" },
   { key: "acessibilidade", label: "Acessibilidade (Rampa/Elevador)" },
@@ -92,7 +102,18 @@ export default function ClinicaOnboardingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingInitial, setIsLoadingInitial] = useState(true);
   const [especialidades, setEspecialidades] = useState<Especialidade[]>([]);
+  const [perfilSalvo, setPerfilSalvo] = useState<PerfilAtendimento | null>(null);
+  const [perfilEscolhido, setPerfilEscolhido] = useState<PerfilAtendimento | "">("");
   const [error, setError] = useState<ErrorState | null>(null);
+  const [erroAoCarregar, setErroAoCarregar] = useState(false);
+  const centroDeExames = perfilEscolhido === "exames";
+  const etapas = centroDeExames ? etapasDeExames : onboardingSteps;
+  const areasDisponiveis = centroDeExames
+    ? especialidades.filter(({ nome }) => AREAS_DE_EXAMES.includes(nome))
+    : especialidades;
+  const comodidadesDisponiveis = centroDeExames
+    ? COMODIDADES_LIST.filter(({ key }) => comodidadeDeCentroDeExames(key))
+    : COMODIDADES_LIST;
 
   // Form Data
   const [selectedEspecialidades, setSelectedEspecialidades] = useState<string[]>([]);
@@ -131,28 +152,24 @@ export default function ClinicaOnboardingPage() {
       try {
         hasFetched.current = true;
         setIsLoadingInitial(true);
-        // Load Specialties
-        const espResponse = await getEspecialidades();
-        if (espResponse.success) {
-          setEspecialidades(espResponse.data);
-        }
-
-        // Load Progress
-        const progress = await getClinicaOnboardingProgress();
-        if (progress.currentStep > 1) {
-          const validCurrentStep = Math.min(Math.max(progress.currentStep, 0), 5);
-          setCurrentStep(validCurrentStep);
-        }
-
-        // Load Plans
-        const plansResponse = await getPlanos();
+        const [espResponse, progress, plansResponse] = await Promise.all([
+          getEspecialidades(), getClinicaOnboardingProgress(), getPlanos(),
+        ]);
+        if (!espResponse.success || !progress.clinica) throw new Error("Dados de cadastro indisponíveis.");
+        setEspecialidades(espResponse.data);
         if (plansResponse) {
           setAvailablePlans(plansResponse);
         }
 
-        // Populate Data if exists
         const clinica = progress.clinica;
         if (clinica) {
+          if (perfilAtendimentoValido(clinica.perfilAtendimento)) {
+            setPerfilSalvo(clinica.perfilAtendimento);
+            setPerfilEscolhido(clinica.perfilAtendimento);
+          }
+          if (progress.currentStep > 1) {
+            setCurrentStep(clinica.perfilAtendimento ? Math.min(progress.currentStep, 5) : 1);
+          }
           if (clinica.especialidades) {
             setSelectedEspecialidades(clinica.especialidades.map((e: { id: string }) => e.id));
           }
@@ -180,6 +197,7 @@ export default function ClinicaOnboardingPage() {
         setIsLoadingInitial(false);
       } catch (err) {
         console.error("Error loading onboarding:", err);
+        setErroAoCarregar(true);
         setIsLoadingInitial(false);
       }
     };
@@ -198,15 +216,29 @@ export default function ClinicaOnboardingPage() {
 
     try {
       switch (currentStep) {
-        case 1:
-          if (selectedEspecialidades.length === 0) {
+        case 1: {
+          if (!perfilEscolhido) throw new Error("Selecione o tipo de estabelecimento.");
+          const areasSelecionadas = centroDeExames
+            ? areasDisponiveis.filter(({ id }) => selectedEspecialidades.includes(id)).map(({ id }) => id)
+            : selectedEspecialidades;
+          if (!centroDeExames && areasSelecionadas.length === 0) {
             throw new Error("Selecione pelo menos uma especialidade.");
           }
-          await submitClinicaOnboardingStep1({ especialidades: selectedEspecialidades });
+          await submitClinicaOnboardingStep1({
+            especialidades: areasSelecionadas,
+            perfilAtendimento: perfilSalvo ? undefined : perfilEscolhido,
+          });
+          setPerfilSalvo(perfilEscolhido);
+          setSelectedEspecialidades(areasSelecionadas);
           break;
-        case 2:
-          await submitClinicaOnboardingStep2({ comodidades: selectedComodidades });
+        }
+        case 2: {
+          const comodidades = centroDeExames
+            ? Object.fromEntries(Object.entries(selectedComodidades).filter(([key]) => comodidadeDeCentroDeExames(key)))
+            : selectedComodidades;
+          await submitClinicaOnboardingStep2({ comodidades });
           break;
+        }
         case 3:
           const hasHours = Object.values(horariosFuncionamento).some(day => day.length > 0);
           if (!hasHours) throw new Error("Defina horário para pelo menos um dia.");
@@ -228,7 +260,7 @@ export default function ClinicaOnboardingPage() {
           });
           await completeClinicaOnboarding();
           updateUser({ onboardingComplete: 1 });
-          router.push("/dashboard/clinica");
+          router.push(centroDeExames ? "/dashboard/clinica/exames" : "/dashboard/clinica");
           return;
       }
 
@@ -252,6 +284,14 @@ export default function ClinicaOnboardingPage() {
       </div>
     );
   }
+  if (erroAoCarregar) {
+    return (
+      <div className={styles.loadingContainer}>
+        <p>Não foi possível carregar os dados do cadastro.</p>
+        <button className={styles.primaryButton} onClick={() => window.location.reload()}>Tentar novamente</button>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -259,7 +299,7 @@ export default function ClinicaOnboardingPage() {
       <div className={styles.sidebar}>
 
         <div className={styles.stepsContainer}>
-          {onboardingSteps.map((step, index) => (
+          {etapas.map((step, index) => (
             <div key={index} className={`${styles.stepItem} ${index <= currentStep ? styles.activeStep : ""} ${index < currentStep ? styles.completedStep : ""}`}>
               <div className={styles.stepIndicator}>
                 {index < currentStep ? <Check size={16} /> : index + 1}
@@ -278,43 +318,65 @@ export default function ClinicaOnboardingPage() {
           {currentStep === 0 && (
             <div className={styles.welcomeContainer}>
               <h1>Bem-vindo ao Lince Pet!</h1>
-              <p>Estamos muito felizes em ter sua clínica conosco. Vamos configurar seu perfil em poucos passos.</p>
+              <p>{centroDeExames
+                ? "Vamos preparar o perfil do seu centro de exames ou laboratório. Depois, você poderá configurar os exames, a agenda e o responsável técnico no painel de Exames."
+                : "Vamos configurar o perfil do seu estabelecimento em poucos passos."}</p>
               <button className={styles.primaryButton} onClick={handleNext}>Começar</button>
             </div>
           )}
 
           {currentStep === 1 && (
             <div className={styles.stepContainer}>
-              <h2>Especialidades</h2>
-              <p>Selecione todas as especialidades atendidas na clínica.</p>
+              {!perfilSalvo && (
+                <div className={styles.formGroup}>
+                  <label htmlFor="perfilAtendimento">Tipo de estabelecimento</label>
+                  <select id="perfilAtendimento" className={styles.textarea} value={perfilEscolhido}
+                    onChange={(e) => {
+                      const valor = e.target.value;
+                      if (perfilAtendimentoValido(valor)) setPerfilEscolhido(valor);
+                    }}>
+                    <option value="" disabled>Selecione o tipo de estabelecimento</option>
+                    {PERFIS_ATENDIMENTO.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+                  </select>
+                </div>
+              )}
+              {perfilEscolhido && (
+                <>
+                  <h2>{etapas[1].title}</h2>
+                  <p>{centroDeExames
+                    ? "Marque as áreas em que você atua. Exames individuais, como ultrassom ou hemograma, são cadastrados depois no catálogo do painel de Exames."
+                    : "Selecione todas as especialidades atendidas na clínica."}</p>
 
-              <div className={styles.optionsGrid}>
-                {especialidades.map((esp) => (
-                  <div key={esp.id}
-                    className={`${styles.optionCard} ${selectedEspecialidades.includes(esp.id) ? styles.selected : ""}`}
-                    onClick={() => {
-                      if (selectedEspecialidades.includes(esp.id)) {
-                        setSelectedEspecialidades(prev => prev.filter(id => id !== esp.id));
-                      } else {
-                        setSelectedEspecialidades(prev => [...prev, esp.id]);
-                      }
-                    }}
-                  >
-                    <span className={styles.optionLabel}>{esp.nome}</span>
-                    {selectedEspecialidades.includes(esp.id) && <Check size={18} className={styles.checkIcon} />}
+                  <div className={styles.optionsGrid}>
+                    {areasDisponiveis.map((esp) => {
+                      const selecionada = selectedEspecialidades.includes(esp.id);
+                      return (
+                        <button type="button" key={esp.id} aria-pressed={selecionada}
+                          className={`${styles.optionCard} ${selecionada ? styles.selected : ""}`}
+                          onClick={() => setSelectedEspecialidades(prev =>
+                            prev.includes(esp.id) ? prev.filter(id => id !== esp.id) : [...prev, esp.id]
+                          )}
+                        >
+                          <span className={styles.optionLabel}>{esp.nome}</span>
+                          {selecionada && <Check size={18} className={styles.checkIcon} />}
+                        </button>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
+                </>
+              )}
             </div>
           )}
 
           {currentStep === 2 && (
             <div className={styles.stepContainer}>
-              <h2>Comodidades</h2>
-              <p>Marque o que sua clínica oferece para melhor experiência dos clientes.</p>
+              <h2>{etapas[2].title}</h2>
+              <p>{centroDeExames
+                ? "Marque as facilidades disponíveis para os tutores no local de exames e coletas."
+                : "Marque o que sua clínica oferece para melhor experiência dos clientes."}</p>
 
               <div className={styles.checklistGrid}>
-                {COMODIDADES_LIST.map((item) => (
+                {comodidadesDisponiveis.map((item) => (
                   <div key={item.key} className={styles.checklistItem}>
                     <CustomCheckbox
                       label={item.label}
@@ -329,11 +391,10 @@ export default function ClinicaOnboardingPage() {
 
           {currentStep === 3 && (
             <div className={styles.stepContainer}>
-              <h2>Horário de Funcionamento</h2>
-              <p>
-                Marque bloco a bloco, um intervalo (das/até) ou aberto 24h — inclusive todos os
-                dias de uma vez para clínicas 24h.
-              </p>
+              <h2>{etapas[3].title}</h2>
+              <p>{centroDeExames
+                ? "Informe quando você recebe pets para exames e coletas. Marque blocos, um intervalo ou atendimento 24h."
+                : "Marque bloco a bloco, um intervalo (das/até) ou aberto 24h, inclusive todos os dias de uma vez para clínicas 24h."}</p>
               <GradeSemanalEditor
                 value={horariosFuncionamento}
                 dias={DIAS_KEYS}
@@ -346,7 +407,7 @@ export default function ClinicaOnboardingPage() {
 
           {currentStep === 4 && (
             <div className={styles.stepContainer}>
-              <h2>Perfil da Clínica</h2>
+              <h2>{etapas[4].title}</h2>
 
               <div className={styles.formGroup2}>
                 <label>Foto de Perfil / Logo</label>
@@ -364,11 +425,14 @@ export default function ClinicaOnboardingPage() {
                 </div>
               </div>
               <div className={styles.formGroup}>
-                <label>Sobre a Clínica</label>
+                <label htmlFor="descricao">{centroDeExames ? "Sobre o centro de exames" : "Sobre a clínica"}</label>
                 <textarea
+                  id="descricao"
                   className={styles.textarea}
                   rows={5}
-                  placeholder="Descreva a história, missão e valores da clínica..."
+                  placeholder={centroDeExames
+                    ? "Descreva os serviços, as espécies atendidas e como funcionam os exames e as coletas."
+                    : "Descreva a história, missão e valores da clínica..."}
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
                 />
@@ -378,11 +442,10 @@ export default function ClinicaOnboardingPage() {
 
           {currentStep === 5 && (
             <div className={styles.stepContainer}>
-              <h2>Planos de Saúde</h2>
-              <p>
-                Selecione os planos e informe as categorias que a clínica aceita em cada um
-                (cada clínica aceita faixas diferentes do mesmo plano).
-              </p>
+              <h2>{etapas[5].title}</h2>
+              <p>{centroDeExames
+                ? "Selecione os convênios aceitos para exames e informe as categorias de cada um. Se atende somente particular, deixe em branco."
+                : "Selecione os planos e informe as categorias que a clínica aceita em cada um. Cada clínica aceita faixas diferentes do mesmo plano."}</p>
 
               <div className={styles.optionsGrid}>
                 {availablePlans.map((plan) => {
@@ -434,6 +497,9 @@ export default function ClinicaOnboardingPage() {
                   );
                 })}
               </div>
+              {centroDeExames && (
+                <p className="mt-4">Ao concluir, você vai para o painel de Exames. Para publicar a agenda, é necessário um plano com exames e a aprovação do responsável técnico.</p>
+              )}
             </div>
           )}
 
@@ -445,7 +511,7 @@ export default function ClinicaOnboardingPage() {
                 Voltar
               </button>
               <button className={styles.primaryButton} onClick={handleNext} disabled={isLoading}>
-                {isLoading ? "Salvando..." : (currentStep === 5 ? "Concluir" : "Continuar")}
+                {isLoading ? "Salvando..." : (currentStep === 5 ? centroDeExames ? "Ir para o painel de Exames" : "Concluir" : "Continuar")}
               </button>
             </div>
           )}

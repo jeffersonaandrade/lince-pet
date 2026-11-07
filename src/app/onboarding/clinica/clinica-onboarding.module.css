@@ -133,6 +133,9 @@
   cursor: pointer;
   transition: all 0.2s;
   background: white;
+  text-align: left;
+  font: inherit;
+  color: inherit;
 }
 
 .optionCard:hover {

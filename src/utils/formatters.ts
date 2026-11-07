@@ -43,6 +43,14 @@ export const removeMask = (value: string): string => {
   return value.replace(/\D/g, "");
 };
 
+export function telefoneNacional(numero?: string | null): string {
+  const digitos = removeMask(numero || "");
+  return /^55\d{10,11}$/.test(digitos) ? digitos.slice(2) : digitos;
+}
+
+export const ehCelular = (digitos: string) => /^[1-9]\d9\d{8}$/.test(digitos);
+export const ehFixo = (digitos: string) => /^[1-9]\d[2-5]\d{7}$/.test(digitos);
+
 /**
  * Normaliza nomes para comparação (remove acentos, espaços extras e case)
  */

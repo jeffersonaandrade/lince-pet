@@ -1,6 +1,7 @@
 import 'server-only'
 import axios, { type AxiosInstance } from 'axios'
 import type { Clinica, Prestador, Tutor, User, Veterinario } from '@/generated/prisma/client'
+import { ehCelular, ehFixo, telefoneNacional } from '@/utils/formatters'
 import { env } from '../env'
 import { dataLocal } from './assinatura-regras'
 
@@ -27,6 +28,7 @@ export type AsaasCustomer = {
   id: string
   name?: string | null
   email?: string | null
+  phone?: string | null
   mobilePhone?: string | null
   cpfCnpj?: string | null
 }
@@ -99,7 +101,7 @@ export class AsaasService {
 
   private async upsertCustomer(
     existing: AsaasCustomer | undefined,
-    desired: { name: string; email?: string | null; mobilePhone?: string; cpfCnpj?: string },
+    desired: { name: string; email?: string | null; phone?: string; mobilePhone?: string | null; cpfCnpj?: string },
     externalReference: string
   ): Promise<AsaasCustomer> {
     if (existing) {
@@ -107,13 +109,15 @@ export class AsaasService {
         (!existing.cpfCnpj && !!desired.cpfCnpj) ||
         (desired.name && existing.name !== desired.name) ||
         (desired.email && existing.email !== desired.email) ||
-        (desired.mobilePhone && existing.mobilePhone !== desired.mobilePhone)
+        (desired.phone && existing.phone !== desired.phone) ||
+        (desired.mobilePhone !== undefined && existing.mobilePhone !== desired.mobilePhone)
 
       if (needsUpdate) {
         await this.http.put(`/customers/${existing.id}`, {
           name: desired.name || existing.name,
           email: desired.email || existing.email,
-          mobilePhone: desired.mobilePhone || existing.mobilePhone,
+          ...(desired.phone ? { phone: desired.phone } : {}),
+          mobilePhone: desired.mobilePhone === undefined ? existing.mobilePhone : desired.mobilePhone,
           cpfCnpj: desired.cpfCnpj || existing.cpfCnpj,
         })
         const refreshed = await this.http.get<AsaasCustomer>(`/customers/${existing.id}`)
@@ -162,6 +166,13 @@ export class AsaasService {
   ) {
     const externalReference = `clinica:${clinica.id}`
     const existing = await this.findCustomer(externalReference, user.email)
+    const contatos = [user.celular, clinica.whatsapp, clinica.telefone].map(telefoneNacional)
+    const phone = telefoneNacional(clinica.telefone)
+    const fixo = ehFixo(phone) ? phone : contatos.find(ehFixo)
+    const celular = contatos.find(ehCelular)
+    const celularAntigo = telefoneNacional(existing?.mobilePhone)
+    // Corrige apenas o fixo que reconhecemos entre os contatos da própria clínica.
+    const fixoNoCampoDeCelular = ehFixo(celularAntigo) && contatos.includes(celularAntigo)
     try {
       return await this.upsertCustomer(
         existing,
@@ -170,7 +181,8 @@ export class AsaasService {
             (clinica.razaoSocial || clinica.nomeClinica || `${user.nome || ''} ${user.sobrenome || ''}`).trim() ||
             'Clínica Sem Nome',
           email: user.email || undefined,
-          mobilePhone: clinica.whatsapp || clinica.telefone || user.celular || undefined,
+          ...(fixo ? { phone: fixo } : {}),
+          mobilePhone: celular ?? (fixoNoCampoDeCelular ? null : undefined),
           cpfCnpj: clinica.cnpj || undefined,
         },
         externalReference

@@ -38,6 +38,11 @@ enum TipoClinica {
   multipla
 }
 
+enum PerfilAtendimento {
+  veterinario
+  exames
+}
+
 enum Porte {
   pequeno
   medio
@@ -242,6 +247,7 @@ model Clinica {
   updatedAt             DateTime?    @map("updated_at") @db.Timestamp(0)
   nomeClinica           String?      @map("nome_clinica") @db.VarChar(200)
   tipoClinica           TipoClinica? @default(solo) @map("tipo_clinica")
+  perfilAtendimento     PerfilAtendimento? @map("perfil_atendimento")
   nomeFantasia          String?      @map("nome_fantasia") @db.VarChar(255)
   razaoSocial           String?      @map("razao_social") @db.VarChar(255)
   endereco              String?      @db.VarChar(255)

@@ -59,8 +59,6 @@ export const POST = route(async (req) => {
   if (bairro) userChanges.bairro = bairro
   if (cidade) userChanges.cidade = cidade
   if (estado) userChanges.estado = estado
-  if (telefone) userChanges.celular = telefone
-
   const gravar = async () => {
     await saveClinica(clinica, clinicaChanges)
     await saveUser(currentUser, userChanges)
