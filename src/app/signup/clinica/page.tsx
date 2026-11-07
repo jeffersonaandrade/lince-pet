@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { fetchCep } from "@/services/external/brazilapi";
 import { handleApiError, type ErrorState } from "@/utils/errorHandler";
-import { formatCep, formatPhone, removeMask } from "@/utils/formatters";
+import { ehCelular, ehFixo, formatCep, formatPhone, removeMask, telefoneNacional } from "@/utils/formatters";
 import { useAuth } from "@/contexts/AuthContext";
 import { API_BASE_URL } from "@/hook/api";
 import Tooltip from "@/components/ui/Tooltip/Tooltip";
 import styles from "./clinica-signup.module.css";
 import Image from "next/image";
+import { PERFIS_ATENDIMENTO } from "@/lib/perfil-atendimento";
 
 function ClinicaSignup() {
     const router = useRouter();
@@ -22,6 +23,8 @@ function ClinicaSignup() {
         razaoSocial: "",
         cnpj: "",
         telefone: "",
+        celular: "",
+        perfilAtendimento: "",
         email: "",
         senha: "",
         cep: "",
@@ -31,6 +34,9 @@ function ClinicaSignup() {
         estado: "",
         numero: "",
     });
+    const centroDeExames = formData.perfilAtendimento === "exames";
+    const telefoneInvalido = !!formData.telefone && !ehFixo(telefoneNacional(formData.telefone));
+    const celularInvalido = !!formData.celular && !ehCelular(telefoneNacional(formData.celular));
 
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -107,8 +113,9 @@ function ClinicaSignup() {
             return;
         }
 
-        if (name === "telefone") {
-            const formattedPhone = formatPhone(value);
+        if (name === "telefone" || name === "celular") {
+            const digits = telefoneNacional(value);
+            const formattedPhone = digits.length <= 11 ? formatPhone(digits) : digits;
             setFormData((prev) => ({
                 ...prev,
                 [name]: formattedPhone,
@@ -146,7 +153,8 @@ function ClinicaSignup() {
     const isStepValid = () => {
         switch (currentStep) {
             case 1:
-                return formData.nomeFantasia && formData.razaoSocial && formData.cnpj && formData.telefone;
+                return formData.perfilAtendimento && formData.nomeFantasia && formData.razaoSocial && formData.cnpj
+                    && !telefoneInvalido && !celularInvalido;
             case 2:
                 return (
                     formData.cep &&
@@ -172,6 +180,7 @@ function ClinicaSignup() {
             const submitData = {
               ...formData,
               telefone: removeMask(formData.telefone),
+              celular: removeMask(formData.celular),
               cep: removeMask(formData.cep),
               cnpj: removeMask(formData.cnpj),
               email: formData.email,
@@ -230,9 +239,9 @@ function ClinicaSignup() {
                     className={`${styles.leftTitle} ${styles.fadeText}`}
                 >
                     {currentStep === 1
-                        ? "Conte-nos sobre sua clínica ou laboratório"
+                        ? centroDeExames ? "Cadastre seu centro de exames" : "Conte-nos sobre seu estabelecimento"
                         : currentStep === 2
-                            ? "Onde sua clínica está localizada?"
+                            ? centroDeExames ? "Onde seu centro de exames está localizado?" : "Onde sua clínica está localizada?"
                             : "Finalize seu cadastro"}
                 </h1>
                 <p
@@ -240,10 +249,16 @@ function ClinicaSignup() {
                     className={`${styles.leftDescription} ${styles.fadeText}`}
                 >
                     {currentStep === 1
-                        ? "Cadastre sua clínica veterinária, clínica de exames ou laboratório. Exames usam esta mesma conta, exigem plano pago e responsável técnico aprovado e não precisam de veterinários vinculados."
+                        ? centroDeExames
+                            ? "Configure seu perfil para oferecer exames e coletas. Para receber agendamentos, você precisa de um plano com exames e de um responsável técnico aprovado."
+                            : "Escolha o tipo de estabelecimento para configurar o perfil e os serviços que você oferece."
                         : currentStep === 2
-                            ? "Torne fácil para tutores encontrarem e agendarem com sua clínica online. Apareça nos resultados de busca e simplifique o processo de marcação."
-                            : "Economize tempo coletando informações essenciais dos tutores. Receba documentos dos pets e formulários antes mesmo da consulta."}
+                            ? centroDeExames
+                                ? "Informe onde os tutores devem levar os pets para realizar os exames."
+                                : "Torne fácil para tutores encontrarem e agendarem com sua clínica online."
+                            : centroDeExames
+                                ? "Crie o acesso ao painel onde você vai configurar o catálogo, a agenda de exames e o envio de laudos."
+                                : "Economize tempo coletando informações essenciais dos tutores. Receba documentos dos pets e formulários antes mesmo da consulta."}
                 </p>
             </div>
             <div className={styles.rightSection}>
@@ -256,7 +271,7 @@ function ClinicaSignup() {
                     )}
 
                     <div className={styles.userTypeDisplay}>
-                        <p className={styles.userTypeText}>Cadastrando como Clínica</p>
+                        <p className={styles.userTypeText}>{centroDeExames ? "Cadastrando centro de exames ou laboratório" : "Cadastro de estabelecimento veterinário"}</p>
                     </div>
 
                     <div className={styles.stepIndicator}>
@@ -297,8 +312,16 @@ function ClinicaSignup() {
                         {currentStep === 1 && (
                             <>
                                 <div className={styles.inputGroup}>
+                                    <label htmlFor="perfilAtendimento" className={styles.label}>Tipo de estabelecimento</label>
+                                    <select id="perfilAtendimento" name="perfilAtendimento" className={styles.input}
+                                        value={formData.perfilAtendimento} onChange={handleInputChange} required>
+                                        <option value="" disabled>Selecione o tipo de estabelecimento</option>
+                                        {PERFIS_ATENDIMENTO.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+                                    </select>
+                                </div>
+                                <div className={styles.inputGroup}>
                                     <label htmlFor="nomeFantasia" className={styles.label}>
-                                        Nome da Clinica
+                                        {centroDeExames ? "Nome do centro de exames ou laboratório" : "Nome da clínica"}
                                     </label>
                                     <input
                                         type="text"
@@ -307,7 +330,7 @@ function ClinicaSignup() {
                                         value={formData.nomeFantasia}
                                         onChange={handleInputChange}
                                         className={styles.input}
-                                        placeholder="Como sua clínica é conhecida"
+                                        placeholder="Como seu estabelecimento é conhecido"
                                         required
                                     />
                                 </div>
@@ -328,28 +351,26 @@ function ClinicaSignup() {
                                     />
                                 </div>
 
+                                <div className={styles.inputGroup}>
+                                    <label htmlFor="cnpj" className={styles.label}>CNPJ</label>
+                                    <input
+                                        type="text"
+                                        id="cnpj"
+                                        name="cnpj"
+                                        value={formData.cnpj}
+                                        onChange={handleInputChange}
+                                        placeholder="00.000.000/0000-00"
+                                        maxLength={18}
+                                        className={styles.input}
+                                        required
+                                    />
+                                </div>
+
                                 <div className={styles.inputRow}>
                                     <div className={styles.inputGroup}>
-                                        <label htmlFor="cnpj" className={styles.label}>
-                                            CNPJ
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="cnpj"
-                                            name="cnpj"
-                                            value={formData.cnpj}
-                                            onChange={handleInputChange}
-                                            placeholder="00.000.000/0000-00"
-                                            maxLength={18}
-                                            className={styles.input}
-                                            required
-                                        />
-                                    </div>
-
-                                    <div className={styles.inputGroup}>
                                         <label htmlFor="telefone" className={styles.label}>
-                                            Telefone
-                                            <Tooltip text="Telefone principal da clínica para contato." />
+                                            Telefone fixo
+                                            <Tooltip text="Telefone público do estabelecimento. Informe o DDD e os oito dígitos." />
                                         </label>
                                         <input
                                             type="tel"
@@ -357,13 +378,31 @@ function ClinicaSignup() {
                                             name="telefone"
                                             value={formData.telefone}
                                             onChange={handleInputChange}
-                                            placeholder="(11) 99999-9999"
-                                            maxLength={15}
+                                            placeholder="(81) 3333-4444"
+                                            autoComplete="tel-national"
+                                            aria-invalid={telefoneInvalido}
+                                            aria-describedby={telefoneInvalido ? "erro-telefone" : undefined}
                                             className={styles.input}
-                                            required
                                         />
+                                        {telefoneInvalido && <p id="erro-telefone" className={styles.errorMessage}>Informe DDD e 8 dígitos do fixo.</p>}
+                                    </div>
+                                    <div className={styles.inputGroup}>
+                                        <label htmlFor="celular" className={styles.label}>Celular para cobrança</label>
+                                        <input
+                                            type="tel"
+                                            id="celular"
+                                            name="celular"
+                                            value={formData.celular}
+                                            onChange={handleInputChange}
+                                            placeholder="(81) 99999-9999"
+                                            aria-invalid={celularInvalido}
+                                            aria-describedby={celularInvalido ? "erro-celular" : "aviso-celular"}
+                                            className={styles.input}
+                                        />
+                                        {celularInvalido && <p id="erro-celular" className={styles.errorMessage}>Informe DDD e 9 dígitos, começando com 9.</p>}
                                     </div>
                                 </div>
+                                <p id="aviso-celular" className="text-sm text-slate-600">Os dois telefones são opcionais. Informe um celular se quiser receber avisos de cobrança por SMS. Os avisos também podem chegar por e-mail.</p>
                             </>
                         )}
 

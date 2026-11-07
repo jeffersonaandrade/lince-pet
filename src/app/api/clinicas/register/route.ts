@@ -3,6 +3,8 @@ import { generateToken } from '@/server/auth/jwt'
 import { setAuthCookie } from '@/server/auth/session'
 import { registerClinica, type ClinicaRegistrationData } from '@/server/services/clinicas'
 import { LIMITES, limitarTentativas } from '@/server/rate-limit'
+import { perfilAtendimentoValido } from '@/lib/perfil-atendimento'
+import { ehCelular, ehFixo, telefoneNacional } from '@/utils/formatters'
 
 export const POST = route(async (req) => {
   limitarTentativas(req, LIMITES.cadastro)
@@ -11,6 +13,8 @@ export const POST = route(async (req) => {
     'razaoSocial',
     'cnpj',
     'telefone',
+    'celular',
+    'perfilAtendimento',
     'email',
     'senha',
     'cep',
@@ -23,6 +27,21 @@ export const POST = route(async (req) => {
 
   if (!data.email || !data.senha || !data.cnpj) {
     return badRequest({ message: 'Dados incompletos' })
+  }
+  if (data.perfilAtendimento !== undefined && !perfilAtendimentoValido(data.perfilAtendimento)) {
+    return badRequest({ message: 'Selecione um tipo de estabelecimento válido.' })
+  }
+  if (data.perfilAtendimento && data.telefone != null) {
+    if (typeof data.telefone !== 'string' || !ehFixo(telefoneNacional(data.telefone))) {
+      return badRequest({ message: 'Informe um telefone fixo com DDD ou deixe o campo em branco.' })
+    }
+    data.telefone = telefoneNacional(data.telefone)
+  }
+  if (data.celular != null) {
+    if (typeof data.celular !== 'string' || !ehCelular(telefoneNacional(data.celular))) {
+      return badRequest({ message: 'Informe um celular com DDD ou deixe o campo em branco.' })
+    }
+    data.celular = telefoneNacional(data.celular)
   }
 
   try {

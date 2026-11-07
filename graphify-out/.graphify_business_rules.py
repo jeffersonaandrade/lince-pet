@@ -865,6 +865,10 @@ laboratorio_nodes = [
          "Novas insercoes de veterinarios sem plano explicito recebem none no PostgreSQL e Prisma, alinhado ao cadastro. Migracao 20261024200000_veterinario_plano_padrao_none altera somente DEFAULT, sem UPDATE. Aplicada via MCP prezaxlfnpzirpbaodns em 24/10/2026 com historicos Prisma/Supabase; perfil legado e de teste manual em producao conforme dono e teve plano preservado."),
     rule("rule_laboratorio_cadastro_sem_veterinarios", "Laboratorio: cadastro e exames sem veterinarios vinculados",
          "Laboratorio usa conta clinica e agenda exames sem criar nem vincular veterinarios. Cadastro inicia quantidade_vets em 0, nao em 1 ficticio; a contagem real e a dos vinculos. Exames continuam exigindo plano pago e RT aprovado, com veterinario_id nulo no agendamento. Dois tutores podem agendar exames avulsos do mesmo laboratorio respeitando capacidade por exame."),
+    rule("rule_laboratorio_jornada_exames", "Centro de exames e laboratorio tem jornada de cadastro propria",
+         "Perfil de atendimento escolhido no cadastro ou por contas antigas ao retomar ou editar. Centro seleciona areas diagnosticas, estrutura, horarios e convenios e conclui no painel de Exames. Catalogo de exames individuais fica no painel."),
+    rule("rule_assinatura_clinica_sem_celular", "Clinica pode assinar sem celular no Asaas",
+         "Telefone fixo e celular opcionais e separados. Asaas recebe phone para fixo e mobilePhone para celular. Avisos por e-mail dependem do canal habilitado. Assinatura com fixo e e-mail validada no sandbox."),
     rule("rule_laboratorio_link_preserva_encaminhamento", "Laboratorio: Agendar exame preserva encaminhamento e pet",
          "Do painel do tutor ao perfil da clinica e a /exames/:id, manter parametros encaminhamento e pet no link Agendar exame. Antes o segundo link descartava o contexto e perdia o vinculo. Sem encaminhamento, agendamento direto permanece. Backend valida aceite, tutor, pet e destino; parametros nao dao permissao. Regressao e2e confere agendamento_destino_id persistido e ausencia de veterinario vinculado."),
 ]
@@ -873,10 +877,17 @@ new_edges += [edge("concept_regras_de_negocio", n["id"]) for n in laboratorio_no
 new_edges += [edge("rule_veterinario_default_none_preserva_testes", "rule_assinatura_cortesia_legado", "references"), edge("rule_laboratorio_cadastro_sem_veterinarios", "rule_exames_modulo_da_clinica", "references")]
 laboratorio_impl = {
     "src_server_services_veterinarios": ["rule_veterinario_default_none_preserva_testes"],
-    "src_server_services_clinicas": ["rule_laboratorio_cadastro_sem_veterinarios"],
+    "src_server_services_clinicas": ["rule_laboratorio_cadastro_sem_veterinarios", "rule_laboratorio_jornada_exames"],
+    "src_app_signup_clinica_page": ["rule_laboratorio_jornada_exames", "rule_assinatura_clinica_sem_celular"],
+    "src_app_onboarding_clinica_page": ["rule_laboratorio_jornada_exames"],
+    "src_server_services_asaas": ["rule_assinatura_clinica_sem_celular"],
     "src_components_exames_secaoexamesclinica": ["rule_laboratorio_link_preserva_encaminhamento"],
     "src_app_clinicas_id_page": ["rule_laboratorio_link_preserva_encaminhamento"],
-    "e2e_demandas_laboratorio_spec": [n["id"] for n in laboratorio_nodes],
+    "e2e_demandas_laboratorio_spec": [
+        "rule_veterinario_default_none_preserva_testes",
+        "rule_laboratorio_cadastro_sem_veterinarios",
+        "rule_laboratorio_link_preserva_encaminhamento",
+    ],
 }
 for code_id, rs in laboratorio_impl.items():
     impl[code_id] = list(dict.fromkeys(impl.get(code_id, []) + rs))

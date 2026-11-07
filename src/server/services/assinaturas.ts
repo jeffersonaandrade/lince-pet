@@ -78,7 +78,8 @@ async function assinarNoAsaas(user: CurrentUser, a: Assinante, plan: Plano, asaa
       customer = (await garantirClienteAsaas(service, user, a)).id
     } catch (e) {
       console.error('[Assinaturas] Asaas recusou o cliente:', respostaDoAsaas(e))
-      throw erro(400, 'Não foi possível cadastrar seus dados no Asaas. Confira CPF/CNPJ, e-mail e celular do perfil.')
+      const dados = a.tipo === 'clinica' ? 'CNPJ e e-mail' : 'CPF/CNPJ, e-mail e celular'
+      throw erro(400, `Não foi possível cadastrar seus dados no Asaas. Confira ${dados} do perfil.`)
     }
   }
 

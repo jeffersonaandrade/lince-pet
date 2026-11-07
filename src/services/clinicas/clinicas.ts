@@ -1,5 +1,6 @@
 import { api } from "@/hook/api";
 import type { ClinicaDetalheApi } from "@/lib/clinica-perfil";
+import type { PerfilAtendimento } from "@/lib/perfil-atendimento";
 
 
 
@@ -8,7 +9,7 @@ export const getClinicaOnboardingProgress = async () => {
   return response.data;
 };
 
-export const submitClinicaOnboardingStep1 = async (data: { especialidades: string[] }) => {
+export const submitClinicaOnboardingStep1 = async (data: { especialidades: string[]; perfilAtendimento?: PerfilAtendimento }) => {
   const response = await api.post("/clinicas/onboarding/step1", data);
   return response.data;
 };

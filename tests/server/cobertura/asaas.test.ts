@@ -238,7 +238,7 @@ describe('AsaasService: clientes', () => {
 
   const CLINICA = { id: 'c1', razaoSocial: 'Pet LTDA', nomeClinica: 'Pet Clin', cnpj: '123', whatsapp: '81911112222', telefone: '8133334444' }
 
-  it('clínica nova: razão social, WhatsApp e CNPJ', async () => {
+  it('clínica nova: razão social, fixo, celular de cobrança e CNPJ', async () => {
     http.get.mockResolvedValueOnce(lista()).mockResolvedValueOnce(lista())
     http.post.mockResolvedValueOnce({ data: { id: 'cus_c' } })
     await new AsaasService().ensureCustomerForClinica(USER, CLINICA)
@@ -246,7 +246,8 @@ describe('AsaasService: clientes', () => {
     expect(http.post).toHaveBeenCalledWith('/customers', {
       name: 'Pet LTDA',
       email: 'ana@x.com',
-      mobilePhone: '81911112222',
+      phone: '8133334444',
+      mobilePhone: USER.celular,
       cpfCnpj: '123',
       externalReference: 'clinica:c1',
     })
@@ -256,7 +257,7 @@ describe('AsaasService: clientes', () => {
     const s = new AsaasService()
     http.get.mockResolvedValue(lista())
     http.post.mockResolvedValue({ data: {} })
-    await s.ensureCustomerForClinica(USER, { ...CLINICA, razaoSocial: null })
+    await s.ensureCustomerForClinica({ ...USER, celular: null }, { ...CLINICA, razaoSocial: null })
     await s.ensureCustomerForClinica(USER, { ...CLINICA, razaoSocial: null, nomeClinica: null, whatsapp: null })
     await s.ensureCustomerForClinica(
       { nome: '', sobrenome: '', email: '', celular: null },
@@ -268,9 +269,31 @@ describe('AsaasService: clientes', () => {
     )
     const bodies = http.post.mock.calls.map((c) => c[1])
     expect(bodies[0]).toMatchObject({ name: 'Pet Clin', mobilePhone: '81911112222' })
-    expect(bodies[1]).toMatchObject({ name: 'Ana Lima', mobilePhone: '8133334444' })
+    expect(bodies[1]).toMatchObject({ name: 'Ana Lima', phone: '8133334444', mobilePhone: USER.celular })
     expect(bodies[2]).toMatchObject({ name: 'Clínica Sem Nome', email: undefined, mobilePhone: undefined, cpfCnpj: undefined })
     expect(bodies[3]).toMatchObject({ name: 'Clínica Sem Nome', mobilePhone: '81900000000' })
+  })
+
+  it('clínica nova com apenas telefone fixo cadastra o fixo e omite o celular', async () => {
+    http.get.mockResolvedValue(lista())
+    http.post.mockResolvedValueOnce({ data: { id: 'cus_c' } })
+    await new AsaasService().ensureCustomerForClinica(
+      { ...USER, celular: '8133334444' },
+      { ...CLINICA, whatsapp: null, telefone: '+55 (81) 3333-4444' },
+    )
+    expect(http.post.mock.calls[0][1]).toMatchObject({ phone: '8133334444', mobilePhone: undefined })
+  })
+
+  it('clínica existente move o fixo enviado anteriormente como celular', async () => {
+    const existente = { id: 'cus_c', name: CLINICA.razaoSocial, email: USER.email, cpfCnpj: CLINICA.cnpj, mobilePhone: CLINICA.telefone }
+    const atualizado = { ...existente, phone: CLINICA.telefone, mobilePhone: null }
+    http.get.mockResolvedValueOnce(lista(existente)).mockResolvedValueOnce({ data: atualizado })
+    const result = await new AsaasService().ensureCustomerForClinica(
+      { ...USER, celular: CLINICA.telefone },
+      { ...CLINICA, whatsapp: null },
+    )
+    expect(http.put).toHaveBeenCalledWith('/customers/cus_c', expect.objectContaining({ phone: CLINICA.telefone, mobilePhone: null }))
+    expect(result).toBe(atualizado)
   })
 
   it('clínica: erro HTTP ao criar é logado com status e corpo e propagado', async () => {

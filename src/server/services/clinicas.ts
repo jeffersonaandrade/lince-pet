@@ -9,6 +9,8 @@ import { hashPassword } from '../auth/password'
 import { creating, updating } from '../lucid'
 import { PLANO_PADRAO } from './assinante'
 import { conferirNovasEspecialidades } from './especialidades'
+import { AREAS_DE_EXAMES, type PerfilAtendimento } from '@/lib/perfil-atendimento'
+import { HttpError } from '../http'
 
 /** Colunas que existem no banco mas não no model Lucid (não eram serializadas). */
 export function serializeClinica<T extends Partial<Clinica>>(clinica: T) {
@@ -126,9 +128,29 @@ export async function saveUser(user: { id: string } & Record<string, unknown>, c
 }
 
 /** Equivalente ao `related(...).sync(ids)` do Lucid (sem timestamps na pivot). */
-export async function syncEspecialidadesClinica(clinicaId: string, ids: unknown[]) {
+export async function syncEspecialidadesClinica(
+  clinicaId: string,
+  ids: unknown[],
+  perfilAtual?: PerfilAtendimento | null,
+  perfilEscolhido?: PerfilAtendimento,
+) {
   const wanted = [...new Set(ids.map(String))]
   await prisma.$transaction(async (tx) => {
+    if (perfilEscolhido && perfilEscolhido !== perfilAtual) {
+      const { count } = await tx.clinica.updateMany({
+        where: { id: clinicaId, OR: [{ perfilAtendimento: null }, { perfilAtendimento: perfilEscolhido }] },
+        data: updating({ perfilAtendimento: perfilEscolhido }),
+      })
+      if (!count) throw new HttpError(409, { message: 'O tipo de estabelecimento já foi definido. Atualize a página.' })
+    }
+    if ((perfilEscolhido ?? perfilAtual) === 'exames' && wanted.length) {
+      const count = await tx.especialidade.count({
+        where: { id: { in: wanted }, nome: { in: [...AREAS_DE_EXAMES] } },
+      })
+      if (count !== wanted.length) {
+        throw new HttpError(422, { message: 'Selecione somente áreas de exames veterinários.' })
+      }
+    }
     const existing = await tx.especialidadeRelacionamento.findMany({
       where: { entidadeId: clinicaId, entidadeTipo: 'clinica' },
     })
@@ -193,6 +215,8 @@ export type ClinicaRegistrationData = {
   razaoSocial?: string
   cnpj: string
   telefone?: string
+  celular?: string | null
+  perfilAtendimento?: PerfilAtendimento
   email: string
   senha: string
   cep?: string
@@ -216,7 +240,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
       password,
       userType: UserType.clinica,
       nome: str(data.nomeFantasia) as string,
-      celular: str(data.telefone),
+      celular: data.perfilAtendimento ? data.celular ?? null : data.celular ?? str(data.telefone),
       cep: str(data.cep) || '',
       rua: str(data.rua) || '',
       numero: str(data.numero) || '',
@@ -234,6 +258,7 @@ export async function registerClinica(data: ClinicaRegistrationData) {
           nomeClinica: str(data.nomeFantasia),
           razaoSocial: str(data.razaoSocial),
           tipoClinica: TipoClinica.multipla,
+          perfilAtendimento: data.perfilAtendimento,
           quantidadeVets: '0',
           cnpj,
           telefone: str(data.telefone),

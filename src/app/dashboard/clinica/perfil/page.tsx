@@ -23,6 +23,7 @@ import {
 import { getEspecialidades, getPlanos } from "@/services/veterinarios/veterinarios";
 import { Search, UserPlus, Trash2, CheckCircle } from "lucide-react";
 import { mensagemDaApi } from "@/lib/erros";
+import { AREAS_DE_EXAMES, comodidadeDeCentroDeExames, PERFIS_ATENDIMENTO, perfilAtendimentoValido, type PerfilAtendimento } from "@/lib/perfil-atendimento";
 import { NotificacoesNavegador } from "@/components/PreferenciasNotificacao/NotificacoesNavegador";
 import GradeSemanalEditor from "@/components/GradeHorarios/GradeSemanalEditor";
 import styles from "./perfil.module.css";
@@ -34,6 +35,7 @@ interface Especialidade {
 
 /** Dados da clínica em `GET /clinicas/onboarding/progress` usados nesta tela. */
 type ClinicaProgresso = {
+    perfilAtendimento?: PerfilAtendimento | null;
     descricao?: string | null;
     telefone?: string | null;
     especialidades?: { id?: string | number }[];
@@ -66,6 +68,16 @@ const COMODIDADES_MAP: Record<string, string> = {
     laboratorio: "Laboratório",
     examesImagem: "Exames de Imagem",
     emergencia24h: "Emergência 24h",
+};
+
+const COMODIDADES_EXAMES: Record<string, string> = {
+    estacionamento: "Estacionamento",
+    acessibilidade: "Acessibilidade",
+    arcondicionado: "Ar Condicionado",
+    wifi: "Wi-Fi",
+    salaespera: "Sala de Espera",
+    banheiro: "Banheiro para Clientes",
+    atendimento24h: "Atendimento 24h",
 };
 
 const DIAS_SEMANA_MAP: Record<string, string> = {
@@ -114,10 +126,16 @@ export default function PerfilClinica() {
 
     const [descricao, setDescricao] = useState("");
     const [telefone, setTelefone] = useState("");
+    const [perfilSalvo, setPerfilSalvo] = useState<PerfilAtendimento | null>(null);
+    const [perfilEscolhido, setPerfilEscolhido] = useState<PerfilAtendimento | "">("");
+    const centroDeExames = perfilEscolhido === "exames";
 
     // ── Especialidades ─────────────────────────────────────────────────────────
     const [especialidadesDisponiveis, setEspecialidadesDisponiveis] = useState<Especialidade[]>([]);
     const [especialidadesSelecionadas, setEspecialidadesSelecionadas] = useState<(string | number)[]>([]);
+    const areasDisponiveis = centroDeExames
+        ? especialidadesDisponiveis.filter(({ nome }) => AREAS_DE_EXAMES.includes(nome))
+        : especialidadesDisponiveis;
 
     // ── Comodidades ────────────────────────────────────────────────────────────
     const [comodidades, setComodidades] = useState<Record<string, boolean>>(
@@ -181,6 +199,8 @@ export default function PerfilClinica() {
             if (clinica) {
                 setDescricao(clinica.descricao || "");
                 setTelefone(clinica.telefone || "");
+                setPerfilSalvo(clinica.perfilAtendimento ?? null);
+                setPerfilEscolhido(clinica.perfilAtendimento ?? "");
 
                 // Especialidades
                 if (Array.isArray(clinica.especialidades)) {
@@ -279,10 +299,22 @@ export default function PerfilClinica() {
     const handleSaveAll = async () => {
         try {
             setIsSaving(true);
+            const areasSelecionadas = centroDeExames
+                ? areasDisponiveis.filter(({ id }) => especialidadesSelecionadas.includes(id)).map(({ id }) => id)
+                : especialidadesSelecionadas;
+            await submitClinicaOnboardingStep1({
+                especialidades: areasSelecionadas.map(String),
+                perfilAtendimento: perfilSalvo ? undefined : perfilEscolhido || undefined,
+            });
+            if (perfilEscolhido) setPerfilSalvo(perfilEscolhido);
+            setEspecialidadesSelecionadas(areasSelecionadas);
             await Promise.all([
                 submitClinicaOnboardingStep4({ nome, descricao, telefone }),
-                submitClinicaOnboardingStep1({ especialidades: especialidadesSelecionadas as string[] }),
-                submitClinicaOnboardingStep2({ comodidades }),
+                submitClinicaOnboardingStep2({
+                    comodidades: centroDeExames
+                        ? Object.fromEntries(Object.entries(comodidades).filter(([key]) => comodidadeDeCentroDeExames(key)))
+                        : comodidades,
+                }),
                 submitClinicaOnboardingStep3({ horariosFuncionamento: horarios }),
                 submitClinicaOnboardingStep5({
                     planos: planosSelecionados.map((id) => ({
@@ -417,12 +449,28 @@ export default function PerfilClinica() {
 
                 {/* ── Especialidades ────────────────────────────────────────────── */}
                 <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Especialidades Atendidas</h2>
+                    {!perfilSalvo && (
+                        <div className="mb-4">
+                            <label htmlFor="perfilAtendimento" className="mb-2 block font-medium">Tipo de estabelecimento</label>
+                            <select id="perfilAtendimento" className="rounded-lg border border-gray-300 bg-white px-3 py-2"
+                                value={perfilEscolhido} onChange={(e) => {
+                                    const valor = e.target.value;
+                                    if (perfilAtendimentoValido(valor)) {
+                                        setPerfilEscolhido(valor);
+                                        setHasUnsavedChanges(true);
+                                    }
+                                }}>
+                                <option value="" disabled>Selecione o tipo de estabelecimento</option>
+                                {PERFIS_ATENDIMENTO.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+                            </select>
+                        </div>
+                    )}
+                    <h2 className={styles.sectionTitle}>{centroDeExames ? "Áreas de exames" : "Especialidades Atendidas"}</h2>
                     <p className={styles.sectionDescription}>
-                        Selecione as especialidades disponíveis na sua clínica.
+                        {centroDeExames ? "Selecione as áreas em que seu centro atua." : "Selecione as especialidades disponíveis na sua clínica."}
                     </p>
                     <div className={styles.especialidadesGrid}>
-                        {especialidadesDisponiveis.map((esp) => (
+                        {areasDisponiveis.map((esp) => (
                             <button
                                 key={esp.id}
                                 className={`${styles.especialidadeChip} ${especialidadesSelecionadas.includes(esp.id)
@@ -439,12 +487,12 @@ export default function PerfilClinica() {
 
                 {/* ── Comodidades ───────────────────────────────────────────────── */}
                 <div className={styles.section}>
-                    <h2 className={styles.sectionTitle}>Estrutura e Comodidades</h2>
+                    <h2 className={styles.sectionTitle}>{centroDeExames ? "Estrutura do local" : "Estrutura e Comodidades"}</h2>
                     <p className={styles.sectionDescription}>
-                        Informe quais comodidades sua clínica oferece.
+                        {centroDeExames ? "Informe o que os tutores encontram no local." : "Informe quais comodidades sua clínica oferece."}
                     </p>
                     <div className={styles.especialidadesGrid}>
-                        {Object.entries(COMODIDADES_MAP).map(([key, label]) => (
+                        {Object.entries(centroDeExames ? COMODIDADES_EXAMES : COMODIDADES_MAP).map(([key, label]) => (
                             <button
                                 key={key}
                                 className={`${styles.especialidadeChip} ${comodidades[key] ? styles.selected : ""

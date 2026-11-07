@@ -279,6 +279,21 @@ describe('registerClinica', () => {
     expect(clinicaData).toMatchObject({ endereco: '', cep: '', cidade: '', estado: '', razaoSocial: undefined })
   })
 
+  it('cadastro de centro de exames salva o fixo separado do celular de cobrança', async () => {
+    const retornarDados = async ({ data }: { data: object }) => data
+    prisma.clinica.create.mockImplementationOnce(retornarDados).mockImplementationOnce(retornarDados)
+
+    await registerClinica({ ...dados, perfilAtendimento: 'exames' })
+    await registerClinica({ ...dados, perfilAtendimento: 'exames', celular: '81999990000' })
+
+    expect(prisma.clinica.create.mock.calls[0][0].data).toMatchObject({
+      perfilAtendimento: 'exames',
+      telefone: '8133334444',
+    })
+    expect(prisma.user.create.mock.calls[0][0].data.celular).toBeNull()
+    expect(prisma.user.create.mock.calls[1][0].data.celular).toBe('81999990000')
+  })
+
   it('e-mail duplicado: 422 "Email já está em uso"', async () => {
     prisma.user.create.mockRejectedValueOnce(p2002(['email']))
     const erro = await registerClinica(dados).catch((e) => e)
