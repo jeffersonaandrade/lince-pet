@@ -104,7 +104,7 @@ function authService(db) {
   return load('src/server/services/auth.ts', {
     '../db': { prisma: db }, '../http': { HttpError }, '../lucid': lucid, '../auth/jwt': {},
     '../auth/password': { hashPassword: async (password) => `dummy-hash:${password}` },
-    './mail': {}, '../emails/forgot_password': {},
+    './mail': {}, '../emails/forgot_password': {}, '@/lib/endereco-tutor': {},
   })
 }
 
@@ -247,7 +247,7 @@ test('limites de experiências são checados antes de apagar os registros anteri
   const service = load('src/server/services/veterinarios.ts', {
     'luxon': {}, '@/generated/prisma/client': {}, '../db': { prisma: { $transaction: async () => writes++ } },
     '../auth/session': {}, '../auth/password': {}, '../lucid': lucid, './subscription': {},
-    './assinante': {}, './aprovacoes': {}, '../http': { HttpError },
+    './assinante': {}, './aprovacoes': {}, './planos-saude': {}, './especialidades': {}, '../http': { HttpError },
   })
   for (const input of ['invalid', Array(31).fill({ local: 'Dummy', cargo: 'Dummy' }), [{ local: 'Dummy', descricao: 'x'.repeat(5001) }]]) {
     await assert.rejects(service.replaceExperiencias('dummy-vet', input), { status: 422 })

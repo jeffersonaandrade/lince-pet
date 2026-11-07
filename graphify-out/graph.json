@@ -49512,6 +49512,24 @@
       "community": 22,
       "community_name": "api.tsx",
       "norm_label": "entrega: abrir pr para main (sem merge automatico)"
+    },
+    {
+      "id": "rule_laboratorio_jornada_exames",
+      "label": "Centro de exames e laboratorio tem jornada de cadastro propria",
+      "file_type": "rationale",
+      "rationale": "Perfil de atendimento escolhido no cadastro ou por contas antigas ao retomar ou editar. Centro seleciona areas diagnosticas, estrutura, horarios e convenios e conclui no painel de Exames. Catalogo de exames individuais fica no painel.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
+    },
+    {
+      "id": "rule_assinatura_clinica_sem_celular",
+      "label": "Clinica pode assinar sem celular no Asaas",
+      "file_type": "rationale",
+      "rationale": "Telefone fixo e celular opcionais e separados. Asaas recebe phone para fixo e mobilePhone para celular. Avisos por e-mail dependem do canal habilitado. Assinatura com fixo e e-mail validada no sandbox.",
+      "source_file": "docs/ARQUITETURA.md",
+      "source_location": null,
+      "contributor": "regras-de-negocio"
     }
   ],
   "links": [
@@ -196287,6 +196305,69 @@
       "source": "concept_regras_de_negocio",
       "target": "rule_entrega_pr_para_main",
       "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_laboratorio_jornada_exames",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "concept_regras_de_negocio",
+      "target": "rule_assinatura_clinica_sem_celular",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_asaas",
+      "target": "rule_assinatura_clinica_sem_celular",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_server_services_clinicas",
+      "target": "rule_laboratorio_jornada_exames",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_signup_clinica_page",
+      "target": "rule_laboratorio_jornada_exames",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_signup_clinica_page",
+      "target": "rule_assinatura_clinica_sem_celular",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/ARQUITETURA.md",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_onboarding_clinica_page",
+      "target": "rule_laboratorio_jornada_exames",
+      "relation": "implements",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "docs/ARQUITETURA.md",
